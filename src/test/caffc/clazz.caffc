@@ -1,0 +1,47 @@
+module main2
+
+use caffc.math as math
+
+
+class Point {
+  i32 x, y
+}
+
+
+class Rectangle {
+  Point startPoint, endPoint
+
+  area() -> i32 {
+    return math.abs(_this.startPoint.x - _this.endPoint.x) *
+           math.abs(_this.startPoint.y - _this.endPoint.y)
+  }
+
+  to_string() -> str {
+    return f"x1: {_this.startPoint.x}"
+  }
+}
+
+perimeter(extend Rectangle) -> i32 {
+  return _this.width() * 2 + _this.height() * 2
+}
+
+
+width(extend Rectangle) -> i32 {
+  return math.abs(_this.startPoint.x - _this.endPoint.x)
+}
+
+
+height(extend Rectangle, offset i32) -> i32 {
+  return math.abs(_this.startPoint.y - _this.endPoint.y + offset)
+}
+
+
+check_stuff(x i32) -> bool {
+  if x > 3 return true
+
+  for i in x {
+    if i < 3 continue
+    if i == 7 break
+    if i == 51 return false
+  }
+}

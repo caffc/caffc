@@ -1,0 +1,4 @@
+main() -> int {
+    io.stdout.print("hello world!")
+    return 0
+}

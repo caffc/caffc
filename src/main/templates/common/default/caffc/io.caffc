@@ -1,0 +1,11 @@
+module caffc
+
+native {
+#include <stdio.h>
+}
+
+print(str what) {
+  native {
+    printf("%s\n", what->_caffc_data);
+  }
+}

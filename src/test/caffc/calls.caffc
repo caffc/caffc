@@ -1,0 +1,48 @@
+module main
+
+myfn(i32 x, str name, str surname="Doe") {
+ //
+}
+
+// the call is resolved directly in the compiler
+myfn(name="abc", x=3)
+
+// this should be the generated code
+native {
+  main_myfn(3, const_str_abc, const_str_doe);
+}
+
+printf(str format, *list<obj> args, *map<str, obj> kw) {
+}
+
+// this call is resolved differently
+printf("a%dwut{meta}", 3, meta="abc")
+
+// this should be the generated code
+native {
+  local args = list()
+  args.add(3)
+
+  local kw = map()
+  kw.add(const_str_kw)
+
+  main_printf(str_const, args, kw)
+}
+
+map<str, obj> kw;
+kw["a"] = new A()
+
+myfn(*kw)
+
+pleb() {
+  myfn(3, "abc", "cde")
+  myfn(3, name="abc")
+  myfn(name="abc", x=3)
+  myfn(name="a", surname="b", x=3)
+  myfn(name=null, surname=null, x=3)
+}
+
+main() {
+  new a.b.c.Hello(4)[4].say()
+  printout(5)
+}

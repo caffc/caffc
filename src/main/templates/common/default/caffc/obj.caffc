@@ -1,0 +1,16 @@
+module caffc
+
+interface obj {
+}
+
+interface HasCompare {
+  compare(HasCompare other) -> i32
+}
+
+interface HasEquals {
+  equals(HasEquals other) -> bool
+}
+
+interface HasHash {
+  hash() -> u32
+}

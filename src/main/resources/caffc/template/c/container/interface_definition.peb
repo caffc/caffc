@@ -1,0 +1,8 @@
+typedef struct {
+    caffc_class_header* _caffc_class_header;
+} {{ ctx.typeName | c_name }};
+
+/* interface functions */
+{%- for f in ctx.functions %}
+{{  f | c_function_signature }};
+{%- endfor -%}

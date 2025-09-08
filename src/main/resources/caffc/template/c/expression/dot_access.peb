@@ -1,0 +1,5 @@
+{% if ctx.symbol.typeName.dataType == 'FUNCTION' -%}
+{{ ctx.symbol | c_type_name }}
+{%- else -%}
+{{ ctx.leftOfDot | render }}->{{ ctx.rightOfDot }}
+{%- endif %}

@@ -1,0 +1,20 @@
+module main
+
+main() -> i32 {
+  other()
+  return 0
+}
+
+native {
+  int main(int argc, char* argv[]) {
+    int result;
+
+    atexit(caffc_done);
+    caffc_init();
+
+    result = main_main();
+
+    return result;
+  }
+}
+

@@ -1,0 +1,57 @@
+module main
+
+native {
+#include <stdio.h>
+}
+
+class A {
+  u32 index
+
+  constructor(u32 index) {
+    _this.index = index
+  }
+}
+
+createA(u32 index) -> A {
+  return new A(index)
+}
+
+callGc() {
+  native {
+    caffc_gc_perform();
+  }
+}
+
+main() {
+  A a = createA(3)
+  A[] arr = new A[10000]
+
+  for u32 i = 0; i < arr.size(); i += 1 {
+    arr[i] = createA(i)
+  }
+
+  callGc()
+  for u32 i = 0; i < 100000000; i = i + 1 {
+    createA(i)
+  }
+
+  print(a)
+}
+
+print(A a) {
+  native {
+    printf("%ud\n", a->index);
+  }
+}
+
+native {
+  int main(int argc, const char* argv[]) {
+    atexit(caffc_done);
+    caffc_init();
+
+    main_main();
+
+    return 0;
+  }
+}
+

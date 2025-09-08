@@ -1,0 +1,59 @@
+module main
+
+native {
+  #include <dirent.h>
+  #include <stdio.h>
+}
+
+class File {
+  str name
+
+  constructor(str name) {
+    _this.name = name
+  }
+}
+
+add_item_to_list(ArrayList<File> list, ptr path) {
+  str s = create_string_from_ptr(path)
+  list.add(new File(s))
+}
+
+list_files(str path) -> ArrayList<File> {
+  ArrayList<File> result = new ArrayList()
+
+  native {
+    DIR *dir = NULL;
+    struct dirent* ent = NULL;
+
+    dir = opendir(path->_caffc_data);
+
+    while ((ent = readdir(dir)) != NULL) {
+      main_add_item_to_list(result, ent->d_name);
+    }
+
+    closedir(dir);
+  }
+
+  return result
+}
+
+main() -> i32 {
+  ArrayList<File> files = list_files(".")
+
+  for u32 i = 0; i < files.length; i = i + 1 {
+    File f = files.get(i)
+    print(f.name)
+  }
+
+  return 0
+}
+
+native {
+  int main(int argc, char* argv[]) {
+    atexit(caffc_done);
+    caffc_init();
+
+    return main_main();
+  }
+}
+

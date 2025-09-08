@@ -1,0 +1,14 @@
+{# constructors while void for the user, they are actually methods that return
+   the new instance. furthermore, all the initialization steps are also ran
+   here. #}
+{{ ctx | c_function_signature }} {
+{% include "gc_stack_frame_register.peb" %}
+
+{{ ctx.definition.returnType | c_name }}* _this = caffc_new(&{{ ctx.localvar.typeName.fqdn }}_type);
+{% for statement in ctx.statements %}
+  {{- statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+{% endfor %}
+
+{% include "gc_stack_frame_unregister.peb" %}
+  return _this;
+}

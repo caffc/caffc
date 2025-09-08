@@ -1,0 +1,14 @@
+/* caffc module: {{ ctx.module.name }} */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "{{ ctx | c_global_header }}"
+
+{%- for block in ctx.compileBlocks %}
+{{ block | render }}
+{%- endfor %}
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,0 +1,20 @@
+interface A<T> {
+  get() -> T
+}
+
+// this gets resolved first, then what?
+class B<U is Item> implements A<U> {
+  U item
+}
+
+// create a queue with items to resolve?
+B<U is Item>
+Item
+A<T>
+obj
+
+// create a graph?
+B --> Item
+A --> A
+A --> obj
+

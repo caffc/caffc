@@ -1,0 +1,22 @@
+{# needs a function as root context -#}
+
+{% for variable in ctx.variables %}
+  {{ variable.owner.typeSymbol | c_type }} {{ variable.name }};
+{% endfor %}
+
+{%- if ctx.gcVariableCount() > 0 %}
+/* GC managed variables */
+ptr _caffc_locals[] = {
+{%- for param in ctx.objParameters %}
+  &{{ param.name }}{% if not loop.last or not ctx.objVariables.isEmpty() %},{% endif %}
+{%- endfor %}
+{%- for variable in ctx.objVariables %}
+  &{{ variable.name }}{% if not loop.last %},{% endif %}
+{%- endfor %}
+};
+
+_caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});
+
+{%- else %}
+_caffc_stack_frame_register("{{ ctx.name }}", null, 0);
+{% endif %}

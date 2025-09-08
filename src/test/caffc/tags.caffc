@@ -1,0 +1,13 @@
+module main
+
+tag nodoc {
+  /**
+   * This is not documentation
+   */
+  str default
+}
+
+#nodoc("interesting code")
+#wut  // error, unknown tag wut
+interesting(#param i32 x) -> i32 {
+}

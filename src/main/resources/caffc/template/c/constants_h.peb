@@ -1,0 +1,9 @@
+#ifndef caffc_program_constants
+#define caffc_program_constants
+
+/* string constants */
+{% for constant in program.stringConstants %}
+extern caffc_str {{ constant.name }};
+{% endfor %}
+
+#endif /* caffc_program_constants */

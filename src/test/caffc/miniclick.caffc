@@ -1,0 +1,36 @@
+package main
+
+// use click, io
+
+click<T>(fn<<X, Y>,T> f, map<string, string> kw*) -> fn<<X,Y,Z>,T> {
+    return yolo(x X, y Y, z Z) -> T {
+        return f(x, y + z)
+    }
+}
+
+parameter(fn<<list<>, map<>>,> f, str name) -> fn<<list<>, map<>>,> {
+  context.parameters.add(name)
+  return log(list<> args*, map<> kw*) {
+    try {
+      print("==>")
+      f(args, kw)
+    } finally {
+      print("<==")
+    }
+  }
+}
+
+parameter(str name, fn<<list<>, map<>>,> f) -> fn<<list<>, map<>>,> {
+    createParamInstance(name)
+    return f
+}
+
+@parameter("--name", help="name of the parsed file")
+@parameter("--path", help="path")
+main_entrypoint(str name, str path) -> void {
+    io.out.println("name: {name}")
+}
+
+main(list<str> args) -> int {
+    return click.parse(args)
+}

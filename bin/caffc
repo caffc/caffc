@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+#
+# caffc launcher script
+#
+
+if [[ "$CAFFC_HOME" == "" ]]; then
+    CAFFC_HOME=$(readlink -f "$(dirname "$0")/..")
+fi   # else [[ "$CAFFC_HOME" == "" ]]
+
+if [[ "$CAFFC_JAVA_DEBUG" != "" ]]; then
+    JAVA_DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+fi # [[ "$CAFFC_JAVA_DEBUG" != "" ]]
+
+java $JAVA_DEBUG_OPTIONS -jar $CAFFC_HOME/bin/caffc-*.jar "$@"

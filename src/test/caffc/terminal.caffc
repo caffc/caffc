@@ -1,0 +1,46 @@
+module main
+
+native {
+#include <ioctl.h>
+}
+
+class Terminal {
+    i32 stdin_fd
+    i32 stdout_fd
+
+    constructor() {
+        _this.stdin_fd = 0
+        _this.stdout_fd = 1
+    }
+
+    reset() {
+        native {
+            ioctl();
+            ioctl();
+        }
+    }
+
+    moveCursor(i32 x, i32 y) {
+        native {
+            write(_this->stdout_fd, "123", 3);
+        }
+    }
+}
+
+write(extend Terminal, str text)  -> {
+    if not text {
+        ret
+    }
+
+    native {
+        write(_this->stdout_fd, text->buffer, strlen(text->buffer));
+    }
+}
+
+// global variable
+var terminal = Terminal()
+
+main() {
+    terminal.write("editor loaded")
+}
+

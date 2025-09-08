@@ -1,0 +1,158 @@
+[
+{
+  "name":"com.germaniumhq.caffc.compiler.model.ClassDefinition",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Clazz",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.CompilationUnit",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Field",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Function",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.FunctionDefinition",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.GenericDefinition",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Interface",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.InterfaceDefinition",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Module",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.NativeBlock",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Parameter",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Program",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Tag",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.Tags",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.TypeSymbol",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.germaniumhq.caffc.compiler.model.type.TypeName",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.mitchellbosecke.pebble.node.ForNode$LoopVariables",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"com.mitchellbosecke.pebble.node.expression.UnaryNotExpression",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"java.util.List",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+},
+{
+  "name":"sun.security.provider.SHA2$SHA256",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allDeclaredFields": true
+}
+]

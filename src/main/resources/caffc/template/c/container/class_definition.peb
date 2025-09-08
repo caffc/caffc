@@ -1,0 +1,36 @@
+typedef struct {
+    caffc_class_header* _caffc_class_header;
+{% if ctx.tags.has("caffc_object_array") %}
+    caffc_class_header* _caffc_contained_class_header;
+{% endif %}
+    u8 _caffc_flags;
+
+    /* external references */
+{%- for field in ctx.fields %}
+    {%- if not field.typeName.isPrimitive %}
+    {{ field.typeName | c_name }}* {{ field.name }};
+    {%- endif %}
+{%- endfor %}
+
+    /* primitive types */
+{%- for field in ctx.fields %}
+    {%- if field.typeName.isPrimitive %}
+    {{ field.typeName | c_name }} {{ field.name }};
+    {%- endif %}
+{%- endfor %}
+
+{% if ctx.tags.has("caffc_array") %}
+    {{ ctx.tags.get("caffc_array").get("value") }} _caffc_data[];
+{% endif %}
+} {{ ctx.typeName | c_name }};
+
+extern caffc_class_header {{ ctx.typeName | c_name }}_type;
+
+/* new operator */
+{%- set constructor = ctx.getFunction("constructor") %}
+{{ ctx.typeName | c_name }}* {{ ctx.typeName | c_name }}_new({{ constructor | c_constructor_parameters }});
+
+/* other functions */
+{%- for f in ctx.functions %}
+{{  f | c_function_signature }};
+{%- endfor -%}

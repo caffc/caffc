@@ -1,0 +1,28 @@
+package main
+
+interface Area {
+  size() -> i32
+}
+
+/**
+ * A class can implement as many interfaces as it wants.
+ */
+class Rectangle implements Area {
+  i32 width, height
+
+  area() -> i32 {
+    return _this.width * _this.height
+  }
+}
+
+/**
+ * A class cannot extend another class, but it can implement its default
+ * interface. So now `Square` is `Rectangle` returns true.
+ */
+class Square implements Rectangle {
+  i32 length
+
+  area() -> i32 {
+    return _this.length * _this.length
+  }
+}

@@ -1,0 +1,5 @@
+{%- if ctx.expression.symbol.typeName.childType.primitive -%}
+(({{ ctx.expression.symbol.typeName.childType | c_type }}) caffc_{{ ctx.expression.symbol.typeName.childType.name }}_arr_get(({{ ctx.expression.symbol.typeName | c_type }}) {{ ctx.expression | render }}, {{ ctx.index | render }}))
+{%- else -%}
+(({{ ctx.expression.symbol.typeName.childType | c_type }}) caffc_obj_arr_get(({{ ctx.expression.symbol.typeName | c_type }}) {{ ctx.expression | render }}, {{ ctx.index | render }}))
+{%- endif -%}

@@ -1,0 +1,27 @@
+{#  class functions #}
+{%- for f in ctx.definition.functions %}
+{{ f | c_function_signature }} {
+{%- for implementation in ctx.definition.concreteImplementations %}
+  if (_this->_caffc_class_header == &{{ implementation | c_name }}_type) {
+    {%- if f.returnType.name == "void" %}
+    {{ implementation | c_name }}_{{ f.name }}(
+        {%- for p in f.parameters %}
+            {{- p.name }}{% if not loop.last %}, {% endif -%}
+        {% endfor -%});
+    return;
+    {%- else %}
+    return {{ implementation | c_name }}_{{ f.name }}(
+        {%- for p in f.parameters %}
+            {{- p.name }}{% if not loop.last %}, {% endif -%}
+        {% endfor -%});
+    {%- endif %}
+  }
+{%- endfor %}
+
+{%- if f.returnType.name == "void" %}
+  return; /* FIXME: throw an error, _this isn't a valid pointer */
+{%- else %}
+  return 0; /* FIXME: throw an error, _this isn't a valid pointer */
+{%- endif %}
+}
+{%- endfor %}

@@ -1,0 +1,11 @@
+module main
+
+native {
+  #include <stdio.h>
+}
+
+other() -> i32 {
+  native {
+    printf("hello from the other side\n");
+  }
+}

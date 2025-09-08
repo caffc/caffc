@@ -1,0 +1,40 @@
+module caffc
+
+_caffc_u8_arr_size(u32 size) -> u32 {
+  u32 result
+
+  native {
+    result = sizeof(u8) * size + sizeof(caffc_u8_arr);
+  }
+
+  return result
+}
+
+/**
+ * An array of unsigned chars. This is the implementation
+ * behind the u8[].
+ */
+#caffc_array("u8")
+class u8_arr {
+  u32 size
+
+  constructor(u32 size) {
+    _this.size = size
+  }
+
+  set(u32 index, u8 value) {
+    native {
+      _this->_caffc_data[index] = value;
+    }
+  }
+
+  get(u32 index) -> u8 {
+    u8 result
+
+    native {
+      result = _this->_caffc_data[index];
+    }
+
+    return result
+  }
+}

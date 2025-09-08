@@ -1,0 +1,38 @@
+module generics
+
+fn<INPUT, OUTPUT>
+
+// there is a generics _declaration_ and there's a generics
+// instantiation.
+class A<T is X> {
+  T xItem
+
+  constructor(T x) {
+    _self.xItem = x
+  }
+}
+
+smallA = new A<Y>()
+smallA.xItem.abc
+
+my_list = new list<i32>()
+my_list.add(13)
+
+class list<T> {
+  T[] list
+  index i32
+
+  add(T value) {
+    list 
+  }
+}
+
+class fn<INPUT<...>, OUTPUT<U<...>, V is Error>> {
+  // we can have multiple result, last one must be an error
+  call(INPUT) -> OUTPUT
+}
+
+
+fn<<i32, i32>, <i32, error>> f; // <-- instantiation
+
+x, err = f(3, 1)

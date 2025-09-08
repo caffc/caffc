@@ -1,0 +1,11 @@
+{% if ctx.variableDeclarations != null -%}
+{{ ctx.variableDeclarations | render }};
+{% else -%}
+{{ ctx.variableInitializationExpression | render }};
+{% endif -%}
+while ({{ ctx.checkExpression | render }}) {
+{%- for statement in ctx.statements %}
+{{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+{%- endfor %}
+{{ ctx.incrementExpression | render }};
+}

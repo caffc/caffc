@@ -1,0 +1,25 @@
+module main
+
+use caffcclick
+
+/**
+ * Program processing arguments
+ */
+class ProgramArgs {
+  name str
+  outputFolder str
+}
+
+/**
+ * Output folder
+ */
+@caffcclick.option("--name")
+@caffcclick.option("--outputFolder")
+caffcmain(programArgs ProgramArgs) -> i32 {
+  io.stdout.println("my name is " + programArgs.name)
+  io.stdout.println("output is in folder " + programArgs.outputFolder)
+}
+
+main() -> i32 {
+  caffcmain()
+}

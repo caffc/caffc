@@ -1,0 +1,12 @@
+package main
+
+get_tuple() -> i32, i32 {
+    ret 0, 0
+}
+
+main() -> i32 {
+    x var = 3 * 3 + 3 - 3 + 3 * fact(get(3))
+    x, y var = get_tuple()
+
+    ret x * y
+}

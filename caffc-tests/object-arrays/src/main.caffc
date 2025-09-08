@@ -1,0 +1,44 @@
+module main
+
+native {
+#include <stdio.h>
+}
+
+class Swag {
+  i32 data
+
+  constructor(i32 x) {
+    _this.data = x
+  }
+}
+
+print_value(i32 value) {
+  native {
+    printf("value: %d\n", value);
+  }
+}
+
+main() {
+  Swag[][] arr = new Swag[2][2]
+
+  arr[0][0] = new Swag(0)
+  arr[0][1] = new Swag(1)
+  arr[1][0] = new Swag(2)
+  arr[1][1] = new Swag(3)
+
+  print_value(arr[0][1].data) // expect 1
+  arr[0][1] = arr[1][0]
+  print_value(arr[0][1].data) // expect 2
+}
+
+native {
+  int main(int argc, char* argv[]) {
+    atexit(caffc_done);
+    caffc_init();
+
+    main_main();
+
+    return 0;
+  }
+}
+

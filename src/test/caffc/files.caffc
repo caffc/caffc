@@ -1,0 +1,27 @@
+module main
+
+use caffc.files
+
+main() -> i32 {
+    var x = files.open(...)  // fast gc at end?
+
+    try {
+        var fin = files.open("/tmp/in", "rt", "utf-8")
+        var fout = files.open("/tmp/out", "wt", "utf-8")
+
+        for var line in fin.lines() {
+            if line.starts_with("abc") {
+                fout.write_line(line)
+                io.stdout.println("line matches: line")
+            }
+        }
+    } finally {
+        // except and finally see the top scoped variables from the try
+        // the i32 `subScope` variable isn't seen
+        fin.close()
+        fout.close()
+    }
+
+    return 0
+}
+

@@ -1,0 +1,51 @@
+module caffc
+
+// FIXME: this should use tags
+_caffc_obj_arr_size(u32 size) -> u32 {
+  u32 result
+
+  native {
+    result = sizeof(ptr) * size + sizeof(caffc_obj_arr);
+  }
+
+  return result
+}
+
+/**
+ * Class that contains a bunch of objects. This is managed by the
+ * garbage collector, including the references it contains.
+ *
+ * This is the only array class in the runtime, the other ones are
+ * regular objects.
+ */
+#caffc_array("ptr") #caffc_object_array
+#public class obj_arr<T> {
+    u32 _caffc_array_size
+
+    #public constructor(u32 size) {
+        // info for the GC, how many fields are in this array
+        native {
+            _this->_caffc_array_size = size;
+        }
+    }
+
+    #public set(u32 index, T value) {
+        native {
+            _this->_caffc_data[index] = (caffc_obj*) value;
+        }
+    }
+
+    #public get(u32 index) -> T {
+        T result
+
+        native {
+            result = _this->_caffc_data[index];
+        }
+
+        return result
+    }
+
+    #public size() -> u32 {
+        return _this._caffc_array_size
+    }
+}

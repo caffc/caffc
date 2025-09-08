@@ -1,0 +1,37 @@
+package main
+
+class Buffer {
+  data ptr
+  size i32
+
+  constructor(size i32) {
+    native {
+      _this->data = malloc(size);
+      _this->size = size;
+    }
+  }
+
+  destructor() {
+    native {
+      free(_this->data);
+    }
+  }
+
+  // enables the rvalue [] operator
+  get(index i32) -> u8 {
+    result var
+
+    native {
+      result = _this->data[index];
+    }
+
+    return result
+  }
+
+  // enables the lvalue [] operator for assignments
+  set(index i32, value u8) {
+    native {
+      _this->data[index] = value;
+    }
+  }
+}

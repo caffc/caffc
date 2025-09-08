@@ -1,0 +1,33 @@
+module caffc
+
+_caffc_str_size(u32 size) -> u32 {
+  u32 result
+
+  native {
+    result = sizeof(u8) * size + sizeof(caffc_str);
+  }
+
+  return result
+}
+
+/**
+ * A basic string.
+ */
+#caffc_array("u8")
+class str {
+  u32 size  // size in bytes, including nul byte
+
+  constructor(u32 size) {
+    _this.size = size
+  }
+
+  c_str() -> ptr {
+    ptr result
+
+    native {
+      result = _this->_caffc_data;
+    }
+
+    return result
+  }
+}

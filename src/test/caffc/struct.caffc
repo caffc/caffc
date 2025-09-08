@@ -1,0 +1,19 @@
+
+#wire_bigendian
+struct A {
+  u32 i {
+    i32:1 flag
+    i32:4 what
+    u8 other
+  }
+  f32 x
+}
+
+writeToWire()
+readFromWire()
+
+A a;
+
+a.readFromWire()
+a.readFromWire(u8[] data)
+

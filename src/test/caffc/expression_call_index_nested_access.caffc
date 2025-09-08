@@ -1,0 +1,7 @@
+module main2
+
+var x = 3
+
+main() -> i32 {
+    x = a(3).b(4)
+}

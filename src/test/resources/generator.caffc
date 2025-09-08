@@ -1,0 +1,28 @@
+package main
+
+class A {
+}
+
+autoReturnI32() -> i32 { // same as the return
+  ret 0
+}
+
+someFunction() -> void {
+}
+
+range(stop i32) -> gen<i32> {
+  start var = 0
+
+  while start < stop {
+    yield start
+    start++
+  }
+}
+
+main(a, b i32, c str) -> i32 {
+  for i in range(10) {
+    print(i)
+  }
+
+  return 0
+}

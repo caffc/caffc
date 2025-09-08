@@ -1,0 +1,5 @@
+{% if ctx.countExpressions.size() > 1 -%}
+{{ ctx.symbol | c_name }}_multi_new({% for countExp in ctx.countExpressions %}{{ countExp | render }}{% if not loop.last %}, {% endif %}{% endfor %})
+{%- else -%}
+{{ ctx.symbol | c_name }}_new({% for countExp in ctx.countExpressions %}{{ countExp | render }}{% endfor %})
+{%- endif %}

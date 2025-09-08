@@ -1,0 +1,14 @@
+{{ ctx | c_function_signature }} {
+{% include "gc_stack_frame_register.peb" %}
+
+/* actual statements */
+{%- for statement in ctx.statements %}
+  {{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+{%- endfor %}
+
+{# if it's a void function, we need to make sure we have the unregister, since
+   it's not 100% clear if we have a return statement in the code -#}
+{%- if ctx.definition.returnType.name == "void" %}
+{% include "gc_stack_frame_unregister.peb" %}
+{%- endif %}
+}

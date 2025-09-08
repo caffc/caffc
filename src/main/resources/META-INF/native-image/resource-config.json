@@ -1,0 +1,45 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/compilation_unit_c.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/constants_c.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/constants_h.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/container/class.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/container/class_definition.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/container/function.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/container/interface.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/container/interface_definition.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/expression/assign.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/expression/dot_access.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/expression/id.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/expression/variable_declaration.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/instruction/native.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/instruction/return.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/module_c.peb\\E"
+  }, {
+    "pattern":"\\Qcaffc/template/c/module_h.peb\\E"
+  }, {
+    "pattern":"\\Qgc_stack_frame_register.peb\\E"
+  }, {
+    "pattern":"\\Qgc_stack_frame_unregister.peb\\E"
+  }, {
+    "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
+  }]},
+  "bundles":[]
+}

@@ -1,0 +1,66 @@
+/* caffc module: {{ ctx.name }} */
+#ifndef {{ ctx | c_header_guard }}
+#define {{ ctx | c_header_guard }}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "caffcpt.h"  /* caffc primitive types */
+#include "caffco.h"   /* caffc objects         */
+#include "caffca.h"   /* caffc arrays          */
+#include "caffcmem.h" /* caffc_new()           */
+
+#include "module_caffc.h"
+
+/* forward definitions */
+{%- for clazz in ctx.classDefinitions %}
+struct {{ clazz.typeName | c_name }};
+{%- endfor %}
+{%- for clazz in ctx.interfaceDefinitions %}
+struct {{ clazz.typeName | c_name }};
+{%- endfor %}
+
+/* forward array definitions */
+{%- for array in ctx.registeredArrays %}
+{%- if ctx.resolve(array.name) == null %}
+#define {{ array | c_name }} caffc_obj_arr
+extern caffc_class_header {{ array | c_name }}_type;
+{%- endif %}
+{%- endfor %}
+
+/* includes for used modules */
+{%- for module in ctx.usedModules %}
+#include "{{ module | c_global_header }}"
+{%- endfor %}
+
+/* module {{ ctx.name }} interface definitions */
+{%- for clazz in ctx.interfaceDefinitions %}
+{{ clazz | render }}
+{%- endfor %}
+
+/* module {{ ctx.name }} class definitions */
+{%- for clazz in ctx.classDefinitions %}
+{{ clazz | render }}
+{%- endfor %}
+
+/* module {{ ctx.name }} function definitions */
+{%- for function in ctx.functionDefinitions %}
+{{ function | c_function_signature }};
+{%- endfor %}
+
+/* module {{ ctx.name }} array constructors */
+{%- for array in ctx.registeredArrays %}
+{{ array | c_name }}* {{ array | c_name }}_new(u32 size);
+{%- if array.arrayDimensions > 1 %}
+{{ array | c_name }}* {{ array | c_name }}_multi_new({% for i in range(1, array.arrayDimensions) %}u32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endif %}
+{%- endfor %}
+
+#include "caffc_program_constants.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* {{ ctx | c_header_guard }} */

@@ -1,0 +1,12 @@
+
+#include "module_caffc.h"
+
+{% for constant in program.stringConstants %}
+caffc_str {{ constant.name }} = {
+    /* _caffc_class_header */ &caffc_str_type,
+    /* _caffc_flags */ 0,
+    /* size */ {{ constant.bytesSize }},
+    {{ constant.value }},
+};
+{% endfor %}
+
