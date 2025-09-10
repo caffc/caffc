@@ -293,6 +293,17 @@ VOID: 'void';
 WHILE: 'while';
 YIELD: 'yield';
 
+U8: 'u8';
+I8: 'i8';
+U16: 'u16';
+I16: 'i16';
+U32: 'u32';
+I32: 'i32';
+U64: 'u64';
+I64: 'i64';
+F32: 'f32';
+F64: 'f64';
+
 // KEYWORDS
 NATIVE: 'native' WS+ NATIVE_FRAGMENT;
 fragment NATIVE_FRAGMENT: '{' ((~'}') | NATIVE_FRAGMENT)* '}';
@@ -304,7 +315,114 @@ STAR: '*';
 DOT: '.';
 ID: LETTER (LETTER | DIGIT)*;
 
-NUMBER: [0-9]+;
+NUMBER
+    : IntegerConstant
+    | FloatingConstant;
+
+fragment IntegerConstant
+    : DecimalConstant IntegerSuffix?
+    | OctalConstant IntegerSuffix?
+    | HexadecimalConstant IntegerSuffix?
+    | BinaryConstant
+    ;
+
+fragment BinaryConstant
+    : '0' [bB] [0-1]+
+    ;
+
+fragment DecimalConstant
+    : NonzeroDigit Digit*
+    ;
+
+fragment OctalConstant
+    : '0' OctalDigit*
+    ;
+
+fragment HexadecimalConstant
+    : HexadecimalPrefix HexadecimalDigit+
+    ;
+
+fragment HexadecimalPrefix
+    : '0' [xX]
+    ;
+
+fragment Digit
+    : [0-9]
+    ;
+
+fragment NonzeroDigit
+    : [1-9]
+    ;
+
+fragment OctalDigit
+    : [0-7]
+    ;
+
+fragment HexadecimalDigit
+    : [0-9a-fA-F]
+    ;
+
+fragment FloatingConstant
+    : DecimalFloatingConstant
+    | HexadecimalFloatingConstant
+    ;
+
+fragment DecimalFloatingConstant
+    : FractionalConstant ExponentPart? FloatingSuffix?
+    | DigitSequence ExponentPart FloatingSuffix?
+    ;
+
+fragment HexadecimalFloatingConstant
+    : HexadecimalPrefix (HexadecimalFractionalConstant | HexadecimalDigitSequence) BinaryExponentPart FloatingSuffix?
+    ;
+
+fragment FractionalConstant
+    : DigitSequence? '.' DigitSequence
+    | DigitSequence '.'
+    ;
+
+fragment ExponentPart
+    : [eE] Sign? DigitSequence
+    ;
+
+fragment Sign
+    : [+-]
+    ;
+
+fragment IntegerSuffix
+    : '_' U8
+    | '_' I8
+    | '_' U16
+    | '_' I16
+    | '_' U32
+    | '_' I32
+    | '_' U64
+    | '_' I64
+    ;
+
+
+fragment FloatingSuffix
+    : '_' F32
+    | '_' F64
+    ;
+
+DigitSequence
+    : Digit+
+    ;
+
+fragment HexadecimalFractionalConstant
+    : HexadecimalDigitSequence? '.' HexadecimalDigitSequence
+    | HexadecimalDigitSequence '.'
+    ;
+
+fragment BinaryExponentPart
+    : [pP] Sign? DigitSequence
+    ;
+
+fragment HexadecimalDigitSequence
+    : HexadecimalDigit+
+    ;
+
 
 fragment LETTER: [_a-zA-Z];
 fragment DIGIT: [0-9];

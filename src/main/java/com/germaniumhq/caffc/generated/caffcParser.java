@@ -22,13 +22,13 @@ public class caffcParser extends Parser {
 		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
 		T__24=25, T__25=26, T__26=27, T__27=28, T__28=29, T__29=30, T__30=31, 
 		T__31=32, T__32=33, T__33=34, T__34=35, T__35=36, T__36=37, T__37=38, 
-		T__38=39, T__39=40, T__40=41, T__41=42, T__42=43, T__43=44, T__44=45, 
-		T__45=46, T__46=47, T__47=48, T__48=49, T__49=50, T__50=51, T__51=52, 
-		STRING=53, COMMENT=54, BLOCK_COMMENT=55, WS=56, AS=57, AND=58, BREAK=59, 
-		CATCH=60, CLASS=61, CONTINUE=62, ELSE=63, EXTENDS=64, FINALLY=65, FOR=66, 
-		IF=67, IMPLEMENTS=68, IN=69, INTERFACE=70, IS=71, MODULE=72, NEW=73, NOT=74, 
-		OR=75, RETURN=76, TAG=77, THROW=78, TRY=79, USE=80, VAR=81, VOID=82, WHILE=83, 
-		YIELD=84, NATIVE=85, FN=86, SHARP=87, STAR=88, DOT=89, ID=90, NUMBER=91;
+		T__38=39, T__39=40, T__40=41, T__41=42, STRING=43, COMMENT=44, BLOCK_COMMENT=45, 
+		WS=46, AS=47, AND=48, BREAK=49, CATCH=50, CLASS=51, CONTINUE=52, ELSE=53, 
+		EXTENDS=54, FINALLY=55, FOR=56, IF=57, IMPLEMENTS=58, IN=59, INTERFACE=60, 
+		IS=61, MODULE=62, NEW=63, NOT=64, OR=65, RETURN=66, TAG=67, THROW=68, 
+		TRY=69, USE=70, VAR=71, VOID=72, WHILE=73, YIELD=74, U8=75, I8=76, U16=77, 
+		I16=78, U32=79, I32=80, U64=81, I64=82, F32=83, F64=84, NATIVE=85, FN=86, 
+		SHARP=87, STAR=88, DOT=89, ID=90, NUMBER=91, DigitSequence=92;
 	public static final int
 		RULE_compilationUnit = 0, RULE_module = 1, RULE_useStatement = 2, RULE_compileBlock = 3, 
 		RULE_use = 4, RULE_use_alias = 5, RULE_nativeBlock = 6, RULE_function = 7, 
@@ -66,13 +66,13 @@ public class caffcParser extends Parser {
 			"'['", "']'", "'!'", "'~'", "'%'", "'/'", "'+'", "'-'", "'<<'", "'>>'", 
 			"'<'", "'<='", "'>='", "'>'", "'=='", "'!='", "'&'", "'^'", "'|'", "'?'", 
 			"':'", "'?:'", "'<<='", "'>>='", "'&='", "'|='", "'^='", "'*='", "'/='", 
-			"'+='", "'-='", "'u8'", "'i8'", "'u16'", "'i16'", "'u32'", "'i32'", "'u64'", 
-			"'i64'", "'f32'", "'f64'", "'ptr'", "'bool'", null, null, null, null, 
-			"'as'", "'and'", "'break'", "'catch'", "'class'", "'continue'", "'else'", 
-			"'extends'", "'finally'", "'for'", "'if'", "'implements'", "'in'", "'interface'", 
+			"'+='", "'-='", "'ptr'", "'bool'", null, null, null, null, "'as'", "'and'", 
+			"'break'", "'catch'", "'class'", "'continue'", "'else'", "'extends'", 
+			"'finally'", "'for'", "'if'", "'implements'", "'in'", "'interface'", 
 			"'is'", "'module'", "'new'", "'not'", "'or'", "'return'", "'tag'", "'throw'", 
-			"'try'", "'use'", "'var'", "'void'", "'while'", "'yield'", null, "'fn'", 
-			"'#'", "'*'", "'.'"
+			"'try'", "'use'", "'var'", "'void'", "'while'", "'yield'", "'u8'", "'i8'", 
+			"'u16'", "'i16'", "'u32'", "'i32'", "'u64'", "'i64'", "'f32'", "'f64'", 
+			null, "'fn'", "'#'", "'*'", "'.'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -81,12 +81,13 @@ public class caffcParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, "STRING", "COMMENT", "BLOCK_COMMENT", "WS", 
-			"AS", "AND", "BREAK", "CATCH", "CLASS", "CONTINUE", "ELSE", "EXTENDS", 
+			null, null, null, null, null, null, null, "STRING", "COMMENT", "BLOCK_COMMENT", 
+			"WS", "AS", "AND", "BREAK", "CATCH", "CLASS", "CONTINUE", "ELSE", "EXTENDS", 
 			"FINALLY", "FOR", "IF", "IMPLEMENTS", "IN", "INTERFACE", "IS", "MODULE", 
 			"NEW", "NOT", "OR", "RETURN", "TAG", "THROW", "TRY", "USE", "VAR", "VOID", 
-			"WHILE", "YIELD", "NATIVE", "FN", "SHARP", "STAR", "DOT", "ID", "NUMBER"
+			"WHILE", "YIELD", "U8", "I8", "U16", "I16", "U32", "I32", "U64", "I64", 
+			"F32", "F64", "NATIVE", "FN", "SHARP", "STAR", "DOT", "ID", "NUMBER", 
+			"DigitSequence"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -189,7 +190,7 @@ public class caffcParser extends Parser {
 			setState(106);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2305843009213694240L) != 0) || ((((_la - 70)) & ~0x3f) == 0 && ((1L << (_la - 70)) & 1212545L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1155173304420532512L) != 0) || ((((_la - 67)) & ~0x3f) == 0 && ((1L << (_la - 67)) & 9699329L) != 0)) {
 				{
 				{
 				setState(103);
@@ -588,7 +589,7 @@ public class caffcParser extends Parser {
 					setState(150);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 600333348769791L) != 0)) {
+					if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 615711479169027L) != 0)) {
 						{
 						setState(149);
 						returnType();
@@ -632,7 +633,7 @@ public class caffcParser extends Parser {
 				setState(165);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 668503069691903L) != 0)) {
+				if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 686078075863043L) != 0)) {
 					{
 					setState(164);
 					parameterDefinition(0);
@@ -651,7 +652,7 @@ public class caffcParser extends Parser {
 					setState(170);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 600333348769791L) != 0)) {
+					if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 615711479169027L) != 0)) {
 						{
 						setState(169);
 						returnType();
@@ -699,16 +700,16 @@ public class caffcParser extends Parser {
 			switch (_input.LA(1)) {
 			case T__40:
 			case T__41:
-			case T__42:
-			case T__43:
-			case T__44:
-			case T__45:
-			case T__46:
-			case T__47:
-			case T__48:
-			case T__49:
-			case T__50:
-			case T__51:
+			case U8:
+			case I8:
+			case U16:
+			case I16:
+			case U32:
+			case I32:
+			case U64:
+			case I64:
+			case F32:
+			case F64:
 			case FN:
 			case ID:
 				enterOuterAlt(_localctx, 1);
@@ -1254,7 +1255,7 @@ public class caffcParser extends Parser {
 				setState(273);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 668503069691903L) != 0)) {
+				if (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 686078075863043L) != 0)) {
 					{
 					setState(272);
 					parameterDefinition(0);
@@ -1343,7 +1344,7 @@ public class caffcParser extends Parser {
 			setState(293);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 598134325514239L) != 0)) {
+			while (((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 615709331685379L) != 0)) {
 				{
 				{
 				setState(290);
@@ -1588,7 +1589,7 @@ public class caffcParser extends Parser {
 			setState(324);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 5206158970217050370L) != 0) || ((((_la - 66)) & ~0x3f) == 0 && ((1L << (_la - 66)) & 54437251L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & -9002117311997398782L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & 218103461L) != 0)) {
 				{
 				{
 				setState(321);
@@ -2183,16 +2184,16 @@ public class caffcParser extends Parser {
 				break;
 			case T__40:
 			case T__41:
-			case T__42:
-			case T__43:
-			case T__44:
-			case T__45:
-			case T__46:
-			case T__47:
-			case T__48:
-			case T__49:
-			case T__50:
-			case T__51:
+			case U8:
+			case I8:
+			case U16:
+			case I16:
+			case U32:
+			case I32:
+			case U64:
+			case I64:
+			case F32:
+			case F64:
 			case FN:
 			case ID:
 				enterOuterAlt(_localctx, 2);
@@ -2879,7 +2880,7 @@ public class caffcParser extends Parser {
 				setState(463);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 9007199254753282L) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & 393219L) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & -9223363240761741310L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & 201326593L) != 0)) {
 					{
 					setState(462);
 					expressionTuple(0);
@@ -3251,7 +3252,7 @@ public class caffcParser extends Parser {
 						setState(540);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 9007199254753282L) != 0) || ((((_la - 73)) & ~0x3f) == 0 && ((1L << (_la - 73)) & 393219L) != 0)) {
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & -9223363240761741310L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & 201326593L) != 0)) {
 							{
 							setState(539);
 							expressionTuple(0);
@@ -3630,16 +3631,16 @@ public class caffcParser extends Parser {
 				break;
 			case T__40:
 			case T__41:
-			case T__42:
-			case T__43:
-			case T__44:
-			case T__45:
-			case T__46:
-			case T__47:
-			case T__48:
-			case T__49:
-			case T__50:
-			case T__51:
+			case U8:
+			case I8:
+			case U16:
+			case I16:
+			case U32:
+			case I32:
+			case U64:
+			case I64:
+			case F32:
+			case F64:
 				{
 				_localctx = new TypePrimitiveContext(_localctx);
 				_ctx = _localctx;
@@ -3780,16 +3781,16 @@ public class caffcParser extends Parser {
 				break;
 			case T__40:
 			case T__41:
-			case T__42:
-			case T__43:
-			case T__44:
-			case T__45:
-			case T__46:
-			case T__47:
-			case T__48:
-			case T__49:
-			case T__50:
-			case T__51:
+			case U8:
+			case I8:
+			case U16:
+			case I16:
+			case U32:
+			case I32:
+			case U64:
+			case I64:
+			case F32:
+			case F64:
 				{
 				_localctx = new NewTypePrimitiveContext(_localctx);
 				_ctx = _localctx;
@@ -3859,6 +3860,16 @@ public class caffcParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class PrimitiveTypeNameContext extends ParserRuleContext {
+		public TerminalNode U8() { return getToken(caffcParser.U8, 0); }
+		public TerminalNode I8() { return getToken(caffcParser.I8, 0); }
+		public TerminalNode U16() { return getToken(caffcParser.U16, 0); }
+		public TerminalNode I16() { return getToken(caffcParser.I16, 0); }
+		public TerminalNode U32() { return getToken(caffcParser.U32, 0); }
+		public TerminalNode I32() { return getToken(caffcParser.I32, 0); }
+		public TerminalNode U64() { return getToken(caffcParser.U64, 0); }
+		public TerminalNode I64() { return getToken(caffcParser.I64, 0); }
+		public TerminalNode F32() { return getToken(caffcParser.F32, 0); }
+		public TerminalNode F64() { return getToken(caffcParser.F64, 0); }
 		public PrimitiveTypeNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -3874,7 +3885,7 @@ public class caffcParser extends Parser {
 			{
 			setState(631);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 9005000231485440L) != 0)) ) {
+			if ( !(((((_la - 41)) & ~0x3f) == 0 && ((1L << (_la - 41)) & 17575006175235L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -4337,7 +4348,7 @@ public class caffcParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001[\u02aa\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001\\\u02aa\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -4430,10 +4441,10 @@ public class caffcParser extends Parser {
 		"-\u029c\b-\u0001.\u0001.\u0003.\u02a0\b.\u0001/\u0001/\u0001/\u0005/\u02a5"+
 		"\b/\n/\f/\u02a8\t/\u0001/\u0000\u0006DFHLNP0\u0000\u0002\u0004\u0006\b"+
 		"\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e \"$&(*,.02"+
-		"468:<>@BDFHJLNPRTVXZ\\^\u0000\n\u0002\u0000;;>>\u0002\u000055[[\u0002"+
-		"\u0000\f\fJJ\u0002\u0000\u000e\u000eXX\u0001\u0000\u0010\u0011\u0001\u0000"+
+		"468:<>@BDFHJLNPRTVXZ\\^\u0000\n\u0002\u00001144\u0002\u0000++[[\u0002"+
+		"\u0000\f\f@@\u0002\u0000\u000e\u000eXX\u0001\u0000\u0010\u0011\u0001\u0000"+
 		"\u0012\u0013\u0001\u0000\u0014\u0017\u0001\u0000\u0018\u0019\u0001\u0000"+
-		" (\u0001\u0000)4\u02f6\u0000`\u0001\u0000\u0000\u0000\u0002m\u0001\u0000"+
+		" (\u0002\u0000)*KT\u02f6\u0000`\u0001\u0000\u0000\u0000\u0002m\u0001\u0000"+
 		"\u0000\u0000\u0004p\u0001\u0000\u0000\u0000\u0006|\u0001\u0000\u0000\u0000"+
 		"\b~\u0001\u0000\u0000\u0000\n\u0081\u0001\u0000\u0000\u0000\f\u0084\u0001"+
 		"\u0000\u0000\u0000\u000e\u00af\u0001\u0000\u0000\u0000\u0010\u00b3\u0001"+
@@ -4460,7 +4471,7 @@ public class caffcParser extends Parser {
 		"\u0000\u0000fd\u0001\u0000\u0000\u0000gi\u0003\u0006\u0003\u0000hg\u0001"+
 		"\u0000\u0000\u0000il\u0001\u0000\u0000\u0000jh\u0001\u0000\u0000\u0000"+
 		"jk\u0001\u0000\u0000\u0000k\u0001\u0001\u0000\u0000\u0000lj\u0001\u0000"+
-		"\u0000\u0000mn\u0005H\u0000\u0000no\u0003D\"\u0000o\u0003\u0001\u0000"+
+		"\u0000\u0000mn\u0005>\u0000\u0000no\u0003D\"\u0000o\u0003\u0001\u0000"+
 		"\u0000\u0000pr\u0003\b\u0004\u0000qs\u0003\n\u0005\u0000rq\u0001\u0000"+
 		"\u0000\u0000rs\u0001\u0000\u0000\u0000s\u0005\u0001\u0000\u0000\u0000"+
 		"t}\u0003\f\u0006\u0000u}\u00032\u0019\u0000v}\u0003 \u0010\u0000w}\u0003"+
@@ -4469,8 +4480,8 @@ public class caffcParser extends Parser {
 		"\u0000\u0000|v\u0001\u0000\u0000\u0000|w\u0001\u0000\u0000\u0000|x\u0001"+
 		"\u0000\u0000\u0000|y\u0001\u0000\u0000\u0000|z\u0001\u0000\u0000\u0000"+
 		"|{\u0001\u0000\u0000\u0000}\u0007\u0001\u0000\u0000\u0000~\u007f\u0005"+
-		"P\u0000\u0000\u007f\u0080\u0003D\"\u0000\u0080\t\u0001\u0000\u0000\u0000"+
-		"\u0081\u0082\u00059\u0000\u0000\u0082\u0083\u0005Z\u0000\u0000\u0083\u000b"+
+		"F\u0000\u0000\u007f\u0080\u0003D\"\u0000\u0080\t\u0001\u0000\u0000\u0000"+
+		"\u0081\u0082\u0005/\u0000\u0000\u0082\u0083\u0005Z\u0000\u0000\u0083\u000b"+
 		"\u0001\u0000\u0000\u0000\u0084\u0085\u0005U\u0000\u0000\u0085\r\u0001"+
 		"\u0000\u0000\u0000\u0086\u0088\u0003<\u001e\u0000\u0087\u0086\u0001\u0000"+
 		"\u0000\u0000\u0087\u0088\u0001\u0000\u0000\u0000\u0088\u0089\u0001\u0000"+
@@ -4498,14 +4509,14 @@ public class caffcParser extends Parser {
 		"\u00ac\u00ad\u0001\u0000\u0000\u0000\u00ad\u00ae\u0001\u0000\u0000\u0000"+
 		"\u00ae\u00b0\u0003&\u0013\u0000\u00af\u0087\u0001\u0000\u0000\u0000\u00af"+
 		"\u009d\u0001\u0000\u0000\u0000\u00b0\u000f\u0001\u0000\u0000\u0000\u00b1"+
-		"\u00b4\u0003^/\u0000\u00b2\u00b4\u0005R\u0000\u0000\u00b3\u00b1\u0001"+
+		"\u00b4\u0003^/\u0000\u00b2\u00b4\u0005H\u0000\u0000\u00b3\u00b1\u0001"+
 		"\u0000\u0000\u0000\u00b3\u00b2\u0001\u0000\u0000\u0000\u00b4\u0011\u0001"+
 		"\u0000\u0000\u0000\u00b5\u00b7\u0003<\u001e\u0000\u00b6\u00b5\u0001\u0000"+
 		"\u0000\u0000\u00b6\u00b7\u0001\u0000\u0000\u0000\u00b7\u00b8\u0001\u0000"+
-		"\u0000\u0000\u00b8\u00b9\u0005=\u0000\u0000\u00b9\u00bb\u0003\u0016\u000b"+
+		"\u0000\u0000\u00b8\u00b9\u00053\u0000\u0000\u00b9\u00bb\u0003\u0016\u000b"+
 		"\u0000\u00ba\u00bc\u0003V+\u0000\u00bb\u00ba\u0001\u0000\u0000\u0000\u00bb"+
 		"\u00bc\u0001\u0000\u0000\u0000\u00bc\u00bf\u0001\u0000\u0000\u0000\u00bd"+
-		"\u00be\u0005D\u0000\u0000\u00be\u00c0\u0003\u0018\f\u0000\u00bf\u00bd"+
+		"\u00be\u0005:\u0000\u0000\u00be\u00c0\u0003\u0018\f\u0000\u00bf\u00bd"+
 		"\u0001\u0000\u0000\u0000\u00bf\u00c0\u0001\u0000\u0000\u0000\u00c0\u00c1"+
 		"\u0001\u0000\u0000\u0000\u00c1\u00c5\u0005\u0005\u0000\u0000\u00c2\u00c4"+
 		"\u0003\"\u0011\u0000\u00c3\u00c2\u0001\u0000\u0000\u0000\u00c4\u00c7\u0001"+
@@ -4517,10 +4528,10 @@ public class caffcParser extends Parser {
 		"\u0000\u0000\u0000\u00cd\u00cb\u0001\u0000\u0000\u0000\u00ce\u00cf\u0005"+
 		"\u0006\u0000\u0000\u00cf\u0013\u0001\u0000\u0000\u0000\u00d0\u00d2\u0003"+
 		"<\u001e\u0000\u00d1\u00d0\u0001\u0000\u0000\u0000\u00d1\u00d2\u0001\u0000"+
-		"\u0000\u0000\u00d2\u00d3\u0001\u0000\u0000\u0000\u00d3\u00d4\u0005F\u0000"+
+		"\u0000\u0000\u00d2\u00d3\u0001\u0000\u0000\u0000\u00d3\u00d4\u0005<\u0000"+
 		"\u0000\u00d4\u00d6\u0003\u0016\u000b\u0000\u00d5\u00d7\u0003V+\u0000\u00d6"+
 		"\u00d5\u0001\u0000\u0000\u0000\u00d6\u00d7\u0001\u0000\u0000\u0000\u00d7"+
-		"\u00da\u0001\u0000\u0000\u0000\u00d8\u00d9\u0005@\u0000\u0000\u00d9\u00db"+
+		"\u00da\u0001\u0000\u0000\u0000\u00d8\u00d9\u00056\u0000\u0000\u00d9\u00db"+
 		"\u0003\u0018\f\u0000\u00da\u00d8\u0001\u0000\u0000\u0000\u00da\u00db\u0001"+
 		"\u0000\u0000\u0000\u00db\u00dc\u0001\u0000\u0000\u0000\u00dc\u00dd\u0005"+
 		"\u0005\u0000\u0000\u00dd\u00de\u0003\u001c\u000e\u0000\u00de\u00df\u0005"+
@@ -4562,7 +4573,7 @@ public class caffcParser extends Parser {
 		"\u0000\u011a\u0109\u0001\u0000\u0000\u0000\u011b\u001f\u0001\u0000\u0000"+
 		"\u0000\u011c\u011e\u0003<\u001e\u0000\u011d\u011c\u0001\u0000\u0000\u0000"+
 		"\u011d\u011e\u0001\u0000\u0000\u0000\u011e\u011f\u0001\u0000\u0000\u0000"+
-		"\u011f\u0120\u0005M\u0000\u0000\u0120\u0121\u0005Z\u0000\u0000\u0121\u0125"+
+		"\u011f\u0120\u0005C\u0000\u0000\u0120\u0121\u0005Z\u0000\u0000\u0121\u0125"+
 		"\u0005\u0005\u0000\u0000\u0122\u0124\u0003\"\u0011\u0000\u0123\u0122\u0001"+
 		"\u0000\u0000\u0000\u0124\u0127\u0001\u0000\u0000\u0000\u0125\u0123\u0001"+
 		"\u0000\u0000\u0000\u0125\u0126\u0001\u0000\u0000\u0000\u0126\u0128\u0001"+
@@ -4588,30 +4599,30 @@ public class caffcParser extends Parser {
 		"\u0142\u0001\u0000\u0000\u0000\u0144\u0145\u0001\u0000\u0000\u0000\u0145"+
 		"\u0147\u0001\u0000\u0000\u0000\u0146\u0144\u0001\u0000\u0000\u0000\u0147"+
 		"\u0148\u0005\u0006\u0000\u0000\u0148\'\u0001\u0000\u0000\u0000\u0149\u014a"+
-		"\u0005S\u0000\u0000\u014a\u014b\u0003F#\u0000\u014b\u014c\u0003&\u0013"+
-		"\u0000\u014c)\u0001\u0000\u0000\u0000\u014d\u0150\u0005B\u0000\u0000\u014e"+
+		"\u0005I\u0000\u0000\u014a\u014b\u0003F#\u0000\u014b\u014c\u0003&\u0013"+
+		"\u0000\u014c)\u0001\u0000\u0000\u0000\u014d\u0150\u00058\u0000\u0000\u014e"+
 		"\u0151\u0003F#\u0000\u014f\u0151\u00036\u001b\u0000\u0150\u014e\u0001"+
 		"\u0000\u0000\u0000\u0150\u014f\u0001\u0000\u0000\u0000\u0151\u0152\u0001"+
 		"\u0000\u0000\u0000\u0152\u0153\u0005\u0007\u0000\u0000\u0153\u0154\u0003"+
 		"F#\u0000\u0154\u0155\u0005\u0007\u0000\u0000\u0155\u0156\u0003F#\u0000"+
 		"\u0156\u0157\u0003&\u0013\u0000\u0157+\u0001\u0000\u0000\u0000\u0158\u0159"+
-		"\u0005C\u0000\u0000\u0159\u015d\u0003F#\u0000\u015a\u015e\u0003&\u0013"+
+		"\u00059\u0000\u0000\u0159\u015d\u0003F#\u0000\u015a\u015e\u0003&\u0013"+
 		"\u0000\u015b\u015e\u00030\u0018\u0000\u015c\u015e\u00034\u001a\u0000\u015d"+
 		"\u015a\u0001\u0000\u0000\u0000\u015d\u015b\u0001\u0000\u0000\u0000\u015d"+
 		"\u015c\u0001\u0000\u0000\u0000\u015e\u0166\u0001\u0000\u0000\u0000\u015f"+
-		"\u0160\u0005C\u0000\u0000\u0160\u0161\u0003F#\u0000\u0161\u0162\u0003"+
-		"&\u0013\u0000\u0162\u0163\u0005?\u0000\u0000\u0163\u0164\u0003&\u0013"+
+		"\u0160\u00059\u0000\u0000\u0160\u0161\u0003F#\u0000\u0161\u0162\u0003"+
+		"&\u0013\u0000\u0162\u0163\u00055\u0000\u0000\u0163\u0164\u0003&\u0013"+
 		"\u0000\u0164\u0166\u0001\u0000\u0000\u0000\u0165\u0158\u0001\u0000\u0000"+
 		"\u0000\u0165\u015f\u0001\u0000\u0000\u0000\u0166-\u0001\u0000\u0000\u0000"+
-		"\u0167\u0168\u0005O\u0000\u0000\u0168\u016f\u0003&\u0013\u0000\u0169\u016a"+
-		"\u0005<\u0000\u0000\u016a\u016b\u0005\u0001\u0000\u0000\u016b\u016c\u0003"+
+		"\u0167\u0168\u0005E\u0000\u0000\u0168\u016f\u0003&\u0013\u0000\u0169\u016a"+
+		"\u00052\u0000\u0000\u016a\u016b\u0005\u0001\u0000\u0000\u016b\u016c\u0003"+
 		"T*\u0000\u016c\u016d\u0005Z\u0000\u0000\u016d\u016e\u0005\u0003\u0000"+
 		"\u0000\u016e\u0170\u0001\u0000\u0000\u0000\u016f\u0169\u0001\u0000\u0000"+
 		"\u0000\u016f\u0170\u0001\u0000\u0000\u0000\u0170\u0173\u0001\u0000\u0000"+
-		"\u0000\u0171\u0172\u0005A\u0000\u0000\u0172\u0174\u0003&\u0013\u0000\u0173"+
+		"\u0000\u0171\u0172\u00057\u0000\u0000\u0172\u0174\u0003&\u0013\u0000\u0173"+
 		"\u0171\u0001\u0000\u0000\u0000\u0173\u0174\u0001\u0000\u0000\u0000\u0174"+
-		"/\u0001\u0000\u0000\u0000\u0175\u0176\u0005L\u0000\u0000\u0176\u017b\u0003"+
-		"F#\u0000\u0177\u017b\u0005L\u0000\u0000\u0178\u0179\u0005T\u0000\u0000"+
+		"/\u0001\u0000\u0000\u0000\u0175\u0176\u0005B\u0000\u0000\u0176\u017b\u0003"+
+		"F#\u0000\u0177\u017b\u0005B\u0000\u0000\u0178\u0179\u0005J\u0000\u0000"+
 		"\u0179\u017b\u0003F#\u0000\u017a\u0175\u0001\u0000\u0000\u0000\u017a\u0177"+
 		"\u0001\u0000\u0000\u0000\u017a\u0178\u0001\u0000\u0000\u0000\u017b1\u0001"+
 		"\u0000\u0000\u0000\u017c\u017d\u0005\b\u0000\u0000\u017d\u017e\u0003F"+
@@ -4627,7 +4638,7 @@ public class caffcParser extends Parser {
 		"7\u0001\u0000\u0000\u0000\u0190\u018e\u0001\u0000\u0000\u0000\u0191\u0194"+
 		"\u0005Z\u0000\u0000\u0192\u0193\u0005\t\u0000\u0000\u0193\u0195\u0003"+
 		"F#\u0000\u0194\u0192\u0001\u0000\u0000\u0000\u0194\u0195\u0001\u0000\u0000"+
-		"\u0000\u01959\u0001\u0000\u0000\u0000\u0196\u0199\u0005Q\u0000\u0000\u0197"+
+		"\u0000\u01959\u0001\u0000\u0000\u0000\u0196\u0199\u0005G\u0000\u0000\u0197"+
 		"\u0199\u0003N\'\u0000\u0198\u0196\u0001\u0000\u0000\u0000\u0198\u0197"+
 		"\u0001\u0000\u0000\u0000\u0199;\u0001\u0000\u0000\u0000\u019a\u019c\u0003"+
 		">\u001f\u0000\u019b\u019a\u0001\u0000\u0000\u0000\u019c\u019d\u0001\u0000"+
@@ -4652,14 +4663,14 @@ public class caffcParser extends Parser {
 		"\u0000\u0000\u01c0\u01be\u0001\u0000\u0000\u0000\u01c0\u01c1\u0001\u0000"+
 		"\u0000\u0000\u01c1E\u0001\u0000\u0000\u0000\u01c2\u01c0\u0001\u0000\u0000"+
 		"\u0000\u01c3\u01c4\u0006#\uffff\uffff\u0000\u01c4\u01e2\u0005[\u0000\u0000"+
-		"\u01c5\u01e2\u00055\u0000\u0000\u01c6\u01e2\u0005Z\u0000\u0000\u01c7\u01c8"+
+		"\u01c5\u01e2\u0005+\u0000\u0000\u01c6\u01e2\u0005Z\u0000\u0000\u01c7\u01c8"+
 		"\u0005\u0001\u0000\u0000\u01c8\u01c9\u0003F#\u0000\u01c9\u01ca\u0005\u0003"+
-		"\u0000\u0000\u01ca\u01e2\u0001\u0000\u0000\u0000\u01cb\u01cc\u0005I\u0000"+
+		"\u0000\u0000\u01ca\u01e2\u0001\u0000\u0000\u0000\u01cb\u01cc\u0005?\u0000"+
 		"\u0000\u01cc\u01cd\u0003P(\u0000\u01cd\u01cf\u0005\u0001\u0000\u0000\u01ce"+
 		"\u01d0\u0003H$\u0000\u01cf\u01ce\u0001\u0000\u0000\u0000\u01cf\u01d0\u0001"+
 		"\u0000\u0000\u0000\u01d0\u01d1\u0001\u0000\u0000\u0000\u01d1\u01d2\u0005"+
 		"\u0003\u0000\u0000\u01d2\u01e2\u0001\u0000\u0000\u0000\u01d3\u01d4\u0005"+
-		"I\u0000\u0000\u01d4\u01d9\u0003P(\u0000\u01d5\u01d6\u0005\n\u0000\u0000"+
+		"?\u0000\u0000\u01d4\u01d9\u0003P(\u0000\u01d5\u01d6\u0005\n\u0000\u0000"+
 		"\u01d6\u01d7\u0003F#\u0000\u01d7\u01d8\u0005\u000b\u0000\u0000\u01d8\u01da"+
 		"\u0001\u0000\u0000\u0000\u01d9\u01d5\u0001\u0000\u0000\u0000\u01da\u01db"+
 		"\u0001\u0000\u0000\u0000\u01db\u01d9\u0001\u0000\u0000\u0000\u01db\u01dc"+
@@ -4681,9 +4692,9 @@ public class caffcParser extends Parser {
 		"\u0005\u001a\u0000\u0000\u01f7\u0225\u0003F#\t\u01f8\u01f9\n\u0007\u0000"+
 		"\u0000\u01f9\u01fa\u0005\u001b\u0000\u0000\u01fa\u0225\u0003F#\b\u01fb"+
 		"\u01fc\n\u0006\u0000\u0000\u01fc\u01fd\u0005\u001c\u0000\u0000\u01fd\u0225"+
-		"\u0003F#\u0007\u01fe\u01ff\n\u0005\u0000\u0000\u01ff\u0200\u0005:\u0000"+
+		"\u0003F#\u0007\u01fe\u01ff\n\u0005\u0000\u0000\u01ff\u0200\u00050\u0000"+
 		"\u0000\u0200\u0225\u0003F#\u0006\u0201\u0202\n\u0004\u0000\u0000\u0202"+
-		"\u0203\u0005K\u0000\u0000\u0203\u0225\u0003F#\u0005\u0204\u020a\n\u0003"+
+		"\u0203\u0005A\u0000\u0000\u0203\u0225\u0003F#\u0005\u0204\u020a\n\u0003"+
 		"\u0000\u0000\u0205\u0206\u0005\u001d\u0000\u0000\u0206\u0207\u0003F#\u0000"+
 		"\u0207\u0208\u0005\u001e\u0000\u0000\u0208\u020b\u0001\u0000\u0000\u0000"+
 		"\u0209\u020b\u0005\u001f\u0000\u0000\u020a\u0205\u0001\u0000\u0000\u0000"+
@@ -4718,7 +4729,7 @@ public class caffcParser extends Parser {
 		"\u0000\u0000\u0232\u0234\u0001\u0000\u0000\u0000\u0233\u022c\u0001\u0000"+
 		"\u0000\u0000\u0234\u0237\u0001\u0000\u0000\u0000\u0235\u0233\u0001\u0000"+
 		"\u0000\u0000\u0235\u0236\u0001\u0000\u0000\u0000\u0236I\u0001\u0000\u0000"+
-		"\u0000\u0237\u0235\u0001\u0000\u0000\u0000\u0238\u0239\u0005@\u0000\u0000"+
+		"\u0000\u0237\u0235\u0001\u0000\u0000\u0000\u0238\u0239\u00056\u0000\u0000"+
 		"\u0239\u023a\u0003T*\u0000\u023aK\u0001\u0000\u0000\u0000\u023b\u023d"+
 		"\u0006&\uffff\uffff\u0000\u023c\u023e\u0003<\u001e\u0000\u023d\u023c\u0001"+
 		"\u0000\u0000\u0000\u023d\u023e\u0001\u0000\u0000\u0000\u023e\u023f\u0001"+
@@ -4763,7 +4774,7 @@ public class caffcParser extends Parser {
 		"\u0000\u0000\u0000\u0283\u0284\u0001\u0000\u0000\u0000\u0284\u0286\u0001"+
 		"\u0000\u0000\u0000\u0285\u0283\u0001\u0000\u0000\u0000\u0286\u0287\u0005"+
 		"\u0017\u0000\u0000\u0287W\u0001\u0000\u0000\u0000\u0288\u028d\u0005Z\u0000"+
-		"\u0000\u0289\u028a\u0005Z\u0000\u0000\u028a\u028b\u0005G\u0000\u0000\u028b"+
+		"\u0000\u0289\u028a\u0005Z\u0000\u0000\u028a\u028b\u0005=\u0000\u0000\u028b"+
 		"\u028d\u0003N\'\u0000\u028c\u0288\u0001\u0000\u0000\u0000\u028c\u0289"+
 		"\u0001\u0000\u0000\u0000\u028dY\u0001\u0000\u0000\u0000\u028e\u028f\u0005"+
 		"\u0014\u0000\u0000\u028f\u029c\u0005\u0017\u0000\u0000\u0290\u0291\u0005"+
