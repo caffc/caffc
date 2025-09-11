@@ -38,12 +38,6 @@ CaffC offers also a `ptr` type, that has its size unspecified, and is
 actually a `void*`. This exists only to allow classes to keep a reference
 to a memory address somewhere. `ptr` references are not managed by the GC.
 
-To specify a type for a constant, suffix it with its type after `_`:
-
-```
-u32 x = 32_u32
-```
-
 ## Functions
 
 CaffC has functions. The notation is slightly different from C:
@@ -62,22 +56,6 @@ log(str what) {
 }
 ```
 
-Here's a basic hello world example:
-
-```caffc
-module main
-
-main(str[] args) -> i32 {
-  print("hello world")
-
-  for i32 i = 0; i < args.size(); i += 1 {
-    print(args[i])
-  }
-
-  return 0
-}
-```
-
 ## Classes
 
 CaffC has classes and objects. They work as you expect
@@ -90,10 +68,6 @@ class Rectangle {
   constructor(u32 width, u32 height) {
     _this.width = width
     _this.height = height
-  }
-
-  static newSquare(u32 width) -> Rectangle {
-    return new Rectangle(width, width)
   }
 
   area() -> u32 {
@@ -204,7 +178,7 @@ items() {
 
   print(v.getName())  // prints "vase"
   v = p
-  print(v.getName())  // prints "potato"
+  print(p.getName())  // prints "potato"
 }
 ```
 
@@ -217,7 +191,7 @@ cannot be resized after creation.
 There's plans to have collection classes for the big three: dict, set and list.
 
 ```caffc
-main(str[] args) -> i32 {
+main() {
   Swag[][] arr = new Swag[2][2]
 
   arr[0][0] = new Swag(0)
@@ -228,8 +202,6 @@ main(str[] args) -> i32 {
   print_value(arr[0][1].data) // expect 1
   arr[0][1] = arr[1][0]
   print_value(arr[0][1].data) // expect 2
-
-  return 0
 }
 ```
 
@@ -242,7 +214,7 @@ by the GC.
 There shouldn't be any memory leaks, even if the program exits randomly with `exit(n)`.
 
 ```caffc
-main(str[] args) -> i32 {
+main() -> i32 {
   str[] x = new str[2]  // all these are GC now, even if we exit(0) somewhere
 
   x[0] = "abc"
@@ -252,6 +224,15 @@ main(str[] args) -> i32 {
   print_string(x[1])
 
   return 0
+}
+
+native { // this will be generated in the future
+  int main(int argc, char** argv) {
+    atexit(caffc_done);
+    caffc_init();
+
+    return main_main();
+  }
 }
 ```
 
