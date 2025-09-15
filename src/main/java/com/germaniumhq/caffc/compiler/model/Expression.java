@@ -20,6 +20,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -73,6 +74,10 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExBitNotContext bitNotContext) {
             return ExpressionBitNot.fromAntlr(unit, owner, bitNotContext);
+        }
+
+        if (expression instanceof caffcParser.ExUnaryMinusContext unaryMinusContext) {
+            return ExpressionUnaryMinus.fromAntlr(unit, owner, unaryMinusContext);
         }
 
         if (expression instanceof caffcParser.ExMulModContext mulModContext) {

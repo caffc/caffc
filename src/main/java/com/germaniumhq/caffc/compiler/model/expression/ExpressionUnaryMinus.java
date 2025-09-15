@@ -6,7 +6,7 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionBitNot implements Expression {
+public class ExpressionUnaryMinus implements Expression {
     public Expression expression;
     public AstItem owner;
     public Symbol symbol;
@@ -15,15 +15,15 @@ public class ExpressionBitNot implements Expression {
     public int astColumn;
     public int astLine;
 
-    public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitNotContext bitNotContext) {
-        ExpressionBitNot result = new ExpressionBitNot();
+    public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExUnaryMinusContext exUnaryMinusContext) {
+        ExpressionUnaryMinus result = new ExpressionUnaryMinus();
 
         result.astFilePath = unit.astFilePath;
-        result.astLine = bitNotContext.getStart().getLine();
-        result.astColumn = bitNotContext.getStart().getCharPositionInLine();
+        result.astLine = exUnaryMinusContext.getStart().getLine();
+        result.astColumn = exUnaryMinusContext.getStart().getCharPositionInLine();
 
         result.owner = owner;
-        result.expression = Expression.fromAntlr(unit, result, bitNotContext.expression());
+        result.expression = Expression.fromAntlr(unit, result, exUnaryMinusContext.expression());
 
         return result;
     }
@@ -56,6 +56,7 @@ public class ExpressionBitNot implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
+
         this.symbol = this.expression.getSymbol();
     }
 }

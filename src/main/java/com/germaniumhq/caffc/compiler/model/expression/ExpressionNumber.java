@@ -5,6 +5,9 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
+/**
+ * An expression that identifies a constant number.
+ */
 public class ExpressionNumber implements Expression {
     public Symbol type;
     public String value;
@@ -20,7 +23,8 @@ public class ExpressionNumber implements Expression {
         result.astFilePath = unit.astFilePath;
         result.astLine = numberExpression.getStart().getLine();
         result.astColumn = numberExpression.getStart().getCharPositionInLine();
-        result.type = new TypeSymbol(TypeName.I32); // FIXME: multiple types?
+
+        result.type = new TypeSymbol(TypeName.I32);
         result.value = numberExpression.getText();
 
         return result;

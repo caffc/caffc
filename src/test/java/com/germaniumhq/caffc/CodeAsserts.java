@@ -209,6 +209,10 @@ public class CodeAsserts {
             TestUnit[] testUnits) {
         CompilationUnit compilationUnit = compileCaffcUnitsAst(program, unit, testUnits);
 
+        if (CaffcCompiler.get().hasErrors) {
+            CaffcCompiler.get().fatal(compilationUnit, "Errors found in compilation");
+        }
+
         try {
             Map<String, Object> renderContext = PebbleTemplater.createRenderContext(
                     template.contains("module") ?

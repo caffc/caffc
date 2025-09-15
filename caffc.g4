@@ -150,6 +150,7 @@ expression:
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
   | ('!'|NOT) expression                                                                           # ExBoolNot
   | '~' expression                                                                                 # ExBitNot
+  | '-' expression                                                                                 # ExUnaryMinus
 //  | expression NOT? IN expression                                                                # ExNotIn
   | leftExpression=expression ('*'|'%') rightExpression=expression                                 # ExMulMod
   | leftExpression=expression '/' rightExpression=expression                                       # ExDiv
@@ -195,8 +196,6 @@ newType:
     | newType ('[' ']')+  # NewTypeArray
     ;
 
-// FIXME: add unsigned types as well? this is C after all, a bunch of messages
-//        are unsigned unfortunately.
 primitiveTypeName:
     'u8' | 'i8' | 'u16' | 'i16' | 'u32' | 'i32' | 'u64' | 'i64' | 'f32' | 'f64' | 'ptr' | 'bool';
 
@@ -264,7 +263,6 @@ BLOCK_COMMENT : '/*' ( BLOCK_COMMENT | . )*? '*/'  -> skip ;
 
 WS: [ \n\t\r] -> skip;
 
-AS: 'as';
 AND: 'and';
 BREAK: 'break';
 CATCH: 'catch';
