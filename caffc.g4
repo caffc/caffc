@@ -364,16 +364,11 @@ fragment HexadecimalDigit
 
 fragment FloatingConstant
     : DecimalFloatingConstant
-    | HexadecimalFloatingConstant
     ;
 
 fragment DecimalFloatingConstant
     : FractionalConstant ExponentPart? FloatingSuffix?
     | DigitSequence ExponentPart FloatingSuffix?
-    ;
-
-fragment HexadecimalFloatingConstant
-    : HexadecimalPrefix (HexadecimalFractionalConstant | HexadecimalDigitSequence) BinaryExponentPart FloatingSuffix?
     ;
 
 fragment FractionalConstant

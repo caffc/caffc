@@ -28,7 +28,7 @@ public class TestS001Numbers {
                 "i32 variable should be resolved correctly");
         assertCodeContains(code, "y = 33;",
                 "i32 variable should be resolved correctly");
-        assertCodeContains(code, "z = 33;",
-                "i32 variable should be resolved correctly");
+        assertCodeContains(code, "z = 0x0000000000000021;",
+                "i64 constant should be correctly computed");
     }
 }
