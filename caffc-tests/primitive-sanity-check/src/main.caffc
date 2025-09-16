@@ -1,0 +1,74 @@
+module main
+
+native {
+#include <stdio.h>
+}
+
+/**
+ * Check if the given type has the correct size. If there's no error, the code
+ * returns 0.
+ */
+check(str typeName, u32 expectedSize, u32 actualSize) -> u32 {
+  if (expectedSize != actualSize) {
+    print("FAIL")
+    print(typeName)
+
+    native {
+      printf("expected size: %u, actual size: %u\n", expectedSize, actualSize);
+    }
+
+    return 1
+  }
+
+  return 0
+}
+
+
+main() -> i32 {
+  u32 i8size, u8size, i16size, u16size,
+      i32size, u32size, i64size, u64size,
+      f32size, f64size
+  u32 errors = 0
+
+  native {
+    i8size = (u32) sizeof(i8);
+    u8size = (u32) sizeof(u8);
+    i16size = (u32) sizeof(i16);
+    u16size = (u32) sizeof(u16);
+    i32size = (u32) sizeof(i32);
+    u32size = (u32) sizeof(u32);
+    i64size = (u32) sizeof(i64);
+    u64size = (u32) sizeof(u64);
+    f32size = (u32) sizeof(f32);
+    f64size = (u32) sizeof(f64);
+  }
+
+  errors |= check("i8" , 1, i8size)
+  errors |= check("u8" , 1, u8size)
+  errors |= check("i16", 2, i16size)
+  errors |= check("u16", 2, u16size)
+  errors |= check("i32", 4, i32size)
+  errors |= check("u32", 4, u32size)
+  errors |= check("i64", 8, i64size)
+  errors |= check("u64", 8, u64size)
+  errors |= check("f32", 4, f32size)
+  errors |= check("f64", 8, f64size)
+
+  if errors {
+    return 1
+  }
+
+  print("all sizes for primitive types are OK")
+
+  return 0
+}
+
+native {
+  int main(int argc, char** argv) {
+    atexit(caffc_done);
+    caffc_init();
+
+    return main_main();
+  }
+}
+

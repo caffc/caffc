@@ -31,13 +31,9 @@ public class ExpressionNewObject implements Expression {
         result.astColumn = newObject.getStart().getCharPositionInLine();
         result.instantiatedTypeSearch = SymbolSearch.fromAntlr(unit, newObject.newType());
 
-        if (newObject.expressionTuple() != null && newObject.expressionTuple().expression() != null) {
-            result.parameters.add(Expression.fromAntlr(unit, result, newObject.expressionTuple().expression()));
-        } else if (newObject.expressionTuple() != null) {
-            List<caffcParser.ExpressionTupleContext> expressionTupleContexts = newObject.expressionTuple().expressionTuple();
-
-            for (caffcParser.ExpressionTupleContext parameter: expressionTupleContexts) {
-                result.parameters.add(Expression.fromAntlr(unit, result, parameter.expression()));
+        if (newObject.expressionTuple() != null) {
+            for (caffcParser.ExpressionContext parameterExpression: newObject.expressionTuple().expression()) {
+                result.parameters.add(Expression.fromAntlr(unit, result, parameterExpression));
             }
         }
 

@@ -140,6 +140,12 @@ public interface Expression extends Statement {
             return ExpressionAssign.fromAntlr(unit, owner, assignContext);
         }
 
+        if (expression == null) {
+            CaffcCompiler.get().fatal(
+                    owner,
+                    "null expression passed from owner");
+        }
+
         CaffcCompiler.get().fatal(
                 AstItem.fromAntlr(unit.astFilePath, expression),
                 "unsupported expression: " + expression.getText());

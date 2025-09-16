@@ -25,8 +25,8 @@ use_alias: AS ID;
 nativeBlock: NATIVE;
 
 function:
-    tags? ID genericsDeclarations? '(' extend (',' parameterDefinition)? ')' ('->' returnType?)? block |
-    tags? ID genericsDeclarations? '(' parameterDefinition? ')' ('->' returnType?)? block;
+    tags? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
+    tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
 
 returnType:
   typeTuple |
@@ -67,8 +67,8 @@ interfaceStatements:
     ;
 
 functionDeclaration:
-    tags? ID genericsDeclarations? '(' extend (',' parameterDefinition)? ')' ('->' returnType?)? |
-    tags? ID genericsDeclarations? '(' parameterDefinition? ')' ('->' returnType?)?;
+    tags? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? |
+    tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)?;
 
 tagDefinition:
     tags? TAG ID '{' fieldDeclaration* '}'
@@ -173,18 +173,19 @@ expression:
   ;
 
 expressionTuple:
-  expressionTuple (',' expressionTuple)+ |
-  expression;
+  expression (',' expression)*;
 
 extend:
     EXTENDS classType;
 
-parameterDefinition:
-    tags? typeName ID STAR? ('=' expression)? |
-    parameterDefinition (',' parameterDefinition)+;
+parameterDefinitions:
+    parameterDefinition (',' parameterDefinition)*;
 
-typeName:
-    classType             # TypeClass
+parameterDefinition:
+    tags? typeName ID STAR? ('=' expression)?;
+
+typeName
+    : classType           # TypeClass
     | primitiveTypeName   # TypePrimitive
     | functionType        # TypeFunction
     | typeName ('[' ']')+ # TypeArray
@@ -263,6 +264,7 @@ BLOCK_COMMENT : '/*' ( BLOCK_COMMENT | . )*? '*/'  -> skip ;
 
 WS: [ \n\t\r] -> skip;
 
+AS: 'as';
 AND: 'and';
 BREAK: 'break';
 CATCH: 'catch';

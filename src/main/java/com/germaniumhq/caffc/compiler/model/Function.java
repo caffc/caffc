@@ -61,14 +61,12 @@ public class Function implements CompileBlock, Scope, Symbol {
         }
 
         // if the function has parameters, add them
-        caffcParser.ParameterDefinitionContext parameterDefinitionContext = ctx.parameterDefinition();
+        caffcParser.ParameterDefinitionsContext parameterDefinitions = ctx.parameterDefinitions();
 
-        if (parameterDefinitionContext != null && parameterDefinitionContext.typeName() == null) {
-            for (caffcParser.ParameterDefinitionContext parameter: parameterDefinitionContext.parameterDefinition()) {
+        if (parameterDefinitions != null) {
+            for (caffcParser.ParameterDefinitionContext parameter : parameterDefinitions.parameterDefinition()) {
                 function.definition.parameters.add(Parameter.fromAntlr(unit, function.definition, parameter));
             }
-        } else if (parameterDefinitionContext != null && parameterDefinitionContext.typeName() != null) {
-            function.definition.parameters.add(Parameter.fromAntlr(unit, function.definition, parameterDefinitionContext));
         }
 
         for (caffcParser.StatementContext antlrStatement: ctx.block().statement()) {

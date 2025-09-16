@@ -40,15 +40,9 @@ public class ExpressionFnCall implements Expression {
         result.functionExpression = Expression.fromAntlr(unit, result, fnCallExpression.expression());
         result.genericsInstantiations = GenericInstantiations.fromAntlr(unit, result, fnCallExpression.genericsInstantiations());
 
-        // here the function should be first searched as a symbol
-
-        if (fnCallExpression.expressionTuple() != null && fnCallExpression.expressionTuple().expression() != null) {
-            result.parameters.add(Expression.fromAntlr(unit, result, fnCallExpression.expressionTuple().expression()));
-        } else if (fnCallExpression.expressionTuple() != null) {
-            List<caffcParser.ExpressionTupleContext> expressionTupleContexts = fnCallExpression.expressionTuple().expressionTuple();
-
-            for (caffcParser.ExpressionTupleContext parameter: expressionTupleContexts) {
-                result.parameters.add(Expression.fromAntlr(unit, result, parameter.expression()));
+        if (fnCallExpression.expressionTuple() != null) {
+            for (caffcParser.ExpressionContext parameterExpression: fnCallExpression.expressionTuple().expression()) {
+                result.parameters.add(Expression.fromAntlr(unit, result, parameterExpression));
             }
         }
 
