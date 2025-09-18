@@ -28,7 +28,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
  * A language expression.
  */
 public interface Expression extends Statement {
-    Symbol getSymbol();
+    Symbol typeSymbol();
 
     static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExpressionContext expression) {
         // keep in sync with CaffcPebblesExtension and caffc.g4

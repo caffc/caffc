@@ -29,7 +29,7 @@ public class ExpressionUnaryMinus implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return this.symbol;
     }
 
@@ -57,6 +57,6 @@ public class ExpressionUnaryMinus implements Expression {
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
 
-        this.symbol = this.expression.getSymbol();
+        this.symbol = this.expression.typeSymbol();
     }
 }

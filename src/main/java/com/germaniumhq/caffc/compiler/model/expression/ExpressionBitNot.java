@@ -29,7 +29,7 @@ public class ExpressionBitNot implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return this.symbol;
     }
 
@@ -56,6 +56,6 @@ public class ExpressionBitNot implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
-        this.symbol = this.expression.getSymbol();
+        this.symbol = this.expression.typeSymbol();
     }
 }

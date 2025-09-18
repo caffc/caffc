@@ -33,7 +33,7 @@ public class ExpressionShift implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return this.symbol;
     }
 
@@ -62,6 +62,6 @@ public class ExpressionShift implements Expression {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
 
-        this.symbol = this.left.getSymbol();
+        this.symbol = this.left.typeSymbol();
     }
 }

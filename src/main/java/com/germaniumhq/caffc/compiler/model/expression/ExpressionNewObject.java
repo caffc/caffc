@@ -50,7 +50,7 @@ public class ExpressionNewObject implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return instantiatedType;
     }
 

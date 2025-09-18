@@ -218,7 +218,7 @@ public class ExpressionNumber implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return symbol;
     }
 }
