@@ -320,10 +320,10 @@ NUMBER
     | FloatingConstant;
 
 fragment IntegerConstant
-    : DecimalConstant IntegerSuffix?
-    | OctalConstant IntegerSuffix?
-    | HexadecimalConstant IntegerSuffix?
-    | BinaryConstant
+    : '-'? DecimalConstant IntegerSuffix?
+    | '-'? OctalConstant IntegerSuffix?
+    | '-'? HexadecimalConstant IntegerSuffix?
+    | '-'? BinaryConstant
     ;
 
 fragment BinaryConstant

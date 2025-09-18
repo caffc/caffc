@@ -114,7 +114,7 @@ public class CodeAsserts {
     private static List<TestUnit> caffcFeature(String feature, String profile) {
         List<TestUnit> featureUnits = new ArrayList<>();
 
-        String fullPath = "src/main/templates/" + feature + "/" + profile + "/caffc";
+        String fullPath = "templates/" + feature + "/" + profile + "/caffc";
 
         for (String filePath: findCaffcFiles(fullPath)) {
             TestUnit testUnit = new TestUnit(filePath, readFileContents(filePath));

@@ -17,18 +17,48 @@ public class TestS001Numbers {
                 module main
         
                 main(i32 i) {
-                  i16 x = -33
-                  u16 y = 33
-                  i64 z = 33_i64
+                  i32 i32default = 33
+                  u8 u8var = 33_u8
+                  i8 i8var = 33_i8
+                  i8 i8var_negative = -33_i8
+                  u16 u16var = 33_u16
+                  i16 i16var = 33_i16
+                  i16 i16var_negative = -33_i16
+                  u32 u32var = 33_u32
+                  i32 i32var = 33_i32
+                  i32 i32var_negative = -33_i32
+                  u64 u64var = 33_u64
+                  i64 i64var = 33_u64
+                  i64 i64var_negative = -33_i64
                 }
                 """)}
         );
 
-        assertCodeContains(code, "x = -33;",
-                "i32 variable should be resolved correctly");
-        assertCodeContains(code, "y = 33;",
-                "i32 variable should be resolved correctly");
-        assertCodeContains(code, "z = 0x0000000000000021;",
-                "i64 constant should be correctly computed");
+        assertCodeContains(code, "i32default = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "u8var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i8var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i8var_negative = -33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "u16var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i16var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i16var_negative = -33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "u32var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i32var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i32var_negative = -33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "u64var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i64var = 33;",
+                "variable should be generated correctly");
+        assertCodeContains(code, "i64var_negative = -33;",
+                "variable should be generated correctly");
     }
 }
