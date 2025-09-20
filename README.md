@@ -38,6 +38,12 @@ CaffC offers also a `ptr` type, that has its size unspecified, and is
 actually a `void*`. This exists only to allow classes to keep a reference
 to a memory address somewhere. `ptr` references are not managed by the GC.
 
+To specify a type for a constant, suffix it with its type after `_`:
+
+```
+u32 x = 32_u32
+```
+
 ## Functions
 
 CaffC has functions. The notation is slightly different from C:
@@ -178,7 +184,7 @@ items() {
 
   print(v.getName())  // prints "vase"
   v = p
-  print(p.getName())  // prints "potato"
+  print(v.getName())  // prints "potato"
 }
 ```
 
