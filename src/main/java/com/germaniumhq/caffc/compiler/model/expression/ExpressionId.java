@@ -30,6 +30,19 @@ public class ExpressionId implements Expression {
         return result;
     }
 
+    public static Expression fromName(CompilationUnit unit, AstItem owner, String name) {
+        ExpressionId result = new ExpressionId();
+
+        result.astFilePath = unit.astFilePath;
+        result.astLine = owner.getLineNumber();
+        result.astColumn = owner.getColumnNumber();
+
+        result.owner = owner;
+        result.name = name;
+
+        return result;
+    }
+
     @Override
     public Symbol typeSymbol() {
         return this.symbol;

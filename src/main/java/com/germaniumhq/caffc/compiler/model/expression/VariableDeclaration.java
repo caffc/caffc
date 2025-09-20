@@ -9,7 +9,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 
 public class VariableDeclaration implements AstItem, Symbol {
     public String name;
-    public Expression expression;
+    public ExpressionAssign assignExpression;
 
     public VariableDeclarations owner;
     public String astFilePath;
@@ -30,7 +30,15 @@ public class VariableDeclaration implements AstItem, Symbol {
         caffcParser.ExpressionContext expressionContext = variableDeclarationContext.expression();
 
         if (expressionContext != null) {
-            result.expression = Expression.fromAntlr(unit, result, expressionContext);
+            result.assignExpression = new ExpressionAssign();
+
+            result.assignExpression.astFilePath = result.getFilePath();
+            result.assignExpression.astLine = result.getLineNumber();
+            result.assignExpression.astColumn = result.getColumnNumber();
+
+            result.assignExpression.owner = result;
+            result.assignExpression.left = ExpressionId.fromName(unit, result.assignExpression, result.name);
+            result.assignExpression.right = Expression.fromAntlr(unit, result.assignExpression, expressionContext);
         }
 
         return result;
@@ -64,8 +72,8 @@ public class VariableDeclaration implements AstItem, Symbol {
 
         this.isResolved = true;
 
-        if (expression != null) {
-            expression.recurseResolveTypes();
+        if (this.assignExpression != null) {
+            this.assignExpression.recurseResolveTypes();
         }
     }
 

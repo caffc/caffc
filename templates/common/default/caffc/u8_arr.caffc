@@ -1,10 +1,10 @@
 module caffc
 
-_caffc_u8_arr_size(u32 size) -> u32 {
-  u32 result
+_caffc_u8_arr_size(i32 size) -> i32 {
+  i32 result
 
   native {
-    result = sizeof(u8) * size + sizeof(caffc_u8_arr);
+    result = (i32) (sizeof(u8) * size + sizeof(caffc_u8_arr));
   }
 
   return result
@@ -18,17 +18,17 @@ _caffc_u8_arr_size(u32 size) -> u32 {
 class u8_arr {
   u32 size
 
-  constructor(u32 size) {
+  constructor(i32 size) {
     _this.size = size
   }
 
-  set(u32 index, u8 value) {
+  set(i32 index, u8 value) {
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
-  get(u32 index) -> u8 {
+  get(i32 index) -> u8 {
     u8 result
 
     native {

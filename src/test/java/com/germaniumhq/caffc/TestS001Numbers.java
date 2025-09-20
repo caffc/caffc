@@ -61,4 +61,27 @@ public class TestS001Numbers {
         assertCodeContains(code, "i64var_negative = -33;",
                 "variable should be generated correctly");
     }
+
+    @Test
+    public void testNumberConstantsInExpressionCasting() {
+        String code = compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb", /* template         */
+                "test.caffc",                              /* compilation unit */
+                new TestUnit[]{
+                    new TestUnit("test.caffc",
+                    """
+                            module main
+
+                            main(i32 i) {
+                              i16 i16default = 33
+                              i16 u8var = 33_i16 | i16default
+                            }
+                            """)}
+        );
+
+        assertCodeContains(code, "u8var = 33 | i16default;",
+                "if a constant is declared into an expression, it should not" +
+                        " be explicitly casted in the generated C code");
+
+    }
 }

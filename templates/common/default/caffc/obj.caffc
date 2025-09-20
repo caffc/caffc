@@ -12,5 +12,5 @@ interface HasEquals {
 }
 
 interface HasHash {
-  hash() -> u32
+  hash() -> i32
 }
