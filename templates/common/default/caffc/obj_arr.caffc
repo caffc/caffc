@@ -1,8 +1,8 @@
 module caffc
 
 // FIXME: this should use tags
-_caffc_obj_arr_size(u32 size) -> u32 {
-  u32 result
+_caffc_obj_arr_size(i32 size) -> i32 {
+  i32 result
 
   native {
     result = sizeof(ptr) * size + sizeof(caffc_obj_arr);
@@ -20,22 +20,22 @@ _caffc_obj_arr_size(u32 size) -> u32 {
  */
 #caffc_array("ptr") #caffc_object_array
 #public class obj_arr<T> {
-    u32 _caffc_array_size
+    i32 _caffc_array_size
 
-    #public constructor(u32 size) {
+    #public constructor(i32 size) {
         // info for the GC, how many fields are in this array
         native {
             _this->_caffc_array_size = size;
         }
     }
 
-    #public set(u32 index, T value) {
+    #public set(i32 index, T value) {
         native {
             _this->_caffc_data[index] = (caffc_obj*) value;
         }
     }
 
-    #public get(u32 index) -> T {
+    #public get(i32 index) -> T {
         T result
 
         native {
@@ -45,7 +45,7 @@ _caffc_obj_arr_size(u32 size) -> u32 {
         return result
     }
 
-    #public size() -> u32 {
+    #public size() -> i32 {
         return _this._caffc_array_size
     }
 }

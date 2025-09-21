@@ -1,6 +1,6 @@
 {%- if ctx.isIndex -%}
-{%- if ctx.right.symbol.typeName.isPrimitive -%}
-caffc_{{ ctx.left.expression.symbol.typeName.childType.name }}_arr_set({{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, {{ ctx.right | render }})
+{%- if ctx.right.typeSymbol.typeName.isPrimitive -%}
+caffc_{{ ctx.left.expression.typeSymbol.typeName.childType.name }}_arr_set({{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, {{ ctx.right | render }})
 {%- else -%}
 caffc_obj_arr_set((caffc_obj_arr*) {{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, (ptr) {{ ctx.right | render }})
 {%- endif -%}

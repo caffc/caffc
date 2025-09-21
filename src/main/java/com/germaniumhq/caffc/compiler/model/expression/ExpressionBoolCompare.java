@@ -49,7 +49,7 @@ public class ExpressionBoolCompare implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return new TypeSymbol(TypeName.BOOL);
     }
 
