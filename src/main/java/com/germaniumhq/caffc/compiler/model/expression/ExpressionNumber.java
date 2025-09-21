@@ -6,6 +6,7 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -30,6 +31,28 @@ public class ExpressionNumber implements Expression {
 
         String numberExpressionText = numberExpression.getText();
 
+        if (numberExpressionText.contains(".") || numberExpressionText.contains("e") && !numberExpressionText.startsWith("0x")) {
+            parseFloatNumber(numberExpressionText, result);
+        } else {
+            parseIntegerNumber(numberExpressionText, result);
+        }
+
+        return result;
+    }
+
+    private static void parseFloatNumber(String numberExpressionText, ExpressionNumber result) {
+        if (numberExpressionText.endsWith("_f64")) {
+            String textValue = numberExpressionText.substring(0, numberExpressionText.length() - "_f64".length());
+            parseFloatNumberFromString(result, textValue, TypeName.F64);
+        } else if (numberExpressionText.endsWith("_f32")) {
+            String textValue = numberExpressionText.substring(0, numberExpressionText.length() - "_f32".length());
+            parseFloatNumberFromString(result, textValue, TypeName.F32);
+        } else {
+            parseFloatNumberFromString(result, numberExpressionText, TypeName.F32);
+        }
+    }
+
+    private static void parseIntegerNumber(String numberExpressionText, ExpressionNumber result) {
         if (numberExpressionText.endsWith("_i64")) {
             String textValue = numberExpressionText.substring(0, numberExpressionText.length() - "_i64".length());
             parseIntegerNumberFromString(result, textValue, TypeName.I64);
@@ -57,9 +80,13 @@ public class ExpressionNumber implements Expression {
         } else {
             parseIntegerNumberFromString(result, numberExpressionText, TypeName.I32);
         }
-
-        return result;
     }
+
+    private static void parseFloatNumberFromString(ExpressionNumber result, String textValue, TypeName primitiveTypeName) {
+        result.symbol = new TypeSymbol(primitiveTypeName);
+        result.value = textValue;
+    }
+
 
     private static void parseIntegerNumberFromString(ExpressionNumber result, String textValue, TypeName primitiveTypeName) {
         result.symbol = new TypeSymbol(primitiveTypeName);
@@ -98,29 +125,6 @@ public class ExpressionNumber implements Expression {
 
         result.bigIntValue = bigIntegerValue;
         result.value = textValue;
-    }
-
-    private static int getHexLength(ExpressionNumber result, TypeName primitiveTypeName) {
-        if (primitiveTypeName.name.equals(TypeName.I8.name)) {
-            return 2;
-        } else if (primitiveTypeName.name.equals(TypeName.U8.name)) {
-            return 2;
-        } else if (primitiveTypeName.name.equals(TypeName.I16.name)) {
-            return 4;
-        } else if (primitiveTypeName.name.equals(TypeName.U16.name)) {
-            return 4;
-        } else if (primitiveTypeName.name.equals(TypeName.I32.name)) {
-            return 8;
-        } else if (primitiveTypeName.name.equals(TypeName.U32.name)) {
-            return 8;
-        } else if (primitiveTypeName.name.equals(TypeName.I64.name)) {
-            return 16;
-        } else if (primitiveTypeName.name.equals(TypeName.U64.name)) {
-            return 16;
-        }
-
-        CaffcCompiler.get().fatal(result, "expression is not an integer primitive type: " + primitiveTypeName);
-        return 0; // not reached
     }
 
     private static BigInteger getMinimumValue(ExpressionNumber result, TypeName primitiveTypeName) {
@@ -167,30 +171,6 @@ public class ExpressionNumber implements Expression {
 
         CaffcCompiler.get().fatal(result, "expression is not an integer primitive type: " + primitiveTypeName);
         return BigInteger.ZERO; // not reached
-    }
-
-    public static String padAs0xString(String input, int totalLength) {
-        boolean hasMinus = input.startsWith("-");
-        StringBuilder sb = new StringBuilder();
-        int paddingLength;
-
-        if (hasMinus) {
-            input = input.substring(1);
-            sb.append("-0x");
-        } else {
-            sb.append("0x");
-        }
-
-        // Add leading zeros
-        paddingLength = totalLength - input.length();
-
-        for (int i = 0; i < paddingLength; i++) {
-            sb.append('0');
-        }
-
-        sb.append(input);
-
-        return sb.toString();
     }
 
     @Override

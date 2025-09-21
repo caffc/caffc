@@ -82,6 +82,37 @@ public class TestS001Numbers {
         assertCodeContains(code, "u8var = 33 | i16default;",
                 "if a constant is declared into an expression, it should not" +
                         " be explicitly casted in the generated C code");
+    }
 
+    @Test
+    public void testFloatNumberInstantiation() {
+        String code = compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb", /* template         */
+                "test.caffc",                              /* compilation unit */
+                new TestUnit[]{
+                        new TestUnit("test.caffc",
+                                """
+                                        module main
+
+                                        main(i32 i) {
+                                          f32 f32Num = 33.0
+                                          f64 f64Num = 34.0
+                                          f32 f32Num_specified = 33.0_f32
+                                          f64 f64Num_specified = 34.0_f64
+                                          f32 exponentNumber = 100e1
+                                        }
+                                        """)}
+        );
+
+        assertCodeContains(code, "f32Num = 33.0;",
+                "f32 floating numbers can be declared");
+        assertCodeContains(code, "f64Num = 34.0;",
+                "f64 floating numbers can be declared");
+        assertCodeContains(code, "f32Num_specified = 33.0;",
+                "f32 floating numbers can be explicitly declared");
+        assertCodeContains(code, "f64Num_specified = 34.0;",
+                "f64 floating numbers can be explicitly declared");
+        assertCodeContains(code, "exponentNumber = 100e1;",
+                "f32 floating numbers with exponent can be declared");
     }
 }
