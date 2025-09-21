@@ -21,7 +21,7 @@ ge_java_native_binary(
 
 filegroup(
   name="templates",
-  srcs=glob(["src/main/templates/**/*"]),
+  srcs=glob(["templates/**/*"]),
 )
 
 ge_genrule(

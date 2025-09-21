@@ -2,6 +2,10 @@
 
 set -e
 
+cfc() {
+    java -jar ../../target/caffc-*.jar "$@"
+}
+
 echo "#############################################################################"
 echo "# caffc compile"
 echo "#############################################################################"
@@ -22,7 +26,7 @@ for f in `find target/caffc-c -name \*.c`; do
   c_file_name=$(basename $f)
   o_file_name=target/caffc-o/${c_file_name%%.*}.o
   echo "cc: ${f} -> ${o_file_name}"
-  gcc -c $f -o $o_file_name
+  gcc -Wall -g -ggdb -c $f -o $o_file_name
 done
 
 echo "#############################################################################"
@@ -30,5 +34,5 @@ echo "# linking"
 echo "#############################################################################"
 
 echo ld: target/caffc-o/*.o "->" target/main
-gcc target/caffc-o/*.o -o target/main
+gcc -g target/caffc-o/*.o -o target/main
 

@@ -37,7 +37,7 @@ public class ExpressionDotAccess implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return symbol;
     }
 
@@ -65,7 +65,7 @@ public class ExpressionDotAccess implements Expression {
     public void recurseResolveTypes() {
         this.leftOfDot.recurseResolveTypes();
 
-        Symbol leftOfDotType = this.leftOfDot.getSymbol();
+        Symbol leftOfDotType = this.leftOfDot.typeSymbol();
 
         if (!(leftOfDotType instanceof Scope)) {
             List<Symbol> resolvedPath = new ArrayList<>();

@@ -116,7 +116,7 @@ public class TestClasses {
 
         CodeAsserts.assertCodeContains(code, "  caffc_ByteArray* _this = (caffc_ByteArray*) caffc_new(\n" +
                         "      &caffc_ByteArray_type,\n" +
-                        "      (u32) caffc__caffc_ByteArray_size(size));\n" +
+                        "      (i32) caffc__caffc_ByteArray_size(size));\n" +
                         "  caffc_ByteArray_constructor(_this, size);",
                 "instantiation should work with dynamic sizes for the objects");
 

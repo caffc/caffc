@@ -61,7 +61,7 @@ public class TestS010Array {
                 caffc__obj_a* caffc__obj_a_new(i32 size) {
                   caffc__obj_a* _this = (caffc__obj_a*) caffc_new(
                       &caffc__obj_a_type,
-                      (u32) caffc__caffc__obj_a_size(size));
+                      (i32) caffc__caffc__obj_a_size(size));
                   caffc__obj_a_constructor(_this, size);
                 """,
                 "the new call should go via the dynamic size function defined for _obj_a");

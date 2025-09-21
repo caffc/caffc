@@ -37,7 +37,7 @@ public class ExpressionAssign implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return new TypeSymbol(TypeName.VOID);
     }
 

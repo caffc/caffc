@@ -20,6 +20,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -27,7 +28,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
  * A language expression.
  */
 public interface Expression extends Statement {
-    Symbol getSymbol();
+    Symbol typeSymbol();
 
     static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExpressionContext expression) {
         // keep in sync with CaffcPebblesExtension and caffc.g4
@@ -73,6 +74,10 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExBitNotContext bitNotContext) {
             return ExpressionBitNot.fromAntlr(unit, owner, bitNotContext);
+        }
+
+        if (expression instanceof caffcParser.ExUnaryMinusContext unaryMinusContext) {
+            return ExpressionUnaryMinus.fromAntlr(unit, owner, unaryMinusContext);
         }
 
         if (expression instanceof caffcParser.ExMulModContext mulModContext) {
@@ -133,6 +138,12 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExAssignContext assignContext) {
             return ExpressionAssign.fromAntlr(unit, owner, assignContext);
+        }
+
+        if (expression == null) {
+            CaffcCompiler.get().fatal(
+                    owner,
+                    "null expression passed from owner");
         }
 
         CaffcCompiler.get().fatal(

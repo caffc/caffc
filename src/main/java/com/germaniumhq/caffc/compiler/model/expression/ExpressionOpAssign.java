@@ -35,7 +35,7 @@ public class ExpressionOpAssign implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return this.symbol;
     }
 

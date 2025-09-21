@@ -39,7 +39,7 @@ public class ExpressionTernary implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return this.symbol;
     }
 
@@ -73,6 +73,6 @@ public class ExpressionTernary implements Expression {
 
         this.falseExpression.recurseResolveTypes();
 
-        this.symbol = this.falseExpression.getSymbol();
+        this.symbol = this.falseExpression.typeSymbol();
     }
 }

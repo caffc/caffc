@@ -6,28 +6,24 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionShift implements Expression {
-    public Expression left;
-    public Expression right;
-    public String operator;
+public class ExpressionUnaryMinus implements Expression {
+    public Expression expression;
     public AstItem owner;
+    public Symbol symbol;
 
     public String astFilePath;
     public int astColumn;
     public int astLine;
-    public Symbol symbol;
 
-    public static ExpressionShift fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExShiftContext shiftContext) {
-        ExpressionShift result = new ExpressionShift();
+    public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExUnaryMinusContext exUnaryMinusContext) {
+        ExpressionUnaryMinus result = new ExpressionUnaryMinus();
 
         result.astFilePath = unit.astFilePath;
-        result.astLine = shiftContext.getStart().getLine();
-        result.astColumn = shiftContext.getStart().getCharPositionInLine();
+        result.astLine = exUnaryMinusContext.getStart().getLine();
+        result.astColumn = exUnaryMinusContext.getStart().getCharPositionInLine();
 
         result.owner = owner;
-        result.left = Expression.fromAntlr(unit, result, shiftContext.leftExpression);
-        result.right = Expression.fromAntlr(unit, result, shiftContext.rightExpression);
-        result.operator = shiftContext.getChild(1).getText();
+        result.expression = Expression.fromAntlr(unit, result, exUnaryMinusContext.expression());
 
         return result;
     }
@@ -59,9 +55,8 @@ public class ExpressionShift implements Expression {
 
     @Override
     public void recurseResolveTypes() {
-        this.left.recurseResolveTypes();
-        this.right.recurseResolveTypes();
+        this.expression.recurseResolveTypes();
 
-        this.symbol = this.left.typeSymbol();
+        this.symbol = this.expression.typeSymbol();
     }
 }

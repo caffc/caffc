@@ -33,7 +33,7 @@ public class ExpressionIndexAccess implements Expression, AstItem {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return symbol;
     }
 
@@ -62,7 +62,7 @@ public class ExpressionIndexAccess implements Expression, AstItem {
         this.index.recurseResolveTypes();
         this.expression.recurseResolveTypes();
 
-        Symbol expressionSymbol = this.expression.getSymbol();
+        Symbol expressionSymbol = this.expression.typeSymbol();
 
         // FIXME: probably anything that implements some List interface should be ok,
         //        not only arrays.

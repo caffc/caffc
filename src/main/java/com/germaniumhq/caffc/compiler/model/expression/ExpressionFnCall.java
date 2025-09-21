@@ -40,15 +40,9 @@ public class ExpressionFnCall implements Expression {
         result.functionExpression = Expression.fromAntlr(unit, result, fnCallExpression.expression());
         result.genericsInstantiations = GenericInstantiations.fromAntlr(unit, result, fnCallExpression.genericsInstantiations());
 
-        // here the function should be first searched as a symbol
-
-        if (fnCallExpression.expressionTuple() != null && fnCallExpression.expressionTuple().expression() != null) {
-            result.parameters.add(Expression.fromAntlr(unit, result, fnCallExpression.expressionTuple().expression()));
-        } else if (fnCallExpression.expressionTuple() != null) {
-            List<caffcParser.ExpressionTupleContext> expressionTupleContexts = fnCallExpression.expressionTuple().expressionTuple();
-
-            for (caffcParser.ExpressionTupleContext parameter: expressionTupleContexts) {
-                result.parameters.add(Expression.fromAntlr(unit, result, parameter.expression()));
+        if (fnCallExpression.expressionTuple() != null) {
+            for (caffcParser.ExpressionContext parameterExpression: fnCallExpression.expressionTuple().expression()) {
+                result.parameters.add(Expression.fromAntlr(unit, result, parameterExpression));
             }
         }
 
@@ -56,7 +50,7 @@ public class ExpressionFnCall implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
 
         return functionDefinition.returnType;
@@ -89,7 +83,7 @@ public class ExpressionFnCall implements Expression {
         // if we have a dot access function, it means the function is a field of something
         // else, so we need to get the first part as its first parameter, and call the function.
         if (this.functionExpression instanceof ExpressionDotAccess dotAccess) {
-            if (dotAccess.leftOfDot.getSymbol().typeName().dataType != DataType.MODULE) {
+            if (dotAccess.leftOfDot.typeSymbol().typeName().dataType != DataType.MODULE) {
                 this.parameters.add(0, dotAccess.leftOfDot);
             }
         }
@@ -102,10 +96,10 @@ public class ExpressionFnCall implements Expression {
         if (this.genericsInstantiations != null) {
             this.genericsInstantiations.recurseResolveTypes();
             this.symbol = GenericsDefinitionsSymbol.instantiateCopy(
-                    this.functionExpression.getSymbol(),
+                    this.functionExpression.typeSymbol(),
                     this.genericsInstantiations.getResolvedSymbolList());
         } else {
-            this.symbol = this.functionExpression.getSymbol();
+            this.symbol = this.functionExpression.typeSymbol();
         }
     }
 

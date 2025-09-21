@@ -2,14 +2,9 @@ package com.germaniumhq.caffc;
 
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
-import com.germaniumhq.caffc.compiler.model.Field;
-import com.germaniumhq.caffc.compiler.model.Function;
-import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
-import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,7 +46,7 @@ public class TestS006GenericsParameters {
         );
 
         ExpressionAssign expressionAssign = AstUtil.findAstItem(ast, "calls.[1]");
-        ClassDefinition returnCallClassDefinition = (ClassDefinition) expressionAssign.right.getSymbol();
+        ClassDefinition returnCallClassDefinition = (ClassDefinition) expressionAssign.right.typeSymbol();
 
         TypeName returnType = returnCallClassDefinition.typeName();
 

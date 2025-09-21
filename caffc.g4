@@ -25,8 +25,8 @@ use_alias: AS ID;
 nativeBlock: NATIVE;
 
 function:
-    tags? ID genericsDeclarations? '(' extend (',' parameterDefinition)? ')' ('->' returnType?)? block |
-    tags? ID genericsDeclarations? '(' parameterDefinition? ')' ('->' returnType?)? block;
+    tags? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
+    tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
 
 returnType:
   typeTuple |
@@ -67,8 +67,8 @@ interfaceStatements:
     ;
 
 functionDeclaration:
-    tags? ID genericsDeclarations? '(' extend (',' parameterDefinition)? ')' ('->' returnType?)? |
-    tags? ID genericsDeclarations? '(' parameterDefinition? ')' ('->' returnType?)?;
+    tags? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? |
+    tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)?;
 
 tagDefinition:
     tags? TAG ID '{' fieldDeclaration* '}'
@@ -150,6 +150,7 @@ expression:
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
   | ('!'|NOT) expression                                                                           # ExBoolNot
   | '~' expression                                                                                 # ExBitNot
+  | '-' expression                                                                                 # ExUnaryMinus
 //  | expression NOT? IN expression                                                                # ExNotIn
   | leftExpression=expression ('*'|'%') rightExpression=expression                                 # ExMulMod
   | leftExpression=expression '/' rightExpression=expression                                       # ExDiv
@@ -172,18 +173,19 @@ expression:
   ;
 
 expressionTuple:
-  expressionTuple (',' expressionTuple)+ |
-  expression;
+  expression (',' expression)*;
 
 extend:
     EXTENDS classType;
 
-parameterDefinition:
-    tags? typeName ID STAR? ('=' expression)? |
-    parameterDefinition (',' parameterDefinition)+;
+parameterDefinitions:
+    parameterDefinition (',' parameterDefinition)*;
 
-typeName:
-    classType             # TypeClass
+parameterDefinition:
+    tags? typeName ID STAR? ('=' expression)?;
+
+typeName
+    : classType           # TypeClass
     | primitiveTypeName   # TypePrimitive
     | functionType        # TypeFunction
     | typeName ('[' ']')+ # TypeArray
@@ -195,8 +197,6 @@ newType:
     | newType ('[' ']')+  # NewTypeArray
     ;
 
-// FIXME: add unsigned types as well? this is C after all, a bunch of messages
-//        are unsigned unfortunately.
 primitiveTypeName:
     'u8' | 'i8' | 'u16' | 'i16' | 'u32' | 'i32' | 'u64' | 'i64' | 'f32' | 'f64' | 'ptr' | 'bool';
 
@@ -293,6 +293,17 @@ VOID: 'void';
 WHILE: 'while';
 YIELD: 'yield';
 
+U8: 'u8';
+I8: 'i8';
+U16: 'u16';
+I16: 'i16';
+U32: 'u32';
+I32: 'i32';
+U64: 'u64';
+I64: 'i64';
+F32: 'f32';
+F64: 'f64';
+
 // KEYWORDS
 NATIVE: 'native' WS+ NATIVE_FRAGMENT;
 fragment NATIVE_FRAGMENT: '{' ((~'}') | NATIVE_FRAGMENT)* '}';
@@ -304,7 +315,109 @@ STAR: '*';
 DOT: '.';
 ID: LETTER (LETTER | DIGIT)*;
 
-NUMBER: [0-9]+;
+NUMBER
+    : IntegerConstant
+    | FloatingConstant;
+
+fragment IntegerConstant
+    : '-'? DecimalConstant IntegerSuffix?
+    | '-'? OctalConstant IntegerSuffix?
+    | '-'? HexadecimalConstant IntegerSuffix?
+    | '-'? BinaryConstant
+    ;
+
+fragment BinaryConstant
+    : '0' [bB] [0-1]+
+    ;
+
+fragment DecimalConstant
+    : NonzeroDigit Digit*
+    ;
+
+fragment OctalConstant
+    : '0' OctalDigit*
+    ;
+
+fragment HexadecimalConstant
+    : HexadecimalPrefix HexadecimalDigit+
+    ;
+
+fragment HexadecimalPrefix
+    : '0' [xX]
+    ;
+
+fragment Digit
+    : [0-9]
+    ;
+
+fragment NonzeroDigit
+    : [1-9]
+    ;
+
+fragment OctalDigit
+    : [0-7]
+    ;
+
+fragment HexadecimalDigit
+    : [0-9a-fA-F]
+    ;
+
+fragment FloatingConstant
+    : DecimalFloatingConstant
+    ;
+
+fragment DecimalFloatingConstant
+    : FractionalConstant ExponentPart? FloatingSuffix?
+    | DigitSequence ExponentPart FloatingSuffix?
+    ;
+
+fragment FractionalConstant
+    : DigitSequence? '.' DigitSequence
+    | DigitSequence '.'
+    ;
+
+fragment ExponentPart
+    : [eE] Sign? DigitSequence
+    ;
+
+fragment Sign
+    : [+-]
+    ;
+
+fragment IntegerSuffix
+    : '_' U8
+    | '_' I8
+    | '_' U16
+    | '_' I16
+    | '_' U32
+    | '_' I32
+    | '_' U64
+    | '_' I64
+    ;
+
+
+fragment FloatingSuffix
+    : '_' F32
+    | '_' F64
+    ;
+
+DigitSequence
+    : Digit+
+    ;
+
+fragment HexadecimalFractionalConstant
+    : HexadecimalDigitSequence? '.' HexadecimalDigitSequence
+    | HexadecimalDigitSequence '.'
+    ;
+
+fragment BinaryExponentPart
+    : [pP] Sign? DigitSequence
+    ;
+
+fragment HexadecimalDigitSequence
+    : HexadecimalDigit+
+    ;
+
 
 fragment LETTER: [_a-zA-Z];
 fragment DIGIT: [0-9];

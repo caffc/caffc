@@ -25,6 +25,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
@@ -99,6 +100,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(ExpressionIndexAccess.class, "c/expression/index_access.peb")
                 .withMapping(ExpressionBoolNot.class, "c/expression/bool_not.peb")
                 .withMapping(ExpressionBitNot.class, "c/expression/bit_not.peb")
+                .withMapping(ExpressionUnaryMinus.class, "c/expression/unary_minus.peb")
                 .withMapping(ExpressionMath.class, "c/expression/math.peb") // MulMod Div AddSub
                 .withMapping(ExpressionShift.class, "c/expression/shift.peb")
                 .withMapping(ExpressionBoolCompare.class, "c/expression/bool_compare.peb") // LtLteGtGte EqNeq

@@ -34,7 +34,7 @@ public class ExpressionString implements Expression {
     }
 
     @Override
-    public Symbol getSymbol() {
+    public Symbol typeSymbol() {
         return symbol;
     }
 
