@@ -15,7 +15,8 @@ _caffc_str_size(i32 size) -> i32 {
  */
 #caffc_array("u8")
 class str {
-  i32 size  // size in bytes, including nul byte
+  i32 size   // size in bytes, including nul byte
+  bool ascii // is the code ASCII, or is it really UTF-8
 
   constructor(i32 size) {
     _this.size = size
@@ -54,6 +55,50 @@ class str {
 
      return result
   }
+
+  /**
+   * Concatenates the current `str`, with the other `str`, into a new `str`
+   * instance.
+   */
+  add(str other) -> str {
+    return null
+  }
+
+  /**
+   * Slices the current `str` into a new `str`. `start` and `end` positions are
+   * character indexes.
+   */
+  slice(i32 start, i32 end) -> str {
+  }
+
+  starts_with(str other) -> bool {
+  }
+
+  ends_with(str other) -> bool {
+  }
+
+  /**
+   * Returns the character at the given character position.
+   */
+  char_at(i32 index) -> u32 {
+  }
+
+  /**
+   * Returns the byte at the given byte position.
+   */
+  byte_at(i32 index) -> u8 {
+    if (u32) index >= (u32) _this.size {
+      throw new Exception("dead")
+    }
+
+    u8 result
+
+    native {
+      result = _this->_caffc_data[index]
+    }
+
+    return result
+  }
 }
 
 /**
@@ -72,3 +117,4 @@ _strlen(ptr data) -> i32 {
 
   return result
 }
+
