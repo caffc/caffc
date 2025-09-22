@@ -155,6 +155,7 @@ public class CodeAsserts {
             String unit,
             TestUnit[] testUnits) {
         Program program = Program.reset();
+        CaffcCompiler.get().hasErrors = false;
 
         try {
             return compileCaffcUnits(program, template, unit, testUnits);
@@ -170,6 +171,7 @@ public class CodeAsserts {
      */
     public static CompilationUnit compileCaffcUnitsAst(String unit, TestUnit[] testUnits) {
         Program program = Program.reset();
+        CaffcCompiler.get().hasErrors = false;
 
         try {
             return compileCaffcUnitsAst(program, unit, testUnits);

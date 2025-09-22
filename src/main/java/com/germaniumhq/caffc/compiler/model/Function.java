@@ -36,6 +36,10 @@ public class Function implements CompileBlock, Scope, Symbol {
         function.definition.returnTypeSearch = SymbolSearch.fromAntlr(unit, ctx.returnType());
         function.definition.name = ctx.ID().getText();
 
+        if (ctx.STATIC() != null) {
+            function.definition.isStatic = true;
+        }
+
         caffcParser.TagsContext antlrTags = ctx.tags();
 
         if (antlrTags != null) {
@@ -47,6 +51,12 @@ public class Function implements CompileBlock, Scope, Symbol {
 
         if (owner instanceof Clazz clazz) {
             function.definition.clazz = clazz.definition;
+        }
+
+        if (function.definition.isStatic && function.definition.clazz == null) {
+            CaffcCompiler.get().error(function.definition, String.format(
+                    "static function '%s' is not a method of a class",
+                    function.definition.name));
         }
 
         if (function.definition.clazz != null) {

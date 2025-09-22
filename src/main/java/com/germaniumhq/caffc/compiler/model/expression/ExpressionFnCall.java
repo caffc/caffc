@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.*;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
@@ -80,18 +81,6 @@ public class ExpressionFnCall implements Expression {
     public void recurseResolveTypes() {
         this.functionExpression.recurseResolveTypes();
 
-        // if we have a dot access function, it means the function is a field of something
-        // else, so we need to get the first part as its first parameter, and call the function.
-        if (this.functionExpression instanceof ExpressionDotAccess dotAccess) {
-            if (dotAccess.leftOfDot.typeSymbol().typeName().dataType != DataType.MODULE) {
-                this.parameters.add(0, dotAccess.leftOfDot);
-            }
-        }
-
-        for (Expression parameter: parameters) {
-            parameter.recurseResolveTypes();
-        }
-
         // FIXME: resolve the generics instantiations, and copy the function
         if (this.genericsInstantiations != null) {
             this.genericsInstantiations.recurseResolveTypes();
@@ -100,6 +89,24 @@ public class ExpressionFnCall implements Expression {
                     this.genericsInstantiations.getResolvedSymbolList());
         } else {
             this.symbol = this.functionExpression.typeSymbol();
+        }
+
+        if (!(this.symbol instanceof FunctionDefinition)) {
+            CaffcCompiler.get().fatal(this.functionExpression, "not a function definition");
+        }
+
+        FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
+
+        // if we have a dot access function, it means the function is a field of something
+        // else, so we need to get the first part as its first parameter, and call the function.
+        if (this.functionExpression instanceof ExpressionDotAccess dotAccess && !functionDefinition.isStatic) {
+            if (dotAccess.leftOfDot.typeSymbol().typeName().dataType != DataType.MODULE) {
+                this.parameters.add(0, dotAccess.leftOfDot);
+            }
+        }
+
+        for (Expression parameter: parameters) {
+            parameter.recurseResolveTypes();
         }
     }
 

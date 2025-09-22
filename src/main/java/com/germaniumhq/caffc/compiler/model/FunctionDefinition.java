@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
     public Symbol clazz;
+    public boolean isStatic;
 
     public String name;
     public Symbol returnType;
