@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static com.germaniumhq.caffc.CodeAsserts.assertCodeContains;
 import static com.germaniumhq.caffc.CodeAsserts.compileCaffcProgram;
 
-public class TestS004ClassFunctionsStatic {
+public class TestS004ClassStaticMethods {
     @Test
     public void testStaticClassFunctions() {
         String code = compileCaffcProgram(
@@ -35,6 +35,10 @@ public class TestS004ClassFunctionsStatic {
                     return _this._name
                   }
                 }
+                
+                createA() {
+                  A a = A.newA()
+                }
                 """)}
         );
 
@@ -42,6 +46,8 @@ public class TestS004ClassFunctionsStatic {
                 "static methods shouldn't have the _this parameter");
         assertCodeContains(code, "caffc_str* caffc_A_getName(caffc_A* _this) {",
                 "non-static methods should have the _this parameter");
+        assertCodeContains(code, "a = caffc_A_newA();",
+                "calls of static methods should be possible");
     }
 
     @Test
