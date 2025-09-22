@@ -62,14 +62,16 @@ public class Clazz implements CompileBlock, AstItem, Scope {
                 Function function = Function.fromAntlr(unit, clazz, antlrFunction);
                 function.definition.clazz = clazz.definition;
 
-                // we syntheticaly add the `_this` parameter to the function pointing to the class.
-                Parameter thisParameter = new Parameter(function.definition, "_this");
-                thisParameter.astFilePath = function.getFilePath(); // we set the function coordinates
-                thisParameter.astLine = function.getLineNumber();
-                thisParameter.astColumn = function.getColumnNumber();
+                if (!function.definition.isStatic) {
+                    // we syntheticaly add the `_this` parameter to the function pointing to the class.
+                    Parameter thisParameter = new Parameter(function.definition, "_this");
+                    thisParameter.astFilePath = function.getFilePath(); // we set the function coordinates
+                    thisParameter.astLine = function.getLineNumber();
+                    thisParameter.astColumn = function.getColumnNumber();
 
-                function.definition.parameters.add(0, thisParameter);
-                // FIXME: check for existing `_this` parameters.
+                    function.definition.parameters.add(0, thisParameter);
+                    // FIXME: check for existing `_this` parameters.
+                }
 
                 SymbolSearch.uniqueSymbolNameCheck(clazz, function.definition.name, function);
 

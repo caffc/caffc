@@ -25,8 +25,8 @@ use_alias: AS ID;
 nativeBlock: NATIVE;
 
 function:
-    tags? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
-    tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
+    tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
+    tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
 
 returnType:
   typeTuple |
@@ -284,6 +284,7 @@ NEW: 'new';
 NOT: 'not';
 OR: 'or';
 RETURN: 'return';
+STATIC: 'static';
 TAG: 'tag';
 THROW: 'throw';
 TRY: 'try';
