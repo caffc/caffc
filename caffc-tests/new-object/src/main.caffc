@@ -11,6 +11,10 @@ class A {
     _this.index = index
   }
 
+  static createA(i32 index) -> A {
+    return new A(index)
+  }
+
   hello(i32 index) {
     native {
       printf("hello world from object: %d, a is %d\n", index, _this->index);
@@ -21,7 +25,7 @@ class A {
 }
 
 main() {
-  A a = new A(4)
+  A a = A.createA(4)
   new A(3).hello(4)
 }
 
