@@ -76,6 +76,10 @@ class Rectangle {
     _this.height = height
   }
 
+  static newSquare(u32 width) -> Rectangle {
+    return new Rectangle(width, width)
+  }
+
   area() -> u32 {
     return _this.width * _this.height
   }
