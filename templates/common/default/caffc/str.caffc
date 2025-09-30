@@ -31,6 +31,10 @@ class str {
     return result
   }
 
+  /**
+   * Creates a copy of the bytes until the first nul byte and creates a new `str` instance.
+   * The `ptr` isn't stored internally.
+   */
   static fromPtr(ptr data) -> str {
      u32 stringLen = _strlen(data)
      str result = new str(stringLen + 1)
@@ -52,6 +56,10 @@ class str {
   }
 }
 
+/**
+ * Computes the length of the given string. The same as the normal
+ * C `strlen`, but without the libc dependency.
+ */
 _strlen(ptr data) -> i32 {
   i32 result = 0
 
