@@ -12,3 +12,28 @@
 {% include "gc_stack_frame_unregister.peb" %}
 {%- endif %}
 }
+
+{% if ctx.definition.tags.has("entrypoint") %}
+int main(int argc, char* argv[]) {
+  caffc_str_arr* arr;
+  ptr _caffc_locals[] = { &arr };
+  int i, result;
+
+  atexit(caffc_done);
+  caffc_init();
+
+  _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
+
+  arr = caffc_str_arr_new(argc);
+
+  for (i = 0; i < argc; i++) {
+    caffc_obj_arr_set((caffc_obj_arr*) arr, (i32) i, caffc_str_fromPtr(argv[i]));
+  }
+
+  result = {{ ctx.definition.module }}_{{ ctx.definition.name }}(arr);
+
+  _caffc_stack_frame_unregister(&_caffc_locals);
+
+  return result;
+}
+{% endif %}

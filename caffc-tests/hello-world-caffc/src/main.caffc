@@ -1,0 +1,13 @@
+module main
+
+#entrypoint
+main(str[] args) -> i32 {
+  print("hello world")
+
+  for i32 i = 0; i < args.size(); i += 1 {
+    print(args[i])
+  }
+
+  return 0
+}
+

@@ -62,6 +62,27 @@ log(str what) {
 }
 ```
 
+Your _main_ function must:
+- return `i32`,
+- accept a `str[]` as a single parameter,
+- be annotated with `#entrypoint`
+
+```caffc
+module main
+
+#entrypoint
+main(str[] args) -> i32 {
+  print("hello world")
+
+  for i32 i = 0; i < args.size(); i += 1 {
+    print(args[i])
+  }
+
+  return 0
+}
+
+```
+
 ## Classes
 
 CaffC has classes and objects. They work as you expect
@@ -201,7 +222,7 @@ cannot be resized after creation.
 There's plans to have collection classes for the big three: dict, set and list.
 
 ```caffc
-main() {
+main(str[] args) -> i32 {
   Swag[][] arr = new Swag[2][2]
 
   arr[0][0] = new Swag(0)
@@ -212,6 +233,8 @@ main() {
   print_value(arr[0][1].data) // expect 1
   arr[0][1] = arr[1][0]
   print_value(arr[0][1].data) // expect 2
+
+  return 0
 }
 ```
 
@@ -224,7 +247,8 @@ by the GC.
 There shouldn't be any memory leaks, even if the program exits randomly with `exit(n)`.
 
 ```caffc
-main() -> i32 {
+#entrypoint
+main(str[] args) -> i32 {
   str[] x = new str[2]  // all these are GC now, even if we exit(0) somewhere
 
   x[0] = "abc"
@@ -234,15 +258,6 @@ main() -> i32 {
   print_string(x[1])
 
   return 0
-}
-
-native { // this will be generated in the future
-  int main(int argc, char** argv) {
-    atexit(caffc_done);
-    caffc_init();
-
-    return main_main();
-  }
 }
 ```
 

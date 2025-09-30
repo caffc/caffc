@@ -30,4 +30,37 @@ class str {
 
     return result
   }
+
+  static fromPtr(ptr data) -> str {
+     u32 stringLen = _strlen(data)
+     str result = new str(stringLen + 1)
+
+     native {
+       char* dst = result->_caffc_data;
+       char* src = data;
+
+       while (*src) {
+         *dst = *src;
+         dst++;
+         src++;
+       }
+
+       *dst = 0;
+     }
+
+     return result
+  }
+}
+
+_strlen(ptr data) -> i32 {
+  i32 result = 0
+
+  native {
+    while (*((char*)data)) {
+      result += 1;
+      data = (ptr) (((char*)data) + 1);
+    }
+  }
+
+  return result
 }
