@@ -1,4 +1,4 @@
-version = "0.0.1"
+version = "0.0.2"
 
 subrepo(
   name="gbs",
@@ -9,14 +9,22 @@ subinclude("@gbs//toolchain/java:java.plz")
 subinclude("@gbs//util:util.plz")
 
 ge_java_maven_fatjar(
-  name="caffc-jar",
+  name="caffc.jar",
   maven_jar="target/caffc-*.jar",
+  help="""\
+Fat jar distribution (a runnable jar that includes all its dependencies) for caffc.
+
+This is the preferred way to use `caffc` since it won't have issues with
+reflection, or anything else that GraalVM usually has. All the integration
+tests as well are ran against this jar.
+"""
 )
 
 ge_java_native_binary(
   name="caffc",
-  deps=[":caffc-jar"],
+  deps=[":caffc.jar"],
   out="caffc",
+  help="caffc native binary (native via graalvm)"
 )
 
 filegroup(
@@ -25,27 +33,33 @@ filegroup(
 )
 
 ge_genrule(
-  name="caffc-native-tgz",
-  cmd=f"""
+  name="caffc-native.tgz",
+  cmd=dedent(f"""\
     mkdir -p target/bin
     cp $(location :caffc) target/bin
     cp -R src/main/templates target/
 
     cd target
     tar -zcf ../caffc-native-{version}.tar.gz .
-  """,
+  """),
   out=f"caffc-native-{version}.tar.gz",
   deps=[":caffc", ":templates"],
+  help=dedent("""\
+    caffc compiler + templates - native binary tgz release
+  """),
 )
 
 filegroup(
   name="java-launcher",
   srcs=["bin/caffc"],
+  #    help=dedent("""\  # I need a ge_filegroup to support help
+  #      For the Java version, this is the launcher that allows us to call `caffc` in the command line.
+  #    """),
 )
 
 ge_genrule(
-  name="caffc-java-tgz",
-  cmd=f"""
+  name="caffc-java.tgz",
+  cmd=dedent(f"""\
     mkdir -p target/bin
     cp $(location :caffc-jar) target/bin
     cp bin/caffc target/bin
@@ -53,7 +67,10 @@ ge_genrule(
 
     cd target
     tar -zcf ../caffc-java-{version}.tar.gz .
-  """,
+  """),
   out=f"caffc-java-{version}.tar.gz",
-  deps=[":caffc-jar", ":java-launcher", ":templates"],
+  deps=[":caffc.jar", ":java-launcher", ":templates"],
+  help=dedent("""\
+    caffc compiler + templates - java fatjar tgz release
+  """),
 )
