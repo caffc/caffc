@@ -39,9 +39,3 @@ create_string_from_ptr(ptr data) -> str {
   return result
 }
 
-
-print(str name) {
-  native {
-    printf("%s\n", name->_caffc_data);
-  }
-}

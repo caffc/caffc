@@ -31,14 +31,3 @@ main() {
   print_value(arr[0][1].data) // expect 2
 }
 
-native {
-  int main(int argc, char* argv[]) {
-    atexit(caffc_done);
-    caffc_init();
-
-    main_main();
-
-    return 0;
-  }
-}
-

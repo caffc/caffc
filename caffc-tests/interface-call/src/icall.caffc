@@ -1,9 +1,5 @@
 module main
 
-native {
-  #include <stdio.h>
-}
-
 interface I {
   x() -> str
 }
@@ -31,21 +27,4 @@ main() {
 
   print(a.x())
   print(b.x())
-}
-
-print(str what) {
-  native {
-    printf("%s\n", what->_caffc_data);
-  }
-}
-
-native {
-  int main(int argc, char** argv) {
-    atexit(caffc_done);
-    caffc_init();
-
-    main_main();
-
-    return 0;
-  }
 }

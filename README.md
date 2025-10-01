@@ -62,15 +62,11 @@ log(str what) {
 }
 ```
 
-Your _main_ function must:
-- return `i32`,
-- accept a `str[]` as a single parameter,
-- be annotated with `#entrypoint`
+Here's a basic hello world example:
 
 ```caffc
 module main
 
-#entrypoint
 main(str[] args) -> i32 {
   print("hello world")
 
@@ -80,7 +76,6 @@ main(str[] args) -> i32 {
 
   return 0
 }
-
 ```
 
 ## Classes
@@ -247,7 +242,6 @@ by the GC.
 There shouldn't be any memory leaks, even if the program exits randomly with `exit(n)`.
 
 ```caffc
-#entrypoint
 main(str[] args) -> i32 {
   str[] x = new str[2]  // all these are GC now, even if we exit(0) somewhere
 

@@ -9,13 +9,3 @@ main() {
     printf("hello world from a native block\n");
   }
 }
-
-native {
-  int main(int argc, char* argv[]) {
-    atexit(caffc_done);
-    caffc_init();
-
-    main_main();
-    return 0;
-  }
-}

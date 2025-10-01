@@ -6,7 +6,11 @@ CURDIR=$(readlink -f "$(dirname "$0")")
 run_single_test() {
     local test_folder=$1
 
+    echo "#########"
+    echo "#########"
     echo "######### $test_folder"
+    echo "#########"
+    echo "#########"
     cd $test_folder
     ./make.sh
     target/main

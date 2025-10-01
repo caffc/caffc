@@ -29,14 +29,3 @@ main() {
   new A(3).hello(4)
 }
 
-native {
-  int main(int argc, const char* argv[]) {
-    atexit(caffc_done);
-    caffc_init();
-
-    main_main();
-
-    return 0;
-  }
-}
-
