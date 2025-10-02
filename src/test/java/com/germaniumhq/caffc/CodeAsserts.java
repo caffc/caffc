@@ -101,6 +101,7 @@ public class CodeAsserts {
         allUnits.addAll(Arrays.asList(testUnits));
         allUnits.addAll(caffcFeature("common", "default"));
         allUnits.addAll(caffcFeature("gc", "test"));
+        allUnits.addAll(caffcFeature("string", "default"));
 
         return compileCaffcProgram(template, unit, allUnits.toArray(new TestUnit[0]));
     }

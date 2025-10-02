@@ -44,7 +44,7 @@ public class MainApp {
 
     public void mainRun(String[] args) throws IOException {
         BuildConfig buildConfig = ArgumentsParser.parse(args);
-        String[] features = {"common", "gc"};
+        String[] features = {"common", "gc", "string"};
 
         if (buildConfig.getInputSources().isEmpty()) {
             reportError("no sources passed for the build");
