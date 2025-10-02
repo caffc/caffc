@@ -4,8 +4,7 @@ test_add() {
   str a = "hello "
   str b = "world!"
 
-  print(a.add(b))
-  // FIXME: use assert
+  assertEqual("hello world!", a.add(b), "string concatenation should work")
 }
 
 test_slice() {
@@ -13,11 +12,10 @@ test_slice() {
   str h = "hello.exe"
   //      -987654321
 
-  print(h.slice(0, 0))
-  print(h.slice(-3, 0))
-  print(h.slice(1, -4))
-  print(h.slice(1, 5))
-  // FIXME: use assert
+  assertEqual("hello.exe", h.slice(0, 0), "a full slice should return the full string")
+  assertEqual("exe", h.slice(-3, 0), "a slice can start from the end of the string using negative indexes")
+  assertEqual("ello", h.slice(1, -4), "a slice can start from the left, and end at the end")
+  assertEqual("ello", h.slice(1, 5), "a slice can be a regular index slice")
 }
 
 main() {

@@ -13,7 +13,7 @@ _caffc_str_size(i32 size) -> i32 {
 /**
  * A basic string.
  */
-#caffc_array("u8")
+#public #caffc_array("u8")
 class str {
   i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
 
@@ -29,6 +29,7 @@ class str {
    * Creates a copy of the bytes until the first nul byte and creates a new `str` instance.
    * The `ptr` reference isn't stored internally, and a copy of the string will be made.
    */
+  #public
   static fromPtr(ptr data) -> str {
      u32 stringLen = _strlen(data)
      str result = new str(stringLen + 1)
@@ -61,6 +62,7 @@ class str {
       caffc_memcpy(result->_caffc_data, _this->_caffc_data, _this->_byte_length - 1);
       caffc_memcpy(result->_caffc_data + _this->_byte_length - 1,
                    other->_caffc_data, other->_byte_length);
+      result->_caffc_data[result->_byte_length - 1] = 0;
     }
 
     return result
@@ -132,6 +134,25 @@ class str {
   #public
   size() -> i32 {
     return _this._byte_length
+  }
+
+  #public
+  equals(str other) -> bool {
+    if not other {
+      return 0
+    }
+
+    if _this.size() != other.size() {
+      return 0
+    }
+
+    for i32 i = 0; i < _this.size(); i += 1 {
+      if _this.get(i) != other.get(i) {
+        return 0
+      }
+    }
+
+    return 1
   }
 }
 

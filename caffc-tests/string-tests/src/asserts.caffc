@@ -1,5 +1,13 @@
 module main
 
+assertEqual(str expected, str test, str message) {
+  if not expected.equals(test) {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}
+
 assertTrue(bool what, str message) {
   if not what {
     print("assertion failed!")
