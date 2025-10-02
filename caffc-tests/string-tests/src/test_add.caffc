@@ -1,8 +1,26 @@
 module main
 
-main() {
+test_add() {
   str a = "hello "
   str b = "world!"
 
   print(a.add(b))
+  // FIXME: use assert
+}
+
+test_slice() {
+  //       012345678
+  str h = "hello.exe"
+  //      -987654321
+
+  print(h.slice(0, 0))
+  print(h.slice(-3, 0))
+  print(h.slice(1, -4))
+  print(h.slice(1, 5))
+  // FIXME: use assert
+}
+
+main() {
+  test_add()
+  test_slice()
 }

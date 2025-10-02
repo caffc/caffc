@@ -18,12 +18,16 @@ class str {
   i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
 
   constructor(i32 size) {
+    if size <= 0 {
+      raise("invalid string size.")
+    }
+
     _this._byte_length = size
   }
 
   /**
    * Creates a copy of the bytes until the first nul byte and creates a new `str` instance.
-   * The `ptr` isn't stored internally.
+   * The `ptr` reference isn't stored internally, and a copy of the string will be made.
    */
   static fromPtr(ptr data) -> str {
      u32 stringLen = _strlen(data)
@@ -64,21 +68,46 @@ class str {
 
   /**
    * Slices the current `str` into a new `str`. `start` and `end` positions are
-   * character indexes.
+   * character indexes (they can be negative). `0` for the `end_index` means
+   * `_this.size()`
    */
   #public
   slice(i32 start_index, i32 end_index) -> str {
-  }
+      if start_index < 0 {
+        start_index = (i32) _this._byte_length + start_index - 1
+      }
 
-  starts_with(str other) -> bool {
-  }
+      if (u32) start_index >= (u32) _this._byte_length {
+        raise("start_index out of bounds")
+      }
 
-  ends_with(str other) -> bool {
+      if end_index <= 0 {
+        end_index = (i32) _this._byte_length + end_index - 1
+      }
+
+      if (u32) end_index > (u32) _this._byte_length {
+        raise("end_index out of bounds")
+      }
+
+      if start_index > end_index {
+        raise("start_index > end_index")
+      }
+
+      str result = new str(end_index - start_index + 1)
+
+      native {
+        caffc_memcpy(result->_caffc_data,
+                     _this->_caffc_data + start_index, result->_byte_length - 1);
+        result->_caffc_data[result->_byte_length - 1] = 0;
+      }
+
+      return result
   }
 
   /**
    * Returns the character at the given character position.
    */
+  #public
   get(i32 index) -> u32 {
     if index < 0 {
       index = (i32) _this._byte_length + index
@@ -98,23 +127,9 @@ class str {
   }
 
   /**
-   * Returns the byte at the given byte position. Note, that since can be
-   * _inside_ a multi-byte character.
+   * Returns the size of this string in _characters_.
    */
-  byte_at(i32 index) -> u8 {
-    if (u32) index >= (u32) _this._byte_length {
-      raise("index out of bounds")
-    }
-
-    u8 result
-
-    native {
-      result = _this->_caffc_data[index];
-    }
-
-    return result
-  }
-
+  #public
   size() -> i32 {
     return _this._byte_length
   }
