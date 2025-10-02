@@ -1,0 +1,17 @@
+module caffc
+
+/**
+ * Exit the application with a return code.
+ */
+exit(i32 code) {
+  native {
+    exit(code);
+  }
+}
+
+raise(str e) {
+  print("exception: ")
+  print(e)
+
+  exit(1)
+}

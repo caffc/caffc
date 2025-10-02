@@ -119,7 +119,9 @@ public class Program implements ModuleProvider, AstItem, Scope {
     private StringConstant newStringConstant(String it) {
         StringConstant stringConstant = new StringConstant();
 
-        byte[] bytes = it.getBytes(StandardCharsets.UTF_8);
+        // removes the surrounding quotes
+        byte[] bytes = it.substring(1, it.length() - 1)
+                .getBytes(StandardCharsets.UTF_8);
         stringConstant.name = "caffc_cstr_" + bytesToHex(sha256Digest.digest(bytes));
         stringConstant.value = it;
         stringConstant.bytesSize = bytes.length + 1; // we add the null terminator

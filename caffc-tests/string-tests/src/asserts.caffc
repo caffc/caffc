@@ -1,0 +1,9 @@
+module main
+
+assertTrue(bool what, str message) {
+  if not what {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}

@@ -1,0 +1,154 @@
+module caffc
+
+_caffc_str_size(i32 size) -> i32 {
+  i32 result
+
+  native {
+    result = (i32) (sizeof(u8) * size + sizeof(caffc_str));
+  }
+
+  return result
+}
+
+/**
+ * A basic string.
+ */
+#caffc_array("u8")
+class str {
+  i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
+
+  constructor(i32 size) {
+    _this._byte_length = size
+  }
+
+  /**
+   * Creates a copy of the bytes until the first nul byte and creates a new `str` instance.
+   * The `ptr` isn't stored internally.
+   */
+  static fromPtr(ptr data) -> str {
+     u32 stringLen = _strlen(data)
+     str result = new str(stringLen + 1)
+
+     native {
+       char* dst = result->_caffc_data;
+       char* src = data;
+
+       while (*src) {
+         *dst = *src;
+         dst++;
+         src++;
+       }
+
+       *dst = 0;
+     }
+
+     return result
+  }
+
+  /**
+   * Concatenates the current `str`, with the other `str`, into a new `str`
+   * instance.
+   */
+  #public
+  add(str other) -> str {
+    str result = new str(_this._byte_length + other._byte_length - 1)
+
+    native {
+      caffc_memcpy(result->_caffc_data, _this->_caffc_data, _this->_byte_length - 1);
+      caffc_memcpy(result->_caffc_data + _this->_byte_length - 1,
+                   other->_caffc_data, other->_byte_length);
+    }
+
+    return result
+  }
+
+  /**
+   * Slices the current `str` into a new `str`. `start` and `end` positions are
+   * character indexes.
+   */
+  #public
+  slice(i32 start_index, i32 end_index) -> str {
+  }
+
+  starts_with(str other) -> bool {
+  }
+
+  ends_with(str other) -> bool {
+  }
+
+  /**
+   * Returns the character at the given character position.
+   */
+  get(i32 index) -> u32 {
+    if index < 0 {
+      index = (i32) _this._byte_length + index
+    }
+
+    if (u32) index >= (u32) _this._byte_length {
+      raise("index out of bounds")
+    }
+
+    u32 result
+
+    native {
+      result = (u32) _this->_caffc_data[index];
+    }
+
+    return result
+  }
+
+  /**
+   * Returns the byte at the given byte position. Note, that since can be
+   * _inside_ a multi-byte character.
+   */
+  byte_at(i32 index) -> u8 {
+    if (u32) index >= (u32) _this._byte_length {
+      raise("index out of bounds")
+    }
+
+    u8 result
+
+    native {
+      result = _this->_caffc_data[index];
+    }
+
+    return result
+  }
+
+  size() -> i32 {
+    return _this._byte_length
+  }
+}
+
+native {
+  /**
+   * memcpy() with CaffC semantics, without a dependency on libC
+   */
+  void caffc_memcpy(ptr dest, ptr src, i32 size) {
+    u8* destPtr = (u8*) dest;
+    u8* srcPtr = (u8*) src;
+    i32 i;
+
+    for (i = 0; i < size; i++) {
+      destPtr[i] = srcPtr[i];
+    }
+  }
+}
+
+/**
+ * Computes the length of the given string. The same as the normal
+ * C `strlen`, but without the libc dependency.
+ */
+_strlen(ptr data) -> i32 {
+  i32 result = 0
+
+  native {
+    while (*((char*)data)) {
+      result += 1;
+      data = (ptr) (((char*)data) + 1);
+    }
+  }
+
+  return result
+}
+

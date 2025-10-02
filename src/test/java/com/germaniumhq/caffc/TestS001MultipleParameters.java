@@ -34,7 +34,7 @@ public class TestS001MultipleParameters {
                 """)}
         );
 
-        assertCodeContains(code, "errors |= caffc_check(&caffc_cstr_e1b1d547ae11d7c203332cd71cabcb900870220c714a790594f4676fef5e5557, 1, i8size);",
+        assertCodeContains(code, "errors |= caffc_check(&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);",
                 "calling functions with multiple parameters should work fine");
         assertCodeContains(code, "u32 caffc_check(caffc_str* typeName, u32 expectedSize, u32 actualSize) {",
                 "declaring functions with multiple parameters should work fine");

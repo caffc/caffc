@@ -1,0 +1,8 @@
+module main
+
+main() {
+  str a = "hello "
+  str b = "world!"
+
+  print(a.add(b))
+}

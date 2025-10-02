@@ -29,7 +29,7 @@ public class TestS003String {
                                         """)
                 });
 
-        CodeAsserts.assertCodeContains(code, "x = &caffc_cstr_6292db02441c2d7b7ab6960d0bff928b834ec69a20f13626e8ccbd39ef95a6f8;",
+        CodeAsserts.assertCodeContains(code, "x = &caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;",
                 "string constants aren't generated correctly.");
     }
 
@@ -59,10 +59,10 @@ public class TestS003String {
 
         CodeAsserts.assertCodeContains(code,
                 """
-                caffc_str caffc_cstr_6292db02441c2d7b7ab6960d0bff928b834ec69a20f13626e8ccbd39ef95a6f8 = {
+                caffc_str caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9 = {
                     /* _caffc_class_header */ &caffc_str_type,
                     /* _caffc_flags */ 0,
-                    /* size */ 15,
+                    /* size */ 13,
                     "hello world!",
                 };
                 """,
@@ -94,7 +94,7 @@ public class TestS003String {
                 });
 
         CodeAsserts.assertCodeContains(code,
-                "caffc_str caffc_cstr_6292db02441c2d7b7ab6960d0bff928b834ec69a20f13626e8ccbd39ef95a6f8;",
+                "extern caffc_str caffc_cstr_ce2cddbe5f7f742d1630540ee17299cd33ff3866e5da666952ebff45fdfaa72a;",
                 "string constants aren't generated correctly.");
     }
 }
