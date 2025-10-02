@@ -31,6 +31,37 @@ public class TestS050Expressions {
     }
 
     @Test
+    public void testCast() {
+        String code = CodeAsserts.compileFullCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                        new TestUnit("a/a.caffc",
+                                """
+                                        module main
+
+                                        interface A {}
+                                        class B implements A {}
+
+                                        main() -> i32 {
+                                          // primitive cast
+                                          u32 x = (u32) 3_u64
+
+                                          // objects cast
+                                          A a = new B()
+                                          B b = (B) a
+                                        }
+                                        """)
+                }
+        );
+
+        CodeAsserts.assertCodeContains(code, "x = (u32) 3;",
+                "primitive casting should translate into the generated code");
+        CodeAsserts.assertCodeContains(code, "b = (main_B*) a;",
+                "object casting should translate into the generated code");
+    }
+
+    @Test
     public void testBoolNot() {
         String code = CodeAsserts.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",

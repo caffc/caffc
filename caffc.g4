@@ -141,13 +141,14 @@ expression:
   NUMBER                                                                                           # ExNumber
   | STRING                                                                                         # ExString
   | ID                                                                                             # ExId
-  | '(' expression ')'                                                                             # ExParens
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
   | NEW newType '(' expressionTuple? ')'                                                           # ExNewObject
   | NEW newType ('[' expression ']')+                                                              # ExNewArray
   | expression genericsInstantiations? '(' expressionTuple? ')'                                    # ExFnCall
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
+  | '(' typeName ')' expression                                                                    # ExCast
+  | '(' expression ')'                                                                             # ExParens
   | ('!'|NOT) expression                                                                           # ExBoolNot
   | '~' expression                                                                                 # ExBitNot
   | '-' expression                                                                                 # ExUnaryMinus

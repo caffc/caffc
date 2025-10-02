@@ -41,10 +41,15 @@ public class Render implements Filter {
             "caffc/template/" + templateName,
                 PebbleTemplater.createRenderContext(o, evaluationContext));
 
-//         FIXME: implement as debug flag
-//         result = extractName(templateName) + "«" + result + "»";
+        if (isCaffcDebugTemplates()) {
+            result = extractName(templateName) + ":«" + result + "»";
+        }
 
         return result;
+    }
+
+    private boolean isCaffcDebugTemplates() {
+        return System.getenv("CAFFC_DEBUG_TEMPLATES") != null;
     }
 
     private String extractName(String templateName) {

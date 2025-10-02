@@ -10,6 +10,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolOperation;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionCast;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
@@ -98,6 +99,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(ExpressionNewArray.class, "c/expression/new_array.peb")
                 .withMapping(ExpressionFnCall.class, "c/expression/fn_call.peb")
                 .withMapping(ExpressionIndexAccess.class, "c/expression/index_access.peb")
+                .withMapping(ExpressionCast.class, "c/expression/cast.peb")
                 .withMapping(ExpressionBoolNot.class, "c/expression/bool_not.peb")
                 .withMapping(ExpressionBitNot.class, "c/expression/bit_not.peb")
                 .withMapping(ExpressionUnaryMinus.class, "c/expression/unary_minus.peb")

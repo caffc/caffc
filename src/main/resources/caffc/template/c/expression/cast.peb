@@ -1,0 +1,1 @@
+({{ ctx.castType | c_type }}) {{ ctx.expression | render }}

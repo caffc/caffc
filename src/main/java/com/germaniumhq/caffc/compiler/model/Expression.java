@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolOperation;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionCast;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
@@ -44,10 +45,6 @@ public interface Expression extends Statement {
             return ExpressionId.fromAntlr(unit, owner, idExpression);
         }
 
-        if (expression instanceof caffcParser.ExParensContext parensContext) {
-            return ExpressionParens.fromAntlr(unit, owner, parensContext);
-        }
-
         if (expression instanceof caffcParser.ExDotAccessContext dotAccessExpression) {
             return ExpressionDotAccess.fromAntlr(unit, owner, dotAccessExpression);
         }
@@ -66,6 +63,14 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExIndexAccessContext indexAccessExpression) {
             return ExpressionIndexAccess.fromAntlr(unit, owner, indexAccessExpression);
+        }
+
+        if (expression instanceof caffcParser.ExCastContext castContext) {
+            return ExpressionCast.fromAntlr(unit, owner, castContext);
+        }
+
+        if (expression instanceof caffcParser.ExParensContext parensContext) {
+            return ExpressionParens.fromAntlr(unit, owner, parensContext);
         }
 
         if (expression instanceof caffcParser.ExBoolNotContext boolNotContext) {
