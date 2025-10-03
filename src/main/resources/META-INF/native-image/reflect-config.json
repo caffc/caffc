@@ -270,6 +270,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExUnaryMinusContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$FunctionContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -444,6 +450,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExCastContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$FqdnContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -612,6 +624,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ParameterDefinitionsContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$TypeNameContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -768,6 +786,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionCast",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -864,6 +888,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -877,6 +907,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionMath",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
