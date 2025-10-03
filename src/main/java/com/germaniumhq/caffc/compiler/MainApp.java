@@ -130,10 +130,9 @@ public class MainApp {
                 buildConfig.getTemplatesFolder(), feature, selectedOption);
         File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
 
+        // it's ok not to have C sources
         if (!cFilesFolder.isDirectory()) {
-            CaffcCompiler.get().fatal(
-                    AstItem.fromFilePath(cFilesFolderString),
-                    "c templates is not a directory: " + cFilesFolder);
+            return;
         }
 
         for (String file: cFilesFolder.list()) {
