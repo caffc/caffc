@@ -18,7 +18,18 @@ test_slice() {
   assertEqual("ello", h.slice(1, 5), "a slice can be a regular index slice")
 }
 
+test_indexOf() {
+  str h = "hello world"
+
+  assertTrue(h.indexOf("llo") == 2, "invalid index returned by indexOf")
+  assertTrue(h.indexOf("") == 0, "invalid index returned by indexOf")
+  assertTrue(h.indexOf("hel") == 0, "invalid index returned by indexOf")
+  assertTrue(h.indexOf("rld") == 8, "invalid index returned by indexOf")
+}
+
 main() {
   test_add()
   test_slice()
+  test_indexOf()
+  print("all good")
 }

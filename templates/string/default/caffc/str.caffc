@@ -11,7 +11,7 @@ _caffc_str_size(i32 size) -> i32 {
 }
 
 /**
- * A basic string.
+ * A basic string. This implementation only holds ASCII strings.
  */
 #public #caffc_array("u8")
 class str {
@@ -56,13 +56,16 @@ class str {
    */
   #public
   add(str other) -> str {
+    if not other {
+      raise("illegal null argument")
+    }
+
     str result = new str(_this._byte_length + other._byte_length - 1)
 
     native {
       caffc_memcpy(result->_caffc_data, _this->_caffc_data, _this->_byte_length - 1);
       caffc_memcpy(result->_caffc_data + _this->_byte_length - 1,
-                   other->_caffc_data, other->_byte_length);
-      result->_caffc_data[result->_byte_length - 1] = 0;
+                   other->_caffc_data, other->_byte_length); // this copies also the nul byte
     }
 
     return result
@@ -129,13 +132,17 @@ class str {
   }
 
   /**
-   * Returns the size of this string in _characters_.
+   * Returns the size of this string in _characters_. It excludes the nul byte,
+   * since it's not relevant.
    */
   #public
   size() -> i32 {
-    return _this._byte_length
+    return _this._byte_length - 1
   }
 
+  /**
+   * Checks if the current string is exactly the same as the other string.
+   */
   #public
   equals(str other) -> bool {
     if not other {
@@ -153,6 +160,44 @@ class str {
     }
 
     return 1
+  }
+
+  /**
+   * Returns the index of another string inside the current string if it exists,
+   * or `-1` if it doesn't exists.
+   */
+  indexOf(str other) -> i32 {
+    if not other {
+      raise("illegal null argument")
+    }
+
+    i32 thisLength = _this.size()
+    i32 otherLength = other.size()
+
+    if (otherLength == 0) {
+      return 0
+    }
+
+    if (thisLength < otherLength) {
+      return -1
+    }
+
+    for i32 i = 0; i <= thisLength - otherLength; i += 1 {
+      bool match = 1
+
+      for i32 j = 0; j < otherLength; j += 1 {
+        if _this.get(i + j) != other.get(j) {
+          match = 0
+          break
+        }
+      }
+
+      if (match) {
+        return i
+      }
+    }
+
+    return -1
   }
 }
 
