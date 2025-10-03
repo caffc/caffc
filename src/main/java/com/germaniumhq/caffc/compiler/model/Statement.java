@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
+import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
@@ -31,6 +32,10 @@ public interface Statement extends AstItem {
 
         if (antlrStatement.forBlock() != null) {
             return ForInstruction.fromAntlr(unit, owner, antlrStatement.forBlock());
+        }
+
+        if (antlrStatement.controlFlow() != null) {
+            return ControlFlowInstruction.fromAntlr(unit, owner, antlrStatement.controlFlow());
         }
 
         CaffcCompiler.get().fatal(

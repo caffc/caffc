@@ -2,4 +2,8 @@ if ({{ ctx.checkExpression | render }}) {
 {%- for statement in ctx.statements %}
 {{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
 {%- endfor %}
-}
+}{% if ctx.elseStatements is not null %} else {
+{%- for statement in ctx.elseStatements %}
+{{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+{%- endfor %}
+}{% endif %}

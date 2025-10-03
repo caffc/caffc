@@ -93,8 +93,8 @@ block: '{' statement* '}';
 
 whileBlock: WHILE expression block;
 forBlock: FOR (initExpression=expression|variableDeclarations) ';' conditionExpression=expression ';' incrementExpression=expression block;
-ifBlock: IF expression (block|return|controlFlow) |
-  IF expression block ELSE block;
+ifBlock: IF expression (trueBlock=block|return|controlFlow) |
+  IF expression trueBlock=block ELSE falseBlock=block;
 tryCatchBlock: TRY block (CATCH '(' classType ID ')')? (FINALLY block)?;
 
 return:

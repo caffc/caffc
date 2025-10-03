@@ -28,6 +28,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
+import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
@@ -86,6 +87,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(ForInstruction.class, "c/instruction/for.peb")
                 .withMapping(NativeBlock.class, "c/instruction/native.peb")
                 .withMapping(ReturnInstruction.class, "c/instruction/return.peb")
+                .withMapping(ControlFlowInstruction.class, "c/expression/control.peb")
                 .withMapping(VariableDeclarations.class, "c/expression/variable_declaration.peb")
 
                 // expressions

@@ -3,4 +3,4 @@ _caffc_stack_frame_unregister(&_caffc_locals);
 {%- else %}
 _caffc_stack_frame_unregister(null);
 {%- endif %}
-return {{ ctx.value | render }}
+return{% if ctx.value is not null %} {{ ctx.value | render }}{%  endif %}

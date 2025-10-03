@@ -1750,21 +1750,23 @@ public class caffcParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class IfBlockContext extends ParserRuleContext {
+		public BlockContext trueBlock;
+		public BlockContext falseBlock;
 		public TerminalNode IF() { return getToken(caffcParser.IF, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
-		}
-		public List<BlockContext> block() {
-			return getRuleContexts(BlockContext.class);
-		}
-		public BlockContext block(int i) {
-			return getRuleContext(BlockContext.class,i);
 		}
 		public ReturnContext return_() {
 			return getRuleContext(ReturnContext.class,0);
 		}
 		public ControlFlowContext controlFlow() {
 			return getRuleContext(ControlFlowContext.class,0);
+		}
+		public List<BlockContext> block() {
+			return getRuleContexts(BlockContext.class);
+		}
+		public BlockContext block(int i) {
+			return getRuleContext(BlockContext.class,i);
 		}
 		public TerminalNode ELSE() { return getToken(caffcParser.ELSE, 0); }
 		public IfBlockContext(ParserRuleContext parent, int invokingState) {
@@ -1793,7 +1795,7 @@ public class caffcParser extends Parser {
 				case T__4:
 					{
 					setState(354);
-					block();
+					((IfBlockContext)_localctx).trueBlock = block();
 					}
 					break;
 				case RETURN:
@@ -1823,11 +1825,11 @@ public class caffcParser extends Parser {
 				setState(360);
 				expression(0);
 				setState(361);
-				block();
+				((IfBlockContext)_localctx).trueBlock = block();
 				setState(362);
 				match(ELSE);
 				setState(363);
-				block();
+				((IfBlockContext)_localctx).falseBlock = block();
 				}
 				break;
 			}
@@ -2926,7 +2928,7 @@ public class caffcParser extends Parser {
 				match(NEW);
 				setState(472);
 				newType(0);
-				setState(477);
+				setState(477); 
 				_errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -2946,7 +2948,7 @@ public class caffcParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					setState(479);
+					setState(479); 
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,61,_ctx);
 				} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -3692,7 +3694,7 @@ public class caffcParser extends Parser {
 					pushNewRecursionContext(_localctx, _startState, RULE_typeName);
 					setState(605);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(608);
+					setState(608); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -3710,7 +3712,7 @@ public class caffcParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(610);
+						setState(610); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,74,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -3833,7 +3835,7 @@ public class caffcParser extends Parser {
 					pushNewRecursionContext(_localctx, _startState, RULE_newType);
 					setState(622);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(625);
+					setState(625); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -3851,7 +3853,7 @@ public class caffcParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(627);
+						setState(627); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,77,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
