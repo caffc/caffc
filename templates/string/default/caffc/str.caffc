@@ -161,6 +161,7 @@ class str {
    * Returns the index of another string inside the current string if it exists,
    * or `-1` if it doesn't exists.
    */
+  #public
   indexOf(str needle) -> i32 {
     if not needle {
       raise("illegal null argument")
@@ -171,6 +172,24 @@ class str {
     native {
       result = caffc_index_of(_this->_caffc_data, _this->_byte_length - 1,
                               needle->_caffc_data, needle->_byte_length - 1);
+    }
+
+    return result
+  }
+
+  /**
+   * Compares a string to another string for ordering purposes.
+   */
+  #public
+  compareTo(str other) -> i32 {
+    if not other {
+      raise("illegal null argument")
+    }
+
+    i32 result
+
+    native {
+      result = caffc_strcmp(_this->_caffc_data, other->_caffc_data);
     }
 
     return result
