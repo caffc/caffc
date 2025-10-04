@@ -14,8 +14,7 @@ class File {
 }
 
 add_item_to_list(ArrayList<File> list, ptr path) {
-  str s = create_string_from_ptr(path)
-  list.add(new File(s))
+  list.add(new File(str.fromPtr(path)))
 }
 
 list_files(str path) -> ArrayList<File> {

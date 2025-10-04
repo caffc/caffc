@@ -31,17 +31,17 @@ class str {
    */
   #public
   static fromPtr(ptr data) -> str {
-     u32 stringLen
+     u32 byte_length
      str result
 
      native {
-       stringLen = caffc_strlen(data);
+       byte_length = caffc_strlen(data) + 1;
      }
 
-     result = new str(stringLen + 1)
+     result = new str(byte_length)
 
      native {
-       caffc_memcpy(result->_caffc_data, data, result);
+       caffc_memcpy(result->_caffc_data, data, byte_length);
      }
 
      return result
