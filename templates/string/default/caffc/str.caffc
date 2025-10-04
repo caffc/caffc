@@ -31,20 +31,17 @@ class str {
    */
   #public
   static fromPtr(ptr data) -> str {
-     u32 stringLen = _strlen(data)
-     str result = new str(stringLen + 1)
+     u32 stringLen
+     str result
 
      native {
-       char* dst = result->_caffc_data;
-       char* src = data;
+       stringLen = caffc_strlen(data);
+     }
 
-       while (*src) {
-         *dst = *src;
-         dst++;
-         src++;
-       }
+     result = new str(stringLen + 1)
 
-       *dst = 0;
+     native {
+       caffc_memcpy(result->_caffc_data, data, result);
      }
 
      return result
@@ -214,22 +211,18 @@ native {
       destPtr[i] = srcPtr[i];
     }
   }
-}
 
-/**
- * Computes the length of the given string. The same as the normal
- * C `strlen`, but without the libc dependency.
- */
-_strlen(ptr data) -> i32 {
-  i32 result = 0
+  /**
+   * strlen() with CaffC semantics, without a dependency on libC
+   */
+  i32 caffc_strlen(ptr data) {
+    i32 result = 0;
 
-  native {
     while (*((char*)data)) {
       result += 1;
       data = (ptr) (((char*)data) + 1);
     }
+
+    return result;
   }
-
-  return result
 }
-
