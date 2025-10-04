@@ -21,10 +21,10 @@ test_slice() {
 test_indexOf() {
   str h = "hello world"
 
-  assertTrue(h.indexOf("llo") == 2, "invalid index returned by indexOf")
-  assertTrue(h.indexOf("") == 0, "invalid index returned by indexOf")
-  assertTrue(h.indexOf("hel") == 0, "invalid index returned by indexOf")
-  assertTrue(h.indexOf("rld") == 8, "invalid index returned by indexOf")
+  assertTrue(h.indexOf("llo") == 2, "invalid index returned by indexOf 1")
+  assertTrue(h.indexOf("") == 0, "invalid index returned by indexOf 2")
+  assertTrue(h.indexOf("hel") == 0, "invalid index returned by indexOf 3")
+  assertTrue(h.indexOf("rld") == 8, "invalid index returned by indexOf 4")
 }
 
 main() {

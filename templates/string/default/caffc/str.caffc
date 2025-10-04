@@ -142,63 +142,74 @@ class str {
    */
   #public
   equals(str other) -> bool {
-    if not other {
-      return 0
-    }
+    bool result
 
-    if _this.size() != other.size() {
-      return 0
-    }
-
-    for i32 i = 0; i < _this.size(); i += 1 {
-      if _this.get(i) != other.get(i) {
-        return 0
+    native {
+      if (!other) {
+        result = 0;
+      } else if (_this->_byte_length != other->_byte_length) {
+        result = 0;
+      } else {
+        result = caffc_strcmp(_this->_caffc_data, other->_caffc_data) == 0 ? 1 : 0;
       }
     }
 
-    return 1
+    return result
   }
 
   /**
    * Returns the index of another string inside the current string if it exists,
    * or `-1` if it doesn't exists.
    */
-  indexOf(str other) -> i32 {
-    if not other {
+  indexOf(str needle) -> i32 {
+    if not needle {
       raise("illegal null argument")
     }
 
-    i32 thisLength = _this.size()
-    i32 otherLength = other.size()
+    i32 result
 
-    if (otherLength == 0) {
-      return 0
+    native {
+      result = caffc_index_of(_this->_caffc_data, _this->_byte_length - 1,
+                              needle->_caffc_data, needle->_byte_length - 1);
     }
 
-    if (thisLength < otherLength) {
-      return -1
-    }
-
-    for i32 i = 0; i <= thisLength - otherLength; i += 1 {
-      bool match = 1
-
-      for i32 j = 0; j < otherLength; j += 1 {
-        if _this.get(i + j) != other.get(j) {
-          match = 0
-          break
-        }
-      }
-
-      if (match) {
-        return i
-      }
-    }
-
-    return -1
+    return result
   }
 }
 
 native {
+  /**
+   * strcmp() with CaffC semantics, without a dependency on libC.
+   */
+  i32 caffc_strcmp(u8* left_string, u8* right_string) {
+    while (*left_string && *right_string && *left_string == *right_string) {
+      left_string++;
+      right_string++;
+    }
+
+    return *left_string - *right_string;
+  }
+
+  /**
+   * indexOf() with CaffC semantics, without a dependency on libC
+   */
+  i32 caffc_index_of(u8* haystack, i32 haystack_len,
+                     u8* needle, i32 needle_len) {
+    i32 i, j;
+
+    if (needle_len == 0) return 0;
+    if (haystack_len < needle_len) return -1;
+
+    for (i = 0; i <= haystack_len - needle_len; ++i) {
+      for (j = 0; j < needle_len; ++j) {
+          if (haystack[i + j] != needle[j]) break;
+      }
+      if (j == needle_len) return i;
+    }
+
+    return -1;
+  }
+
   /**
    * memcpy() with CaffC semantics, without a dependency on libC
    */
