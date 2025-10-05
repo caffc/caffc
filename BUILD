@@ -11,6 +11,7 @@ subinclude("@gbs//util:util.plz")
 ge_java_maven_fatjar(
   name="caffc.jar",
   maven_jar="target/caffc-*.jar",
+  out="caffc.jar",
   help="""\
 Fat jar distribution (a runnable jar that includes all its dependencies) for caffc.
 
@@ -37,7 +38,7 @@ ge_genrule(
   cmd=dedent(f"""\
     mkdir -p target/bin
     cp $(location :caffc) target/bin
-    cp -R src/main/templates target/
+    cp -R ./templates target/
 
     cd target
     tar -zcf ../caffc-native-{version}.tar.gz .
@@ -61,9 +62,9 @@ ge_genrule(
   name="caffc-java.tgz",
   cmd=dedent(f"""\
     mkdir -p target/bin
-    cp $(location :caffc-jar) target/bin
+    cp $(location :caffc.jar) target/bin
     cp bin/caffc target/bin
-    cp -R src/main/templates target/
+    cp -R ./templates target/
 
     cd target
     tar -zcf ../caffc-java-{version}.tar.gz .
