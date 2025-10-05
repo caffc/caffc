@@ -11,10 +11,22 @@ class File {
   constructor(str name) {
     _this.name = name
   }
+
+  compareTo(File other) -> i32 {
+    return _this.name.compareTo(other.name)
+  }
 }
 
-add_item_to_list(ArrayList<File> list, ptr path) {
-  list.add(new File(str.fromPtr(path)))
+main() -> i32 {
+  ArrayList<File> files = list_files(".")
+  sort(files)
+
+  for u32 i = 0; i < files.length; i = i + 1 {
+    File f = files.get(i)
+    print(f.name)
+  }
+
+  return 0
 }
 
 list_files(str path) -> ArrayList<File> {
@@ -36,14 +48,27 @@ list_files(str path) -> ArrayList<File> {
   return result
 }
 
-main() -> i32 {
-  ArrayList<File> files = list_files(".")
+add_item_to_list(ArrayList<File> list, ptr path) {
+  str s = str.fromPtr(path)
 
-  for u32 i = 0; i < files.length; i = i + 1 {
-    File f = files.get(i)
-    print(f.name)
+  if (s.indexOf(".") == 0) {
+    return // exclude hidden files
   }
 
-  return 0
+  list.add(new File(s))
 }
+
+sort(ArrayList<File> file_list) -> void {
+    for i32 i = 0; i < file_list.size(); i += 1 {
+        for i32 j = 0; j < file_list.size() - i - 1; j += 1 {
+            File f = file_list.get(j)
+            if f.compareTo(file_list.get(j + 1)) > 0 {
+                File temp = file_list.get(j)
+                file_list.set(j, file_list.get(j + 1))
+                file_list.set(j + 1, temp)
+            }
+        }
+    }
+}
+
 

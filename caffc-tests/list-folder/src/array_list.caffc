@@ -1,6 +1,5 @@
 module main
 
-
 class ArrayList<T> {
   T[] items
   i32 length
@@ -33,5 +32,13 @@ class ArrayList<T> {
    */
   get(i32 index) -> T {
     return _this.items[index]
+  }
+
+  set(i32 index, T value) {
+    _this.items[index] = value
+  }
+
+  size() -> i32 {
+    return _this.length
   }
 }
