@@ -1,9 +1,23 @@
 #ifndef caffc_program_constants
 #define caffc_program_constants
 
+/* Fake structs to allow for C keeping the bytes of the strings serialized
+ * correctly as if they're instantiated with `new str(123)`. C requires them
+ * to do the binary copy at compile time.
+ * WARN: this _must_ match the `caffc_str` struct signature
+ */
+{%- for strStructBytesSize in program.strStructBytesSizes %}
+typedef struct {
+    caffc_class_header* _caffc_class_header;
+    caffc_u8 _caffc_flags; /* FIXME: pack into the header pointer */
+    caffc_i32 _byte_length;
+    caffc_u8 _caffc_data[{{ strStructBytesSize }}];
+} caffc_str_{{ strStructBytesSize }};
+{% endfor %}
+
 /* string constants */
 {% for constant in program.stringConstants %}
-extern caffc_str {{ constant.name }};
+extern caffc_str_{{ constant.bytesSize }} {{ constant.name }};
 {% endfor %}
 
 #endif /* caffc_program_constants */

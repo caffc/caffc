@@ -6,17 +6,14 @@
 
 {%- if ctx.gcVariableCount() > 0 %}
 /* GC managed variables */
-ptr _caffc_locals[] = {
-{%- for param in ctx.objParameters %}
-  &{{ param.name }}{% if not loop.last or not ctx.objVariables.isEmpty() %},{% endif %}
+caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];
+
+{%- for item in ctx.objParametersAndVariables %}
+_caffc_locals[{{ loop.index }}] = &{{ item.name }};
 {%- endfor %}
-{%- for variable in ctx.objVariables %}
-  &{{ variable.name }}{% if not loop.last %},{% endif %}
-{%- endfor %}
-};
 
 _caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});
 
 {%- else %}
-_caffc_stack_frame_register("{{ ctx.name }}", null, 0);
+_caffc_stack_frame_register("{{ ctx.name }}", caffc_null, 0);
 {% endif %}

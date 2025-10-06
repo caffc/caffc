@@ -11,25 +11,25 @@
  * Might move in the future to an optional hash set.
  */
 typedef struct {
-    ptr* data;
-    i32 _capacity;
-    i32 len;
+    caffc_ptr* data;
+    caffc_i32 _capacity;
+    caffc_i32 len;
 } caffc_gc_pointer_set;
 
 /**
  * Constructor.
  */
-void caffc_gc_pointer_set_constructor(caffc_gc_pointer_set* _this, i32 default_capacity);
+void caffc_gc_pointer_set_constructor(caffc_gc_pointer_set* _this, caffc_i32 default_capacity);
 
 /**
  * Add an item into the set. If the item already exists, does nothing.
  */
-void caffc_gc_pointer_set_add(caffc_gc_pointer_set* _this, ptr value);
+void caffc_gc_pointer_set_add(caffc_gc_pointer_set* _this, caffc_ptr value);
 
 /**
  * Pops an item from the set.
  */
-ptr caffc_gc_pointer_set_pop(caffc_gc_pointer_set* _this);
+caffc_ptr caffc_gc_pointer_set_pop(caffc_gc_pointer_set* _this);
 
 /**
  * Destructor that deallocates the used resources.

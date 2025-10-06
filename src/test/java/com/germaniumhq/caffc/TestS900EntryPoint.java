@@ -24,10 +24,12 @@ main(str[] args) -> i32 {
 
         CodeAsserts.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
-  caffc_str_arr* arr;
-  ptr _caffc_locals[] = { &arr };
-  int i;
   int result;
+  caffc_str_arr* arr;
+  caffc_ptr _caffc_locals[1];
+  int i;
+
+  _caffc_locals[0] = &arr;
 
   atexit(caffc_done);
   caffc_init();
@@ -37,7 +39,11 @@ int main(int argc, char* argv[]) {
   arr = caffc_str_arr_new(argc);
 
   for (i = 0; i < argc; i++) {
-    caffc_obj_arr_set((caffc_obj_arr*) arr, (i32) i, caffc_str_fromPtr(argv[i]));
+    caffc_obj_arr_set(
+      (caffc_obj_arr*) arr,
+      (caffc_i32) i,
+      (caffc_obj*) caffc_str_fromPtr(argv[i])
+    );
   }
 
   result = main_main(arr);
@@ -68,8 +74,10 @@ int main(int argc, char* argv[]) {
         CodeAsserts.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
   caffc_str_arr* arr;
-  ptr _caffc_locals[] = { &arr };
+  caffc_ptr _caffc_locals[1];
   int i;
+
+  _caffc_locals[0] = &arr;
 
   atexit(caffc_done);
   caffc_init();
@@ -79,7 +87,11 @@ int main(int argc, char* argv[]) {
   arr = caffc_str_arr_new(argc);
 
   for (i = 0; i < argc; i++) {
-    caffc_obj_arr_set((caffc_obj_arr*) arr, (i32) i, caffc_str_fromPtr(argv[i]));
+    caffc_obj_arr_set(
+      (caffc_obj_arr*) arr,
+      (caffc_i32) i,
+      (caffc_obj*) caffc_str_fromPtr(argv[i])
+    );
   }
 
   main_main(arr);
@@ -115,11 +127,11 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
-  _caffc_stack_frame_register("#entrypoint", null, 0);
+  _caffc_stack_frame_register("#entrypoint", caffc_null, 0);
 
   result = main_main();
 
-  _caffc_stack_frame_unregister(null);
+  _caffc_stack_frame_unregister(caffc_null);
 
   return result;
 }

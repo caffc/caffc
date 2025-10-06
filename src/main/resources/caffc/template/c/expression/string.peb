@@ -1,1 +1,1 @@
-&{{ program.constantName(ctx.constant) }}
+(caffc_str*)&{{ program.constantName(ctx.constant) }}

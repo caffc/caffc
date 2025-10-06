@@ -145,13 +145,13 @@ i = 0;
 while (i < 3) {
 if (i == 1) {
 
-_caffc_stack_frame_unregister(null);
+_caffc_stack_frame_unregister(caffc_null);
 return;
 }
 
 if (i == 2) {
 
-_caffc_stack_frame_unregister(null);
+_caffc_stack_frame_unregister(caffc_null);
 return;
 }
 

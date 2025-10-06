@@ -26,8 +26,12 @@ public class FilterCName implements Filter {
     }
 
     public static String getCType(TypeName t) {
+        if (t.isPrimitive() && t.name.equals("void")) {
+          return t.name;
+        }
+
         if (t.isPrimitive()) {
-            return t.name;
+            return "caffc_" + t.name;
         }
 
         if (t.dataType == DataType.ARRAY) {

@@ -1,10 +1,71 @@
 module caffc
 
+native {
+  /**
+   * strcmp() with CaffC semantics, without a dependency on libC.
+   */
+  caffc_i32 caffc_strcmp(caffc_u8* left_string, caffc_u8* right_string) {
+    while (*left_string && *right_string && *left_string == *right_string) {
+      left_string++;
+      right_string++;
+    }
+
+    return *left_string - *right_string;
+  }
+
+  /**
+   * indexOf() with CaffC semantics, without a dependency on libC
+   */
+  caffc_i32 caffc_index_of(caffc_u8* haystack, caffc_i32 haystack_len,
+                           caffc_u8* needle, caffc_i32 needle_len) {
+    caffc_i32 i, j;
+
+    if (needle_len == 0) return 0;
+    if (haystack_len < needle_len) return -1;
+
+    for (i = 0; i <= haystack_len - needle_len; ++i) {
+      for (j = 0; j < needle_len; ++j) {
+          if (haystack[i + j] != needle[j]) break;
+      }
+      if (j == needle_len) return i;
+    }
+
+    return -1;
+  }
+
+  /**
+   * memcpy() with CaffC semantics, without a dependency on libC
+   */
+  void caffc_memcpy(caffc_ptr dest, caffc_ptr src, caffc_i32 size) {
+    caffc_u8* destPtr = (caffc_u8*) dest;
+    caffc_u8* srcPtr = (caffc_u8*) src;
+    caffc_i32 i;
+
+    for (i = 0; i < size; i++) {
+      destPtr[i] = srcPtr[i];
+    }
+  }
+
+  /**
+   * strlen() with CaffC semantics, without a dependency on libC
+   */
+  caffc_i32 caffc_strlen(caffc_ptr data) {
+    caffc_i32 result = 0;
+
+    while (*((char*)data)) {
+      result += 1;
+      data = (caffc_ptr) (((char*)data) + 1);
+    }
+
+    return result;
+  }
+}
+
 _caffc_str_size(i32 size) -> i32 {
   i32 result
 
   native {
-    result = (i32) (sizeof(u8) * size + sizeof(caffc_str));
+    result = (caffc_i32) (sizeof(caffc_u8) * size + sizeof(caffc_str));
   }
 
   return result
@@ -13,7 +74,7 @@ _caffc_str_size(i32 size) -> i32 {
 /**
  * A basic string. This implementation only holds ASCII strings.
  */
-#public #caffc_array("u8")
+#public #caffc_array("caffc_u8")
 class str {
   i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
 
@@ -62,7 +123,7 @@ class str {
     native {
       caffc_memcpy(result->_caffc_data, _this->_caffc_data, _this->_byte_length - 1);
       caffc_memcpy(result->_caffc_data + _this->_byte_length - 1,
-                   other->_caffc_data, other->_byte_length); // this copies also the nul byte
+                   other->_caffc_data, other->_byte_length); /* this copies also the nul byte */
     }
 
     return result
@@ -122,7 +183,7 @@ class str {
     u32 result
 
     native {
-      result = (u32) _this->_caffc_data[index];
+      result = (caffc_u32) _this->_caffc_data[index];
     }
 
     return result
@@ -193,66 +254,5 @@ class str {
     }
 
     return result
-  }
-}
-
-native {
-  /**
-   * strcmp() with CaffC semantics, without a dependency on libC.
-   */
-  i32 caffc_strcmp(u8* left_string, u8* right_string) {
-    while (*left_string && *right_string && *left_string == *right_string) {
-      left_string++;
-      right_string++;
-    }
-
-    return *left_string - *right_string;
-  }
-
-  /**
-   * indexOf() with CaffC semantics, without a dependency on libC
-   */
-  i32 caffc_index_of(u8* haystack, i32 haystack_len,
-                     u8* needle, i32 needle_len) {
-    i32 i, j;
-
-    if (needle_len == 0) return 0;
-    if (haystack_len < needle_len) return -1;
-
-    for (i = 0; i <= haystack_len - needle_len; ++i) {
-      for (j = 0; j < needle_len; ++j) {
-          if (haystack[i + j] != needle[j]) break;
-      }
-      if (j == needle_len) return i;
-    }
-
-    return -1;
-  }
-
-  /**
-   * memcpy() with CaffC semantics, without a dependency on libC
-   */
-  void caffc_memcpy(ptr dest, ptr src, i32 size) {
-    u8* destPtr = (u8*) dest;
-    u8* srcPtr = (u8*) src;
-    i32 i;
-
-    for (i = 0; i < size; i++) {
-      destPtr[i] = srcPtr[i];
-    }
-  }
-
-  /**
-   * strlen() with CaffC semantics, without a dependency on libC
-   */
-  i32 caffc_strlen(ptr data) {
-    i32 result = 0;
-
-    while (*((char*)data)) {
-      result += 1;
-      data = (ptr) (((char*)data) + 1);
-    }
-
-    return result;
   }
 }

@@ -51,9 +51,9 @@ extern caffc_class_header {{ array | c_name }}_type;
 
 /* module {{ ctx.name }} array constructors */
 {%- for array in ctx.registeredArrays %}
-{{ array | c_name }}* {{ array | c_name }}_new(i32 size);
+{{ array | c_name }}* {{ array | c_name }}_new(caffc_i32 size);
 {%- if array.arrayDimensions > 1 %}
-{{ array | c_name }}* {{ array | c_name }}_multi_new({% for i in range(1, array.arrayDimensions) %}i32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %});
+{{ array | c_name }}* {{ array | c_name }}_multi_new({% for i in range(1, array.arrayDimensions) %}caffc_i32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %});
 {% endif %}
 {%- endfor %}
 

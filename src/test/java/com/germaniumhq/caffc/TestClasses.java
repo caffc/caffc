@@ -71,7 +71,7 @@ public class TestClasses {
         CodeAsserts.assertCodeContains(code, " _this->some_field = x;",
                 "local function resolving, or local property resolving, doesn't seem to be working");
 
-        CodeAsserts.assertCodeContains(code, "void main_A_constructor(main_A* _this, i32 x) {",
+        CodeAsserts.assertCodeContains(code, "void main_A_constructor(main_A* _this, caffc_i32 x) {",
                 "new operator generation doesn't seem to be working for constructors with parameters");
         CodeAsserts.assertCodeContains(code, " main_A* _this = (main_A*) caffc_new(&main_A_type, sizeof(main_A));",
                 "new operator generation doesn't seem to be working for constructors with parameters");
@@ -116,7 +116,7 @@ public class TestClasses {
 
         CodeAsserts.assertCodeContains(code, "  caffc_ByteArray* _this = (caffc_ByteArray*) caffc_new(\n" +
                         "      &caffc_ByteArray_type,\n" +
-                        "      (i32) caffc__caffc_ByteArray_size(size));\n" +
+                        "      (caffc_i32) caffc__caffc_ByteArray_size(size));\n" +
                         "  caffc_ByteArray_constructor(_this, size);",
                 "instantiation should work with dynamic sizes for the objects");
 

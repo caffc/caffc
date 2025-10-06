@@ -15,13 +15,15 @@
 
 {% if ctx.definition.name == "main" and ctx.definition.clazz == null %}
 int main(int argc, char* argv[]) {
-  {%- if not ctx.definition.parameters.isEmpty() %}
-  caffc_str_arr* arr;
-  ptr _caffc_locals[] = { &arr };
-  int i;
-  {%- endif %}
   {%- if ctx.definition.returnType.typeSymbol.name != "void" %}
   int result;
+  {%- endif %}
+  {%- if not ctx.definition.parameters.isEmpty() %}
+  caffc_str_arr* arr;
+  caffc_ptr _caffc_locals[1];
+  int i;
+
+  _caffc_locals[0] = &arr;
   {%- endif %}
 
   atexit(caffc_done);
@@ -34,11 +36,15 @@ int main(int argc, char* argv[]) {
   arr = caffc_str_arr_new(argc);
 
   for (i = 0; i < argc; i++) {
-    caffc_obj_arr_set((caffc_obj_arr*) arr, (i32) i, caffc_str_fromPtr(argv[i]));
+    caffc_obj_arr_set(
+      (caffc_obj_arr*) arr,
+      (caffc_i32) i,
+      (caffc_obj*) caffc_str_fromPtr(argv[i])
+    );
   }
   {%- else %}
 
-  _caffc_stack_frame_register("#entrypoint", null, 0);
+  _caffc_stack_frame_register("#entrypoint", caffc_null, 0);
   {%- endif %}
 
   {% if ctx.definition.returnType.typeSymbol.name != "void" %}result = {% endif %}{{ ctx.definition.module }}_{{ ctx.definition.name }}({% if not ctx.definition.parameters.isEmpty() %}arr{% endif %});
@@ -48,7 +54,7 @@ int main(int argc, char* argv[]) {
   _caffc_stack_frame_unregister(&_caffc_locals);
   {%- else %}
 
-  _caffc_stack_frame_unregister(null);
+  _caffc_stack_frame_unregister(caffc_null);
   {%- endif %}
 
   {%- if ctx.definition.returnType.typeSymbol.name != "void" %}

@@ -2,7 +2,7 @@
 {%- if ctx.right.typeSymbol.typeName.isPrimitive -%}
 caffc_{{ ctx.left.expression.typeSymbol.typeName.childType.name }}_arr_set({{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, {{ ctx.right | render }})
 {%- else -%}
-caffc_obj_arr_set((caffc_obj_arr*) {{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, (ptr) {{ ctx.right | render }})
+caffc_obj_arr_set((caffc_obj_arr*) {{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, (caffc_ptr) {{ ctx.right | render }})
 {%- endif -%}
 {%- else -%}
 {{ ctx.left | render }} = {{ ctx.right | render }}

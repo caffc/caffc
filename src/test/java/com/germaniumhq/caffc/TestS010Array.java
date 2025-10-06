@@ -58,10 +58,10 @@ public class TestS010Array {
         );
 
         CodeAsserts.assertCodeContains(code, """
-                caffc__obj_a* caffc__obj_a_new(i32 size) {
+                caffc__obj_a* caffc__obj_a_new(caffc_i32 size) {
                   caffc__obj_a* _this = (caffc__obj_a*) caffc_new(
                       &caffc__obj_a_type,
-                      (i32) caffc__caffc__obj_a_size(size));
+                      (caffc_i32) caffc__caffc__obj_a_size(size));
                   caffc__obj_a_constructor(_this, size);
                 """,
                 "the new call should go via the dynamic size function defined for _obj_a");
@@ -109,7 +109,7 @@ public class TestS010Array {
                 "unidimensional object array new generation isn't working");
         CodeAsserts.assertCodeContains(code, "class_multidimensional = yolo_Swag_arr_arr_arr_multi_new(1, 2, 3);",
                 "multidimensional primitive array new generation isn't working");
-        CodeAsserts.assertCodeContains(code, "caffc_obj_arr_set((caffc_obj_arr*) ((yolo_Swag_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr*) ((yolo_Swag_arr_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr_arr*) class_multidimensional, 0)), 1)), 2, (ptr) yolo_Swag_new());",
+        CodeAsserts.assertCodeContains(code, "caffc_obj_arr_set((caffc_obj_arr*) ((yolo_Swag_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr*) ((yolo_Swag_arr_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr_arr*) class_multidimensional, 0)), 1)), 2, (caffc_ptr) yolo_Swag_new());",
                 "index assignment isn't working");
     }
 

@@ -58,9 +58,9 @@ public class TestNativeBlocks {
               return 0
             }
             """);
-        assertCodeContains(code, "void main_hello_planet(i32 x);",
+        assertCodeContains(code, "void main_hello_planet(caffc_i32 x);",
                 "functions declarations with parameters should work");
-        assertCodeContains(code, "i32 main_main();",
+        assertCodeContains(code, "caffc_i32 main_main();",
                 "function declarations without parameters should work");
     }
 }
