@@ -19,6 +19,6 @@ void caffc_done();
 /**
  * Allocate a new object.
  */
-caffc_object_header* caffc_new(caffc_class_header* object_type, u32 object_size);
+caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object_size);
 
 #endif

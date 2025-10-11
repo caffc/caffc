@@ -120,10 +120,10 @@ public class Program implements ModuleProvider, AstItem, Scope {
         StringConstant stringConstant = new StringConstant();
 
         // removes the surrounding quotes
-        byte[] bytes = it.substring(1, it.length() - 1)
-                .getBytes(StandardCharsets.UTF_8);
+        String actualStr = it.substring(1, it.length() - 1);
+        byte[] bytes = actualStr.getBytes(StandardCharsets.UTF_8);
         stringConstant.name = "caffc_cstr_" + bytesToHex(sha256Digest.digest(bytes));
-        stringConstant.value = it;
+        stringConstant.bytes = bytes;
         stringConstant.bytesSize = bytes.length + 1; // we add the null terminator
 
         return stringConstant;
@@ -170,6 +170,16 @@ public class Program implements ModuleProvider, AstItem, Scope {
         typeResolveRequests.add(request);
 
         return result;
+    }
+
+    public Collection<Integer> strStructBytesSizes() {
+        TreeSet<Integer> sizes = new TreeSet<>();
+
+        for (StringConstant stringConstant: stringConstantsMap.values()) {
+            sizes.add(stringConstant.bytesSize);
+        }
+
+        return sizes;
     }
 
     @Override

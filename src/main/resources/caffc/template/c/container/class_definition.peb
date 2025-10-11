@@ -3,7 +3,7 @@ typedef struct {
 {% if ctx.tags.has("caffc_object_array") %}
     caffc_class_header* _caffc_contained_class_header;
 {% endif %}
-    u8 _caffc_flags;
+    caffc_u8 _caffc_flags;
 
     /* external references */
 {%- for field in ctx.fields %}

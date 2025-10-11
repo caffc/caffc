@@ -12,6 +12,10 @@ class A {
   }
 }
 
+class B {
+  A a1, a2, a3
+}
+
 createA(u32 index) -> A {
   return new A(index)
 }
@@ -24,14 +28,20 @@ callGc() {
 
 main() {
   A a = createA(3)
+  B b = new B()
+
   A[] arr = new A[10000]
+
+  b.a1 = createA(1)
+  b.a2 = createA(2)
+  b.a3 = a
 
   for u32 i = 0; i < arr.size(); i += 1 {
     arr[i] = createA(i)
   }
 
   callGc()
-  for u32 i = 0; i < 100000000; i = i + 1 {
+  for u32 i = 0; i < 1000000; i = i + 1 {
     createA(i)
   }
 
@@ -40,7 +50,6 @@ main() {
 
 print(A a) {
   native {
-    printf("%ud\n", a->index);
+    printf("%u\n", a->index);
   }
 }
-

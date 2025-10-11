@@ -46,7 +46,7 @@ public class TestFunctionCalls {
             }
             """);
 
-        assertCodeContains(code, "void main_hello_world(i32 x)",
+        assertCodeContains(code, "void main_hello_world(caffc_i32 x)",
                 "the function hello_world(i32 x) should have been generated as main_hello_world");
         assertCodeContains(code, "main_hello_world(3);",
                 "the call to hello_world(3) should have been generated");
@@ -68,7 +68,7 @@ public class TestFunctionCalls {
             }
             """);
 
-        assertCodeContains(code, "void main_hello_world(i16 x, i32 y)",
+        assertCodeContains(code, "void main_hello_world(caffc_i16 x, caffc_i32 y)",
                 "the function hello_world(i16 x, i32 y) should have been generated as main_hello_world");
         assertCodeContains(code, "main_hello_world(3, 4);",
                 "the call to hello_world(3, 4) should have been generated");

@@ -12,7 +12,7 @@
 #define caffc_gc_ms_set_marked(o) ((caffc_object_header*)o)->_caffc_flags |= CAFFC_OBJECT_FLAGS_GC_MARKED
 #define caffc_gc_ms_clear_marked(o) ((caffc_object_header*)o)->_caffc_flags &= ~CAFFC_OBJECT_FLAGS_GC_MARKED
 
-caffc_gc_pointer_list caffc_all_objects = {};
+caffc_gc_pointer_list caffc_all_objects;
 
 /**
  * Goes over all the root elements and recursively marks all the used
@@ -20,11 +20,11 @@ caffc_gc_pointer_list caffc_all_objects = {};
  */
 void caffc_gc_ms_mark() {
     caffc_gc_pointer_list work_list;
-    caffc_object_header* object_header = null;
-    caffc_class_header* class_header = null;
-    u32 i = 0, j = 0;
-    ptr field_ptr = null;
-    u32 field_count = 0;
+    caffc_object_header* object_header = caffc_null;
+    caffc_class_header* class_header = caffc_null;
+    caffc_u32 i = 0, j = 0;
+    caffc_ptr field_ptr = caffc_null;
+    caffc_u32 field_count = 0;
 
     caffc_gc_pointer_list_constructor(&work_list, 16);
 
@@ -39,7 +39,7 @@ void caffc_gc_ms_mark() {
     }
 
     while (work_list.len) {
-        ptr object = caffc_gc_pointer_list_remove(&work_list, work_list.len - 1);
+        caffc_ptr object = caffc_gc_pointer_list_remove(&work_list, work_list.len - 1);
         object_header = (caffc_object_header*) object;
 
         /* duplicate pointer, we already processed it */
@@ -56,19 +56,19 @@ void caffc_gc_ms_mark() {
             field_count = array_header->_caffc_field_count;
         } else { /* regular object */
             class_header = object_header->_caffc_class_header;
-            field_ptr = (ptr)object_header + sizeof(caffc_object_header);
+            field_ptr = object_header->_caffc_data;
             field_count = class_header->field_count;
         }
 
         for (i = 0; i < field_count; i++) {
-            ptr actual_field_ptr = *((void**) field_ptr);
+            caffc_ptr actual_field_ptr = *((void**) field_ptr);
             if (!actual_field_ptr || caffc_gc_ms_is_marked(actual_field_ptr)) {
                 continue;
             }
 
             caffc_gc_pointer_list_add(&work_list, actual_field_ptr);
 
-            field_ptr += sizeof(ptr);
+            field_ptr = (caffc_ptr) ((void**)field_ptr + 1);
         }
     }
 
@@ -80,8 +80,8 @@ void caffc_gc_ms_mark() {
  * not marked.
  */
 void caffc_gc_ms_sweep() {
-    i32 i;
-    ptr object;
+    caffc_i32 i;
+    caffc_ptr object;
 
     for (i = caffc_all_objects.len - 1; i >= 0; i--) {
         object = caffc_gc_pointer_list_get(&caffc_all_objects, i);

@@ -15,8 +15,8 @@
  */
 typedef struct {
     caffc_class_header* _caffc_class_header;
-    u8 _caffc_flags; /* FIXME: pack into the header pointer */
-    ptr _caffc_data[0];
+    caffc_u8 _caffc_flags; /* FIXME: pack into the header pointer */
+    caffc_ptr _caffc_data[];
 } caffc_object_header;
 
 #endif  /* ifndef __caffco_o */

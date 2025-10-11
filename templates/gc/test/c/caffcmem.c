@@ -18,7 +18,7 @@ void caffc_done() {
 /*
  * This allocator is only for testing, since it leaks memory.
  */
-caffc_object_header* caffc_new(caffc_class_header* object_type, u32 object_size) {
+caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object_size) {
     if (!object_type) {
         return null;
     }

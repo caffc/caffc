@@ -27,32 +27,34 @@ check(str typeName, i32 expectedSize, i32 actualSize) -> i32 {
 main() -> i32 {
   i32 i8size, u8size, i16size, u16size,
       i32size, u32size, i64size, u64size,
-      f32size, f64size
+      f32size, f64size, boolsize
   i32 errors = 0
 
   native {
-    i8size = (i32) sizeof(i8);
-    u8size = (i32) sizeof(u8);
-    i16size = (i32) sizeof(i16);
-    u16size = (i32) sizeof(u16);
-    i32size = (i32) sizeof(i32);
-    u32size = (i32) sizeof(u32);
-    i64size = (i32) sizeof(i64);
-    u64size = (i32) sizeof(u64);
-    f32size = (i32) sizeof(f32);
-    f64size = (i32) sizeof(f64);
+    boolsize = (caffc_i32) sizeof(caffc_bool);
+    i8size = (caffc_i32) sizeof(caffc_i8);
+    u8size = (caffc_i32) sizeof(caffc_u8);
+    i16size = (caffc_i32) sizeof(caffc_i16);
+    u16size = (caffc_i32) sizeof(caffc_u16);
+    i32size = (caffc_i32) sizeof(caffc_i32);
+    u32size = (caffc_i32) sizeof(caffc_u32);
+    i64size = (caffc_i32) sizeof(caffc_i64);
+    u64size = (caffc_i32) sizeof(caffc_u64);
+    f32size = (caffc_i32) sizeof(caffc_f32);
+    f64size = (caffc_i32) sizeof(caffc_f64);
   }
 
-  errors |= check("i8" , 1, i8size)
-  errors |= check("u8" , 1, u8size)
-  errors |= check("i16", 2, i16size)
-  errors |= check("u16", 2, u16size)
-  errors |= check("i32", 4, i32size)
-  errors |= check("u32", 4, u32size)
-  errors |= check("i64", 8, i64size)
-  errors |= check("u64", 8, u64size)
-  errors |= check("f32", 4, f32size)
-  errors |= check("f64", 8, f64size)
+  errors |= check("bool", 1, i8size)
+  errors |= check("i8"  , 1, i8size)
+  errors |= check("u8"  , 1, u8size)
+  errors |= check("i16" , 2, i16size)
+  errors |= check("u16" , 2, u16size)
+  errors |= check("i32" , 4, i32size)
+  errors |= check("u32" , 4, u32size)
+  errors |= check("i64" , 8, i64size)
+  errors |= check("u64" , 8, u64size)
+  errors |= check("f32" , 4, f32size)
+  errors |= check("f64" , 8, f64size)
 
   if errors {
     return 1
@@ -62,4 +64,3 @@ main() -> i32 {
 
   return 0
 }
-

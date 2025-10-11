@@ -10,7 +10,7 @@ caffc_class_header {{ ctx.definition.typeName | c_name }}_type = {
 {%- if fn_new_size_calculator != null %}
   {{ ctx.definition.typeName | c_name }}* _this = ({{ ctx.definition.typeName | c_name }}*) caffc_new(
       &{{ ctx.definition.typeName | c_name }}_type,
-      (i32) {{ fn_new_size_calculator.definition.typeName | c_name }}({{ fn_new_size_calculator | c_constructor_parameters_call  }}));
+      (caffc_i32) {{ fn_new_size_calculator.definition.typeName | c_name }}({{ fn_new_size_calculator | c_constructor_parameters_call  }}));
 {%- else %}
   {{ ctx.definition.typeName | c_name }}* _this = ({{ ctx.definition.typeName | c_name }}*) caffc_new(&{{ ctx.definition.typeName | c_name }}_type, sizeof({{ ctx.definition.typeName | c_name }}));
 {%- endif %}

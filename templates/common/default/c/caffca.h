@@ -14,11 +14,11 @@
 typedef struct {
     caffc_class_header* _caffc_class_header;
     caffc_class_header* _caffc_contained_class_header;
-    u8 _caffc_flags; /* FIXME: pack into the header pointer */
-    i32 _caffc_field_count;
-    ptr _caffc_data[0];
+    caffc_u8 _caffc_flags; /* FIXME: pack into the header pointer */
+    caffc_i32 _caffc_field_count;
+    caffc_ptr _caffc_data[];
 } caffc_array_header;
 
-bool caffc_is_array(ptr object);
+caffc_bool caffc_is_array(caffc_ptr object);
 
 #endif  /* ifndef __caffca_h */

@@ -220,6 +220,15 @@ public class Function implements CompileBlock, Scope, Symbol {
         return objParametersCache;
     }
 
+    public Collection<Object> objParametersAndVariables() {
+        List<Object> result = new ArrayList<>();
+
+        result.addAll(objParameters());
+        result.addAll(objVariables());
+
+        return result;
+    }
+
     public Collection<VariableDeclaration> variables() {
         return this._variables.values();
     }

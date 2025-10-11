@@ -3,14 +3,14 @@
 #include "caffcpt.h"
 #include "caffcgcps.h"
 
-void caffc_gc_pointer_set_add_to_index(caffc_gc_pointer_set* _this, ptr value, i32 index);
+void caffc_gc_pointer_set_add_to_index(caffc_gc_pointer_set* _this, caffc_ptr value, caffc_i32 index);
 
-void caffc_gc_pointer_set_constructor(caffc_gc_pointer_set* _this, i32 default_capacity) {
+void caffc_gc_pointer_set_constructor(caffc_gc_pointer_set* _this, caffc_i32 default_capacity) {
     if (default_capacity <= 0) {
         default_capacity = 16;
     }
 
-    _this->data = malloc(sizeof(ptr) * default_capacity);
+    _this->data = malloc(sizeof(caffc_ptr) * default_capacity);
     _this->_capacity = default_capacity;
     _this->len = 0;
 }
@@ -24,8 +24,8 @@ void caffc_gc_pointer_set_destructor(caffc_gc_pointer_set* _this) {
 /**
  * Add a pointer to the set.
  */
-void caffc_gc_pointer_set_add(caffc_gc_pointer_set* _this, ptr value) {
-    i32 start, end, index;
+void caffc_gc_pointer_set_add(caffc_gc_pointer_set* _this, caffc_ptr value) {
+    caffc_i32 start, end, index;
 
     if (!_this->len) {
         caffc_gc_pointer_set_add_to_index(_this, value, 0);
@@ -66,8 +66,8 @@ void caffc_gc_pointer_set_add(caffc_gc_pointer_set* _this, ptr value) {
 /**
  * Internal code to add a pointer to a given index.
  */
-void caffc_gc_pointer_set_add_to_index(caffc_gc_pointer_set* _this, ptr value, i32 index) {
-    i32 i;
+void caffc_gc_pointer_set_add_to_index(caffc_gc_pointer_set* _this, caffc_ptr value, caffc_i32 index) {
+    caffc_i32 i;
 
     if (_this->_capacity == _this->len) {
         _this->_capacity <<= 1; /* multiply by 2 */
@@ -87,7 +87,7 @@ void caffc_gc_pointer_set_add_to_index(caffc_gc_pointer_set* _this, ptr value, i
 /**
  * Pop an item from the set, in our case it's always the last item.
  */
-ptr caffc_gc_pointer_set_pop(caffc_gc_pointer_set* _this) {
+caffc_ptr caffc_gc_pointer_set_pop(caffc_gc_pointer_set* _this) {
     if (!_this->len) {
         return NULL;
     }

@@ -4,7 +4,7 @@ _caffc_u8_arr_size(i32 size) -> i32 {
   i32 result
 
   native {
-    result = (i32) (sizeof(u8) * size + sizeof(caffc_u8_arr));
+    result = (caffc_i32) (sizeof(caffc_u8) * size + sizeof(caffc_u8_arr));
   }
 
   return result
@@ -14,7 +14,7 @@ _caffc_u8_arr_size(i32 size) -> i32 {
  * An array of unsigned chars. This is the implementation
  * behind the u8[].
  */
-#caffc_array("u8")
+#caffc_array("caffc_u8")
 class u8_arr {
   u32 size
 

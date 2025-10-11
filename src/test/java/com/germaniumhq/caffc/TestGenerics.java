@@ -35,7 +35,7 @@ public class TestGenerics {
 
         assertCodeContains(code, "void main_List_set(main_List* _this, caffc_obj* value) {",
                 "functions using generics parameters should be generated correctly");
-        assertCodeContains(code, "caffc_obj* main_List_get(main_List* _this, i32 x) {",
+        assertCodeContains(code, "caffc_obj* main_List_get(main_List* _this, caffc_i32 x) {",
                 "functions returning generic objects should be generated correctly");
     }
 

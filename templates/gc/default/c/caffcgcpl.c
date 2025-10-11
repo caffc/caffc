@@ -6,12 +6,12 @@
 /**
  * Create a pointer list.
  */
-void caffc_gc_pointer_list_constructor(caffc_gc_pointer_list* _this, i32 default_capacity) {
+void caffc_gc_pointer_list_constructor(caffc_gc_pointer_list* _this, caffc_i32 default_capacity) {
     if (default_capacity <= 0) {
         default_capacity = 16;
     }
 
-    _this->data = malloc(sizeof(ptr) * default_capacity);
+    _this->data = malloc(sizeof(caffc_ptr) * default_capacity);
     _this->_capacity = default_capacity;
     _this->len = 0;
 }
@@ -22,7 +22,7 @@ void caffc_gc_pointer_list_constructor(caffc_gc_pointer_list* _this, i32 default
 void caffc_gc_pointer_list_destructor(caffc_gc_pointer_list* _this) {
     if (_this->data) {
         free(_this->data);
-        _this->data = null;
+        _this->data = caffc_null;
     }
 }
 
@@ -30,7 +30,7 @@ void caffc_gc_pointer_list_destructor(caffc_gc_pointer_list* _this) {
  * Add an item into the list. If the capacity is not enough, the
  * list will be expanded dynamically.
  */
-void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, ptr value) {
+void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, caffc_ptr value) {
     if (_this->_capacity == _this->len) {
         if (_this->_capacity == 0) {
             _this->_capacity = 16;
@@ -38,7 +38,7 @@ void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, ptr value) {
             _this->_capacity = _this->_capacity * 2;
         }
 
-        _this->data = realloc(_this->data, sizeof(ptr) * _this->_capacity);
+        _this->data = realloc(_this->data, sizeof(caffc_ptr) * _this->_capacity);
     }
 
     _this->data[_this->len] = value;
@@ -49,11 +49,11 @@ void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, ptr value) {
  * Removes an item from the list. The last pointer from the list
  * will replace the removed index.
  */
-ptr caffc_gc_pointer_list_remove(caffc_gc_pointer_list* _this, i32 index) {
-    ptr result;
+caffc_ptr caffc_gc_pointer_list_remove(caffc_gc_pointer_list* _this, caffc_i32 index) {
+    caffc_ptr result;
 
     if (index < 0 || index >= _this->len) {
-        return null; /* FIXME: report this, since it's a bug? */
+        return caffc_null; /* FIXME: report this, since it's a bug? */
     }
 
     _this->len--;
@@ -76,9 +76,9 @@ ptr caffc_gc_pointer_list_remove(caffc_gc_pointer_list* _this, i32 index) {
 /**
  * Gets an item from the list.
  */
-ptr caffc_gc_pointer_list_get(caffc_gc_pointer_list* _this, i32 index) {
+caffc_ptr caffc_gc_pointer_list_get(caffc_gc_pointer_list* _this, caffc_i32 index) {
     if (index < 0 || index >= _this->len) {
-        return null;
+        return caffc_null;
     }
 
     return _this->data[index];

@@ -1,12 +1,17 @@
-
 #include "module_caffc.h"
 
+/*
+ * All strings are written with the data serialized already. When referring
+ * to a constant, a cast to `(caffc_str*)&{constant.name}` will be performed.
+ * This ensures there's no time spent into instantiating _native_ CaffC constant
+ * strings.
+ */
+
 {% for constant in program.stringConstants %}
-caffc_str {{ constant.name }} = {
+caffc_str_{{ constant.bytesSize }} {{ constant.name }} = {
     /* _caffc_class_header */ &caffc_str_type,
     /* _caffc_flags */ 0,
     /* size */ {{ constant.bytesSize }},
-    {{ constant.value }},
+    { {{ constant.valueAsBytes }} }
 };
 {% endfor %}
-
