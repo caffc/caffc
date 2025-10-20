@@ -1,9 +1,17 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.type.*;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
+import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
+import com.germaniumhq.caffc.compiler.model.type.Scope;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +20,9 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
     public boolean isStatic;
 
     public String name;
-    public Symbol returnType;
-    public SymbolSearch returnTypeSearch;
+    public LinkedHashMap<String, Symbol> returnTypes;
+    public LinkedHashMap<String, SymbolSearch> returnTypeSearches = new LinkedHashMap<>();
+    public String[] returnNames;
 
     public List<Parameter> parameters = new ArrayList<>();
     public String module;
@@ -31,6 +40,34 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
     public int astLine;
 
     private boolean isResolved;
+
+    public Symbol returnType;
+
+    public void antlrFillReturnType(
+        CompilationUnit unit,
+        AstItem owner,
+        caffcParser.ReturnTypeContext returnTypeContext) {
+
+        if (returnTypeContext == null || returnTypeContext.VOID() != null) {
+            // NOTHING on purpose, function is void
+        } else if (returnTypeContext.typeName() != null) {
+            // this returns a single primitive type, no need to create a structure for it
+            this.returnTypeSearches.put("", SymbolSearch.fromAntlr(unit, returnTypeContext.typeName()));
+        } else if (returnTypeContext.namedTypeTuple() != null) {
+            caffcParser.NamedTypeTupleContext namedTypeTupleContext = returnTypeContext.namedTypeTuple();
+            for (int i = 0; i < namedTypeTupleContext.typeName().size(); i++) {
+                this.returnTypeSearches.put(
+                    namedTypeTupleContext.ID(i).getText(),
+                    SymbolSearch.fromAntlr(unit, namedTypeTupleContext.typeName(i))
+                );
+            }
+        } else {
+            CaffcCompiler.get().fatal(owner, "unsupported function return type");
+            // not reached
+        }
+
+        returnNames = this.returnTypeSearches.keySet().toArray(new String[0]);
+    }
 
     @Override
     public String name() {
@@ -91,11 +128,29 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
             parameter.recurseResolveTypes();
         }
 
-        if (returnTypeSearch == null) {
-            this.returnType = TypeSymbol.VOID;
+        if (this.returnTypeSearches != null) {
+            this.returnTypes = new LinkedHashMap<>();
+            for (Map.Entry<String, SymbolSearch> entry: this.returnTypeSearches.entrySet()) {
+                Symbol resolvedSymbol = SymbolResolver.mustResolveSymbol(this, entry.getValue());
+                this.returnTypes.put(entry.getKey(), resolvedSymbol);
+            }
         } else {
-            this.returnType = SymbolResolver.mustResolveSymbol(this, returnTypeSearch);
+            this.returnTypes = new LinkedHashMap<>();
         }
+
+        this.returnType = this.createReturnTypeSymbol();
+    }
+
+    private Symbol createReturnTypeSymbol() {
+        if (this.returnTypes == null || this.returnTypes.isEmpty()) {
+            return TypeSymbol.VOID;
+        }
+
+        if (this.returnTypes.size() == 1) {
+            return this.returnTypes.values().iterator().next();
+        }
+
+        return new Struct(this, this.name + "_structreturn", this.returnTypes);
     }
 
     @Override
@@ -114,22 +169,38 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
 
         FunctionDefinition newFunctionDefinition = new FunctionDefinition();
 
-        newFunctionDefinition.name = this.name;
         newFunctionDefinition.clazz = this.clazz;
-        newFunctionDefinition.returnType = this.returnType;
+        newFunctionDefinition.isStatic = this.isStatic;
+
+        newFunctionDefinition.name = this.name;
+        newFunctionDefinition.returnTypes = new LinkedHashMap<>();
         newFunctionDefinition.module = this.module;
         newFunctionDefinition.tags = this.tags;
 
-        if (this.returnType instanceof GenericDefinition returnGenericDefinition) {
-            Symbol resolvedReturnType = resolvedGenerics.get(returnGenericDefinition.name);
-            if (resolvedReturnType != null) {
-                newFunctionDefinition.returnType = resolvedReturnType;
+        newFunctionDefinition.returnNames = this.returnNames;
+
+        for (Map.Entry<String, Symbol> entry: this.returnTypes.entrySet()) {
+            if (!(entry.getValue() instanceof GenericDefinition)) {
+                newFunctionDefinition.returnTypes.put(entry.getKey(), entry.getValue());
+                continue;
             }
+
+            GenericDefinition returnGenericDefinition = (GenericDefinition) entry.getValue();
+
+            Symbol resolvedReturnType = resolvedGenerics.get(returnGenericDefinition.name);
+            if (resolvedReturnType == null) {
+                newFunctionDefinition.returnTypes.put(entry.getKey(), entry.getValue());
+                continue;
+            }
+
+            newFunctionDefinition.returnTypes.put(entry.getKey(), resolvedReturnType);
         }
 
         for (Parameter parameter: this.parameters) {
             newFunctionDefinition.parameters.add(parameter.newGenericsCopy(resolvedGenerics));
         }
+
+        newFunctionDefinition.returnType = newFunctionDefinition.createReturnTypeSymbol();
 
         return (T) newFunctionDefinition;
     }
@@ -173,5 +244,22 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         }
 
         return generics.generics.length;
+    }
+
+    public boolean isNamedReturn() {
+        return !this.returnTypeSearches.isEmpty() &&
+            !"".equals(this.returnTypeSearches.keySet().iterator().next());
+    }
+
+    public boolean isMultiReturn() {
+        return this.returnTypes.size() > 1;
+    }
+
+    public boolean isReturnEmpty() {
+        return this.returnTypes.isEmpty();
+    }
+
+    public String getReturnName(int i) {
+        return this.returnNames[i];
     }
 }

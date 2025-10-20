@@ -22,6 +22,10 @@ public interface Statement extends AstItem {
             return Expression.fromAntlr(unit, owner, antlrStatement.expression());
         }
 
+        if (antlrStatement.assignExpression() != null) {
+            return AssignExpression.fromAntlr(unit, owner, antlrStatement.assignExpression());
+        }
+
         if (antlrStatement.variableDeclarations() != null) {
             return VariableDeclarations.fromAntlr(unit, owner, antlrStatement.variableDeclarations());
         }

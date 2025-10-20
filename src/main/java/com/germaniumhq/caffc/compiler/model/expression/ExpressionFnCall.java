@@ -1,7 +1,11 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.*;
+import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -81,7 +85,6 @@ public class ExpressionFnCall implements Expression {
     public void recurseResolveTypes() {
         this.functionExpression.recurseResolveTypes();
 
-        // FIXME: resolve the generics instantiations, and copy the function
         if (this.genericsInstantiations != null) {
             this.genericsInstantiations.recurseResolveTypes();
             this.symbol = GenericsDefinitionsSymbol.instantiateCopy(

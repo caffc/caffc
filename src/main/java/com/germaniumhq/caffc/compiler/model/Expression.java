@@ -137,14 +137,6 @@ public interface Expression extends Statement {
             return ExpressionTernary.fromAntlr(unit, owner, exTernaryContext);
         }
 
-        if (expression instanceof caffcParser.ExOpAssignContext exOpAssignContext) {
-            return ExpressionOpAssign.fromAntlr(unit, owner, exOpAssignContext);
-        }
-
-        if (expression instanceof caffcParser.ExAssignContext assignContext) {
-            return ExpressionAssign.fromAntlr(unit, owner, assignContext);
-        }
-
         if (expression == null) {
             CaffcCompiler.get().fatal(
                     owner,

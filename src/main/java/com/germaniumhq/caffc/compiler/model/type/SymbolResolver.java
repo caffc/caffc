@@ -58,8 +58,8 @@ public class SymbolResolver {
         // can happen that the compilation unit of that symbol wasn't resolved yet.
         // this would cause issues, since the function definitions for example would
         // be with unresolved types.
-        if (result instanceof AstItem astItem && ! (result instanceof Module)) {
-            astItem.recurseResolveTypes();
+        if (! (result instanceof Module)) {
+            result.recurseResolveTypes();
         }
 
         // Now we just need to resolve the generics if that's the case. We'll

@@ -90,7 +90,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
         functionDefinition.owner = owner;
         functionDefinition.clazz = owner.definition;
         functionDefinition.module = unit.module.name;
-        functionDefinition.returnTypeSearch = SymbolSearch.fromAntlr(unit, ctx.returnType());
+        functionDefinition.antlrFillReturnType(unit, owner, ctx.returnType());
         functionDefinition.name = ctx.ID().getText();
 
         caffcParser.TagsContext antlrTags = ctx.tags();

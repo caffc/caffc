@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.type;
 
+import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.Function;
@@ -28,7 +29,7 @@ import com.germaniumhq.caffc.compiler.model.Parameter;
  * app.x() // resolving x here
  * ```
  */
-public interface Symbol {
+public interface Symbol extends AstItem {
     /**
      * The name of the symbol.
      *
@@ -70,5 +71,15 @@ public interface Symbol {
         }
 
         return "symbol";
+    }
+
+    static String debugInfo(Symbol symbol) {
+        return String.format("%s %s defined at %s:%d:%d",
+            typeOfSymbol(symbol),
+            symbol.name(),
+            symbol.getFilePath(),
+            symbol.getLineNumber(),
+            symbol.getColumnNumber()
+        );
     }
 }

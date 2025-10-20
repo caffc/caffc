@@ -1,7 +1,10 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
-import com.germaniumhq.caffc.compiler.model.*;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.AssignExpression;
+import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -34,11 +37,16 @@ public class ForInstruction implements Statement, Scope {
         if (forAntlr.variableDeclarations() != null) {
             result.variableDeclarations = VariableDeclarations.fromAntlr(unit, result, forAntlr.variableDeclarations());
         } else {
-            result.variableInitializationExpression = Expression.fromAntlr(unit, result, forAntlr.initExpression);
+            result.variableInitializationExpression = AssignExpression.fromAntlr(unit, result, forAntlr.initExpression);
         }
 
         result.checkExpression = Expression.fromAntlr(unit, result, forAntlr.conditionExpression);
-        result.incrementExpression = Expression.fromAntlr(unit, result, forAntlr.incrementExpression);
+
+        if (forAntlr.incrementExpression != null) {
+            result.incrementExpression = Expression.fromAntlr(unit, result, forAntlr.incrementExpression);
+        } else if (forAntlr.incrementAssignExpression != null) {
+            result.incrementExpression = AssignExpression.fromAntlr(unit, result, forAntlr.incrementAssignExpression);
+        }
 
         for (caffcParser.StatementContext antlrStatement: forAntlr.block().statement()) {
             result.statements.add(Statement.fromAntlr(unit, result, antlrStatement));

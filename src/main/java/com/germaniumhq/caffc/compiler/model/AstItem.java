@@ -56,11 +56,23 @@ public interface AstItem {
         );
     }
 
+    static <T extends AstItem> T findParentOrSelf(AstItem owner, Class<T> clazz) {
+        if (clazz.isAssignableFrom(owner.getClass())) {
+            return (T) owner;
+        }
+
+        return owner.findAstParent(clazz);
+    }
+
     static AstItem fromFilePath(String file) {
         return new DefaultAstItem(file, 1, 1);
     }
 
     static AstItem fromData(String filePath, int line, int charPositionInLine) {
         return new DefaultAstItem(filePath, line, charPositionInLine);
+    }
+
+    static String debugInfo(AstItem owner) {
+        return owner.getFilePath() + ":" + owner.getLineNumber() + ":" + owner.getColumnNumber();
     }
 }

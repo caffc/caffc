@@ -34,6 +34,11 @@ extern caffc_class_header {{ array | c_name }}_type;
 #include "{{ module | c_global_header }}"
 {%- endfor %}
 
+/* module {{ ctx.name }} multi-return struct definitions */
+{%- for clazz in ctx.structDefinitions %}
+{{ clazz | render }}
+{%- endfor %}
+
 /* module {{ ctx.name }} interface definitions */
 {%- for clazz in ctx.interfaceDefinitions %}
 {{ clazz | render }}

@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.output.filters;
 
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -22,16 +23,24 @@ public class FilterCName implements Filter {
             return getCType(t);
         }
 
+        if (o instanceof Symbol symbol) {
+            return getCType(symbol.typeName());
+        }
+
         throw new IllegalArgumentException("Unable to find the C name for " + o);
     }
 
     public static String getCType(TypeName t) {
         if (t.isPrimitive() && t.name.equals("void")) {
-          return t.name;
+            return t.name;
         }
 
         if (t.isPrimitive()) {
             return "caffc_" + t.name;
+        }
+
+        if (t.dataType == DataType.STRUCT) {
+            return t.fqdn().replace(".", "_");
         }
 
         if (t.dataType == DataType.ARRAY) {

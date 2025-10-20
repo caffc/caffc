@@ -6,6 +6,7 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
+import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
@@ -43,7 +44,9 @@ import com.germaniumhq.caffc.output.filters.FilterCName;
 import com.germaniumhq.caffc.output.filters.FilterCResolveId;
 import com.germaniumhq.caffc.output.filters.FilterCType;
 import com.germaniumhq.caffc.output.filters.Render;
+import com.germaniumhq.caffc.output.functions.FunctionGet;
 import com.germaniumhq.caffc.output.functions.FunctionIsBlockStatement;
+import com.germaniumhq.caffc.output.functions.FunctionIsIndex;
 import com.mitchellbosecke.pebble.attributes.AttributeResolver;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -81,6 +84,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(ClassDefinition.class, "c/container/class_definition.peb")
                 .withMapping(Interface.class, "c/container/interface.peb")
                 .withMapping(InterfaceDefinition.class, "c/container/interface_definition.peb")
+                .withMapping(Struct.class, "c/container/struct_definition.peb")
 
                 // statements
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")
@@ -131,6 +135,8 @@ public class CaffcPebblesExtension implements Extension {
         Map<String, com.mitchellbosecke.pebble.extension.Function> functions = new HashMap<>();
 
         functions.put("isBlockStatement", new FunctionIsBlockStatement());
+        functions.put("isIndex", new FunctionIsIndex());
+        functions.put("get", new FunctionGet());
 
         return functions;
     }

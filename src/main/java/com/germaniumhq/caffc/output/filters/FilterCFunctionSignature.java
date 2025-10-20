@@ -29,9 +29,11 @@ public class FilterCFunctionSignature implements Filter {
     }
 
     private static String getFunctionSignature(FunctionDefinition functionDefinition) {
+        // is value or is a pointer?
+        boolean isValue = functionDefinition.returnType.typeName().dataType == DataType.PRIMITIVE ||
+            functionDefinition.returnType.typeName().dataType == DataType.STRUCT;
         return String.format("%s %s(%s)",
-                getCType(functionDefinition.returnType.typeName()) +
-                        (functionDefinition.returnType.typeName().dataType == DataType.PRIMITIVE ? "" : "*"),
+                getCType(functionDefinition.returnType.typeName()) + (isValue ? "" : "*"),
                 getCType(functionDefinition.typeName()),
                 getParametersAsString(functionDefinition)
         );

@@ -1,12 +1,20 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
-import com.germaniumhq.caffc.compiler.model.*;
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.generated.caffcParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReturnInstruction implements Statement {
-    public Expression value;
     public AstItem owner;
     public String astFilePath;
+    public List<NamedReturn> returns = new ArrayList<>();
 
     public int astColumn;
     public int astLine;
@@ -20,14 +28,19 @@ public class ReturnInstruction implements Statement {
         result.astColumn = ctx.getStart().getCharPositionInLine();
 
         if (ctx.expression() != null) {
-            result.value = Expression.fromAntlr(unit, result, ctx.expression());
+            Function function = result.getFunction();
+
+            for (int i = 0; i < ctx.expression().size(); i++) {
+                NamedReturn namedReturn = new NamedReturn();
+
+                namedReturn.name = function.definition.getReturnName(i);
+                namedReturn.value = Expression.fromAntlr(unit, result, ctx.expression(i));
+
+                result.returns.add(namedReturn);
+            }
         }
 
         return result;
-    }
-
-    public Expression getValue() {
-        return value;
     }
 
     @Override
@@ -52,12 +65,31 @@ public class ReturnInstruction implements Statement {
 
     @Override
     public void recurseResolveTypes() {
-        if (value != null) {
-            value.recurseResolveTypes();
+        Function function = this.getFunction();
+
+        if (this.returns.size() != function.definition.returnTypes.size()) {
+            CaffcCompiler.get().error(this,
+                String.format(
+                    "failure processing return. function expects %d parameters, return has %d",
+                    function.definition.returnTypes.size(),
+                    this.returns.size()
+                )
+            );
+        }
+
+        for (NamedReturn namedReturn: this.returns) {
+            if (namedReturn.value != null) {
+                namedReturn.value.recurseResolveTypes();
+            }
         }
     }
 
     public Function getFunction() {
         return this.findAstParent(Function.class);
+    }
+
+    public static class NamedReturn {
+        public Expression value;
+        public String name;
     }
 }

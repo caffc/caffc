@@ -6,4 +6,5 @@ public enum DataType {
     OBJECT, // managed by the GC
     FUNCTION,
     MODULE,
+    STRUCT, // used for multi-returns
 }

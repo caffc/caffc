@@ -9,15 +9,16 @@ module: MODULE fqdn;
 
 useStatement: use use_alias?;
 
-compileBlock:
-    nativeBlock
-    | decoratorCall
+compileBlock
+    : nativeBlock
+    // | decoratorCall
     | tagDefinition
     | function
     | classDefinition
     | interfaceDefinition
-    | variableDeclaration
-    | block;
+    // | variableDeclaration
+    // | block
+    ;
 
 use: USE fqdn;
 use_alias: AS ID;
@@ -28,9 +29,11 @@ function:
     tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
     tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
 
-returnType:
-  typeTuple |
-  VOID;
+returnType
+  : namedTypeTuple // multi-return into a struct if multiple names defined, otherwise single-value named return
+  | typeName       // single-value return
+  | VOID           // void return
+  ;
 
 classDefinition:
     tags? CLASS name genericsDeclarations? (IMPLEMENTS interfaceImplementations)? '{'
@@ -77,7 +80,7 @@ tagDefinition:
 fieldDeclaration: typeName ID (',' ID)*;
 
 statement:
-  decoratorCall |
+  // decoratorCall |
   function |
   variableDeclarations |
   return |
@@ -86,21 +89,24 @@ statement:
   whileBlock |
   forBlock |
   ifBlock |
-  tryCatchBlock |
-  expression;
+  // tryCatchBlock |
+  expression |
+  assignExpression;
 
 block: '{' statement* '}';
 
 whileBlock: WHILE expression block;
-forBlock: FOR (initExpression=expression|variableDeclarations) ';' conditionExpression=expression ';' incrementExpression=expression block;
+forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
+              conditionExpression=expression ';'
+              (incrementExpression=expression|incrementAssignExpression=assignExpression)
+              block;
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
-tryCatchBlock: TRY block (CATCH '(' classType ID ')')? (FINALLY block)?;
+// tryCatchBlock: TRY block (CATCH '(' classType ID ')')? (FINALLY block)?;
 
 return:
-  RETURN expression |
-  RETURN |
-  YIELD expression;
+  RETURN expression (',' expression)* |
+  RETURN;
 
 decoratorCall:
   '@' expression function |
@@ -167,10 +173,13 @@ expression:
   | checkExpression=expression
     ('?' trueExpression=expression ':'|'?:')
     falseExpression=expression                                                                     # ExTernary
+  ;
+
+assignExpression
+  : expression (',' expression)* '=' rightExpression=expression                                    # ExAssign
   | leftExpression=expression
     ('<<='|'>>='|'&='|'|='|'^='|'*='|'/='|'+='|'-=')
     rightExpression=expression                                                                     # ExOpAssign
-  | leftExpression=expression '=' rightExpression=expression                                       # ExAssign
   ;
 
 expressionTuple:
@@ -228,8 +237,8 @@ genericsInstantiations:
 functionType:
     FN genericsInstantiations?;
 
-typeTuple:
-    typeName (',' typeName)*
+namedTypeTuple:
+     typeName ID (',' typeName ID)*
     ;
 
 // ***********************************************************************

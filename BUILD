@@ -28,7 +28,7 @@ ge_java_native_binary(
   help="caffc native binary (native via graalvm)"
 )
 
-filegroup(
+ge_filegroup(
   name="templates",
   srcs=glob(["templates/**/*"]),
 )
@@ -50,12 +50,12 @@ ge_genrule(
   """),
 )
 
-filegroup(
-  name="java-launcher",
+ge_filegroup(
+  name="java-launcher.sh",
   srcs=["bin/caffc"],
-  #    help=dedent("""\  # I need a ge_filegroup to support help
-  #      For the Java version, this is the launcher that allows us to call `caffc` in the command line.
-  #    """),
+  help=dedent("""\
+    For the Java version, this is the shell script launcher that allows us to call `caffc` in the command line.
+  """),
 )
 
 ge_genrule(
@@ -70,7 +70,7 @@ ge_genrule(
     tar -zcf ../caffc-java-{version}.tar.gz .
   """),
   out=f"caffc-java-{version}.tar.gz",
-  deps=[":caffc.jar", ":java-launcher", ":templates"],
+  deps=[":caffc.jar", ":java-launcher.sh", ":templates"],
   help=dedent("""\
     caffc compiler + templates - java fatjar tgz release
   """),

@@ -82,14 +82,6 @@ public class SymbolSearch {
             return symbolSearch;
         }
 
-        if (context instanceof caffcParser.ReturnTypeContext returnTypeContext) {
-            if (returnTypeContext.typeTuple() != null) {
-                return fromTypeContext(unit, returnTypeContext.typeTuple().typeName(0));
-            }
-
-            return SymbolSearch.ofName("void");
-        }
-
         if (context instanceof caffcParser.VarTypeContext varTypeContext) {
             return fromTypeContext(unit, varTypeContext.typeName());
         }
