@@ -22,7 +22,7 @@ learn and understand, and the code written in it comprehensible.
 * fast compilation times
 * tags (annotations) (WIP)
 * decorators (TBD)
-* multi-returns (TBD)
+* multi-returns
 
 ## Primitive Types
 
@@ -53,6 +53,30 @@ If the function is void, the return can be omitted:
 ```cafc
 log(str what) {
   // ...
+}
+```
+
+Functions can return multiple things at once, and you get access to the
+`result` packed member variable as a regular local variable:
+
+```caffc
+class Point {
+  compute() -> f32 tx, f32 ty {
+    tx = self._x
+    ty = tx
+
+    native {
+      // in native blocks, the result fields must be accessed via the
+      // `result` defined struct.
+      if (result.tx < 0.0f) {
+        result.tx = 0.0f;
+      }
+    }
+
+    ty += 3.0
+
+    return tx, ty
+  }
 }
 ```
 
