@@ -11,8 +11,10 @@ public class VariableDeclaration implements AstItem, Symbol {
     public String name;
     public ExpressionAssign assignExpression;
 
-    public VariableDeclarations owner;
+    public AstItem owner;
+    public Symbol typeSymbol;
     public String astFilePath;
+
     public int astColumn;
     public int astLine;
 
@@ -37,9 +39,24 @@ public class VariableDeclaration implements AstItem, Symbol {
             result.assignExpression.astColumn = result.getColumnNumber();
 
             result.assignExpression.owner = result;
-            result.assignExpression.left = ExpressionId.fromName(unit, result.assignExpression, result.name);
+            result.assignExpression.leftExpressions.add(
+                ExpressionId.fromName(unit, result.assignExpression, result.name)
+            );
             result.assignExpression.right = Expression.fromAntlr(unit, result.assignExpression, expressionContext);
         }
+
+        return result;
+    }
+
+    public static VariableDeclaration fromEnsure(AstItem owner, Symbol typeSymbol, String name) {
+        VariableDeclaration result = new VariableDeclaration();
+
+        result.name = name;
+        result.typeSymbol = typeSymbol;
+        result.owner = owner;
+        result.astFilePath = owner.getFilePath();
+        result.astLine = owner.getLineNumber();
+        result.astColumn = owner.getColumnNumber();
 
         return result;
     }
@@ -84,11 +101,13 @@ public class VariableDeclaration implements AstItem, Symbol {
 
     @Override
     public TypeName typeName() {
-        return this.owner.typeSymbol.typeName();
+        return this.typeSymbol().typeName();
     }
 
     @Override
     public Symbol typeSymbol() {
-        return this.owner.typeSymbol;
+        return this.typeSymbol != null ?
+            this.typeSymbol :
+            ((VariableDeclarations)this.owner).typeSymbol;
     }
 }

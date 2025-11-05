@@ -40,15 +40,6 @@ public class ExpressionNewObject implements Expression {
         return result;
     }
 
-    private static Expression createInstantiated(AstItem owner, String text) {
-        // FIXME: missing AST info?
-        ExpressionId result = new ExpressionId();
-        result.owner = owner;
-        result.name = text;
-
-        return result;
-    }
-
     @Override
     public Symbol typeSymbol() {
         return instantiatedType;

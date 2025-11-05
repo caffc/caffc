@@ -4,9 +4,9 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
+import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
-import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -53,6 +53,10 @@ public class FilterCResolveId implements Filter {
 
         if (symbol instanceof VariableDeclaration variableDeclaration) {
             return variableDeclaration.name;
+        }
+
+        if (symbol instanceof StructReturnVariableDefinition structVariableDefinition) {
+            return "result." + structVariableDefinition.name;
         }
 
         if (symbol instanceof Field field) {

@@ -2,10 +2,19 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
-import com.germaniumhq.caffc.compiler.model.type.*;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
+import com.germaniumhq.caffc.compiler.model.type.Scope;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A function in caffc.
@@ -15,11 +24,13 @@ public class Function implements CompileBlock, Scope, Symbol {
     public FunctionDefinition definition = new FunctionDefinition();
     public List<Statement> statements = new ArrayList<>();
     public Map<String, VariableDeclaration> _variables = new LinkedHashMap<>();
+    public Map<String, StructReturnVariableDefinition> _structReturnVariables = new LinkedHashMap<>();
 
     private boolean isResolved;
 
     private ArrayList<VariableDeclaration> objVariablesCache;
     private ArrayList<Parameter> objParametersCache;
+    private ArrayList<StructReturnVariableDefinition> objStructReturnVariables;
 
     public static Function fromAntlr(
             CompilationUnit unit,
@@ -33,7 +44,8 @@ public class Function implements CompileBlock, Scope, Symbol {
 
         function.owner = owner;
         function.definition.module = unit.module.name;
-        function.definition.returnTypeSearch = SymbolSearch.fromAntlr(unit, ctx.returnType());
+
+        function.definition.antlrFillReturnType(unit, owner, ctx.returnType());
         function.definition.name = ctx.ID().getText();
 
         if (ctx.STATIC() != null) {
@@ -121,6 +133,11 @@ public class Function implements CompileBlock, Scope, Symbol {
             return variableDeclaration;
         }
 
+        StructReturnVariableDefinition structVariableDefinition = this._structReturnVariables.get(name);
+        if (structVariableDefinition != null) {
+            return structVariableDefinition;
+        }
+
         if (this.definition.generics != null) {
             return this.definition.generics.getByName(name);
         }
@@ -129,15 +146,78 @@ public class Function implements CompileBlock, Scope, Symbol {
     }
 
     public void registerVariable(VariableDeclaration variableDeclaration) {
-        // FIXME: registering _anything_ should check if it shadows things from the outside context
         Symbol existing = this.resolve(variableDeclaration.name);
 
         if (existing != null) {
             CaffcCompiler.get().error(variableDeclaration,
-                    "variable " + variableDeclaration.name + " shadows " + existing);
+                    "variable " + variableDeclaration.name + " shadows " +
+                        Symbol.debugInfo(existing));
         }
 
         this._variables.put(variableDeclaration.name, variableDeclaration);
+    }
+
+    /**
+     * Ensures a variable is defined in the variable scope with the given type. The variable
+     * might be reused in a different context. For example `i32 i` in multiple `for` iterations.
+     * Or a multi-return struct that will get reused for multiple invocations.
+     * <p>
+     * This will create a VariableDeclaration with the given name and type. If the type is
+     * conflicting, an error will be raised.
+     *
+     * @return
+     */
+    public VariableDeclaration ensureVariableExists(AstItem owner, String name, Symbol resolvedType) {
+        Symbol existing = this.resolve(name);
+
+        if (existing != null && !(existing instanceof VariableDeclaration)) {
+            CaffcCompiler.get().error(owner,
+                String.format("conflicting types: %s with type %s attempts to shadow %s %s " +
+                        "that's not a variable declaration",
+                    name, resolvedType, Symbol.typeOfSymbol(existing), name));
+        }
+
+        VariableDeclaration existingVariable = (VariableDeclaration) existing;
+
+        if (existingVariable != null && !existingVariable.typeSymbol().equals(resolvedType)) {
+            CaffcCompiler.get().error(owner,
+                "conflicting types for variable " + name +
+                    ": existing " + existing + ", requested: " + resolvedType);
+        }
+
+        if (existingVariable != null) {
+            return existingVariable;
+        }
+
+        existingVariable = VariableDeclaration.fromEnsure(owner, resolvedType, name);
+        this._variables.put(name, existingVariable);
+
+        return existingVariable;
+    }
+
+    /**
+     * Registers a variable as a return variable.
+     *
+     * We have two scenarios:
+     *
+     * 1. If the function has a single named return, then this is a normal variable that
+     *    we'll just add into the variables set.
+     * 2. If the function has multiple returns, these are in reality fields into a struct,
+     *    and a corresponding `result` with the struct is already defined. These are then
+     *    marked as multi return variables so they can be rendered as such.
+     */
+    public void registerNamedReturnVariable(AstItem owner, String name, Symbol resolvedType) {
+        Symbol existing = this.resolve(name);
+
+        if (existing != null) {
+            CaffcCompiler.get().error(owner,
+                "variable " + name + " defined at " + AstItem.debugInfo(owner) +
+                    " shadows " + Symbol.debugInfo(existing));
+        }
+
+        this._structReturnVariables.put(
+            name,
+            new StructReturnVariableDefinition(this, name, resolvedType));
     }
 
     @Override
@@ -162,8 +242,17 @@ public class Function implements CompileBlock, Scope, Symbol {
         }
 
         this.isResolved = true;
-
         this.definition.recurseResolveTypes();
+
+        // we need also the actual return defined as a variable
+        if (this.definition.returnType instanceof Struct) {
+            VariableDeclaration result = this.ensureVariableExists(this, "result", this.definition.returnType);
+            result.recurseResolveTypes();
+
+            for (Map.Entry<String, Symbol> entry: this.definition.returnTypes.entrySet()) {
+                this.registerNamedReturnVariable(result, entry.getKey(), entry.getValue());
+            }
+        }
 
         for (Statement statement: this.statements) {
             statement.recurseResolveTypes();
@@ -194,8 +283,8 @@ public class Function implements CompileBlock, Scope, Symbol {
         objVariablesCache = new ArrayList<>();
 
         for (VariableDeclaration variableDeclaration: this._variables.values()) {
-            if (variableDeclaration.owner.typeSymbol.typeName().dataType == DataType.OBJECT ||
-                    variableDeclaration.owner.typeSymbol.typeName().dataType == DataType.ARRAY) {
+            if (variableDeclaration.typeName().dataType == DataType.OBJECT ||
+                    variableDeclaration.typeName().dataType == DataType.ARRAY) {
                 objVariablesCache.add(variableDeclaration);
             }
         }
@@ -220,20 +309,51 @@ public class Function implements CompileBlock, Scope, Symbol {
         return objParametersCache;
     }
 
+    public Collection<StructReturnVariableDefinition> objStructVariables() {
+        if (objStructReturnVariables != null) {
+            return objStructReturnVariables;
+        }
+
+        objStructReturnVariables = new ArrayList<>();
+
+        for (VariableDeclaration variableDeclaration: this._variables.values()) {
+            if (variableDeclaration.typeName().dataType == DataType.STRUCT) {
+                Struct struct = (Struct) variableDeclaration.typeSymbol;
+                for (String key: struct.getGcManagedKeys()) {
+                    objStructReturnVariables.add(new StructReturnVariableDefinition(
+                        variableDeclaration,
+                        key,
+                        ((Struct)variableDeclaration.typeSymbol).returnTypes.get(key)
+                    ));
+                }
+            }
+        }
+
+        return objStructReturnVariables;
+    }
+
+
+    @UsedInTemplate("ge_stack_frame_register.peb")
     public Collection<Object> objParametersAndVariables() {
         List<Object> result = new ArrayList<>();
 
         result.addAll(objParameters());
         result.addAll(objVariables());
+        result.addAll(objStructVariables());
 
         return result;
     }
 
+    @UsedInTemplate("ge_stack_frame_register.peb")
     public Collection<VariableDeclaration> variables() {
         return this._variables.values();
     }
 
     public int gcVariableCount() {
-        return this.objVariables().size() + this.objParameters().size();
+        return
+            this.objVariables().size()
+            + this.objParameters().size()
+            + this.objStructVariables().size()
+            ;
     }
 }

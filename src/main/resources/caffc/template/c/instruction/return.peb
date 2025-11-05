@@ -1,6 +1,31 @@
+{# ctx is a ReturnInstruction -#}
 {%- if ctx.function.gcVariableCount() > 0 %}
 _caffc_stack_frame_unregister(&_caffc_locals);
 {%- else %}
 _caffc_stack_frame_unregister(caffc_null);
 {%- endif %}
-return{% if ctx.value is not null %} {{ ctx.value | render }}{%  endif %}
+
+{# it feels wrong to use variables from the stack after the unregister of the stack frame
+   already happened, even if I know it won't crash since the GC gets called only on `new` -#}
+
+{#- we have THREE cases: #}
+{%- if ctx.function.definition.isReturnEmpty %}
+{#- 1. `return` empty statement, on a void function.
+    There's no variable declared for the return, since this is a _void_ function.
+#}
+return
+{%- elseif ctx.function.definition.isMultiReturn %}
+{#- 2. `return` with multiple expressions, on a multi-return function
+    There's a struct called `result` defined for the function. We need to pack
+    the values back in the return.
+#}
+{%- for r in ctx.returns %}
+result.{{ r.name }} = {{ r.value | render }};
+{%- endfor %}
+return result
+{%- else %}
+{#- 3. `return` with a single expression, on an unnamed function return
+    While a variable is created, we don't really need it now for the actual return value.
+#}
+return {{ get(ctx.returns, 0).value | render }}
+{%- endif %}

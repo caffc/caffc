@@ -3,14 +3,19 @@ package com.germaniumhq.caffc.compiler.model.expression;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
+import com.germaniumhq.caffc.output.filters.FilterCTypeName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExpressionAssign implements Expression {
     public AstItem owner;
-    public Expression left;
+    public List<Expression> leftExpressions = new ArrayList<>();
     public Expression right;
 
     public String astFilePath;
@@ -26,14 +31,27 @@ public class ExpressionAssign implements Expression {
 
         expression.owner = owner;
 
-        expression.left = Expression.fromAntlr(unit, expression, assignExpression.leftExpression);
+        for (int i = 0; i < assignExpression.expression().size() - 1; i++) {
+            expression.leftExpressions.add(
+                Expression.fromAntlr(unit, expression, assignExpression.expression(i))
+            );
+        }
         expression.right = Expression.fromAntlr(unit, expression, assignExpression.rightExpression);
 
         return expression;
     }
 
     public boolean isIndex() {
-        return this.left instanceof ExpressionIndexAccess;
+        return this.leftExpressions.size() == 1 &&
+            this.leftExpressions.get(0) instanceof ExpressionIndexAccess;
+    }
+
+    public Expression getLeft() {
+        if (this.leftExpressions.size() == 1) {
+            return this.leftExpressions.get(0);
+        }
+
+        throw new IllegalStateException("multiple expressions exist: " + this.leftExpressions);
     }
 
     @Override
@@ -64,8 +82,22 @@ public class ExpressionAssign implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.right.recurseResolveTypes();
-        this.left.recurseResolveTypes();
+
+        for (Expression leftExpression: this.leftExpressions) {
+            leftExpression.recurseResolveTypes();
+        }
+
+        if (this.leftExpressions.size() > 1) {
+            String cType = FilterCTypeName.getCType(this.right.typeSymbol().typeName());
+            AstItem.findParentOrSelf(this.owner, Function.class)
+                .ensureVariableExists(this, cType + "_ret", this.right.typeSymbol());
+        }
 
         // FIXME: check if the type is assignable from right to left
+    }
+
+    // #UsedInTemplate("assign.peb")
+    public boolean isMultiReturn() {
+        return this.leftExpressions.size() > 1;
     }
 }

@@ -1,0 +1,31 @@
+module main
+
+greeting(str name) -> str header, str footer {
+  header = "hello "
+  header = header.add(name)
+  footer = "have a good day "
+  footer = footer.add(name)
+
+  return
+}
+
+hello(str name) -> str header, str footer {
+  header = "hello "
+  footer = "have a good day "
+
+  return header.add(name), footer.add(name)
+}
+
+main() {
+  str h, f
+
+  h, f = greeting("world")
+
+  print(h)
+  print(f)
+
+  h, f = hello("world")
+
+  print(h)
+  print(f)
+}

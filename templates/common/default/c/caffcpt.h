@@ -66,4 +66,8 @@
   #define caffc_null (void*)0
 #endif /* not caffc_null */
 
+#ifndef caffc_void
+  #define caffc_void void
+#endif /* not caffc_void */
+
 #endif  /* ifndef __caffcpt_h */

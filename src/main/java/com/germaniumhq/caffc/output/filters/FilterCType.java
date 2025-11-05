@@ -34,6 +34,10 @@ public class FilterCType implements Filter {
             return "caffc_" + t.name;
         }
 
+        if (t.dataType == DataType.STRUCT) {
+            return t.fqdn().replace(".", "_");
+        }
+
         if (t.dataType == DataType.ARRAY) {
             if (t.module == null) {
                 return "caffc_" + t.name.replace("[]", "_arr") + "*";

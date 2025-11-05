@@ -4,6 +4,18 @@ caffc_{{ ctx.left.expression.typeSymbol.typeName.childType.name }}_arr_set({{ ct
 {%- else -%}
 caffc_obj_arr_set((caffc_obj_arr*) {{ ctx.left.expression | render }}, {{ ctx.left.index | render }}, (caffc_ptr) {{ ctx.right | render }})
 {%- endif -%}
+{%- elseif ctx.isMultiReturn -%}
+{{ ctx.right.typeSymbol | c_name }}_ret = {{ ctx.right | render }};
+{%- for leftExpression in ctx.leftExpressions %}
+{%- if isIndex(leftExpression) and ctx.right.typeSymbol.isPrimitive() %}
+caffc_{{ leftExpression.expression.typeSymbol.typeName.childType.name }}_arr_set({{ leftExpression.expression | render }}, {{ leftExpression.index | render }}, {{ ctx.right.typeSymbol | c_name }}_ret.{{ ctx.right.typeSymbol.keyName }});
+{%- elseif isIndex(leftExpression) %}
+caffc_obj_arr_set((caffc_obj_arr*) {{ leftExpression.expression | render }}, {{ leftExpression.index | render }}, (caffc_ptr) {{ ctx.right.typeSymbol | c_name }}_ret.{{ ctx.right.typeSymbol.keyName }});
+{%- else %}
+{{ leftExpression | render }} = {{ ctx.right.typeSymbol | c_name }}_ret.{{ ctx.right.typeSymbol.keyName }};
+{%- endif %}
+{%- endfor %}
+caffc_bzero(&{{ ctx.right.typeSymbol | c_name }}_ret, (caffc_u32) sizeof({{ ctx.right.typeSymbol | c_name }}_ret));
 {%- else -%}
 {{ ctx.left | render }} = {{ ctx.right | render }}
 {%- endif -%}

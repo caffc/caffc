@@ -19,4 +19,9 @@ typedef struct {
     caffc_ptr _caffc_data[];
 } caffc_object_header;
 
+/**
+ * Sets the bytes at the given address to 0.
+ */
+caffc_void caffc_bzero(caffc_ptr p, caffc_u32 size);
+
 #endif  /* ifndef __caffco_o */

@@ -20,6 +20,7 @@ public class Module implements AstItem, Scope, Symbol {
     public Map<String, FunctionDefinition> functions = new LinkedHashMap<>();
     public Map<String, ClassDefinition> clazzes = new LinkedHashMap<>();
     public Map<String, InterfaceDefinition> interfaces = new LinkedHashMap<>();
+    public Map<String, Struct> structures = new LinkedHashMap<>();
     public Set<Module> usedModules = new LinkedHashSet<>();
     public Set<String> stringConstants = new LinkedHashSet<>();
 
@@ -47,6 +48,10 @@ public class Module implements AstItem, Scope, Symbol {
 
     public Collection<InterfaceDefinition> interfaceDefinitions() {
         return interfaces.values();
+    }
+
+    public Collection<Struct> structDefinitions() {
+        return structures.values();
     }
 
     @Override
