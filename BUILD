@@ -11,7 +11,7 @@ subinclude("@gbs//util:util.plz")
 ge_java_maven_fatjar(
   name="caffc.jar",
   maven_jar="target/caffc-*.jar",
-  out="caffc.jar",
+  out=f"caffc-{version}.jar",
   help="""\
 Fat jar distribution (a runnable jar that includes all its dependencies) for caffc.
 
@@ -24,7 +24,7 @@ tests as well are ran against this jar.
 ge_java_native_binary(
   name="caffc",
   deps=[":caffc.jar"],
-  out="caffc",
+  out="caff",
   help="caffc native binary (native via graalvm)"
 )
 
