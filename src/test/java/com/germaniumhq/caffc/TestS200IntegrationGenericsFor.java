@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class TestS200IntegrationGenericsFor {
     @Test
     public void testBasicArrayListImplementation() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {

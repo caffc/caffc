@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class TestS009InstantiatedGenericsClassUsingArray {
     @Test
     public void testDeclaredGenericsField() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -34,7 +34,7 @@ public class TestS009InstantiatedGenericsClassUsingArray {
 
     @Test
     public void testDeclaredGenericsFieldArray() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -68,7 +68,7 @@ public class TestS009InstantiatedGenericsClassUsingArray {
 
     @Test
     public void testDeclaredRestrictedGenericsFieldArray() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

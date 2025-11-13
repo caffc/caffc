@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestS101InstructionIfElse {
     @Test
     public void testIfElseGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -26,7 +26,7 @@ public class TestS101InstructionIfElse {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 """
                   if (x == 3) {
                 x = 4;
@@ -39,7 +39,7 @@ public class TestS101InstructionIfElse {
 
     @Test
     public void testIfContinueGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -59,7 +59,7 @@ public class TestS101InstructionIfElse {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 """
 i = 0;
 while (i < 3) {
@@ -79,7 +79,7 @@ i += 1;
 
     @Test
     public void testIfBreakGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -99,7 +99,7 @@ i += 1;
                 }
         );
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 """
 i = 0;
 while (i < 3) {
@@ -119,7 +119,7 @@ i += 1;
 
     @Test
     public void testIfReturnGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -139,7 +139,7 @@ i += 1;
                 }
         );
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
 """
 i = 0;
 while (i < 3) {

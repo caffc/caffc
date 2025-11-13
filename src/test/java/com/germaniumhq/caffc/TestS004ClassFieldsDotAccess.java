@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class TestS004ClassFieldsDotAccess {
     @Test
     public void testDeclaredFieldDotAccess() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -39,7 +39,7 @@ public class TestS004ClassFieldsDotAccess {
 
     @Test
     public void testThisFieldDotAccess() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

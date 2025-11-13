@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestS050Expressions {
     @Test
     public void testExpressionParens() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -24,7 +24,7 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 z = (x + y) * (x - y);
                 """,
                 "parens should translate into the generated code");
@@ -32,7 +32,7 @@ public class TestS050Expressions {
 
     @Test
     public void testCast() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -55,15 +55,15 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, "x = (caffc_u32) 3;",
+        CodeAssertsStr.assertCodeContains(code, "x = (caffc_u32) 3;",
                 "primitive casting should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "b = (main_B*) a;",
+        CodeAssertsStr.assertCodeContains(code, "b = (main_B*) a;",
                 "object casting should translate into the generated code");
     }
 
     @Test
     public void testBoolNot() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -84,7 +84,7 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 if (!x) {
                 """,
                 "not bool should translate into the generated code");
@@ -92,7 +92,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBitNot() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -110,7 +110,7 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 y = ~x;
                 """,
                 "not bits should translate into the generated code");
@@ -118,7 +118,7 @@ public class TestS050Expressions {
 
     @Test
     public void testShift() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -139,11 +139,11 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 z = x << y;
                 """,
                 "left shift should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 t = x >> y;
                 """,
                 "right shift should translate into the generated code");
@@ -151,7 +151,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBitOperations() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -173,15 +173,15 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 t = x & y;
                 """,
                 "bit and should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 u = x | y;
                 """,
                 "bit or should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 v = x ^ y;
                 """,
                 "bit xor should translate into the generated code");
@@ -190,7 +190,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBoolOperations() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -211,11 +211,11 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 t = x && y;
                 """,
                 "bool and should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 u = x || y;
                 """,
                 "bool or should translate into the generated code");
@@ -223,7 +223,7 @@ public class TestS050Expressions {
 
     @Test
     public void testTernaryOperators() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -241,7 +241,7 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 y = x == 1 ? 3 : 4;
                 """,
                 "ternary operators should translate into the generated code");
@@ -250,7 +250,7 @@ public class TestS050Expressions {
     @Test
     public void testOperationAssign() {
         //     ('<<='|'>>='|'&='|'|='|'^='|'*='|'/='|'+='|'-=')
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -278,23 +278,23 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, "x <<= y;",
+        CodeAssertsStr.assertCodeContains(code, "x <<= y;",
                 "shift left assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x >>= y;",
+        CodeAssertsStr.assertCodeContains(code, "x >>= y;",
                 "shift right assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x &= y;",
+        CodeAssertsStr.assertCodeContains(code, "x &= y;",
                 "bit-and assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x |= y;",
+        CodeAssertsStr.assertCodeContains(code, "x |= y;",
                 "bit-or assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x ^= y;",
+        CodeAssertsStr.assertCodeContains(code, "x ^= y;",
                 "bit-xor assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x *= y;",
+        CodeAssertsStr.assertCodeContains(code, "x *= y;",
                 "math mul assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x /= y;",
+        CodeAssertsStr.assertCodeContains(code, "x /= y;",
                 "math div assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x += y;",
+        CodeAssertsStr.assertCodeContains(code, "x += y;",
                 "math plus assign should translate into the generated code");
-        CodeAsserts.assertCodeContains(code, "x -= y;",
+        CodeAssertsStr.assertCodeContains(code, "x -= y;",
                 "math minus assign should translate into the generated code");
     }
 

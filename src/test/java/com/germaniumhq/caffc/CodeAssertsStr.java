@@ -5,6 +5,7 @@ import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
+import com.germaniumhq.caffc.compiler.optimizer.LinearFormOptimizer;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.output.PebbleTemplater;
@@ -15,9 +16,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CodeAsserts {
+/**
+ * This checks the full rendering of a CaffC program. It will do the
+ * asserts against the generated C code.
+ */
+public class CodeAssertsStr {
     public static void assertCodeContains(String code, String containedCode) {
         assertCodeContains(code, containedCode, "code isn't containing expected:  `" + containedCode + "`");
     }
@@ -161,23 +171,7 @@ public class CodeAsserts {
         try {
             return compileCaffcUnits(program, template, unit, testUnits);
         } catch (CancelCompilationException e) {
-            CodeAsserts.printUnitWithLineNumbers(unit, testUnits);
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Compiles multiple units, does the typing resolving, constant creation, etc,
-     * but returns only the CompilationUnit.
-     */
-    public static CompilationUnit compileCaffcUnitsAst(String unit, TestUnit[] testUnits) {
-        Program program = Program.reset();
-        CaffcCompiler.get().hasErrors = false;
-
-        try {
-            return compileCaffcUnitsAst(program, unit, testUnits);
-        } catch (CancelCompilationException e) {
-            printUnitWithLineNumbers(unit, testUnits);
+            CodeAssertsStr.printUnitWithLineNumbers(unit, testUnits);
             throw new RuntimeException(e);
         }
     }
@@ -210,7 +204,7 @@ public class CodeAsserts {
             String template,
             String unit,
             TestUnit[] testUnits) {
-        CompilationUnit compilationUnit = compileCaffcUnitsAst(program, unit, testUnits);
+        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(program, unit, testUnits);
 
         if (CaffcCompiler.get().hasErrors) {
             CaffcCompiler.get().fatal(compilationUnit, "Errors found in compilation");
@@ -228,41 +222,5 @@ public class CodeAsserts {
         } catch (Exception e) {
             throw new RuntimeException("Unable to render unit: " + unit, e);
         }
-    }
-
-    private static CompilationUnit compileCaffcUnitsAst(Program program, String unit, TestUnit[] testUnits) {
-        Map<String, CompilationUnit> compilationUnits = new HashMap<>();
-
-        for (int i = 0; i < testUnits.length; i++) {
-            String compilationUnitPath = testUnits[i].unitPath;
-            String caffcCode = testUnits[i].code;
-
-            caffcLexer lexer = new caffcLexer(new ANTLRInputStream(caffcCode));
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            caffcParser parser = new caffcParser(tokens);
-
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(new CaffcAntlrErrorListener(compilationUnitPath));
-            parser.removeErrorListeners();
-            parser.addErrorListener(new CaffcAntlrErrorListener(compilationUnitPath));
-
-            caffcParser.CompilationUnitContext antlrCompilationUnit = parser.compilationUnit();
-            CompilationUnit compilationUnit = CompilationUnit.fromAntlr(program, antlrCompilationUnit, compilationUnitPath);
-
-            compilationUnits.put(compilationUnitPath, compilationUnit);
-        }
-
-        for (CompilationUnit compilationUnit: compilationUnits.values()) {
-            compilationUnit.recurseResolveTypes();
-        }
-        program.recreateConstants();
-
-        CompilationUnit compilationUnit = compilationUnits.get(unit);
-
-        if (compilationUnit == null) {
-            CaffcCompiler.get().fatal(compilationUnit, "unit not found: " + unit + " known units: " + compilationUnits.keySet());
-        }
-
-        return compilationUnit;
     }
 }

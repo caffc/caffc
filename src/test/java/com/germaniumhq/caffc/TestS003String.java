@@ -2,7 +2,7 @@ package com.germaniumhq.caffc;
 
 import org.junit.jupiter.api.Test;
 
-import static com.germaniumhq.caffc.CodeAsserts.compileFullCaffcProgram;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileFullCaffcProgram;
 
 public class TestS003String {
     @Test
@@ -29,7 +29,7 @@ public class TestS003String {
                                         """)
                 });
 
-        CodeAsserts.assertCodeContains(code, "x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;",
+        CodeAssertsStr.assertCodeContains(code, "x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;",
                 "string constants aren't generated correctly.");
     }
 
@@ -57,7 +57,7 @@ public class TestS003String {
                                         """)
                 });
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 """
                 caffc_str_13 caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9 = {
                     /* _caffc_class_header */ &caffc_str_type,
@@ -93,11 +93,11 @@ public class TestS003String {
                                         """)
                 });
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 "extern caffc_str_12 caffc_cstr_ce2cddbe5f7f742d1630540ee17299cd33ff3866e5da666952ebff45fdfaa72a;",
                 "string constants aren't generated correctly.");
 
-      CodeAsserts.assertCodeContains(code,
+      CodeAssertsStr.assertCodeContains(code,
         """
           typedef struct {
               caffc_class_header* _caffc_class_header;

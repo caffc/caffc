@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class TestS005GenericsDataFunctions {
     @Test
     public void testDeclaredGenericsFunctionParameter() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -48,7 +48,7 @@ public class TestS005GenericsDataFunctions {
 
     @Test
     public void testDeclaredGenericsRestrictedFunctionParameter() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

@@ -4,8 +4,8 @@ import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.germaniumhq.caffc.CodeAsserts.assertCodeContains;
-import static com.germaniumhq.caffc.CodeAsserts.compileCaffcProgram;
+import static com.germaniumhq.caffc.CodeAssertsStr.assertCodeContains;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileCaffcProgram;
 
 public class TestS004ClassStaticMethods {
     @Test
@@ -52,7 +52,7 @@ public class TestS004ClassStaticMethods {
 
     @Test
     public void testStaticMethodsOutsideClassesShouldFailCompiling() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

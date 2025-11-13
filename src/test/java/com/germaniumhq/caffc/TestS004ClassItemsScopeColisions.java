@@ -19,7 +19,7 @@ public class TestS004ClassItemsScopeColisions {
 
     @Test
     public void fieldsAndMethodsShouldNotCollide() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
             "a/a.caffc", /* compilation unit */
             new TestUnit[] {
                 new TestUnit("a/a.caffc",
@@ -41,7 +41,7 @@ public class TestS004ClassItemsScopeColisions {
 
     @Test
     public void fieldsShouldNotBeDuplicated() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -61,7 +61,7 @@ public class TestS004ClassItemsScopeColisions {
 
     @Test
     public void fieldsShouldNotBeDuplicated2() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -80,7 +80,7 @@ public class TestS004ClassItemsScopeColisions {
 
     @Test
     public void methodsShouldNotBeDuplicated() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -103,7 +103,7 @@ public class TestS004ClassItemsScopeColisions {
 
     @Test
     public void methodCanOverloadGlobalFunction() {
-        CodeAsserts.compileCaffcUnitsAst(
+        CodeAssertsAst.compileCaffcUnitsAst(
             "a/a.caffc", /* compilation unit */
             new TestUnit[] {
                 new TestUnit("a/a.caffc",

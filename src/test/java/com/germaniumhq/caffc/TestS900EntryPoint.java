@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class TestS900EntryPoint {
     @Test
     public void testGenerationOfAMainFunctionWorks() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -22,7 +22,7 @@ main(str[] args) -> i32 {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
   int result;
   caffc_str_arr* arr;
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
 
     @Test
     public void testGenerationOfAMainVoidFunctionWorks() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
   caffc_str_arr* arr;
   caffc_ptr _caffc_locals[1];
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
     @Test
     public void testGenerationOfAMainWithoutParamsFunctionWorks() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
   int result;
 

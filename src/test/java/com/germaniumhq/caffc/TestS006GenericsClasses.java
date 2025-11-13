@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 public class TestS006GenericsClasses {
     @Test
     public void testDeclaredGenericsField() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -40,7 +40,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsRestrictedField() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -64,7 +64,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsClassFunction() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -89,7 +89,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsRestrictedClassFunction() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -115,7 +115,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsClassFunctionParameter() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -140,7 +140,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsRestrictedClassFunctionParameterRestricted() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -166,7 +166,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsClassFunctionVariable() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -192,7 +192,7 @@ public class TestS006GenericsClasses {
 
     @Test
     public void testDeclaredGenericsRestrictedClassFunctionVariableRestricted() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

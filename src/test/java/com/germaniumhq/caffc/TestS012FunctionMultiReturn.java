@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestS012FunctionMultiReturn {
     @Test
     public void testGenerationOfFunctionsWithSingleUnnamedReturn() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
             new TestUnit[] {
@@ -25,12 +25,12 @@ public class TestS012FunctionMultiReturn {
             }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 i32 main_getPoint() {
                 """,
             "the return type should be the type for the single unnamed return");
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
             "x = main_getPoint();",
             "the call for a single unnamed return should not be unpacked");
 
@@ -38,7 +38,7 @@ public class TestS012FunctionMultiReturn {
 
     @Test
     public void testGenerationOfFunctionsWithSingleNamedReturn() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
             new TestUnit[] {
@@ -58,20 +58,20 @@ public class TestS012FunctionMultiReturn {
             }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 i32 main_getPoint() {
                 """,
             "the return type should be still just the type for the single unnamed return," +
                 "since the \"name\" of the variable can be thought to be the function names");
 
-        CodeAsserts.assertCodeContains(code,
+        CodeAssertsStr.assertCodeContains(code,
                 "x = main_getPoint();",
                 "the call for a single named return should not be unpacked");
     }
 
     @Test
     public void testGenerationOfFunctionsWithMultipleReturnStructs() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
             new TestUnit[] {
@@ -98,32 +98,32 @@ public class TestS012FunctionMultiReturn {
             }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 caffc_getFile_structreturn main_getFile() {
                 """,
             "the return type should be a struct for multiple returns");
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 caffc_getFile_structreturn_ret = main_getFile();
                 """,
             "the result of the call should be copied in the structure first");
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 caffc_i32_arr_set(sizesArray, 0, caffc_getFile_structreturn_ret.size);
                 """,
             "the value x of the struct should be unpacked (primitive array)");
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 caffc_obj_arr_set((caffc_obj_arr*) namesArray, 0, (caffc_ptr) caffc_getFile_structreturn_ret.name);
                 """,
             "the value y of the struct should be unpacked (object array)");
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 fileSize = caffc_getFile_structreturn_ret.size;
                 """,
             "the value x of the struct should be unpacked (primitive)");
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 fileName = caffc_getFile_structreturn_ret.name;
                 """,
             "the value y of the struct should be unpacked (object)");
@@ -131,7 +131,7 @@ public class TestS012FunctionMultiReturn {
 
     @Test
     public void testGenerationOfFunctionsWithMultipleReturnStructsHeaderGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
             "caffc/template/c/module_h.peb",
             "a/a.caffc",
             new TestUnit[] {
@@ -152,7 +152,7 @@ public class TestS012FunctionMultiReturn {
             }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 typedef struct {
                   caffc_i32 x;
                   caffc_str* s;

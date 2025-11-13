@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestModules {
     @Test
     public void testModuleUse() {
-        String code = CodeAsserts.compileCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb", /* template         */
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
@@ -29,12 +29,12 @@ public class TestModules {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, "b_x(3);");
+        CodeAssertsStr.assertCodeContains(code, "b_x(3);");
     }
 
     @Test
     public void testModuleUseModuleHeaderGen() {
-        String code = CodeAsserts.compileCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/module_h.peb", /* template         */
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
@@ -58,13 +58,13 @@ public class TestModules {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, "#include \"module_b.h\"",
+        CodeAssertsStr.assertCodeContains(code, "#include \"module_b.h\"",
                 "the b module should be imported, since we have a module a -> module b dependency");
     }
 
     @Test
     public void testModuleCaffcIsAvailableByDefault() {
-        String code = CodeAsserts.compileCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb", /* template         */
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
@@ -87,7 +87,7 @@ public class TestModules {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, " caffc_CaffcObj_new()->x = 4;",
+        CodeAssertsStr.assertCodeContains(code, " caffc_CaffcObj_new()->x = 4;",
                 "the caffc.CaffcObj should be instantiated, since caffc is used by default");
     }
 }

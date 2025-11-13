@@ -6,13 +6,13 @@ import com.germaniumhq.caffc.compiler.model.Interface;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.germaniumhq.caffc.CodeAsserts.assertCodeContains;
-import static com.germaniumhq.caffc.CodeAsserts.compileCaffcProgram;
+import static com.germaniumhq.caffc.CodeAssertsStr.assertCodeContains;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileCaffcProgram;
 
 public class TestS003InterfaceFunctions {
     @Test
     public void testInterfaceDeclaration() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
@@ -41,7 +41,7 @@ public class TestS003InterfaceFunctions {
 
     @Test
     public void testInterfaceMethodImplementation() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

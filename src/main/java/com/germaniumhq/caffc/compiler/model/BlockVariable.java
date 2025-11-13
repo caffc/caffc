@@ -3,11 +3,17 @@ package com.germaniumhq.caffc.compiler.model;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
-public class BlockVariable implements Symbol {
+public class BlockVariable implements Symbol, Expression {
     public String name;
     public Symbol typeSymbol;
 
     public AstItem owner;
+
+    public BlockVariable(AstItem owner, Symbol typeSymbol, String name) {
+        this.owner = owner;
+        this.typeSymbol = typeSymbol;
+        this.name = name;
+    }
 
     @Override
     public AstItem getOwner() {

@@ -2,8 +2,8 @@ package com.germaniumhq.caffc;
 
 import org.junit.jupiter.api.Test;
 
-import static com.germaniumhq.caffc.CodeAsserts.assertCodeContains;
-import static com.germaniumhq.caffc.CodeAsserts.compileFullCaffcProgram;
+import static com.germaniumhq.caffc.CodeAssertsStr.assertCodeContains;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileFullCaffcProgram;
 
 public class TestGenerics {
     @Test

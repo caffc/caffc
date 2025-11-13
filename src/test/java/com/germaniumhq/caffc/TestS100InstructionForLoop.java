@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestS100InstructionForLoop {
     @Test
     public void testForLoopGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -21,7 +21,7 @@ public class TestS100InstructionForLoop {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                        i = 0;
                        while (i < 10) {
                        i = i + 1;
@@ -34,7 +34,7 @@ public class TestS100InstructionForLoop {
 
     @Test
     public void testForLoopSeparateVarGeneration() {
-        String code = CodeAsserts.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -51,7 +51,7 @@ public class TestS100InstructionForLoop {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
   i = 0;
 while (i < 10) {
 i = i + 1;

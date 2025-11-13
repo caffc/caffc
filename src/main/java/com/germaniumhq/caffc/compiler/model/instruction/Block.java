@@ -20,8 +20,16 @@ import java.util.Map;
 public class Block implements Statement, Scope {
     public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
     public List<Statement> statements = new ArrayList<>();
+    public int varIndex;
 
     AstItem owner;
+
+    public static Block createFrom(Statement statement) {
+        Block block = new Block();
+        block.owner = statement;
+
+        return block;
+    }
 
     @Override
     public Symbol resolve(String name) {
@@ -52,5 +60,16 @@ public class Block implements Statement, Scope {
     public void recurseResolveTypes() {
         throw new IllegalStateException("recurse resolve types shouldn't be called, " +
             "since the types should have been already resolved");
+    }
+
+    public void addStatement(Statement statement) {
+        this.statements.add(statement);
+    }
+
+    public BlockVariable addTempVariable(AstItem owner, Symbol typeSymbol) {
+        BlockVariable result = new BlockVariable(owner, typeSymbol, "_caffc_temp_" + varIndex);
+        varIndex += 1;
+
+        return result;
     }
 }

@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static com.germaniumhq.caffc.CodeAsserts.assertCodeContains;
-import static com.germaniumhq.caffc.CodeAsserts.compileCaffcCode;
+import static com.germaniumhq.caffc.CodeAssertsStr.assertCodeContains;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileCaffcCode;
 
 public class TestNativeBlocks {
     @Test

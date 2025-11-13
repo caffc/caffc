@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
@@ -19,8 +20,8 @@ public class ExpressionAssign implements Expression {
     public Expression right;
 
     public String astFilePath;
-    public int astColumn;
     public int astLine;
+    public int astColumn;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAssignContext assignExpression) {
         ExpressionAssign expression = new ExpressionAssign();
@@ -39,6 +40,20 @@ public class ExpressionAssign implements Expression {
         expression.right = Expression.fromAntlr(unit, expression, assignExpression.rightExpression);
 
         return expression;
+    }
+
+    public static ExpressionAssign fromCode(AstItem owner, Expression left, Expression right) {
+        ExpressionAssign result = new ExpressionAssign();
+
+        result.owner = owner;
+        result.leftExpressions.add(left);
+        result.right = right;
+
+        result.astFilePath = owner.getFilePath();
+        result.astLine = owner.getLineNumber();
+        result.astColumn = owner.getColumnNumber();
+
+        return result;
     }
 
     public boolean isIndex() {

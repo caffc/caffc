@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class TestS003FqdnNames {
     @Test
     public void testDeclaredFieldWithFqdnType() {
-        CompilationUnit ast = CodeAsserts.compileCaffcUnitsAst(
+        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc", /* compilation unit */
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",

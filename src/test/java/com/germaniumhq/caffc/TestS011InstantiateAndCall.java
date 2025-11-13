@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestS011InstantiateAndCall {
     @Test
     public void testInstantiationCallOfAnAnonymousObject() {
-        String code = CodeAsserts.compileCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -25,7 +25,7 @@ public class TestS011InstantiateAndCall {
                 }
         );
 
-        CodeAsserts.assertCodeContains(code, """
+        CodeAssertsStr.assertCodeContains(code, """
                 a_A_hello(a_A_new(), 3);
                 """,
                 "the new call should go via the dynamic size function defined for _obj_a");
