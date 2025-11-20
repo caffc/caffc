@@ -55,4 +55,12 @@ public class BlockVariable implements Symbol, Expression {
     public Symbol typeSymbol() {
         return this.typeSymbol;
     }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("type", typeSymbol);
+            codeRenderer.field("name", name);
+        });
+    }
 }

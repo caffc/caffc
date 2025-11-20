@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
@@ -74,11 +75,23 @@ public class Block implements Statement, Scope {
         String cTypeName = FilterCTypeName.getCType(expression.typeSymbol().typeName());
         Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
 
+        String variableName = "_caffc_temp_" + cTypeName + "_" + index;
+
         BlockVariable result = new BlockVariable(
             expression,
             expression.typeSymbol(),
-            "_caffc_temp_" + cTypeName + "_" + index);
+            variableName);
+
+        this.blockVariables.put(variableName, result);
 
         return result;
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("variables", this.blockVariables);
+            codeRenderer.field("statements", this.statements);
+        });
     }
 }

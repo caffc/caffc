@@ -8,6 +8,7 @@ public class TestS300LinearFormBasicMath {
     public void testBasicLinearForm() {
         CompilationUnit astOps = CodeAssertsAst.compileCaffcUnitsAst(
                 "a/a.caffc",
+                true,
                 new TestUnit[] {
                     new TestUnit("a/a.caffc",
             """
