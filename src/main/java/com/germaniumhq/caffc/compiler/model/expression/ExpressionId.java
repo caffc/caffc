@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -71,5 +72,12 @@ public class ExpressionId implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.symbol = SymbolResolver.mustResolveSymbol(this, SymbolSearch.ofName(this.name));
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("name", this.name);
+        });
     }
 }

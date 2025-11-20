@@ -141,6 +141,16 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         this.returnType = this.createReturnTypeSymbol();
     }
 
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("isStatic", isStatic);
+            codeRenderer.field("name", name);
+            codeRenderer.field("parameters", parameters);
+            codeRenderer.field("returnTypes", returnTypes);
+        });
+    }
+
     private Symbol createReturnTypeSymbol() {
         if (this.returnTypes == null || this.returnTypes.isEmpty()) {
             return TypeSymbol.VOID;

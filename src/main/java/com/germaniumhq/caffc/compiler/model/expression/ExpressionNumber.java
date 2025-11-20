@@ -201,4 +201,12 @@ public class ExpressionNumber implements Expression {
     public Symbol typeSymbol() {
         return symbol;
     }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("typeSymbol", this.symbol);
+            codeRenderer.field("value", this.value);
+        });
+    }
 }

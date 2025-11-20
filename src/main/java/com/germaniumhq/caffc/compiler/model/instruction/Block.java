@@ -2,14 +2,17 @@ package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.BlockVariable;
+import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Represents a block of statements. Blocks are never created by
@@ -20,7 +23,8 @@ import java.util.Map;
 public class Block implements Statement, Scope {
     public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
     public List<Statement> statements = new ArrayList<>();
-    public int varIndex;
+
+    private Map<String, Integer> typeIndexes = new TreeMap<>();
 
     AstItem owner;
 
@@ -66,9 +70,14 @@ public class Block implements Statement, Scope {
         this.statements.add(statement);
     }
 
-    public BlockVariable addTempVariable(AstItem owner, Symbol typeSymbol) {
-        BlockVariable result = new BlockVariable(owner, typeSymbol, "_caffc_temp_" + varIndex);
-        varIndex += 1;
+    public BlockVariable addTempVariableFor(Expression expression) {
+        String cTypeName = FilterCTypeName.getCType(expression.typeSymbol().typeName());
+        Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
+
+        BlockVariable result = new BlockVariable(
+            expression,
+            expression.typeSymbol(),
+            "_caffc_temp_" + cTypeName + "_" + index);
 
         return result;
     }

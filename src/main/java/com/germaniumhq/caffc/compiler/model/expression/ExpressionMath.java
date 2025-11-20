@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -93,5 +94,14 @@ public class ExpressionMath implements Expression {
         this.right.recurseResolveTypes();
 
         this.symbol = this.left.typeSymbol();
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("left", this.left);
+            codeRenderer.field("operator", this.operator);
+            codeRenderer.field("right", this.right);
+        });
     }
 }

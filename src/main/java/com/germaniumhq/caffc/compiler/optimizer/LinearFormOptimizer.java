@@ -73,26 +73,23 @@ public class LinearFormOptimizer {
     private static void breakDownExpression(Block block, Expression expression) {
         if (expression instanceof ExpressionMath expressionMath) {
             if (!isSimpleExpression(expressionMath.left)) {
-                BlockVariable variable = block.addTempVariable(expressionMath.left, expressionMath.left.typeSymbol());
-
-                breakDownExpression(block, expressionMath.left);
-                ExpressionAssign a1 = ExpressionAssign.fromCode(expressionMath, variable, expressionMath.left);
-
-                block.addStatement(a1);
-                expressionMath.left = variable;
+                expressionMath.left = extractIntoBlockTempVariable(block, expressionMath.left);
             }
 
             if (!isSimpleExpression(expressionMath.right)) {
-                BlockVariable variable = block.addTempVariable(expressionMath.right, expressionMath.right.typeSymbol());
-
-                breakDownExpression(block, expressionMath.right);
-                ExpressionAssign a1 = ExpressionAssign.fromCode(expressionMath, variable, expressionMath.right);
-
-                block.addStatement(a1);
-
-                expressionMath.right = variable;
+                expressionMath.right = extractIntoBlockTempVariable(block, expressionMath.right);
             }
         }
+    }
+
+    private static BlockVariable extractIntoBlockTempVariable(Block block, Expression expression) {
+        BlockVariable variable = block.addTempVariableFor(expression);
+
+        breakDownExpression(block, expression);
+        ExpressionAssign expressionAssign = ExpressionAssign.fromCode(expression.getOwner(), variable, expression);
+
+        block.addStatement(expressionAssign);
+        return variable;
     }
 
     private static boolean isSimpleExpression(Expression expression) {

@@ -1,7 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
@@ -114,5 +114,13 @@ public class ExpressionAssign implements Expression {
     // #UsedInTemplate("assign.peb")
     public boolean isMultiReturn() {
         return this.leftExpressions.size() > 1;
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("leftExpressions", this.leftExpressions);
+            codeRenderer.field("right", this.right);
+        });
     }
 }

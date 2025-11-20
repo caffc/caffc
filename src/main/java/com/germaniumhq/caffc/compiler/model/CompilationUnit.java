@@ -125,4 +125,11 @@ public class CompilationUnit implements AstItem, Scope {
                 "file='" + astFilePath + '\'' +
                 '}';
     }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("compileBlocks", compileBlocks);
+        });
+    }
 }

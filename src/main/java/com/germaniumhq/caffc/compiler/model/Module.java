@@ -182,4 +182,9 @@ public class Module implements AstItem, Scope, Symbol {
 
         return result;
     }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        throw new IllegalStateException("BUG: render ast can only be used on modules");
+    }
 }

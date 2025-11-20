@@ -57,4 +57,18 @@ public class TypeSymbol implements Symbol, AstItem {
     @Override
     public void recurseResolveTypes() {
     }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        String fqdn = String.format(
+            "%s:%s:%s:%s",
+            typeName.module,
+            typeName.functionClass,
+            typeName.name,
+            typeName.dataType
+        );
+        String generics = "";
+
+        codeRenderer.text(fqdn + generics);
+    }
 }

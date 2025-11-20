@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Clazz;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -11,6 +12,9 @@ import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Traverses the AST trying to find an item by its nested name. The
@@ -139,4 +143,38 @@ public class AstUtil {
     }
 
 
+    /**
+     * Renders an AST into a string. This should make far easier
+     * code checks, since it allows for easy structural checks.
+     *
+     * Each AST item _must_ know how to represent itself. The format
+     * is YAML-like.
+     *
+     * i.e.
+     *
+     * ExpressionAssign:
+     *   leftExpressions:
+     *   - ExpressionId:
+     *       name: "x"
+     *   - ExpressionId:
+     *       name: "y"
+     *   right:
+     *     ExpressionFnCall:
+     *       functionExpression:
+     *         ExpressionId:
+     *           name: renderPoint
+     *       genericsInstantiations: null
+     *       parameters:
+     *       - ExpressionId:
+     */
+    public static String astToString(AstItem astItem) {
+        AstItemCodeRenderer codeRenderer = new AstItemCodeRenderer();
+        astItem.renderAst(codeRenderer);
+
+        String result = codeRenderer.toString();
+
+        return Arrays.stream(result.split("\n"))
+            .filter(s -> !s.trim().isEmpty())
+            .collect(Collectors.joining("\n"));
+    }
 }

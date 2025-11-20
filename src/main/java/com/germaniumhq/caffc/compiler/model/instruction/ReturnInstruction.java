@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
@@ -9,7 +10,11 @@ import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class ReturnInstruction implements Statement {
     public AstItem owner;
@@ -91,5 +96,20 @@ public class ReturnInstruction implements Statement {
     public static class NamedReturn {
         public Expression value;
         public String name;
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            List values = returns.stream().map(it -> {
+                Map<String, Object> result = new HashMap<>();
+                result.put("name", it.name);
+                result.put("value", it.value);
+
+                return result;
+            }).toList();
+
+            codeRenderer.field("returns", values);
+        });
     }
 }

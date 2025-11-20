@@ -2,7 +2,6 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -257,6 +256,14 @@ public class Function implements CompileBlock, Scope, Symbol {
         for (Statement statement: this.statements) {
             statement.recurseResolveTypes();
         }
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("definition", definition);
+            codeRenderer.field("statements", statements);
+        });
     }
 
     @Override

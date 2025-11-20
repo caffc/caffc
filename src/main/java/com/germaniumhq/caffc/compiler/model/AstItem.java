@@ -75,4 +75,11 @@ public interface AstItem {
     static String debugInfo(AstItem owner) {
         return owner.getFilePath() + ":" + owner.getLineNumber() + ":" + owner.getColumnNumber();
     }
+
+    /**
+     * Renders the current node using the given code renderer.
+     */
+    default void renderAst(AstItemCodeRenderer codeRenderer) {
+        throw new UnsupportedOperationException("Not supported yet for: " + this.getClass().getCanonicalName());
+    }
 }

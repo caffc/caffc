@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -109,5 +110,14 @@ public class VariableDeclaration implements AstItem, Symbol {
         return this.typeSymbol != null ?
             this.typeSymbol :
             ((VariableDeclarations)this.owner).typeSymbol;
+    }
+
+    @Override
+    public void renderAst(AstItemCodeRenderer codeRenderer) {
+        codeRenderer.object(this, () -> {
+            codeRenderer.field("typeSymbol", this.typeSymbol);
+            codeRenderer.field("name", this.name);
+            codeRenderer.field("expression", this.assignExpression);
+        });
     }
 }
