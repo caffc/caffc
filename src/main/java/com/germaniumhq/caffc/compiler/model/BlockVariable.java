@@ -1,9 +1,14 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
-public class BlockVariable implements Symbol, Expression {
+/**
+ * A block variable is a temporary variable created in a block. It will
+ * eventually be merged in the function variables.
+ */
+public class BlockVariable implements AsmVar {
     public String name;
     public Symbol typeSymbol;
 
@@ -33,12 +38,6 @@ public class BlockVariable implements Symbol, Expression {
     @Override
     public int getColumnNumber() {
         return owner.getColumnNumber();
-    }
-
-    @Override
-    public void recurseResolveTypes() {
-        throw new IllegalStateException("recurse resolve types shouldn't be called, " +
-            "since the types should have been already resolved");
     }
 
     @Override

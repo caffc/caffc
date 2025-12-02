@@ -94,4 +94,20 @@ public class Block implements Statement, Scope {
             codeRenderer.field("statements", this.statements);
         });
     }
+
+    public BlockVariable addTempVar(AstItem owner, Symbol typeSymbol) {
+        String cTypeName = FilterCTypeName.getCType(typeSymbol.typeName());
+        Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
+
+        String variableName = "_caffc_temp_" + cTypeName + "_" + index;
+
+        BlockVariable result = new BlockVariable(
+            owner,
+            typeSymbol,
+            variableName);
+
+        this.blockVariables.put(variableName, result);
+
+        return result;
+    }
 }

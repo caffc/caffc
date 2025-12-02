@@ -1,12 +1,16 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.type.*;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.type.GenericsSymbol;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.Map;
 
-public class Parameter implements AstItem, GenericsSymbol {
+public class Parameter implements AstItem, GenericsSymbol, AsmVar {
     public FunctionDefinition owner;
     public Symbol typeSymbol;
     public String name;

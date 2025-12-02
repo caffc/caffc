@@ -4,11 +4,15 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class VariableDeclaration implements AstItem, Symbol {
+// FIXME: a variable declaration seems to me just that, a variable declaration.
+//        this should probably only reside on the AST side of things, not so
+//        much
+public class VariableDeclaration implements AstItem, Symbol, AsmVar {
     public String name;
     public ExpressionAssign assignExpression;
 

@@ -1,20 +1,23 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Return;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 public class ReturnInstruction implements Statement {
     public AstItem owner;
@@ -93,9 +96,40 @@ public class ReturnInstruction implements Statement {
         return this.findAstParent(Function.class);
     }
 
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        if (this.getFunction().definition.isReturnEmpty()) {
+            return new AsmLinearFormResult(List.of(new Return(null)));
+        }
+
+        if (this.getFunction().definition.isMultiReturn()) {
+            List<AsmInstruction> instructions = new ArrayList<>();
+            BlockVariable structVar = block.addTempVar(this.getFunction(), this.getFunction().definition.returnType);
+
+            for (NamedReturn namedReturn: this.returns) {
+                AsmLinearFormResult namedReturnLinearForm = namedReturn.value.asLinearForm(block);
+                instructions.addAll(namedReturnLinearForm.instructions);
+                instructions.add(new AsmAssign(structVar, namedReturnLinearForm.value));
+            }
+
+            instructions.add(new Return(structVar));
+
+            return new AsmLinearFormResult(instructions);
+        }
+
+        List<AsmInstruction> instructions = new ArrayList<>();
+        NamedReturn ret = this.returns.get(0);
+
+        AsmLinearFormResult linearForm = ret.value.asLinearForm(block);
+        instructions.addAll(linearForm.instructions);
+        instructions.add(new Return(linearForm.value));
+
+        return new AsmLinearFormResult(instructions);
+    }
+
     public static class NamedReturn {
-        public Expression value;
         public String name;
+        public Expression value;
     }
 
     @Override

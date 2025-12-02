@@ -1,8 +1,9 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class NativeBlock implements CompileBlock, Statement {
+final public class NativeBlock implements CompileBlock, Statement, AsmInstruction {
     public AstItem owner;
     public String text;
 

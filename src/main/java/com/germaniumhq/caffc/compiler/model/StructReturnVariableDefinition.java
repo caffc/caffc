@@ -1,12 +1,13 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 /**
  * A variable defined by the return. It lives inside a struct.
  */
-public class StructReturnVariableDefinition implements Symbol {
+public class StructReturnVariableDefinition implements Symbol, AsmVar {
     public AstItem owner;
     public String name;
     public Symbol typeSymbol;

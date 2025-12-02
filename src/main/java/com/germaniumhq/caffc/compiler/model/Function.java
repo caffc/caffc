@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -21,8 +22,30 @@ import java.util.Objects;
 public class Function implements CompileBlock, Scope, Symbol {
     public AstItem owner;
     public FunctionDefinition definition = new FunctionDefinition();
+
+    /**
+     * Statements represent the actual instructions in AST format. They
+     * will be later converted to AsmInstruction instances.
+     */
     public List<Statement> statements = new ArrayList<>();
+
+    /**
+     * Instructions are what the code actually does, in an ASM-like format
+     * (also known as linear form)
+     */
+    public List<AsmInstruction> instructions = new ArrayList<>();
+
+    /**
+     * These are normal variables the user has declared.
+     */
     public Map<String, VariableDeclaration> _variables = new LinkedHashMap<>();
+
+    /**
+     * These are the variables used if the user has defined a function with
+     * multiple returns. The actual values are packed _inside_ the return struct,
+     * however they are available in the language (not native blocks) as regular
+     * variables.
+     */
     public Map<String, StructReturnVariableDefinition> _structReturnVariables = new LinkedHashMap<>();
 
     private boolean isResolved;

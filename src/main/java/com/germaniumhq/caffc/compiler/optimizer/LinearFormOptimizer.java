@@ -8,6 +8,11 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+import com.germaniumhq.caffc.compiler.model.asm.opc.IfJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Jmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Label;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
@@ -15,8 +20,13 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.instruction.Block;
+import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
 
+/**
+ * This will transform the AST into a list of OPS. The OPS are still nodes
+ * from AST, but flattened.
+ */
 public class LinearFormOptimizer {
     /**
      * Recursively traverses each method, and flattens it, so at the end, each
@@ -49,9 +59,9 @@ public class LinearFormOptimizer {
         }
     }
 
-    private static void breakDownStatement(Block block, Statement statement) {
-        if (statement instanceof NativeBlock) {
-            block.addStatement(statement);
+    private static void breakDownStatement(AsmBlock block, Statement statement) {
+        if (statement instanceof NativeBlock nativeBlock) {
+            block.add(nativeBlock);
             return;
         }
 
@@ -61,13 +71,35 @@ public class LinearFormOptimizer {
         }
 
         if (statement instanceof ExpressionAssign assignExpression) {
-            breakDownExpression(block, assignExpression.right);
-            for (Expression expression: assignExpression.leftExpressions) {
-                breakDownExpression(block, expression);
-            }
-
-            block.addStatement(statement);
+            breakDownAssignExpression(block, assignExpression);
+            return;
         }
+
+        if (statement instanceof IfInstruction ifInstruction) {
+            AsmInstruction ifCondition = extractIntoBlockTempVariable(block, ifInstruction.checkExpression);
+
+            Label ifLabel = new Label();
+            IfJmp ifJump = new IfJmp(ifCondition, ifLabel);
+            Label endIfLabel = new Label();
+            Jmp goToEnd = new Jmp(endIfLabel);
+
+            block.add(ifJump);
+            block.add(ifInstruction.statements);
+            block.add(goToEnd);
+            block.add(ifLabel);
+            block.add(ifInstruction.elseStatements);
+            block.add(endIfLabel);
+            return;
+        }
+    }
+
+    private static void breakDownAssignExpression(Block block, ExpressionAssign assignExpression) {
+        breakDownExpression(block, assignExpression.right);
+        for (Expression expression: assignExpression.leftExpressions) {
+            breakDownExpression(block, expression);
+        }
+
+        block.addStatement(assignExpression);
     }
 
     private static void breakDownExpression(Block block, Expression expression) {
