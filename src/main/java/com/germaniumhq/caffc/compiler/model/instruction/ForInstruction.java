@@ -1,10 +1,12 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AssignExpression;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -16,7 +18,7 @@ import java.util.List;
 public class ForInstruction implements Statement, Scope {
     public AstItem owner;
 
-    public VariableDeclarations variableDeclarations;
+    public List<VariableDeclaration> variableDeclarations;
     public Expression variableInitializationExpression;
     public Expression checkExpression;
     public Expression incrementExpression;
@@ -78,7 +80,9 @@ public class ForInstruction implements Statement, Scope {
     @Override
     public void recurseResolveTypes() {
         if (this.variableDeclarations != null) {
-            this.variableDeclarations.recurseResolveTypes();
+            for (VariableDeclaration variableDeclaration: this.variableDeclarations) {
+                variableDeclaration.recurseResolveTypes();
+            }
         }
 
         if (this.variableInitializationExpression != null) {
@@ -95,6 +99,11 @@ public class ForInstruction implements Statement, Scope {
 
     @Override
     public Symbol resolve(String name) {
+        return null;
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
         return null;
     }
 }

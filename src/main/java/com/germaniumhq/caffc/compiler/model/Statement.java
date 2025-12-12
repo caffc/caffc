@@ -30,10 +30,6 @@ public interface Statement extends AstItem {
             return AssignExpression.fromAntlr(unit, owner, antlrStatement.assignExpression());
         }
 
-        if (antlrStatement.variableDeclarations() != null) {
-            return VariableDeclarations.fromAntlr(unit, owner, antlrStatement.variableDeclarations());
-        }
-
         if (antlrStatement.ifBlock() != null) {
             return IfInstruction.fromAntlr(unit, owner, antlrStatement.ifBlock());
         }

@@ -6,26 +6,31 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-// FIXME: a variable declaration seems to me just that, a variable declaration.
-//        this should probably only reside on the AST side of things, not so
-//        much
 public class VariableDeclaration implements AstItem, Symbol, AsmVar {
     public String name;
     public ExpressionAssign assignExpression;
 
     public AstItem owner;
-    public Symbol typeSymbol;
-    public String astFilePath;
 
+    public SymbolSearch typeSymbolSearch;
+    public Symbol typeSymbol;
+
+    public String astFilePath;
     public int astColumn;
     public int astLine;
 
     private boolean isResolved;
 
-    public static VariableDeclaration fromAntlr(CompilationUnit unit, VariableDeclarations owner, caffcParser.VariableDeclarationContext variableDeclarationContext) {
+    public static VariableDeclaration fromAntlr(
+        CompilationUnit unit,
+        AstItem owner,
+        SymbolSearch symbolSearch,
+        caffcParser.VariableDeclarationContext variableDeclarationContext) {
         VariableDeclaration result = new VariableDeclaration();
 
         result.owner = owner;
@@ -33,7 +38,9 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar {
         result.astLine = variableDeclarationContext.getStart().getLine();
         result.astColumn = variableDeclarationContext.getStart().getCharPositionInLine();
 
+        result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();
+
         caffcParser.ExpressionContext expressionContext = variableDeclarationContext.expression();
 
         if (expressionContext != null) {
@@ -47,6 +54,7 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar {
             result.assignExpression.leftExpressions.add(
                 ExpressionId.fromName(unit, result.assignExpression, result.name)
             );
+
             result.assignExpression.right = Expression.fromAntlr(unit, result.assignExpression, expressionContext);
         }
 
@@ -93,6 +101,7 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar {
         }
 
         this.isResolved = true;
+        this.typeSymbol = SymbolResolver.resolveInstantiatedSymbol(this, this.typeSymbolSearch);
 
         if (this.assignExpression != null) {
             this.assignExpression.recurseResolveTypes();
@@ -111,9 +120,7 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar {
 
     @Override
     public Symbol typeSymbol() {
-        return this.typeSymbol != null ?
-            this.typeSymbol :
-            ((VariableDeclarations)this.owner).typeSymbol;
+        return this.typeSymbol;
     }
 
     @Override
