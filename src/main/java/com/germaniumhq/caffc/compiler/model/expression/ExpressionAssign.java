@@ -1,11 +1,17 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.instruction.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -122,5 +128,53 @@ public class ExpressionAssign implements Expression {
             codeRenderer.field("leftExpressions", this.leftExpressions);
             codeRenderer.field("right", this.right);
         });
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        // this is an indexed assign, i.e.: arr[i] = 3
+        // we need to compute each expression (`arr`, `i` and `3`), then create the
+        // setter call for the array.
+        if (this.isIndex()) {
+            ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) this.getLeft();
+
+            AsmLinearFormResult right = this.right.asLinearForm(block);
+            AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
+            AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+
+            // This should be the array class
+            ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
+
+            result.instructions.addAll(right.instructions);
+            result.instructions.addAll(leftIndex.instructions);
+            result.instructions.addAll(leftExpression.instructions);
+
+            // array call
+            result.instructions.add(new Call(
+                leftTypeSymbol.getFunction("set"),
+                leftExpression.value, // _this
+                leftIndex.value,      // index
+                right.value           // value
+            ));
+
+            return result;
+        }
+
+        // this is a normal assign, i.e. a = 3
+        // we just need to compute the expression and do the assign.
+        if (!this.isMultiReturn()) {
+            AsmLinearFormResult right = this.right.asLinearForm(block);
+            AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
+
+            result.instructions.add(new AsmAssign((AsmVar) left.value, right.value));
+
+            return result;
+        }
+
+        // this is a multi return, i.e.: x, arr[i] = someCall()
+
+        return null;
     }
 }
