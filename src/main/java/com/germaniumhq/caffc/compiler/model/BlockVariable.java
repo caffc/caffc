@@ -8,7 +8,7 @@ import com.germaniumhq.caffc.compiler.model.type.TypeName;
  * A block variable is a temporary variable created in a block. It will
  * eventually be merged in the function variables.
  */
-public class BlockVariable implements AsmVar {
+public class BlockVariable implements Symbol, AsmVar {
     public String name;
     public Symbol typeSymbol;
 
@@ -38,6 +38,12 @@ public class BlockVariable implements AsmVar {
     @Override
     public int getColumnNumber() {
         return owner.getColumnNumber();
+    }
+
+    @Override
+    public void recurseResolveTypes() {
+        throw new IllegalStateException("CaffC BUG: should never happen. Block variables " +
+            "are temp variables created when creating the linear form.");
     }
 
     @Override

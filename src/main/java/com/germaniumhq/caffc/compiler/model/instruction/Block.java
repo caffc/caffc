@@ -21,7 +21,7 @@ import java.util.TreeMap;
  * expressions into linear form, after both the AST parsing has
  * completed, and the recursive type resolving was finished.
  */
-public class Block implements Statement, Scope {
+public class Block implements Scope {
     public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
     public List<Statement> statements = new ArrayList<>();
 
@@ -96,6 +96,10 @@ public class Block implements Statement, Scope {
     }
 
     public BlockVariable addTempVar(AstItem owner, Symbol typeSymbol) {
+        if (typeSymbol == null) {
+            throw new IllegalStateException("null type defined for the temp variable");
+        }
+
         String cTypeName = FilterCTypeName.getCType(typeSymbol.typeName());
         Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
 

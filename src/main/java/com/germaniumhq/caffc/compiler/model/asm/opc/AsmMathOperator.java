@@ -12,4 +12,18 @@ public enum AsmMathOperator {
     AsmMathOperator(String op) {
         this.op = op;
     }
+
+    public static AsmMathOperator fromString(String operator) {
+        if (operator == null) {
+            throw new IllegalArgumentException("Null operator");
+        }
+
+        switch (operator) {
+            case "+": return PLUS;
+            case "-": return MINUS;
+            case "*": return MULTIPLY;
+            case "/": return DIVIDE;
+            default: throw new IllegalArgumentException("Unknown operator: " + operator);
+        }
+    }
 }

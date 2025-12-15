@@ -1,9 +1,15 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.instruction.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -103,5 +109,26 @@ public class ExpressionMath implements Expression {
             codeRenderer.field("operator", this.operator);
             codeRenderer.field("right", this.right);
         });
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult left = this.left.asLinearForm(block);
+        AsmLinearFormResult right = this.right.asLinearForm(block);
+
+        AsmLinearFormResult result = new AsmLinearFormResult();
+        result.value = block.addTempVar(this, this.symbol);
+
+        // we add all the instructions for the left and right expressions
+        result.instructions.addAll(left.instructions);
+        result.instructions.addAll(right.instructions);
+        result.instructions.add(new AsmMath(
+            (AsmVar) result.value,
+            AsmMathOperator.fromString(this.operator),
+            left.value,
+            right.value
+        ));
+
+        return result;
     }
 }

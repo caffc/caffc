@@ -1,16 +1,12 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.Block;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
 import com.germaniumhq.caffc.generated.caffcParser;
-
-import java.util.List;
 
 public interface Statement extends AstItem {
     static Statement fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.StatementContext antlrStatement) {
@@ -54,5 +50,7 @@ public interface Statement extends AstItem {
      * @param block
      * @return
      */
-    AsmLinearFormResult asLinearForm(Block block);
+    default AsmLinearFormResult asLinearForm(Block block) {
+        throw new IllegalStateException("linear form not implemented for " + this.getClass().getCanonicalName());
+    }
 }

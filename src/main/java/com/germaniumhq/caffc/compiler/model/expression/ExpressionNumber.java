@@ -1,12 +1,18 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.*;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.TypeSymbol;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
+import com.germaniumhq.caffc.compiler.model.instruction.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -208,5 +214,14 @@ public class ExpressionNumber implements Expression {
             codeRenderer.field("typeSymbol", this.symbol);
             codeRenderer.field("value", this.value);
         });
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        result.value = new AsmConstant(this.typeSymbol(), value);
+
+        return result;
     }
 }
