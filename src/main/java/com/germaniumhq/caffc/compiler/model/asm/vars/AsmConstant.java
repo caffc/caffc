@@ -2,7 +2,10 @@ package com.germaniumhq.caffc.compiler.model.asm.vars;
 
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 
-public class AsmConstant implements AsmValue {
+/**
+ * Holds a constant. Constants aren't backed by variables.
+ */
+final public class AsmConstant implements AsmValue {
     public Symbol type;
     public String value;
 

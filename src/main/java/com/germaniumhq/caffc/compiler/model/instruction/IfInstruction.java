@@ -30,7 +30,7 @@ public class IfInstruction implements Statement {
 
         if (ifAntlr.trueBlock != null) {
             for (caffcParser.StatementContext antlrStatement: ifAntlr.trueBlock.statement()) {
-                result.statements.add(Statement.fromAntlr(unit, result, antlrStatement));
+                result.statements.addAll(Statement.fromAntlr(unit, result, antlrStatement));
             }
         } else if (ifAntlr.return_() != null) {
             result.statements.add(ReturnInstruction.fromAntlr(unit, result, ifAntlr.return_()));
@@ -43,7 +43,7 @@ public class IfInstruction implements Statement {
         if (ifAntlr.falseBlock != null) {
             result.elseStatements = new ArrayList<>();
             for (caffcParser.StatementContext antlrStatement: ifAntlr.falseBlock.statement()) {
-                result.elseStatements.add(Statement.fromAntlr(unit, result, antlrStatement));
+                result.elseStatements.addAll(Statement.fromAntlr(unit, result, antlrStatement));
             }
         }
 

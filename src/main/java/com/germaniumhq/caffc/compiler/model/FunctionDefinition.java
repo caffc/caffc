@@ -269,6 +269,11 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         return this.returnTypes.isEmpty();
     }
 
+    public boolean isVoid() {
+        return isReturnEmpty() || this.returnTypes.size() == 1 &&
+            TypeSymbol.VOID.equals(this.returnTypes.values().iterator().next());
+    }
+
     public String getReturnName(int i) {
         return this.returnNames[i];
     }

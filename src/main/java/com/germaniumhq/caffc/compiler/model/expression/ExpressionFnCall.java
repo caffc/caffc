@@ -1,11 +1,15 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -14,7 +18,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpressionFnCall implements Expression {
+public final class ExpressionFnCall implements Expression {
     private AstItem owner;
 
     public Expression functionExpression;
@@ -113,4 +117,37 @@ public class ExpressionFnCall implements Expression {
         }
     }
 
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
+
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        // first we flatten the parameters themselves
+        List<AsmLinearFormResult> linearParameters = new ArrayList<>();
+        for (Expression parameter: this.parameters) {
+            linearParameters.add(parameter.asLinearForm(block));
+        }
+
+        // add the parameters instructions + prepare the parameter values array for the call
+        AsmValue[] callParameters = new AsmValue[linearParameters.size()];
+        for (int i = 0; i < linearParameters.size(); i++) {
+            AsmLinearFormResult linearParameter = linearParameters.get(i);
+
+            callParameters[i] = linearParameter.value;
+
+            result.instructions.addAll(linearParameter.instructions);
+        }
+
+        // add call instruction
+        Call call = new Call(functionDefinition, callParameters);
+
+        if (!functionDefinition.isVoid()) {
+            call.result = block.addTempVar(this, functionDefinition.returnType);
+        }
+
+        result.instructions.add(call);
+
+        return result;
+    }
 }

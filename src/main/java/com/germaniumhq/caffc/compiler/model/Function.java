@@ -114,7 +114,7 @@ public class Function implements CompileBlock, Scope, Symbol {
         }
 
         for (caffcParser.StatementContext antlrStatement: ctx.block().statement()) {
-            function.statements.add(Statement.fromAntlr(unit, function, antlrStatement));
+            function.statements.addAll(Statement.fromAntlr(unit, function, antlrStatement));
         }
 
         // we register the function in the module only if it's a global function, otherwise they

@@ -11,7 +11,7 @@ import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
-import com.germaniumhq.caffc.compiler.model.instruction.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -20,7 +20,7 @@ import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpressionAssign implements Expression {
+public final class ExpressionAssign implements Expression {
     public AstItem owner;
     public List<Expression> leftExpressions = new ArrayList<>();
     public Expression right;

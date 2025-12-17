@@ -1,9 +1,12 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Jmp;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public class ControlFlowInstruction implements Statement {
@@ -54,5 +57,20 @@ public class ControlFlowInstruction implements Statement {
 
     public Function getFunction() {
         return this.findAstParent(Function.class);
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        ForInstruction forInstruction = this.findAstParent(ForInstruction.class);
+
+        if ("continue".equals(instruction)) {
+            result.instructions.add(new Jmp(forInstruction.forBeginLabel));
+        } else {
+            result.instructions.add(new Jmp(forInstruction.forEndLabel));
+        }
+
+        return result;
     }
 }
