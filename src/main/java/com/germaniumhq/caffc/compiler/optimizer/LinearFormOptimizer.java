@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.optimizer;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.Clazz;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.CompileBlock;
@@ -33,9 +34,16 @@ public class LinearFormOptimizer {
     }
 
     private static void convertStatementsToLinearForm(Function function) {
+        Block functionBlock = new Block(function);
+
         for (int i = 0; i < function.statements.size(); i++) {
             Statement statement = function.statements.get(i);
 
+            AsmLinearFormResult linearStatement = statement.asLinearForm(functionBlock);
+
+            functionBlock.instructions.addAll(linearStatement.instructions);
         }
+
+        function.instructions.add(functionBlock);
     }
 }

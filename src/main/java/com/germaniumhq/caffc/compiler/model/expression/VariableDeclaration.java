@@ -1,10 +1,14 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -131,5 +135,21 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar, Statement {
             codeRenderer.field("name", this.name);
             codeRenderer.field("expression", this.assignExpression);
         });
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        if (this.assignExpression != null) {
+            AsmLinearFormResult right = this.assignExpression.right.asLinearForm(block);
+            result.instructions.addAll(right.instructions);
+
+            result.instructions.add(new AsmAssign(this, right.value));
+        } else {
+            result.instructions.add(new AsmAssign(this, new AsmConstant(this.typeSymbol, "0")));
+        }
+
+        return result;
     }
 }

@@ -57,7 +57,7 @@ public class CodeAssertsAst {
         Program program,
         String unit,
         TestUnit[] testUnits) {
-        return compileCaffcUnitsAst(program, unit, false, testUnits);
+        return compileCaffcUnitsAst(program, unit, true, testUnits);
     }
 
     private static CompilationUnit compileCaffcUnitsAst(

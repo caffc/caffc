@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.output;
 
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Clazz;
 import com.germaniumhq.caffc.compiler.model.Function;
@@ -7,6 +8,11 @@ import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.Struct;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Return;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
@@ -28,6 +34,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
@@ -85,6 +92,16 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(Interface.class, "c/container/interface.peb")
                 .withMapping(InterfaceDefinition.class, "c/container/interface_definition.peb")
                 .withMapping(Struct.class, "c/container/struct_definition.peb")
+
+                // asm
+                .withMapping(AsmAssign.class, "c/asm/assign.peb")
+                .withMapping(AsmConstant.class, "c/asm/constant.peb")
+                .withMapping(AsmMath.class, "c/asm/math.peb")
+                .withMapping(Block.class, "c/asm/block.peb")
+                .withMapping(Return.class, "c/asm/return.peb")
+
+                .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
+                .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
 
                 // statements
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")

@@ -1,0 +1,5 @@
+{
+{%- for instruction in ctx.instructions %}
+  {{ instruction | render }};
+{%- endfor %}
+}

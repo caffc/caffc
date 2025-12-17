@@ -20,6 +20,10 @@ import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Assign a variable, or multiple variables to some expression.
+ *
+ */
 public final class ExpressionAssign implements Expression {
     public AstItem owner;
     public List<Expression> leftExpressions = new ArrayList<>();

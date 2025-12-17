@@ -22,7 +22,7 @@ public class TestS300LinearFormProgrammatic {
         expressionMath.left = createNumber(1);
         expressionMath.right = createNumber(2);
 
-        AsmLinearFormResult linearForm = expressionMath.asLinearForm(new Block());
+        AsmLinearFormResult linearForm = expressionMath.asLinearForm(new Block(null));
 
         assertNotNull(linearForm.value);
     }
