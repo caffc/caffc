@@ -9,9 +9,10 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -136,49 +137,110 @@ public final class ExpressionAssign implements Expression {
 
     @Override
     public AsmLinearFormResult asLinearForm(Block block) {
-        AsmLinearFormResult result = new AsmLinearFormResult();
-
         // this is an indexed assign, i.e.: arr[i] = 3
         // we need to compute each expression (`arr`, `i` and `3`), then create the
         // setter call for the array.
         if (this.isIndex()) {
-            ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) this.getLeft();
-
-            AsmLinearFormResult right = this.right.asLinearForm(block);
-            AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
-            AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
-
-            // This should be the array class
-            ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
-
-            result.instructions.addAll(right.instructions);
-            result.instructions.addAll(leftIndex.instructions);
-            result.instructions.addAll(leftExpression.instructions);
-
-            // array call
-            result.instructions.add(new Call(
-                leftTypeSymbol.getFunction("set"),
-                leftExpression.value, // _this
-                leftIndex.value,      // index
-                right.value           // value
-            ));
-
-            return result;
+            return getAsmLinearIndexAssign(block);
         }
 
         // this is a normal assign, i.e. a = 3
         // we just need to compute the expression and do the assign.
         if (!this.isMultiReturn()) {
-            AsmLinearFormResult right = this.right.asLinearForm(block);
-            AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
-
-            result.instructions.add(new AsmAssign((AsmVar) left.value, right.value));
-
-            return result;
+            return getAsmLinearSimpleAssign(block);
         }
 
-        // this is a multi return, i.e.: x, arr[i] = someCall()
-
-        return null;
+        // this is a multi assign, i.e.: x, arr[i] = someCall()
+        // someCall() returns a `struct` that needs destructured in the individual expressions
+        // individual expressions can in turn also be simple assigns or indexed assigns
+        return getAsmLinearMultiReturnAssign(block);
     }
+
+    /**
+     * Serialize as instructions an indexed assign. We need to make sure the
+     * expressions are evaluated in the right order as well. (right to left)
+     */
+    private AsmLinearFormResult getAsmLinearIndexAssign(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) this.getLeft();
+
+        AsmLinearFormResult right = this.right.asLinearForm(block);
+        AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
+        AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+
+        // This should be the array class
+        ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
+
+        result.instructions.addAll(right.instructions);
+        result.instructions.addAll(leftIndex.instructions);
+        result.instructions.addAll(leftExpression.instructions);
+
+        // array call
+        result.instructions.add(new Call(
+            leftTypeSymbol.getFunction("set"),
+            leftExpression.value, // _this
+            leftIndex.value,      // index
+            right.value           // value
+        ));
+
+        return result;
+    }
+
+    private AsmLinearFormResult getAsmLinearSimpleAssign(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult right = this.right.asLinearForm(block);
+        AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
+
+        result.instructions.add(new AsmAssign((AsmVar) left.value, right.value));
+
+        return result;
+    }
+
+    /**
+     * Serialize a struct deconstruction assignment.
+     */
+    private AsmLinearFormResult getAsmLinearMultiReturnAssign(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        // this right expression since it's a multi-return holds a struct now.
+        AsmLinearFormResult right = this.right.asLinearForm(block);
+        result.instructions.addAll(right.instructions);
+
+        for (int i = 0; i < this.leftExpressions.size(); i++) {
+            Expression left = this.leftExpressions.get(i);
+
+            if (isIndex2(left)) {
+                ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) left;
+
+                AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
+                AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+
+                result.instructions.add(new Call(
+                    ((ClassDefinition)indexAccess.expression).getFunction("set"),
+                    leftExpression.value, // _this
+                    leftIndex.value,      // index
+                    right.value           // value
+                ));
+            } else {
+                AsmLinearFormResult leftLinear = left.asLinearForm(block);
+                result.instructions.addAll(leftLinear.instructions);
+
+                // right.value = ....
+                result.instructions.add(new AsmAssign((AsmVar) leftLinear.value, right.value));
+            }
+
+            // after the assignment in the individual variables is done, we don't want the
+            // GC to think these values are still used.
+            result.instructions.add(new AsmZeroClear((AsmVar) right.value));
+        }
+
+        return result;
+    }
+
+    private boolean isIndex2(Expression left) {
+        return false;
+    }
+
 }

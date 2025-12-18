@@ -2,7 +2,6 @@ package com.germaniumhq.caffc;
 
 import com.germaniumhq.caffc.compiler.error.CaffcAntlrErrorListener;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
 import com.germaniumhq.caffc.compiler.optimizer.LinearFormOptimizer;
@@ -20,25 +19,7 @@ import java.util.Map;
  */
 public class CodeAssertsAst {
     public static CompilationUnit compileCaffcUnitsAst(String unit, TestUnit[] testUnits) {
-        return compileCaffcUnitsAst(unit, false, testUnits);
-    }
-
-    /**
-     * Compiles multiple units, does the typing resolving, constant creation, etc,
-     * but returns only the CompilationUnit. If optimizations are enabled,
-     * it will also run them as well.
-     */
-    public static CompilationUnit compileCaffcUnitsAst(
-            String unit, boolean runOptimizations, TestUnit[] testUnits) {
-        Program program = Program.reset();
-        CaffcCompiler.get().hasErrors = false;
-
-        try {
-            return compileCaffcUnitsAst(program, unit, runOptimizations, testUnits);
-        } catch (CancelCompilationException e) {
-            printUnitWithLineNumbers(unit, testUnits);
-            throw new RuntimeException(e);
-        }
+        return compileCaffcUnitsAst(Program.get(), unit, testUnits);
     }
 
     private static void printUnitWithLineNumbers(String unitName, TestUnit[] testUnits) {
@@ -53,17 +34,13 @@ public class CodeAssertsAst {
         }
     }
 
+    /**
+     * Compiles multiple units, does the typing resolving, constant creation, etc,
+     * but returns only the CompilationUnit.
+     */
     public static CompilationUnit compileCaffcUnitsAst(
-        Program program,
-        String unit,
-        TestUnit[] testUnits) {
-        return compileCaffcUnitsAst(program, unit, true, testUnits);
-    }
-
-    private static CompilationUnit compileCaffcUnitsAst(
             Program program,
             String unit,
-            boolean runOptimizations,
             TestUnit[] testUnits) {
         Map<String, CompilationUnit> compilationUnits = new HashMap<>();
 
@@ -91,10 +68,8 @@ public class CodeAssertsAst {
         }
         program.recreateConstants();
 
-        if (runOptimizations) {
-            for (CompilationUnit compilationUnit: compilationUnits.values()) {
-                LinearFormOptimizer.convertAstToLinearForm(compilationUnit);
-            }
+        for (CompilationUnit compilationUnit: compilationUnits.values()) {
+            LinearFormOptimizer.convertAstToLinearForm(compilationUnit);
         }
 
         CompilationUnit compilationUnit = compilationUnits.get(unit);

@@ -1,4 +1,5 @@
 {
+/* FIXME: variables _must_ be collapsed, so the GC can deal with them. */
 {%- for instruction in ctx.instructions %}
   {{ instruction | render }};
 {%- endfor %}
