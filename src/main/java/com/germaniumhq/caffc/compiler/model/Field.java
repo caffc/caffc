@@ -42,6 +42,13 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
         return fields;
     }
 
+    public static Field fromDefinition(AstItem owner, Symbol typeSymbol, String key) {
+        Field field = new Field(owner, key);
+        field.typeSymbol = typeSymbol;
+
+        return field;
+    }
+
     @Override
     public String name() {
         return name;
@@ -112,5 +119,13 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
         }
 
         return (T) newField;
+    }
+
+    @Override
+    public String toString() {
+        return "Field " +
+            "owner=" + owner +
+            ", type=" + typeSymbol +
+            ", name='" + name + '\'';
     }
 }

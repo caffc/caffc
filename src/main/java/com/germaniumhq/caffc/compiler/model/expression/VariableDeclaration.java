@@ -29,7 +29,7 @@ public class VariableDeclaration implements AstItem, Symbol, AsmVar, Statement {
     public int astColumn;
     public int astLine;
 
-    private boolean isResolved;
+    public boolean isResolved;
 
     public static VariableDeclaration fromAntlr(
         CompilationUnit unit,

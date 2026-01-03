@@ -1,6 +1,8 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.type.DataType;
+import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
+import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -10,31 +12,42 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a structure that will be returned for a multi-return call.
+ * Represents a structure that will be allocated on the stack. Structs
+ * are currently only returned for a multi-return call.
  * A struct is itself just a definition, since there's no correspondent
- * `struct` construct in the CaffC language.
+ * `struct` construct in the CaffC language yet.
  */
-public class Struct implements Symbol, AstItem {
-    private final AstItem owner;
-    private final String name;
-    public final LinkedHashMap<String, Symbol> returnTypes;
-    private final String[] keyNames;
-    private int index;
+public class Struct implements GenericsDefinitionsSymbol, Scope {
+    private AstItem owner;
+    private String name;
+    private String module;
 
-    public Struct(AstItem owner,
-                  String name,
-                  LinkedHashMap<String, Symbol> returnTypes) {
-        this.owner = owner;
-        this.name = name;
-        this.returnTypes = returnTypes;
-        this.keyNames = new String[returnTypes.size()];
+    public String astFilePath;
+    public int astColumn;
+    public int astLine;
 
-        int index = 0;
-        for (Map.Entry<String, Symbol> entry: returnTypes.entrySet()) {
-            this.keyNames[index++] = entry.getKey();
+    /**
+     * A list of fields defined within this class.
+     */
+    public List<Field> fields = new ArrayList<>();
+
+    /**
+     * Generics defined for the struct.
+     */
+    public GenericDefinitions generics = null;
+
+    public static Struct fromDefinition(AstItem owner, String module, String name, LinkedHashMap<String, Symbol> keyNames) {
+        Struct struct = new Struct();
+
+        struct.owner = owner;
+        struct.module = module;
+        struct.name = name;
+        struct.fields = new ArrayList<>(keyNames.size());
+        for (Map.Entry<String, Symbol> entry: keyNames.entrySet()) {
+            struct.fields.add(Field.fromDefinition(struct, entry.getValue(), entry.getKey()));
         }
 
-        owner.findAstParent(Module.class).structures.put(this.name, this);
+        return struct;
     }
 
     @Override
@@ -81,31 +94,68 @@ public class Struct implements Symbol, AstItem {
         return this;
     }
 
+    public List<Field> getGcManagedFields() {
+        List<Field> result = new ArrayList<>();
 
-    @UsedInTemplate("assign.peb")
-    public boolean isPrimitive() {
-        return this.returnTypes.get(this.keyNames[index]).typeName().isPrimitive();
-    }
-
-    @UsedInTemplate("assign.peb")
-    public String getKeyName() {
-        if (index >= this.keyNames.length) {
-            index = 0;
-        }
-
-        return this.keyNames[index++];
-    }
-
-    public List<String> getGcManagedKeys() {
-        List<String> result = new ArrayList<>();
-
-        for (Map.Entry<String, Symbol> entry: returnTypes.entrySet()) {
-            DataType dataType = entry.getValue().typeSymbol().typeName().dataType;
+        for (Field field: this.fields) {
+            DataType dataType = field.typeSymbol().typeName().dataType;
             if (dataType == DataType.ARRAY || dataType == DataType.OBJECT) {
-                result.add(entry.getKey());
+                result.add(field);
             }
         }
 
         return result;
+    }
+
+    @Override
+    public GenericDefinition getGenericDefinition(int index) {
+        return generics.generics[index];
+    }
+
+    @Override
+    public int getGenericsDefinitionCount() {
+        return generics.generics.length;
+    }
+
+    @Override
+    public <T extends GenericsDefinitionsSymbol> T instantiateGenerics(List<Symbol> resolvedGenerics) {
+        Map<String, Symbol> genericsSymbols = GenericsDefinitionsSymbol.createGenericsSymbolMap(
+            this, resolvedGenerics);
+
+        return this.newGenericsCopy(genericsSymbols);
+    }
+
+    @Override
+    public <T extends Symbol> T newGenericsCopy(Map<String, Symbol> resolvedGenerics) {
+        Struct copy = new Struct();
+
+        copy.owner = this.owner;
+        copy.module = this.module;
+        copy.name = this.name;
+
+        copy.astColumn = this.astColumn;
+        copy.astLine = this.astLine;
+        copy.astFilePath = this.astFilePath;
+
+        for (Field f : fields) {
+            copy.fields.add(f.newGenericsCopy(resolvedGenerics));
+        }
+
+        return (T) copy;
+    }
+
+    @Override
+    public Symbol resolve(String name) {
+        for (Field f : fields) {
+            if (f.name.equals(name)) {
+                return f;
+            }
+        }
+
+        if (this.generics != null) {
+            return this.generics.getByName(name);
+        }
+
+        return null;
     }
 }

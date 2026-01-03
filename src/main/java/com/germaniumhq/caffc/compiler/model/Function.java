@@ -214,6 +214,9 @@ public class Function implements CompileBlock, Scope, Symbol {
         existingVariable = VariableDeclaration.fromEnsure(owner, resolvedType, name);
         this._variables.put(name, existingVariable);
 
+        // this is a synthetic variable created after the resolving is already done
+        existingVariable.isResolved = true;
+
         return existingVariable;
     }
 
@@ -349,11 +352,11 @@ public class Function implements CompileBlock, Scope, Symbol {
         for (VariableDeclaration variableDeclaration: this._variables.values()) {
             if (variableDeclaration.typeName().dataType == DataType.STRUCT) {
                 Struct struct = (Struct) variableDeclaration.typeSymbol;
-                for (String key: struct.getGcManagedKeys()) {
+                for (Field field: struct.getGcManagedFields()) {
                     objStructReturnVariables.add(new StructReturnVariableDefinition(
                         variableDeclaration,
-                        key,
-                        ((Struct)variableDeclaration.typeSymbol).returnTypes.get(key)
+                        field.name,
+                        field.typeSymbol
                     ));
                 }
             }

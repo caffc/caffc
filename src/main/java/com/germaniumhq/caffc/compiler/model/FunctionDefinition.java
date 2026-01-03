@@ -160,7 +160,7 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
             return this.returnTypes.values().iterator().next();
         }
 
-        return new Struct(this, this.name + "_structreturn", this.returnTypes);
+        return Struct.fromDefinition(owner, module, this.name + "_structreturn", this.returnTypes);
     }
 
     @Override

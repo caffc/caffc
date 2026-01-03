@@ -7,11 +7,13 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -207,40 +209,36 @@ public final class ExpressionAssign implements Expression {
         // this right expression since it's a multi-return holds a struct now.
         AsmLinearFormResult right = this.right.asLinearForm(block);
         result.instructions.addAll(right.instructions);
+        AsmVar rightStruct = (AsmVar) right.value;
 
         for (int i = 0; i < this.leftExpressions.size(); i++) {
             Expression left = this.leftExpressions.get(i);
+            AsmVar rightAsmVar = AsmFieldVar.fromFieldIndex(rightStruct, i);
 
-            if (isIndex2(left)) {
+            if ((left instanceof ExpressionIndexAccess)) {
                 ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) left;
 
                 AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
                 AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
+                // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
                 result.instructions.add(new Call(
                     ((ClassDefinition)indexAccess.expression).getFunction("set"),
                     leftExpression.value, // _this
                     leftIndex.value,      // index
-                    right.value           // value
+                    rightAsmVar           // value
                 ));
             } else {
                 AsmLinearFormResult leftLinear = left.asLinearForm(block);
                 result.instructions.addAll(leftLinear.instructions);
-
-                // right.value = ....
-                result.instructions.add(new AsmAssign((AsmVar) leftLinear.value, right.value));
+                result.instructions.add(new AsmAssign((AsmVar) leftLinear.value, rightAsmVar));
             }
 
             // after the assignment in the individual variables is done, we don't want the
             // GC to think these values are still used.
-            result.instructions.add(new AsmZeroClear((AsmVar) right.value));
+            result.instructions.add(new AsmZeroClear(rightAsmVar));
         }
 
         return result;
     }
-
-    private boolean isIndex2(Expression left) {
-        return false;
-    }
-
 }
