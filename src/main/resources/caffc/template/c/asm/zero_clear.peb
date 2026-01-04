@@ -1,0 +1,1 @@
+caffc_bzero(&{{ ctx.variable | render }}, sizeof({{ ctx.variable | render }}))

@@ -58,6 +58,7 @@ public interface Statement extends AstItem {
      * @return
      */
     default AsmLinearFormResult asLinearForm(Block block) {
-        throw new IllegalStateException("linear form not implemented for " + this.getClass().getCanonicalName());
+        CaffcCompiler.get().fatal(this, "linear form not implemented for " + this.getClass().getCanonicalName());
+        return null; // not reached
     }
 }

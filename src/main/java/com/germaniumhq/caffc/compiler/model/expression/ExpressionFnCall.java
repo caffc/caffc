@@ -144,6 +144,7 @@ public final class ExpressionFnCall implements Expression {
 
         if (!functionDefinition.isVoid()) {
             call.result = block.addTempVar(this, functionDefinition.returnType);
+            result.value = call.result;
         }
 
         result.instructions.add(call);

@@ -1,0 +1,2 @@
+{# FIXME: check if the owner is a struct or an object (. or ->) -#}
+{{ ctx.owner | render }}.{{ ctx.name }}

@@ -1,0 +1,3 @@
+{%- if ctx.result != null -%}
+{{ ctx.result | render }} = {% endif -%}
+{{ ctx.function.name }}({% for p in ctx.parameters %}{{ p | render }}{% if not loop.last %}, {% endif %}{% endfor %})

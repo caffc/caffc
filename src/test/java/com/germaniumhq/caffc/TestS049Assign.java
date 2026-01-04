@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 public class TestS049Assign {
     @Test
     public void testExpressionParens() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
             new TestUnit[] {

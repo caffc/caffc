@@ -1,6 +1,8 @@
 package com.germaniumhq.caffc.output.filters;
 
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.Struct;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -28,6 +30,10 @@ public class FilterCTypeName implements Filter {
 
         if (o instanceof TypeName t) {
             return getCType(t);
+        }
+
+        if (o instanceof Struct s) {
+            return getCType(s.typeName());
         }
 
         throw new IllegalArgumentException("Unable to find the C name for " + o);

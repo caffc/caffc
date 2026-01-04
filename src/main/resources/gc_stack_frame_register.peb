@@ -1,33 +1,5 @@
 {# needs a function as root context -#}
 
-{%- for variable in ctx.variables %}
-{%- if variable.typeName.isPrimitive and variable.typeSymbol.name == "ptr" %}
-{{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
-{%- elseif variable.typeName.isPrimitive %}
-{{ variable.typeSymbol | c_type }} {{ variable.name }} = 0;
-{%- elseif variable.typeName.dataType == "OBJECT" %}
-{{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
-{%- elseif variable.typeName.dataType == "ARRAY" %}
-{{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
-{%- elseif variable.typeName.dataType == "STRUCT" %}
-{{ variable.typeSymbol | c_type }} {{ variable.name }} = {
-{%- for entry in variable.typeSymbol.returnTypes -%}
-    {%- if entry.value.typeName.isPrimitive and variable.typeSymbol.name == "ptr" -%}
-    caffc_void
-    {%- elseif entry.value.typeName.isPrimitive -%}
-    0
-    {%- elseif entry.value.typeName.dataType == "OBJECT" -%}
-    caffc_null
-    {%- elseif entry.value.typeName.dataType == "ARRAY" -%}
-    caffc_null
-    {%- endif -%}
-{%- if not loop.last %}, {% endif -%}
-
-{%- endfor -%}
-};
-{%- endif %}
-{%- endfor %}
-
 {%- if ctx.gcVariableCount() > 0 %}
 /* GC managed variables */
 caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];

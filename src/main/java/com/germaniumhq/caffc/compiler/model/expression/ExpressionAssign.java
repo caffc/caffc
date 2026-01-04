@@ -15,6 +15,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -236,7 +237,10 @@ public final class ExpressionAssign implements Expression {
 
             // after the assignment in the individual variables is done, we don't want the
             // GC to think these values are still used.
-            result.instructions.add(new AsmZeroClear(rightAsmVar));
+            DataType dataType = rightAsmVar.typeSymbol().typeName().dataType;
+            if (dataType == DataType.ARRAY || dataType == DataType.OBJECT) {
+                result.instructions.add(new AsmZeroClear(rightAsmVar));
+            }
         }
 
         return result;

@@ -20,6 +20,10 @@ public final class AsmFieldVar implements AsmVar {
     }
 
     public static AsmFieldVar fromFieldIndex(AsmVar rightStruct, int index) {
+        if (rightStruct == null) {
+            throw new IllegalArgumentException("invalid null field owner");
+        }
+
         Struct struct = (Struct) rightStruct.typeSymbol();
         Field field = struct.fields.get(index);
 
