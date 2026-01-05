@@ -7,7 +7,7 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
-import com.germaniumhq.caffc.compiler.model.Struct;
+import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
@@ -222,9 +222,12 @@ public final class ExpressionAssign implements Expression {
                 AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
                 AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
+                Symbol arrayDefinition = indexAccess.expression.typeSymbol().typeSymbol();
+                FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
+
                 // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
                 result.instructions.add(new Call(
-                    ((ClassDefinition)indexAccess.expression).getFunction("set"),
+                    setFunction,
                     leftExpression.value, // _this
                     leftIndex.value,      // index
                     rightAsmVar           // value

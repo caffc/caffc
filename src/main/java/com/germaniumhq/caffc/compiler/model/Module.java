@@ -161,13 +161,17 @@ public class Module implements AstItem, Scope, Symbol {
         }
 
         Symbol containedSymbol = symbol;
+        String searchedArrayName = symbol.typeName().isPrimitive() ? symbol.typeName().name + "_arr" : "obj_arr";
         ClassDefinition result = null;
 
         for (int i = 1; i <= arrayDimensions; i++) {
             // SymbolResolver.resolveSymbol(this, SymbolSearch.ofName("obj_arr"));
             // the symbol might be a generics definition, so we need the type of it
             TypeName arrayTypeName = this.registerArray(symbol.typeName(), i);
-            ClassDefinition arrayClassDefinition = Program.get().getModule("caffc").clazzes.get("obj_arr");
+            ClassDefinition arrayClassDefinition = Program.get()
+                .getModule("caffc").clazzes.get(
+                    i == arrayDimensions ? searchedArrayName : "obj_arr"
+                );
 
             if (arrayClassDefinition == null) {
                 CaffcCompiler.get().fatal((AstItem) symbol, "unable to find obj_arr. missing caffc sources?");
