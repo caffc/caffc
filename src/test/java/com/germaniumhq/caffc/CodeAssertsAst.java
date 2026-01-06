@@ -4,7 +4,7 @@ import com.germaniumhq.caffc.compiler.error.CaffcAntlrErrorListener;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
-import com.germaniumhq.caffc.compiler.optimizer.LinearFormOptimizer;
+import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -69,7 +69,7 @@ public class CodeAssertsAst {
         program.recreateConstants();
 
         for (CompilationUnit compilationUnit: compilationUnits.values()) {
-            LinearFormOptimizer.convertAstToLinearForm(compilationUnit);
+            LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
 
         CompilationUnit compilationUnit = compilationUnits.get(unit);

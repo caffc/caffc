@@ -6,7 +6,7 @@ import com.germaniumhq.caffc.compiler.model.*;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.Module;
-import com.germaniumhq.caffc.compiler.optimizer.LinearFormOptimizer;
+import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.output.OutputFilePathCalculator;
@@ -70,7 +70,7 @@ public class MainApp {
         }
 
         for (CompilationUnit compilationUnit: compilationUnits) {
-            LinearFormOptimizer.convertAstToLinearForm(compilationUnit);
+            LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
 
         program.recreateConstants();

@@ -12,7 +12,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
  * This will transform the AST into a list of OPS. The OPS are still nodes
  * from AST, but flattened.
  */
-public class LinearFormOptimizer {
+public class LinearFormConverter {
     /**
      * Recursively traverses each method, and flattens it, so at the end, each
      * function is a linear list of instructions.

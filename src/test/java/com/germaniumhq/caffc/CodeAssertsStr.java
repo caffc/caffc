@@ -1,11 +1,9 @@
 package com.germaniumhq.caffc;
 
-import com.germaniumhq.caffc.compiler.error.CaffcAntlrErrorListener;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
-import com.germaniumhq.caffc.compiler.optimizer.LinearFormOptimizer;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.output.PebbleTemplater;
@@ -19,7 +17,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
