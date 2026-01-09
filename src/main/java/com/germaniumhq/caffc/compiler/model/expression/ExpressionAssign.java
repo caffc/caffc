@@ -147,16 +147,16 @@ public final class ExpressionAssign implements Expression {
             return getAsmLinearIndexAssign(block);
         }
 
-        // this is a normal assign, i.e. a = 3
-        // we just need to compute the expression and do the assign.
-        if (!this.isMultiReturn()) {
-            return getAsmLinearSimpleAssign(block);
-        }
-
         // this is a multi assign, i.e.: x, arr[i] = someCall()
         // someCall() returns a `struct` that needs destructured in the individual expressions
         // individual expressions can in turn also be simple assigns or indexed assigns
-        return getAsmLinearMultiReturnAssign(block);
+        if (this.isMultiReturn()) {
+            return getAsmLinearMultiReturnAssign(block);
+        }
+
+        // this is a normal assign, i.e. a = 3
+        // we just need to compute the expression and do the assign.
+        return getAsmLinearSimpleAssign(block);
     }
 
     /**
@@ -172,8 +172,8 @@ public final class ExpressionAssign implements Expression {
         AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
         AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
-        // This should be the array class
-        ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
+        // This should be the array class: expression.typeSymbol() - VariableDeclaration -> then ClassDefinition
+        ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol().typeSymbol();
 
         result.instructions.addAll(right.instructions);
         result.instructions.addAll(leftIndex.instructions);
