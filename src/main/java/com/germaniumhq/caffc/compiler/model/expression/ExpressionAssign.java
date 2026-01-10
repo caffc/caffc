@@ -11,8 +11,8 @@ import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
@@ -139,7 +139,7 @@ public final class ExpressionAssign implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         // this is an indexed assign, i.e.: arr[i] = 3
         // we need to compute each expression (`arr`, `i` and `3`), then create the
         // setter call for the array.
@@ -163,7 +163,7 @@ public final class ExpressionAssign implements Expression {
      * Serialize as instructions an indexed assign. We need to make sure the
      * expressions are evaluated in the right order as well. (right to left)
      */
-    private AsmLinearFormResult getAsmLinearIndexAssign(Block block) {
+    private AsmLinearFormResult getAsmLinearIndexAssign(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) this.getLeft();
@@ -180,7 +180,7 @@ public final class ExpressionAssign implements Expression {
         result.instructions.addAll(leftExpression.instructions);
 
         // array call
-        result.instructions.add(new Call(
+        result.instructions.add(new AsmCall(
             leftTypeSymbol.getFunction("set"),
             leftExpression.value, // _this
             leftIndex.value,      // index
@@ -190,7 +190,7 @@ public final class ExpressionAssign implements Expression {
         return result;
     }
 
-    private AsmLinearFormResult getAsmLinearSimpleAssign(Block block) {
+    private AsmLinearFormResult getAsmLinearSimpleAssign(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         AsmLinearFormResult right = this.right.asLinearForm(block);
@@ -204,7 +204,7 @@ public final class ExpressionAssign implements Expression {
     /**
      * Serialize a struct deconstruction assignment.
      */
-    private AsmLinearFormResult getAsmLinearMultiReturnAssign(Block block) {
+    private AsmLinearFormResult getAsmLinearMultiReturnAssign(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         // this right expression since it's a multi-return holds a struct now.
@@ -226,7 +226,7 @@ public final class ExpressionAssign implements Expression {
                 FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
 
                 // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
-                result.instructions.add(new Call(
+                result.instructions.add(new AsmCall(
                     setFunction,
                     leftExpression.value, // _this
                     leftIndex.value,      // index

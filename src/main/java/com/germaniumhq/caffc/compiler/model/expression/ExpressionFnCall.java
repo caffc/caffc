@@ -7,9 +7,9 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -118,7 +118,7 @@ public final class ExpressionFnCall implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
 
         AsmLinearFormResult result = new AsmLinearFormResult();
@@ -140,7 +140,7 @@ public final class ExpressionFnCall implements Expression {
         }
 
         // add call instruction
-        Call call = new Call(functionDefinition, callParameters);
+        AsmCall call = new AsmCall(functionDefinition, callParameters);
 
         if (!functionDefinition.isVoid()) {
             call.result = block.addTempVar(this, functionDefinition.returnType);

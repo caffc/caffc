@@ -6,8 +6,8 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Label;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -30,8 +30,8 @@ public class ForInstruction implements Statement, Scope {
     public int astColumn;
     public int astLine;
 
-    public Label forBeginLabel;
-    public Label forEndLabel;
+    public AsmLabel forBeginLabel;
+    public AsmLabel forEndLabel;
 
     public static ForInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ForBlockContext forAntlr) {
         ForInstruction result = new ForInstruction();
@@ -109,9 +109,9 @@ public class ForInstruction implements Statement, Scope {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
-        this.forBeginLabel = new Label();
-        this.forEndLabel = new Label();
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        this.forBeginLabel = new AsmLabel();
+        this.forEndLabel = new AsmLabel();
 
         AsmLinearFormResult result = new AsmLinearFormResult();
 

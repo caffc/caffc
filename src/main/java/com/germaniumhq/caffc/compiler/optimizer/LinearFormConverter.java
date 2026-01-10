@@ -6,7 +6,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.CompileBlock;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 
 /**
  * This will transform the AST into a list of OPS. The OPS are still nodes
@@ -34,7 +34,7 @@ public class LinearFormConverter {
     }
 
     private static void convertStatementsToLinearForm(Function function) {
-        Block functionBlock = new Block(function);
+        AsmBlock functionBlock = new AsmBlock(function);
 
         for (int i = 0; i < function.statements.size(); i++) {
             Statement statement = function.statements.get(i);

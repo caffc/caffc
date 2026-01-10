@@ -5,8 +5,7 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -80,7 +79,7 @@ public final class ExpressionNewObject implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         // first we flatten the parameters themselves

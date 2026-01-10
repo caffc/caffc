@@ -13,9 +13,9 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Return;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
@@ -106,9 +106,9 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmNew.class, "c/asm/new.peb")
                 .withMapping(AsmZeroClear.class, "c/asm/zero_clear.peb")
                 .withMapping(AsmMath.class, "c/asm/math.peb")
-                .withMapping(Call.class, "c/asm/call.peb")
-                .withMapping(Block.class, "c/asm/block.peb")
-                .withMapping(Return.class, "c/asm/return.peb")
+                .withMapping(AsmCall.class, "c/asm/call.peb")
+                .withMapping(AsmBlock.class, "c/asm/block.peb")
+                .withMapping(AsmReturn.class, "c/asm/return.peb")
 
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")

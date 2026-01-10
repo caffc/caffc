@@ -3,10 +3,10 @@ package com.germaniumhq.caffc.compiler.model.asm.opc;
 /**
  * A blind jump to the target label.
  */
-final public class Jmp implements AsmInstruction {
-    public Label target;
+final public class AsmJmp implements AsmInstruction {
+    public AsmLabel target;
 
-    public Jmp(Label target) {
+    public AsmJmp(AsmLabel target) {
         this.target = target;
     }
 }

@@ -19,7 +19,7 @@ import java.util.TreeMap;
  * expressions into linear form, after both the AST parsing has
  * completed, and the recursive type resolving was finished.
  */
-public final class Block implements Scope, AsmInstruction {
+public final class AsmBlock implements Scope, AsmInstruction {
     public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
     public List<AsmInstruction> instructions = new ArrayList<>();
 
@@ -27,7 +27,7 @@ public final class Block implements Scope, AsmInstruction {
 
     AstItem owner;
 
-    public Block(AstItem owner) {
+    public AsmBlock(AstItem owner) {
         this.owner = owner;
     }
 

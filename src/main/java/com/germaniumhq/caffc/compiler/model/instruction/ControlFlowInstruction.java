@@ -5,8 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Jmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ControlFlowInstruction implements Statement {
@@ -60,15 +60,15 @@ public final class ControlFlowInstruction implements Statement {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         ForInstruction forInstruction = this.findAstParent(ForInstruction.class);
 
         if ("continue".equals(instruction)) {
-            result.instructions.add(new Jmp(forInstruction.forBeginLabel));
+            result.instructions.add(new AsmJmp(forInstruction.forBeginLabel));
         } else {
-            result.instructions.add(new Jmp(forInstruction.forEndLabel));
+            result.instructions.add(new AsmJmp(forInstruction.forEndLabel));
         }
 
         return result;

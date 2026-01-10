@@ -8,12 +8,12 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
  * the value returned will be assigned into a temp variable as the `result`.
  * (this will be really an AsmVar)
  */
-public final class Call implements AsmInstruction {
+public final class AsmCall implements AsmInstruction {
     public AsmValue result;
     public FunctionDefinition function;
     public AsmValue[] parameters;
 
-    public Call(FunctionDefinition function, AsmValue ... parameters) {
+    public AsmCall(FunctionDefinition function, AsmValue ... parameters) {
         this.function = function;
         this.parameters = parameters;
     }

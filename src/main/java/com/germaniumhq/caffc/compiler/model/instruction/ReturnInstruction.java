@@ -11,8 +11,8 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Return;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -98,9 +98,9 @@ public final class ReturnInstruction implements Statement {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Block block) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         if (this.getFunction().definition.isReturnEmpty()) {
-            return new AsmLinearFormResult(List.of(new Return(null)));
+            return new AsmLinearFormResult(List.of(new AsmReturn(null)));
         }
 
         if (this.getFunction().definition.isMultiReturn()) {
@@ -113,7 +113,7 @@ public final class ReturnInstruction implements Statement {
                 instructions.add(new AsmAssign(structVar, namedReturnLinearForm.value));
             }
 
-            instructions.add(new Return(structVar));
+            instructions.add(new AsmReturn(structVar));
 
             return new AsmLinearFormResult(instructions);
         }
@@ -123,7 +123,7 @@ public final class ReturnInstruction implements Statement {
 
         AsmLinearFormResult linearForm = ret.value.asLinearForm(block);
         instructions.addAll(linearForm.instructions);
-        instructions.add(new Return(linearForm.value));
+        instructions.add(new AsmReturn(linearForm.value));
 
         return new AsmLinearFormResult(instructions);
     }

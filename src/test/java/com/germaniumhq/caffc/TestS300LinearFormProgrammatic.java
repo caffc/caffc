@@ -4,7 +4,7 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
-import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ public class TestS300LinearFormProgrammatic {
         expressionMath.left = createNumber(1);
         expressionMath.right = createNumber(2);
 
-        AsmLinearFormResult linearForm = expressionMath.asLinearForm(new Block(null));
+        AsmLinearFormResult linearForm = expressionMath.asLinearForm(new AsmBlock(null));
 
         assertNotNull(linearForm.value);
     }
