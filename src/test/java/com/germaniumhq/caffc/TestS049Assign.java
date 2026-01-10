@@ -4,6 +4,9 @@ package com.germaniumhq.caffc;
 import org.junit.jupiter.api.Test;
 
 public class TestS049Assign {
+    /**
+     * Tests a multi-array assign, that will destructure the return struct.
+     */
     @Test
     public void testAssignMulti() {
         String code = CodeAssertsStr.compileCaffcProgram(
@@ -47,6 +50,9 @@ public class TestS049Assign {
             "multi assign should be deconstructed from the struct response");
     }
 
+    /**
+     * Tests regular assignment of a single variable.
+     */
     @Test
     public void testAssignSimple() {
         String code = CodeAssertsStr.compileCaffcProgram(
