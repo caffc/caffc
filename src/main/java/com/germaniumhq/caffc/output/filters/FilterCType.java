@@ -11,6 +11,10 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Returns the C type of the variable for the given type. This includes the
+ * star (`*`) to mark pointers to objects.
+ */
 public class FilterCType implements Filter {
     @Override
     public Object apply(Object o, Map<String, Object> map, PebbleTemplate pebbleTemplate, EvaluationContext evaluationContext, int i) throws PebbleException {

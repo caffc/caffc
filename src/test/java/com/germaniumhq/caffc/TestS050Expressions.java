@@ -55,9 +55,9 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAssertsStr.assertCodeContains(code, "x = (caffc_u32) 3;",
+        CodeAssertsStr.assertCodeContains(code, "_caffc_temp_caffc_u32_1 = (caffc_u32) 3;",
                 "primitive casting should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "b = (main_B*) a;",
+        CodeAssertsStr.assertCodeContains(code, "_caffc_temp_main_B_2 = (main_B*) a;",
                 "object casting should translate into the generated code");
     }
 
