@@ -16,7 +16,7 @@ import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class VariableDeclaration implements AstItem, Symbol, AsmVar, Statement {
+public final class VariableDeclaration implements AstItem, Symbol, AsmVar, Statement {
     public String name;
     public ExpressionAssign assignExpression;
 

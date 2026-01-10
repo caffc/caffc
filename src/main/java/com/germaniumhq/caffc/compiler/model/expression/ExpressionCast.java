@@ -12,7 +12,7 @@ import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionCast implements Expression {
+public final class ExpressionCast implements Expression {
     public SymbolSearch castTypeSearch;
     public Symbol castType;
     public Expression expression;

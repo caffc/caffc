@@ -16,7 +16,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpressionNewObject implements Expression {
+public final class ExpressionNewObject implements Expression {
     public AstItem owner;
     public List<Expression> parameters = new ArrayList<>();
 

@@ -12,7 +12,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionMath implements Expression {
+public final class ExpressionMath implements Expression {
     public Expression left;
     public Expression right;
     public String operator;

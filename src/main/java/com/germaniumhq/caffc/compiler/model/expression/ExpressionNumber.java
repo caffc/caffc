@@ -18,7 +18,7 @@ import java.math.BigInteger;
 /**
  * An expression that identifies a constant number.
  */
-public class ExpressionNumber implements Expression {
+public final class ExpressionNumber implements Expression {
     public Symbol symbol;
     public String value;
     private AstItem owner;

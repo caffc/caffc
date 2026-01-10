@@ -9,7 +9,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.asm.opc.Jmp;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ControlFlowInstruction implements Statement {
+public final class ControlFlowInstruction implements Statement {
     public AstItem owner;
     public String astFilePath;
 

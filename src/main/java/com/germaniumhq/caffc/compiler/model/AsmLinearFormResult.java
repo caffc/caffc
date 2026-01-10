@@ -8,7 +8,8 @@ import java.util.List;
 
 /**
  * The list of instructions for a statement that was flattened into a linear form.
- * Is also contains a value.
+ * It also contains a value in case this was an expression, so they can use nested
+ * expressions.
  */
 public class AsmLinearFormResult {
     public AsmValue value;

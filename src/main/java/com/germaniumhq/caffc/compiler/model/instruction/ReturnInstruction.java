@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReturnInstruction implements Statement {
+public final class ReturnInstruction implements Statement {
     public AstItem owner;
     public String astFilePath;
     public List<NamedReturn> returns = new ArrayList<>();
