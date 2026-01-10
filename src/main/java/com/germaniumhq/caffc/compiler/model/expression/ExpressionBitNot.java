@@ -1,12 +1,16 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionBitNot implements Expression {
+public final class ExpressionBitNot implements Expression {
     public Expression expression;
     public AstItem owner;
     public Symbol symbol;
@@ -57,5 +61,19 @@ public class ExpressionBitNot implements Expression {
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
         this.symbol = this.expression.typeSymbol();
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult linearExpression = this.expression.asLinearForm(block);
+
+        BlockVariable tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
+        result.instructions.addAll(linearExpression.instructions);
+        result.instructions.add(new AsmBitNot(tempVar, linearExpression.value));
+        result.value = tempVar;
+
+        return result;
     }
 }

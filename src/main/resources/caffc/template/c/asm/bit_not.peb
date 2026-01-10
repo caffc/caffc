@@ -1,0 +1,1 @@
+{{ ctx.result | render }} = ~{{ ctx.value | render }}

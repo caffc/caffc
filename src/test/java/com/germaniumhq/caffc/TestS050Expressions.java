@@ -92,7 +92,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBitNot() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -111,7 +111,9 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                y = ~x;
+                x = 1;
+                _caffc_temp_caffc_u32_1 = ~x;
+                y = _caffc_temp_caffc_u32_1;
                 """,
                 "not bits should translate into the generated code");
     }
