@@ -1,7 +1,9 @@
 package com.germaniumhq.caffc.output.filters;
 
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.Struct;
+import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -26,6 +28,14 @@ public class FilterCTypeName implements Filter {
     public Object apply(Object o, Map<String, Object> map, PebbleTemplate pebbleTemplate, EvaluationContext evaluationContext, int i) throws PebbleException {
         if (o instanceof FunctionDefinition fd) {
             return getCType(fd.typeName());
+        }
+
+        if (o instanceof TypeSymbol ts) {
+            return getCType(ts.typeName());
+        }
+
+        if (o instanceof ClassDefinition cd) {
+            return getCType(cd.typeName());
         }
 
         if (o instanceof TypeName t) {

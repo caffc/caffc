@@ -1,0 +1,1 @@
+{{ ctx.left | render }} = ({{ ctx.castType | c_name }}) {{ ctx.right | render }}

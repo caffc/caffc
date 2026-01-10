@@ -32,7 +32,7 @@ public class TestS050Expressions {
 
     @Test
     public void testCast() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {

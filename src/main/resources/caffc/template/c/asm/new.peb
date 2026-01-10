@@ -1,0 +1,1 @@
+{{ ctx.result | render }} = {{ ctx.instantiatedType | c_name }}_new({% for p in ctx.parameters %}{{ p | render }}{% if not loop.last %}, {% endif %}{% endfor %})

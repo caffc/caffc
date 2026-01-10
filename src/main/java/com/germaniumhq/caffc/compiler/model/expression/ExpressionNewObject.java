@@ -1,8 +1,13 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Call;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -74,4 +79,32 @@ public class ExpressionNewObject implements Expression {
         this.instantiatedType = SymbolResolver.mustResolveSymbol(this, this.instantiatedTypeSearch);
     }
 
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        // first we flatten the parameters themselves
+        List<AsmLinearFormResult> linearParameters = new ArrayList<>();
+        for (Expression parameter: this.parameters) {
+            linearParameters.add(parameter.asLinearForm(block));
+        }
+
+        // add the parameters instructions + prepare the parameter values array for the asmNew
+        AsmValue[] callParameters = new AsmValue[linearParameters.size()];
+        for (int i = 0; i < linearParameters.size(); i++) {
+            AsmLinearFormResult linearParameter = linearParameters.get(i);
+
+            callParameters[i] = linearParameter.value;
+
+            result.instructions.addAll(linearParameter.instructions);
+        }
+
+        AsmNew asmNew = new AsmNew(instantiatedType, callParameters);
+        asmNew.result = block.addTempVar(this, instantiatedType);
+
+        result.value = asmNew.result;
+        result.instructions.add(asmNew);
+
+        return result;
+    }
 }

@@ -1,8 +1,12 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast;
+import com.germaniumhq.caffc.compiler.model.asm.opc.Block;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -63,5 +67,19 @@ public class ExpressionCast implements Expression {
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
         castType = SymbolResolver.mustResolveSymbol(this, this.castTypeSearch);
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(Block block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+        BlockVariable tempVar = block.addTempVar(this, this.castType);
+
+        AsmLinearFormResult expressionLinearForm = expression.asLinearForm(block);
+        result.instructions.addAll(expressionLinearForm.instructions);
+
+        result.value = tempVar;
+        result.instructions.add(new AsmCast(this.castType, tempVar, expressionLinearForm.value));
+
+        return result;
     }
 }
