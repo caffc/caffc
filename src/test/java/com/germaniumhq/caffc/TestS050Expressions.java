@@ -66,7 +66,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBoolNot() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -88,7 +88,11 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                if (!x) {
+                _caffc_temp_caffc_bool_1 = !x;
+                if (! _caffc_temp_caffc_bool_1) { goto else0; }
+                return 1;
+                else0:
+                return 0;
                 """,
                 "not bool should translate into the generated code");
     }

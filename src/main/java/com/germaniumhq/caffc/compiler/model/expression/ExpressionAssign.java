@@ -228,6 +228,9 @@ public final class ExpressionAssign implements Expression {
                 Symbol arrayDefinition = indexAccess.expression.typeSymbol().typeSymbol();
                 FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
 
+                result.instructions.addAll(leftIndex.instructions);
+                result.instructions.addAll(leftExpression.instructions);
+
                 // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
                 result.instructions.add(new AsmCall(
                     setFunction,

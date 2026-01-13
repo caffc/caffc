@@ -8,6 +8,6 @@
 {{ variable.value.typeSymbol | c_type_name }} {{ variable.value.name }};
 {%- endfor %}
 {%- for instruction in ctx.instructions %}
-  {{ instruction | render }};
+  {{ instruction | render }}{{ instruction | semicolon }}
 {%- endfor %}
 }

@@ -1,10 +1,15 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -77,5 +82,39 @@ public class IfInstruction implements Statement {
         for (Statement statement: statements) {
             statement.recurseResolveTypes();
         }
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(block);
+        result.instructions.addAll(checkLinearForm.instructions);
+
+        AsmLabel elseLabel = new AsmLabel("else");
+        AsmLabel endIfLabel = new AsmLabel("endif");
+
+        result.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
+
+        for (Statement statement: statements) {
+            result.instructions.addAll(statement.asLinearForm(block).instructions);
+        }
+
+        // if we have `else` instructions, we need to skip them now
+        if (elseStatements != null) {
+            result.instructions.add(new AsmJmp(endIfLabel));
+        }
+
+        result.instructions.add(elseLabel);
+
+        if (elseStatements != null) {
+            for (Statement statement: elseStatements) {
+                result.instructions.addAll(statement.asLinearForm(block).instructions);
+            }
+
+            result.instructions.add(endIfLabel);
+        }
+
+        return result;
     }
 }

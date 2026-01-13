@@ -10,27 +10,30 @@ import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionCast;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionIndexAccess;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewArray;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
@@ -49,13 +52,14 @@ import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
 import com.germaniumhq.caffc.output.filters.AsHeader;
 import com.germaniumhq.caffc.output.filters.FilterCConstructorParameters;
 import com.germaniumhq.caffc.output.filters.FilterCConstructorParametersCall;
-import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 import com.germaniumhq.caffc.output.filters.FilterCFunctionSignature;
 import com.germaniumhq.caffc.output.filters.FilterCGlobalHeader;
 import com.germaniumhq.caffc.output.filters.FilterCHeaderGuard;
 import com.germaniumhq.caffc.output.filters.FilterCName;
 import com.germaniumhq.caffc.output.filters.FilterCResolveId;
 import com.germaniumhq.caffc.output.filters.FilterCType;
+import com.germaniumhq.caffc.output.filters.FilterCTypeName;
+import com.germaniumhq.caffc.output.filters.FilterSemicolon;
 import com.germaniumhq.caffc.output.filters.Render;
 import com.germaniumhq.caffc.output.functions.FunctionGet;
 import com.germaniumhq.caffc.output.functions.FunctionIsBlockStatement;
@@ -89,6 +93,7 @@ public class CaffcPebblesExtension implements Extension {
 
         filters.put("c_constructor_parameters", new FilterCConstructorParameters());
         filters.put("c_constructor_parameters_call", new FilterCConstructorParametersCall());
+        filters.put("semicolon", new FilterSemicolon());
 
         Render renderPebbleFilter = new Render()
                 // bigger containers functions/classes
@@ -102,11 +107,14 @@ public class CaffcPebblesExtension implements Extension {
                 // asm
                 .withMapping(AsmAssign.class, "c/asm/assign.peb")
                 .withMapping(AsmBitNot.class, "c/asm/bit_not.peb")
+                .withMapping(AsmBoolNot.class, "c/asm/bool_not.peb")
                 .withMapping(AsmCast.class, "c/asm/cast.peb")
                 .withMapping(AsmConstant.class, "c/asm/constant.peb")
                 .withMapping(AsmFieldVar.class, "c/asm/field_var.peb")
+                .withMapping(AsmIfZJmp.class, "c/asm/if_zjmp.peb")
                 .withMapping(AsmNew.class, "c/asm/new.peb")
                 .withMapping(AsmZeroClear.class, "c/asm/zero_clear.peb")
+                .withMapping(AsmLabel.class, "c/asm/label.peb")
                 .withMapping(AsmMath.class, "c/asm/math.peb")
                 .withMapping(AsmCall.class, "c/asm/call.peb")
                 .withMapping(AsmBlock.class, "c/asm/block.peb")

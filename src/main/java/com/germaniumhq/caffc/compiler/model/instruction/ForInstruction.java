@@ -110,8 +110,8 @@ public class ForInstruction implements Statement, Scope {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        this.forBeginLabel = new AsmLabel();
-        this.forEndLabel = new AsmLabel();
+        this.forBeginLabel = new AsmLabel("forBegin");
+        this.forEndLabel = new AsmLabel("forEnd");
 
         AsmLinearFormResult result = new AsmLinearFormResult();
 
