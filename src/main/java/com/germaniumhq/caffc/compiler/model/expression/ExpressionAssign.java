@@ -196,6 +196,9 @@ public final class ExpressionAssign implements Expression {
         AsmLinearFormResult right = this.right.asLinearForm(block);
         AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
 
+        result.instructions.addAll(right.instructions);
+        result.instructions.addAll(left.instructions);
+
         result.instructions.add(new AsmAssign((AsmVar) left.value, right.value));
 
         return result;

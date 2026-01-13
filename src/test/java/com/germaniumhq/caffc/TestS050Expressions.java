@@ -25,7 +25,10 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                z = (x + y) * (x - y);
+                _caffc_temp_caffc_i32_1 = x + y;
+                _caffc_temp_caffc_i32_2 = x - y;
+                _caffc_temp_caffc_i32_3 = _caffc_temp_caffc_i32_1 * _caffc_temp_caffc_i32_2;
+                z = _caffc_temp_caffc_i32_3;
                 """,
                 "parens should translate into the generated code");
     }

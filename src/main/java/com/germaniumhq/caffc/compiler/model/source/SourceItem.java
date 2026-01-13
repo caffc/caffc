@@ -2,6 +2,11 @@ package com.germaniumhq.caffc.compiler.model.source;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+/**
+ * SourceItems are objects that are somehow derived from the original CaffC
+ * source. For example both `AstItem`s and after the linear form `AsmInstruction`s
+ * are source items.
+ */
 public interface SourceItem {
     /**
      * In what file is the current item defined?
