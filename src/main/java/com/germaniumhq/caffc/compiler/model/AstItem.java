@@ -1,31 +1,18 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.DefaultSouceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * An item in the AST. Every item in our AST implements this, and allows picking where it's
- * defined. A program is the top "AST" item, and its owner is null.
+ * An item in the AST. Every item in our AST implements this.
+ * A program is the top "AST" item, and its owner is null.
  */
-public interface AstItem {
+public interface AstItem extends SourceItem {
     /**
      * Get the owner of the current AST item. The top program has null as parent.
      */
     AstItem getOwner();
-
-    /**
-     * In what file is the current AST item defined?
-     */
-    String getFilePath();
-
-    /**
-     * At what line number is the current AST item defined?
-     */
-    int getLineNumber();
-
-    /**
-     * At what column number is the current AST item defined?
-     */
-    int getColumnNumber();
 
     /**
      * Recursively resolves the types from the current item. This has the
@@ -48,28 +35,12 @@ public interface AstItem {
         return null;
     }
 
-    static AstItem fromAntlr(String filePath, ParserRuleContext antlrParserRuleContext) {
-        return new DefaultAstItem(
-                filePath,
-                antlrParserRuleContext.getStart().getLine(),
-                antlrParserRuleContext.getStart().getCharPositionInLine()
-        );
-    }
-
     static <T extends AstItem> T findParentOrSelf(AstItem owner, Class<T> clazz) {
         if (clazz.isAssignableFrom(owner.getClass())) {
             return (T) owner;
         }
 
         return owner.findAstParent(clazz);
-    }
-
-    static AstItem fromFilePath(String file) {
-        return new DefaultAstItem(file, 1, 1);
-    }
-
-    static AstItem fromData(String filePath, int line, int charPositionInLine) {
-        return new DefaultAstItem(filePath, line, charPositionInLine);
     }
 
     static String debugInfo(AstItem owner) {

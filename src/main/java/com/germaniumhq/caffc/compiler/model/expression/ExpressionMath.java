@@ -98,7 +98,7 @@ public final class ExpressionMath implements Expression {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
 
-        this.symbol = this.left.typeSymbol();
+        this.symbol = this.left.typeSymbol().typeSymbol();
     }
 
     @Override

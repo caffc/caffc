@@ -2,10 +2,12 @@ package com.germaniumhq.caffc.compiler;
 
 import com.germaniumhq.caffc.args.ArgumentsParser;
 import com.germaniumhq.caffc.compiler.error.CaffcAntlrErrorListener;
-import com.germaniumhq.caffc.compiler.model.*;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Module;
+import com.germaniumhq.caffc.compiler.model.Program;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -112,7 +114,7 @@ public class MainApp {
 
                 compilationUnits.add(unit);
             } catch (IOException e) {
-                CaffcCompiler.get().fatal(AstItem.fromFilePath(file),
+                CaffcCompiler.get().fatal(SourceItem.fromFilePath(file),
                         "I/O exception: " + e.getMessage());
             }
         }
@@ -150,7 +152,7 @@ public class MainApp {
                 );
             } catch (IOException e) {
                 CaffcCompiler.get().fatal(
-                        AstItem.fromFilePath(file),
+                        SourceItem.fromFilePath(file),
                         "I/O exception: " + e.getMessage());
             }
         }
@@ -243,7 +245,7 @@ public class MainApp {
             writer.write(fileContent);
         } catch (IOException e) {
             CaffcCompiler.get().fatal(
-                    AstItem.fromFilePath(outputName),
+                    SourceItem.fromFilePath(outputName),
                     "I/O exception: " + e.getMessage());
         }
     }

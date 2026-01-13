@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -8,7 +9,14 @@ import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A program contains a reference to all the modules loaded. Note that a program
@@ -54,7 +62,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
             this.sha256Digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             CaffcCompiler.get().fatal(
-                    AstItem.fromFilePath("?"),
+                    SourceItem.fromFilePath("?"),
                     "sha256 issue: " + e.getMessage());
             throw new RuntimeException(e); // not reached
         }

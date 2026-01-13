@@ -1,6 +1,6 @@
 package com.germaniumhq.caffc.compiler.error;
 
-import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 
 public class CaffcCompiler {
     public boolean hasErrors;
@@ -12,12 +12,12 @@ public class CaffcCompiler {
 
     /**
      * Reports the error to the user, and terminates execution.
-     * @param astItem
+     * @param sourceItem
      * @param message
      */
-    public void fatal(AstItem astItem, String message) {
+    public void fatal(SourceItem sourceItem, String message) {
         String errorMessage = String.format("%s: %s: %s",
-                fileLocation(astItem), "FATAL", message);
+                fileLocation(sourceItem), "FATAL", message);
         System.err.println(errorMessage);
         this.hasErrors = true;
 
@@ -28,33 +28,33 @@ public class CaffcCompiler {
      * Reports the error to the user, execution continues.
      * Code won't be generated anymore.
      *
-     * @param astItem
+     * @param sourceItem
      * @param message
      */
-    public void error(AstItem astItem, String message) {
+    public void error(SourceItem sourceItem, String message) {
         this.hasErrors = true;
         System.err.format("%s: %s: %s\n",
-                fileLocation(astItem), "ERROR", message);
+                fileLocation(sourceItem), "ERROR", message);
     }
 
     /**
      * Report the warning to the user, execution continues.
      * Code will be generated.
      *
-     * @param astItem
+     * @param sourceItem
      * @param message
      */
-    public void warning(AstItem astItem, String message) {
+    public void warning(SourceItem sourceItem, String message) {
         System.err.format("%s: %s: %s\n",
-                fileLocation(astItem), "WARN ", message);
+                fileLocation(sourceItem), "WARN ", message);
     }
 
 
-    public static String fileLocation(AstItem astItem) {
+    public static String fileLocation(SourceItem sourceItem) {
         return String.format("%s:%d:%d",
-            astItem.getFilePath(),
-            astItem.getLineNumber(),
-            astItem.getColumnNumber()
+            sourceItem.getFilePath(),
+            sourceItem.getLineNumber(),
+            sourceItem.getColumnNumber()
         );
     }
 }

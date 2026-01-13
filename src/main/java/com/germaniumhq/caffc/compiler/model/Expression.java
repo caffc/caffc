@@ -1,7 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
@@ -16,12 +15,12 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewArray;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionOpAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -144,7 +143,7 @@ public interface Expression extends Statement {
         }
 
         CaffcCompiler.get().fatal(
-                AstItem.fromAntlr(unit.astFilePath, expression),
+                SourceItem.fromAntlr(unit.astFilePath, expression),
                 "unsupported expression: " + expression.getText());
 
         return null; // not reached

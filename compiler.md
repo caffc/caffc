@@ -31,15 +31,23 @@ All global variables, functions and their statements (not definitions!), etc. ar
 * `ClassDefinition`
 * `Function`
 ### Symbol
-A symbol represents a resolved name in the context of a Scope. A Symbol has a `name` and a `typeName`. Symbols can be resolved from a given `AstItem` by its name and generics definition, using a `SymbolSearch` object via a `SymbolResolver`.
+A symbol represents a resolved name in the context of a Scope. A Symbol has a `name`, a `typeSymbol` and a `typeName` (a fqdn: `module:[function_class]:name:data_type`).  Symbols can be resolved from a given `AstItem` by its name and generics definition, using a `SymbolSearch` object via a `SymbolResolver`.
 
-* `ClassDefinition`
-* `Field`
-* `FunctionDefinition`
-* `Module`
-* `Parameter`
-* `PrimitiveSymbol`
-* `VariableDeclaration` *!**FIXME**: this should not be an AST item*
+* "Container" Symbols
+	* `PrimitiveSymbol`
+	* `Module`
+	* `ClassDefinition`
+	* `InterfaceDefinition`
+	* `Struct`
+	* `FunctionDefinition`
+* Variable Symbols
+	* `Parameter`
+	* `Field`
+	* `VariableDeclaration`
+All the "container" symbols have the `typeSymbol` pointing to themselves, since the name of `i32` is actually the `i32` primitive itself. Variable Symbols will have the name as the name of the actual variable, and the `typeSymbol` pointing to the actual type of the variable. `i32 x` would have the name as `x` and the `typeSymbol` as a reference to a `PrimitiveSymbol`.
+
+> [!QUESTION] Unclear
+> There's an obvious logical mismatch having the `typeSymbol` for variable symbols and container symbols. It makes no sense having the `typeSymbol` of a container symbol pointing to itself. Probably the `typeSymbol` should remain only for the variable symbols somehow.
 
 ### Program Structure
 

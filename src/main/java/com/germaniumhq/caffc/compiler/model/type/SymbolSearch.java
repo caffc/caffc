@@ -1,7 +1,12 @@
 package com.germaniumhq.caffc.compiler.model.type;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.*;
+import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
+import com.germaniumhq.caffc.compiler.model.Clazz;
+import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Program;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.generated.caffcParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -91,7 +96,7 @@ public class SymbolSearch {
         }
 
         CaffcCompiler.get().fatal(
-                AstItem.fromAntlr(unit.astFilePath, antlrParserRuleContext),
+                SourceItem.fromAntlr(unit.astFilePath, antlrParserRuleContext),
                 "unsupported expression: " + antlrParserRuleContext.getText() +
                         " of type " + antlrParserRuleContext.getClass().getSimpleName());
 
@@ -111,7 +116,7 @@ public class SymbolSearch {
         }
 
         CaffcCompiler.get().fatal(
-                AstItem.fromAntlr(unit.astFilePath, typeContext),
+                SourceItem.fromAntlr(unit.astFilePath, typeContext),
                 "unsupported vartype expression: " + typeContext.getText() +
                         " of type " + typeContext.getClass().getSimpleName());
         return null; // not reached

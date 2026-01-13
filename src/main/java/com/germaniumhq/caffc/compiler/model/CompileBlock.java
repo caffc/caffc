@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public interface CompileBlock extends AstItem {
@@ -21,7 +22,7 @@ public interface CompileBlock extends AstItem {
             return Interface.fromAntlr(unit, owner, antlrCompileBlock.interfaceDefinition());
         }
 
-        CaffcCompiler.get().fatal(AstItem.fromAntlr(unit.astFilePath, antlrCompileBlock),
+        CaffcCompiler.get().fatal(SourceItem.fromAntlr(unit.astFilePath, antlrCompileBlock),
                 "unsupported compile block: " + antlrCompileBlock.getText());
 
         return null; // not reached

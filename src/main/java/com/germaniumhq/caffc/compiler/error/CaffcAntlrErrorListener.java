@@ -1,6 +1,6 @@
 package com.germaniumhq.caffc.compiler.error;
 
-import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
@@ -20,7 +20,7 @@ public class CaffcAntlrErrorListener implements ANTLRErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         CaffcCompiler.get().error(
-                AstItem.fromData(filePath, line, charPositionInLine),
+                SourceItem.fromData(filePath, line, charPositionInLine),
                 msg
         );
     }

@@ -1,17 +1,16 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
-import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public class ExpressionParens implements Expression {
     public Expression expression;
     public AstItem owner;
-    public Symbol symbol;
 
     public String astFilePath;
     public int astColumn;
@@ -32,7 +31,7 @@ public class ExpressionParens implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return this.symbol;
+        return this.expression.typeSymbol();
     }
 
     @Override
@@ -58,5 +57,10 @@ public class ExpressionParens implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.expression.recurseResolveTypes();
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        return expression.asLinearForm(block);
     }
 }
