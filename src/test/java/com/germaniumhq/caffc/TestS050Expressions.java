@@ -127,7 +127,7 @@ public class TestS050Expressions {
 
     @Test
     public void testShift() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -149,11 +149,13 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                z = x << y;
+                _caffc_temp_caffc_u32_1 = x << y;
+                z = _caffc_temp_caffc_u32_1;
                 """,
                 "left shift should translate into the generated code");
         CodeAssertsStr.assertCodeContains(code, """
-                t = x >> y;
+                _caffc_temp_caffc_u32_2 = x >> y;
+                t = _caffc_temp_caffc_u32_2;
                 """,
                 "right shift should translate into the generated code");
     }

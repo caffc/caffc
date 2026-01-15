@@ -1,0 +1,1 @@
+{{ ctx.lValue | render }} = {{ ctx.value1 | render }} {{  ctx.operator }} {{ ctx.value2  | render }}
