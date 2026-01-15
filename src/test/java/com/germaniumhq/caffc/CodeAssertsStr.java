@@ -4,11 +4,7 @@ import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
-import com.germaniumhq.caffc.generated.caffcLexer;
-import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.output.PebbleTemplater;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,25 +65,13 @@ public class CodeAssertsStr {
     }
 
     public static String compileCaffcCode(String template, String compilationUnitPath, String caffcCode) {
-        caffcLexer lexer = new caffcLexer(new ANTLRInputStream(caffcCode));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        caffcParser parser = new caffcParser(tokens);
-
-        Program program = Program.reset();
-
-        caffcParser.CompilationUnitContext antlrCompilationUnit = parser.compilationUnit();
-        CompilationUnit compilationUnit = CompilationUnit.fromAntlr(program, antlrCompilationUnit, compilationUnitPath);
-
-        compilationUnit.recurseResolveTypes();
-        program.recreateConstants();
-
-        Map<String, Object> renderContext = PebbleTemplater.createRenderContext(
-                template.contains("module") ?
-                        compilationUnit.module :
-                        compilationUnit);
-        String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
-
-        return code;
+        return compileCaffcProgram(
+            template,
+            compilationUnitPath,
+            new TestUnit[] {
+                new TestUnit(compilationUnitPath, caffcCode)
+            }
+        );
     }
 
     /**

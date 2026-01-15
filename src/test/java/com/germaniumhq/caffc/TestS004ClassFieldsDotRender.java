@@ -39,8 +39,9 @@ public class TestS004ClassFieldsDotRender {
 
     @Test
     public void testThisFieldDotAccess() {
-        CompilationUnit ast = CodeAssertsAst.compileCaffcUnitsAst(
-                "a/a.caffc", /* compilation unit */
+        String code = CodeAssertsStr.compileCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
                 new TestUnit[] {
                         new TestUnit("a/a.caffc",
                                 """
@@ -57,10 +58,9 @@ public class TestS004ClassFieldsDotRender {
                 }
         );
 
-        Parameter parameterDefinition = AstUtil.findAstItem(ast, "A.getX._this");
-        Assertions.assertNotNull(parameterDefinition);
-        Assertions.assertEquals(
-                TypeName.of("caffc", "A", null, DataType.OBJECT),
-                parameterDefinition.typeSymbol.typeName());
+        CodeAssertsStr.assertCodeContains(code, """
+                a->x = 3;
+                """,
+            "dot access should translate into field access");
     }
 }

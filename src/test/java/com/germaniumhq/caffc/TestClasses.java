@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static com.germaniumhq.caffc.CodeAssertsStr.assertCodeContains;
 import static com.germaniumhq.caffc.CodeAssertsStr.compileCaffcCode;
+import static com.germaniumhq.caffc.CodeAssertsStr.compileCaffcProgram;
 
 public class TestClasses {
     @Test
