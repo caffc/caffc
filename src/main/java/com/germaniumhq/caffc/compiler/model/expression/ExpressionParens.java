@@ -8,7 +8,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionParens implements Expression {
+public final class ExpressionParens implements Expression {
     public Expression expression;
     public AstItem owner;
 
