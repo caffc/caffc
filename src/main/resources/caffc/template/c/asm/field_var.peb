@@ -1,2 +1,7 @@
-{# FIXME: check if the owner is a struct or an object (. or ->) -#}
-{{ ctx.owner | render }}.{{ ctx.name }}
+{{ ctx.owner | render }}
+{%- if ctx.pointerField -%}
+  ->
+{%- else -%}
+  .
+{%- endif -%}
+{{ ctx.name }}
