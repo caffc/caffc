@@ -59,7 +59,7 @@ public class TestS004ClassFieldsDotRender {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                a->x = 3;
+                return _this->x;
                 """,
             "dot access should translate into field access");
     }

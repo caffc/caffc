@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
+import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
@@ -124,6 +125,7 @@ public class CaffcPebblesExtension implements Extension {
 
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
+                .withMapping(Parameter.class, "c/asm/parameter.peb")
 
                 // statements
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")
