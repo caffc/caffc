@@ -37,6 +37,8 @@ public final class ExpressionAssign implements Expression {
     public int astLine;
     public int astColumn;
 
+    private boolean isResolved;
+
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAssignContext assignExpression) {
         ExpressionAssign expression = new ExpressionAssign();
 
@@ -110,6 +112,12 @@ public final class ExpressionAssign implements Expression {
 
     @Override
     public void recurseResolveTypes() {
+        if (isResolved) {
+            return;
+        }
+
+        isResolved = true;
+
         this.right.recurseResolveTypes();
 
         for (Expression leftExpression: this.leftExpressions) {

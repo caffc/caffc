@@ -19,6 +19,8 @@ public final class ExpressionBitNot implements Expression {
     public int astColumn;
     public int astLine;
 
+    private boolean isResolved;
+
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitNotContext bitNotContext) {
         ExpressionBitNot result = new ExpressionBitNot();
 
@@ -59,6 +61,12 @@ public final class ExpressionBitNot implements Expression {
 
     @Override
     public void recurseResolveTypes() {
+        if (isResolved) {
+            return;
+        }
+
+        isResolved = true;
+
         this.expression.recurseResolveTypes();
         this.symbol = this.expression.typeSymbol();
     }

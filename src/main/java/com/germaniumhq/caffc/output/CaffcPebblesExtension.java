@@ -11,6 +11,7 @@ import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
@@ -108,6 +109,7 @@ public class CaffcPebblesExtension implements Extension {
 
                 // asm
                 .withMapping(AsmAssign.class, "c/asm/assign.peb")
+                .withMapping(AsmBitOperation.class, "c/asm/bit_operation.peb")
                 .withMapping(AsmBitNot.class, "c/asm/bit_not.peb")
                 .withMapping(AsmBoolNot.class, "c/asm/bool_not.peb")
                 .withMapping(AsmCast.class, "c/asm/cast.peb")

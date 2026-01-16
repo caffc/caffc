@@ -162,7 +162,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBitOperations() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -185,15 +185,18 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                t = x & y;
+                _caffc_temp_caffc_u32_1 = x & y;
+                t = _caffc_temp_caffc_u32_1;
                 """,
                 "bit and should translate into the generated code");
         CodeAssertsStr.assertCodeContains(code, """
-                u = x | y;
+                _caffc_temp_caffc_u32_2 = x | y;
+                u = _caffc_temp_caffc_u32_2;
                 """,
                 "bit or should translate into the generated code");
         CodeAssertsStr.assertCodeContains(code, """
-                v = x ^ y;
+                _caffc_temp_caffc_u32_3 = x ^ y;
+                v = _caffc_temp_caffc_u32_3;
                 """,
                 "bit xor should translate into the generated code");
     }

@@ -63,4 +63,39 @@ public class TestS004ClassFieldsDotRender {
                 """,
             "dot access should translate into field access");
     }
+
+    @Test
+    public void testFunctionMethodAccess() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                    module main
+                    
+                    class A {
+                      getX() -> i32 {
+                        return 0
+                      }
+                    
+                      getA() -> A {
+                        return _this
+                      }
+                    }
+                    
+                    main() {
+                      A a = new A()
+                      a.getA().getX()
+                    }
+                    """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_main_A_2 = main_A_getA(a);
+                _caffc_temp_caffc_i32_1 = main_A_getX(_caffc_temp_main_A_2);
+                """,
+            "dot access should translate into function access");
+    }
 }

@@ -16,7 +16,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpressionDotAccess implements Expression {
+public final class ExpressionDotAccess implements Expression {
     public AstItem owner;
     public Expression leftOfDot;
     public String rightOfDot;

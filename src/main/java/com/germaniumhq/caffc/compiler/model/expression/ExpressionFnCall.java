@@ -31,6 +31,8 @@ public final class ExpressionFnCall implements Expression {
     public int astColumn;
     public int astLine;
 
+    private boolean isResolved;
+
     /**
      * Converts an ANTLR-based function call expression into a corresponding ExpressionFnCall object.
      *
@@ -87,6 +89,12 @@ public final class ExpressionFnCall implements Expression {
 
     @Override
     public void recurseResolveTypes() {
+        if (isResolved) {
+            return;
+        }
+
+        isResolved = true;
+
         this.functionExpression.recurseResolveTypes();
 
         if (this.genericsInstantiations != null) {
