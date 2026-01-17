@@ -1,9 +1,13 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -77,5 +81,23 @@ public class ExpressionBoolCompare implements Expression {
     public void recurseResolveTypes() {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult value1 = this.left.asLinearForm(block);
+        AsmLinearFormResult value2 = this.right.asLinearForm(block);
+
+        result.instructions.addAll(value1.instructions);
+        result.instructions.addAll(value2.instructions);
+
+        AsmVar resultValue = block.addTempVar(this, this.typeSymbol());
+
+        result.instructions.add(new AsmBoolOperation(resultValue, this.operator, value1.value, value2.value));
+        result.value = resultValue;
+
+        return result;
     }
 }

@@ -14,9 +14,11 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
@@ -111,11 +113,13 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmAssign.class, "c/asm/assign.peb")
                 .withMapping(AsmBitOperation.class, "c/asm/bit_operation.peb")
                 .withMapping(AsmBitNot.class, "c/asm/bit_not.peb")
+                .withMapping(AsmBoolOperation.class, "c/asm/bool_operation.peb")
                 .withMapping(AsmBoolNot.class, "c/asm/bool_not.peb")
                 .withMapping(AsmCast.class, "c/asm/cast.peb")
                 .withMapping(AsmConstant.class, "c/asm/constant.peb")
                 .withMapping(AsmFieldVar.class, "c/asm/field_var.peb")
                 .withMapping(AsmIfZJmp.class, "c/asm/if_zjmp.peb")
+                .withMapping(AsmJmp.class, "c/asm/jmp.peb")
                 .withMapping(AsmNew.class, "c/asm/new.peb")
                 .withMapping(AsmShift.class, "c/asm/shift.peb")
                 .withMapping(AsmZeroClear.class, "c/asm/zero_clear.peb")

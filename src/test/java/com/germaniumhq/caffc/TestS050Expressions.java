@@ -237,7 +237,7 @@ public class TestS050Expressions {
 
     @Test
     public void testTernaryOperators() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -256,10 +256,53 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                y = x == 1 ? 3 : 4;
+                _caffc_temp_caffc_bool_1 = x == 1;
+                if (! _caffc_temp_caffc_bool_1) { goto ternaryElse0; }
+                _caffc_temp_caffc_i32_1 = 3;
+                goto ternaryEnd1;
+                ternaryElse0:
+                _caffc_temp_caffc_i32_1 = 4;
+                ternaryEnd1:
+                y = _caffc_temp_caffc_i32_1;
                 """,
                 "ternary operators should translate into the generated code");
     }
+
+    @Test
+    public void testTernaryOperatorsEmptyTrue() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                            module main
+
+                            class A {}
+
+                            main() -> i32 {
+                              A a
+                              A b = new A()
+                              A c = a ?: b
+
+                              return 0
+                            }
+                            """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                if (! a) { goto ternaryElse0; }
+                _caffc_temp_main_A_2 = a;
+                goto ternaryEnd1;
+                ternaryElse0:
+                _caffc_temp_main_A_2 = b;
+                ternaryEnd1:
+                c = _caffc_temp_main_A_2;
+                """,
+            "ternary operators should translate into the generated code");
+    }
+
 
     @Test
     public void testOperationAssign() {
