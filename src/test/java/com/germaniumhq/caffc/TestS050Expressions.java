@@ -204,7 +204,7 @@ public class TestS050Expressions {
 
     @Test
     public void testBoolOperations() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -226,11 +226,13 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                t = x && y;
+                _caffc_temp_caffc_bool_1 = x && y;
+                t = _caffc_temp_caffc_bool_1;
                 """,
                 "bool and should translate into the generated code");
         CodeAssertsStr.assertCodeContains(code, """
-                u = x || y;
+                _caffc_temp_caffc_bool_2 = x || y;
+                u = _caffc_temp_caffc_bool_2;
                 """,
                 "bool or should translate into the generated code");
     }
@@ -307,7 +309,7 @@ public class TestS050Expressions {
     @Test
     public void testOperationAssign() {
         //     ('<<='|'>>='|'&='|'|='|'^='|'*='|'/='|'+='|'-=')
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
@@ -335,23 +337,23 @@ public class TestS050Expressions {
                 }
         );
 
-        CodeAssertsStr.assertCodeContains(code, "x <<= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x << y;",
                 "shift left assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x >>= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x >> y;",
                 "shift right assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x &= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x & y;",
                 "bit-and assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x |= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x | y;",
                 "bit-or assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x ^= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x ^ y;",
                 "bit-xor assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x *= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x * y;",
                 "math mul assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x /= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x / y;",
                 "math div assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x += y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x + y;",
                 "math plus assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x -= y;",
+        CodeAssertsStr.assertCodeContains(code, "x = x - y;",
                 "math minus assign should translate into the generated code");
     }
 

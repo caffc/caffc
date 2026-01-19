@@ -1,9 +1,14 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -65,5 +70,29 @@ public class ExpressionOpAssign implements Expression {
         this.right.recurseResolveTypes();
 
         this.symbol = new TypeSymbol(TypeName.VOID);
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult leftLinear = left.asLinearForm(block);
+        AsmLinearFormResult rightLinear = right.asLinearForm(block);
+
+        if (!(leftLinear.value instanceof AsmVar)) {
+            CaffcCompiler.get().fatal(this, "invalid left value: left expression is not a variable.");
+        }
+
+        result.value = leftLinear.value;
+        result.instructions.addAll(leftLinear.instructions);
+        result.instructions.addAll(rightLinear.instructions);
+
+        result.instructions.add(new AsmBitOperation(
+            (AsmVar) result.value,
+            this.operator.substring(0, this.operator.length() - 1),
+            result.value,
+            rightLinear.value));
+
+        return result;
     }
 }
