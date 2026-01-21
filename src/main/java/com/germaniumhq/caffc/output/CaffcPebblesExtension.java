@@ -22,6 +22,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNewArray;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmShift;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
@@ -121,6 +122,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmIfZJmp.class, "c/asm/if_zjmp.peb")
                 .withMapping(AsmJmp.class, "c/asm/jmp.peb")
                 .withMapping(AsmNew.class, "c/asm/new.peb")
+                .withMapping(AsmNewArray.class, "c/asm/new_array.peb")
                 .withMapping(AsmShift.class, "c/asm/shift.peb")
                 .withMapping(AsmZeroClear.class, "c/asm/zero_clear.peb")
                 .withMapping(AsmLabel.class, "c/asm/label.peb")

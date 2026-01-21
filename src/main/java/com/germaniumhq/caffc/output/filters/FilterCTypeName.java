@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.output.filters;
 
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
@@ -37,6 +38,10 @@ public class FilterCTypeName implements Filter {
 
         if (o instanceof ClassDefinition cd) {
             return getCType(cd.typeName());
+        }
+
+        if (o instanceof InterfaceDefinition id) {
+            return getCType(id.typeName());
         }
 
         if (o instanceof TypeName t) {

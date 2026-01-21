@@ -1,0 +1,1 @@
+{{ ctx.result | render }} = {{ ctx.instantiatedType | c_name }}_new_array()

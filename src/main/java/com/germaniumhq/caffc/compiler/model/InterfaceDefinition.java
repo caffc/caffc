@@ -17,7 +17,7 @@ import java.util.Map;
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class InterfaceDefinition implements GenericsDefinitionsSymbol, Scope {
+public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope {
     /**
      * The name of the class.
      */
@@ -123,6 +123,7 @@ public class InterfaceDefinition implements GenericsDefinitionsSymbol, Scope {
      * @param name The name of the function to retrieve.
      * @return The function definition if found, otherwise null.
      */
+    @Override
     public FunctionDefinition getFunction(String name) {
         for (FunctionDefinition f : functions) {
             if (f.name.equals(name)) {

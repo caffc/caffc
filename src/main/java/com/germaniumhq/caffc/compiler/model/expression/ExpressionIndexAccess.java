@@ -1,10 +1,17 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.GenericDefinition;
+import com.germaniumhq.caffc.compiler.model.HasMethods;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -17,6 +24,7 @@ public class ExpressionIndexAccess implements Expression, AstItem {
     public int astColumn;
     public int astLine;
     private Symbol symbol;
+    private Symbol arraySymbol;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExIndexAccessContext indexAccessExpression) {
         ExpressionIndexAccess result = new ExpressionIndexAccess();
@@ -71,14 +79,44 @@ public class ExpressionIndexAccess implements Expression, AstItem {
             throw new IllegalStateException("not reachable");
         }
 
-        Symbol symbol = expressionSymbol.typeSymbol();
-
-        if (symbol instanceof ClassDefinition classDefinitionSymbol) {
-            this.symbol = classDefinitionSymbol.childDefinition;
-        }
+        this.arraySymbol = expressionSymbol.typeSymbol();
+        this.symbol = ((ClassDefinition)arraySymbol).childDefinition;
 
         if (this.symbol == null) {
             CaffcCompiler.get().fatal(this, "not a symbol: index access not possible");
         }
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        AsmLinearFormResult indexLinear = this.index.asLinearForm(block);
+        result.instructions.addAll(indexLinear.instructions);
+
+        AsmLinearFormResult expressionLinear = this.expression.asLinearForm(block);
+        result.instructions.addAll(expressionLinear.instructions);
+
+        HasMethods classDefinition = (HasMethods) this.arraySymbol;
+        FunctionDefinition getFunction = classDefinition.getFunction("get");
+
+        if (getFunction == null) {
+            CaffcCompiler.get().fatal(this, "no `get` function defined for " + classDefinition);
+        }
+
+        Symbol returnType = getFunction.returnType;
+
+        if (returnType instanceof GenericDefinition genericDefinition) {
+            returnType = genericDefinition.typeRestriction;
+        }
+
+        BlockVariable resultValue = block.addTempVar(this, returnType);
+
+        result.value = resultValue;
+        AsmCall asmCall = new AsmCall(getFunction, expressionLinear.value, indexLinear.value);
+        asmCall.result = resultValue;
+        result.instructions.add(asmCall);
+
+        return result;
     }
 }

@@ -71,7 +71,7 @@ public class TestS010Array {
 
     @Test
     public void testArrayInstantiation() {
-        String code = CodeAssertsStr.compileCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{

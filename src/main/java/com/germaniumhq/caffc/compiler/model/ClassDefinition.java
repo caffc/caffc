@@ -20,7 +20,7 @@ import java.util.Set;
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class ClassDefinition implements GenericsDefinitionsSymbol, Scope {
+public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope {
     /**
      * The name of the class.
      */
