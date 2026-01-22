@@ -5,7 +5,7 @@ import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.output.filters.FilterCTypeName;
+import com.germaniumhq.caffc.output.filters.FilterCName;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -74,7 +74,7 @@ public final class AsmBlock implements Scope, AsmInstruction {
             throw new IllegalStateException("null type defined for the temp variable");
         }
 
-        String cTypeName = FilterCTypeName.getCType(typeSymbol.typeName());
+        String cTypeName = FilterCName.getCType(typeSymbol.typeName());
         Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
 
         String variableName = "_caffc_temp_" + cTypeName + "_" + index;

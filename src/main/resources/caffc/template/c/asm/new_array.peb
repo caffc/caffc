@@ -1,1 +1,5 @@
-{{ ctx.result | render }} = {{ ctx.instantiatedType | c_name }}_new_array()
+{{ ctx.result | render }} = {{ ctx.instantiatedType | c_name }}_new_array(
+{%- for d in ctx.dimensions -%}
+  {{ d | render }}
+  {%- if not loop.last %}, {% endif -%}
+{%- endfor -%})
