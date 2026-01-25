@@ -161,7 +161,9 @@ public class Module implements AstItem, Scope, Symbol {
         }
 
         Symbol containedSymbol = symbol;
-        String searchedArrayName = symbol.typeName().isPrimitive() ? symbol.typeName().name + "_arr" : "obj_arr";
+        String searchedArrayName = symbol.typeName().isPrimitive() && arrayDimensions == 1 ?
+            symbol.typeName().name + "_arr" :
+            "obj_arr";
         ClassDefinition result = null;
 
         for (int i = 1; i <= arrayDimensions; i++) {

@@ -11,6 +11,7 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -44,8 +45,17 @@ public class ExpressionNewArray implements Expression {
             result.countExpressions.add(Expression.fromAntlr(unit, result, expression));
         }
 
-        String arrayType = asArray(baseType, result.countExpressions.size());
+        int arraySize = result.countExpressions.size();
+        String arrayType = asArray(baseType, arraySize);
         result.symbolSearch = SymbolSearch.ofName(arrayType);
+
+        boolean isPrimitiveArray = TypeName.primitiveType(baseType) != null && arraySize <= 1;
+
+        if (!isPrimitiveArray) {
+            result.symbolSearch.generics = new SymbolSearch[]{
+                SymbolSearch.ofName(arraySize <= 1 ? baseType : asArray(baseType, arraySize - 1))
+            };
+        }
 
         return result;
     }
