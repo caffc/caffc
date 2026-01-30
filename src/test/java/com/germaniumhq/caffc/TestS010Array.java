@@ -222,7 +222,7 @@ public class TestS010Array {
     }
 
     @Test
-    public void testArrayIndexAccess() {
+    public void testMultiArrayPrimitiveIndexAccess() {
         String code = CodeAssertsStr.compileFullCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
@@ -234,9 +234,6 @@ public class TestS010Array {
                     
                     test() {
                         u8[][][] primitive_multidimensional = new u8[1][2][3]
-                        yolo.Swag[][][] class_multidimensional = new yolo.Swag[1][2][3]
-                    
-                        class_multidimensional[0][1][2] = new yolo.Swag()
                         primitive_multidimensional[0][1][2] = 3
                     }
                     """
@@ -244,8 +241,45 @@ public class TestS010Array {
             }
         );
 
-        // FIXME: the arrays get loose the type in the linear form?
-        CodeAssertsStr.assertCodeContains(code, "caffc_obj_arr_set((caffc_obj_arr*) ((yolo_Swag_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr*) ((yolo_Swag_arr_arr*) caffc_obj_arr_get((yolo_Swag_arr_arr_arr*) class_multidimensional, 0)), 1)), 2, (caffc_ptr) yolo_Swag_new());",
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_caffc_u8_arr_arr_arr_1 = caffc_u8_arr_arr_arr_new_array(1, 2, 3);
+                primitive_multidimensional = _caffc_temp_caffc_u8_arr_arr_arr_1;
+                _caffc_temp_caffc_u8_arr_arr_1 = caffc_obj_arr_get(primitive_multidimensional, 0);
+                _caffc_temp_caffc_u8_arr_1 = caffc_obj_arr_get(_caffc_temp_caffc_u8_arr_arr_1, 1);
+                caffc_obj_arr_set(_caffc_temp_caffc_u8_arr_1, 2, 3);
+                """,
+            "index assignment isn't working");
+
+    }
+
+    @Test
+    public void testMultiArrayObjectsIndexAccess() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[]{
+                new TestUnit("a/a.caffc", """
+                    module yolo
+
+                    class Swag {}
+                    
+                    test() {
+                        yolo.Swag[][][] class_multidimensional = new yolo.Swag[1][2][3]
+                        class_multidimensional[0][1][2] = new yolo.Swag()
+                    }
+                    """
+                )
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+            _caffc_temp_yolo_Swag_arr_arr_arr_1 = yolo_Swag_arr_arr_arr_new_array(1, 2, 3);
+            class_multidimensional = _caffc_temp_yolo_Swag_arr_arr_arr_1;
+            _caffc_temp_yolo_Swag_1 = yolo_Swag_new();
+            _caffc_temp_yolo_Swag_arr_arr_1 = caffc_obj_arr_get(class_multidimensional, 0);
+            _caffc_temp_yolo_Swag_arr_1 = caffc_obj_arr_get(_caffc_temp_yolo_Swag_arr_arr_1, 1);
+            caffc_obj_arr_set(_caffc_temp_yolo_Swag_arr_1, 2, _caffc_temp_yolo_Swag_1);
+            """,
             "index assignment isn't working");
 
     }

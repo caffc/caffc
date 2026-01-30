@@ -104,13 +104,7 @@ public class ExpressionIndexAccess implements Expression, AstItem {
             CaffcCompiler.get().fatal(this, "no `get` function defined for " + classDefinition);
         }
 
-        Symbol returnType = getFunction.returnType;
-
-        if (returnType instanceof GenericDefinition genericDefinition) {
-            returnType = genericDefinition.typeRestriction;
-        }
-
-        BlockVariable resultValue = block.addTempVar(this, returnType);
+        BlockVariable resultValue = block.addTempVar(this, this.symbol);
 
         result.value = resultValue;
         AsmCall asmCall = new AsmCall(getFunction, expressionLinear.value, indexLinear.value);
