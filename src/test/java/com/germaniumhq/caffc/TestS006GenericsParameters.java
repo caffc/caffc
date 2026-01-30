@@ -45,7 +45,8 @@ public class TestS006GenericsParameters {
                 }
         );
 
-        ExpressionAssign expressionAssign = AstUtil.findAstItem(ast, "calls.[1]");
+        // [3] since variable definitions are split into individual definitions
+        ExpressionAssign expressionAssign = AstUtil.findAstItem(ast, "calls.[3]");
         ClassDefinition returnCallClassDefinition = (ClassDefinition) expressionAssign.right.typeSymbol();
 
         TypeName returnType = returnCallClassDefinition.typeName();

@@ -125,7 +125,19 @@ public class TestS010Array {
 
     @Test
     public void testArrayTypeCreationNonPrimitive() {
-        String code = CodeAssertsStr.compileCaffcProgram(
+        // FIXME: generation of the multi arrays has a potential ubg since the
+        //        values are not managed by the GC:
+        // yolo_Swag_arr_arr_arr* yolo_Swag_arr_arr_arr_multi_new(caffc_i32 s1, caffc_i32 s2, caffc_i32 s3) {
+        //    caffc_i32 i;
+        //    yolo_Swag_arr_arr_arr* result = yolo_Swag_arr_arr_arr_new(s1); <-- not managed by the GC
+        //
+        //    for (i = 0; i < s1; i++) {
+        //        caffc_obj_arr_set(result, i, (caffc_ptr) yolo_Swag_arr_arr_multi(s2, s3));
+        //    }
+        //
+        //    return result;
+        //}
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
@@ -157,7 +169,7 @@ public class TestS010Array {
 
     @Test
     public void testArrayTypesModuleC() {
-        String code = CodeAssertsStr.compileCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
@@ -190,16 +202,10 @@ public class TestS010Array {
 
     @Test
     public void testArrayAccessInFunctionCall() {
-        String code = CodeAssertsStr.compileCaffcProgram(
+        String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-
-                        class obj_arr {}
-                        class str {}
-                        """),
                         new TestUnit("a/a.caffc", """
                         module yolo
 
