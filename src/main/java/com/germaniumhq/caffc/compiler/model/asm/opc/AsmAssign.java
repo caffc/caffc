@@ -8,6 +8,14 @@ final public class AsmAssign implements AsmInstruction {
     public AsmValue right;
 
     public AsmAssign(AsmVar left, AsmValue right) {
+        if (left == null) {
+            throw new IllegalArgumentException("null left value passed to AsmAssign");
+        }
+
+        if (right == null) {
+            throw new IllegalArgumentException("null right value passed to AsmAssign");
+        }
+
         this.left = left;
         this.right = right;
     }

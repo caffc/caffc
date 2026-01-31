@@ -260,6 +260,8 @@ When copying the function definitions, only the generics defined in the parent c
 This function is important enough, it needs its own section. It's purpose is two-fold:
 1. It descends from the top of the `CompilationUnit` downwards ensuring all symbols (classes, variables, functions) are resolvable for a compilation unit.
 2. It allows each `AstItem` to call the `SymbolResolver`, that in turn will search the `AstItem` upwards for `Scope` items. The `Scope` objects own the used classes, functions or variables for which we're doing the search. The search itself is captured into a `SymbolSearch` that has beside the name, potential _unresolved_ generics information. The `SymbolResolver` will resolve the generics information as well when returning the `Symbol`.
+> [!Important]
+> The `SymbolResolver` will resolve the generics information as well when returning the `Symbol`.
 ### Generics, SymbolSearch and Arrays
 ```plantuml
 interface Scope {

@@ -82,6 +82,12 @@ public class IfInstruction implements Statement {
         for (Statement statement: statements) {
             statement.recurseResolveTypes();
         }
+
+        if (elseStatements != null) {
+            for (Statement statement: elseStatements) {
+                statement.recurseResolveTypes();
+            }
+        }
     }
 
     @Override

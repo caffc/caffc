@@ -86,9 +86,12 @@ public class ExpressionId implements Expression {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        if (this.symbol == null) {
+            throw new IllegalStateException("symbol is null in expression id. resolving should have returned a value.");
+        }
+
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        // FIXME: not so sure it's a great idea
         result.value = (AsmValue) this.symbol;
 
         return result;
