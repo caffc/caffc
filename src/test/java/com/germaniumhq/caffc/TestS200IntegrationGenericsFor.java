@@ -9,13 +9,21 @@ import org.junit.jupiter.api.Test;
 public class TestS200IntegrationGenericsFor {
     @Test
     public void testBasicArrayListImplementation() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
                 "a/a.caffc",
                 new TestUnit[] {
                     new TestUnit("a/a.caffc",
             """
-module main
+module caffc
+
+class str {}
+class obj {}
+class obj_arr<T> {
+  get(i32 i) -> T {}
+  set(i32 i, T value) {}
+  size() -> i32 {}
+}
 
 class File {
   str name
@@ -38,7 +46,7 @@ class ArrayList<T> {
    */
   add(T item) {
     // if we're already at full capacity, we need to resize the array
-    if _this.length >= items.size() {
+    if _this.length >= _this.items.size() {
       T[] new_items = new T[_this.items.size() + 8] // no multiplication yet lol
 
       for i32 i = 0; i < items.size(); i = i + 1 {
@@ -68,5 +76,7 @@ list_files(str path) -> ArrayList<File> {
 """)
                 }
         );
+
+        System.out.println(code);
     }
 }

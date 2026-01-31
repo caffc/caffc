@@ -1,6 +1,10 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.model.type.*;
+import com.germaniumhq.caffc.compiler.model.type.GenericsSymbol;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 

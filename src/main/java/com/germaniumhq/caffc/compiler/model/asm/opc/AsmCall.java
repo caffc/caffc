@@ -13,6 +13,10 @@ public final class AsmCall implements AsmInstruction {
     public AsmValue[] parameters;
 
     public AsmCall(FunctionDefinition function, AsmValue ... parameters) {
+        if (function == null) {
+            throw new IllegalArgumentException("Function cannot be null");
+        }
+
         this.function = function;
         this.parameters = parameters;
     }

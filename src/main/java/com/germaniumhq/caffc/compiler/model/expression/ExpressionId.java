@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
@@ -86,8 +87,8 @@ public class ExpressionId implements Expression {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        if (this.symbol == null) {
-            throw new IllegalStateException("symbol is null in expression id. resolving should have returned a value.");
+        if (!(this.symbol instanceof AsmValue)) {
+            CaffcCompiler.get().fatal(this, "BUG: ExpressionId is not an AsmValue: " + this.symbol);
         }
 
         AsmLinearFormResult result = new AsmLinearFormResult();

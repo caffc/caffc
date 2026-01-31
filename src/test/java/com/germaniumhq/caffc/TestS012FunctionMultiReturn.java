@@ -79,16 +79,16 @@ public class TestS012FunctionMultiReturn {
                     """
                         module main
 
-                        getFile() -> i32 size, str name {
+                        getFile() -> u8 size, str name {
                           name = "a.txt"
                           size = 3
                           return size, name
                         }
                         
                         printFiles() {
-                          i32[] sizesArray = new i32[1]
+                          u8[] sizesArray = new u8[1]
                           str[] namesArray = new str[1]
-                          i32 fileSize
+                          u8 fileSize
                           str fileName
                         
                           sizesArray[0], namesArray[0] = getFile()
@@ -139,12 +139,12 @@ public class TestS012FunctionMultiReturn {
                     """
                         module main
 
-                        getPoint() -> i32 x, str s {
+                        getPoint() -> u8 x, str s {
                           return 3, "yay"
                         }
                         
                         printPoint() {
-                          i32[] x = new i32[1]
+                          u8[] x = new u8[1]
                           str s
                           x[0], s = getPoint()
                         }
