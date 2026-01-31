@@ -4,6 +4,38 @@ import org.junit.jupiter.api.Test;
 
 public class TestS101InstructionIfElse {
     @Test
+    public void testIfGeneration() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                    module main
+
+                    clip(i32 y) -> i32 {
+                        if y > 0 {
+                          return y
+                        }
+    
+                        return 0
+                    }
+                    """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code,
+            """
+              if (x == 3) {
+            x = 4;
+            } else {
+            x = 5;
+            }
+            """,
+            "generating an if/else should work");
+    }
+
+    @Test
     public void testIfElseGeneration() {
         String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
