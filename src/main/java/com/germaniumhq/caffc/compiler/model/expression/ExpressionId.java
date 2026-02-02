@@ -6,8 +6,12 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -89,12 +93,20 @@ public class ExpressionId implements Expression {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        if (this.symbol instanceof StructReturnVariableDefinition structReturnVariableDefinition) {
+            AsmLinearFormResult result = new AsmLinearFormResult();
+
+            AsmVar returnType = (AsmVar) this.findAstParent(Function.class).resolve("result");
+            result.value = new AsmFieldVar(returnType, this._typeSymbol, structReturnVariableDefinition.name);
+
+            return result;
+        }
+
         if (!(this.symbol instanceof AsmValue)) {
             CaffcCompiler.get().fatal(this, "BUG: ExpressionId is not an AsmValue: " + this.symbol);
         }
 
         AsmLinearFormResult result = new AsmLinearFormResult();
-
         result.value = (AsmValue) this.symbol;
 
         return result;

@@ -9,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.Struct;
+import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
