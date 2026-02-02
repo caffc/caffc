@@ -87,7 +87,10 @@ public class TestModules {
                 }
         );
 
-        CodeAssertsStr.assertCodeContains(code, " caffc_CaffcObj_new()->x = 4;",
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_caffc_CaffcObj_1 = caffc_CaffcObj_new();
+                _caffc_temp_caffc_CaffcObj_1->x = 4;
+                """,
                 "the caffc.CaffcObj should be instantiated, since caffc is used by default");
     }
 }
