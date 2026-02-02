@@ -21,7 +21,6 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
     public int astColumn;
     public int astLine;
     private SymbolSearch typeSearch;
-    private boolean isResolved;
 
     public Field(AstItem owner, String name) {
         this.owner = owner;
@@ -90,12 +89,6 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
 
     @Override
     public void recurseResolveTypes() {
-        if (this.isResolved) {
-            return;
-        }
-
-        this.isResolved = true;
-
         this.typeSymbol = SymbolResolver.mustResolveSymbol(this, typeSearch);
     }
 

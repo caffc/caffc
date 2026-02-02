@@ -89,12 +89,14 @@ public final class ExpressionDotAccess implements Expression {
             }
         }
 
-        this.symbol = ((Scope) leftOfDotType).resolve(this.rightOfDot);
+        Symbol propertySymbol = ((Scope) leftOfDotType).resolve(this.rightOfDot);
 
-        if (this.symbol == null) {
+        if (propertySymbol == null) {
             CaffcCompiler.get().error(this.leftOfDot,
                     "No such property: `" + this.rightOfDot + "` on " + leftOfDotType.typeName().fqdn() + ".");
         }
+
+        this.symbol = propertySymbol.typeSymbol();
     }
 
     @Override

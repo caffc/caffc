@@ -17,6 +17,7 @@ public class ExpressionId implements Expression {
     public String name;
     public AstItem owner;
     public Symbol symbol;
+    private Symbol _typeSymbol;
 
     public String astFilePath;
     public int astColumn;
@@ -50,7 +51,7 @@ public class ExpressionId implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return this.symbol;
+        return this._typeSymbol;
     }
 
     @Override
@@ -76,6 +77,7 @@ public class ExpressionId implements Expression {
     @Override
     public void recurseResolveTypes() {
         this.symbol = SymbolResolver.mustResolveSymbol(this, SymbolSearch.ofName(this.name));
+        this._typeSymbol = symbol.typeSymbol();
     }
 
     @Override

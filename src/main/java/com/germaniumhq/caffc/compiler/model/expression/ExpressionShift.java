@@ -79,7 +79,7 @@ public final class ExpressionShift implements Expression {
         AsmLinearFormResult rightLinearForm = this.right.asLinearForm(block);
         result.instructions.addAll(rightLinearForm.instructions);
 
-        BlockVariable value = block.addTempVar(this, this.left.typeSymbol().typeSymbol());
+        BlockVariable value = block.addTempVar(this, this.left.typeSymbol());
         result.instructions.add(new AsmShift(value, leftLinearForm.value, rightLinearForm.value, this.operator));
         result.value = value;
 

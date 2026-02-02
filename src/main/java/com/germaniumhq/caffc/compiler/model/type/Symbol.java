@@ -10,7 +10,7 @@ import com.germaniumhq.caffc.compiler.model.Parameter;
 /**
  * A symbol has a name and a type. It's what we get when we resolve something in a scope.
  * In some cases (function, class, module), the name of the symbol is the same as the
- * one in the type, with the type one specifying also the module, its data type.
+ * type, with the type one specifying also the module, its data type.
  *
  * For local variables, parameters, or class fields, the name is different since it
  * represents the local name the field has, while the type represents the type of the

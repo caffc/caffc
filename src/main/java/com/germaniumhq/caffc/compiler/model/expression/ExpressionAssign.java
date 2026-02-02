@@ -10,9 +10,9 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
@@ -180,8 +180,7 @@ public final class ExpressionAssign implements Expression {
         AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
         AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
-        // This should be the array class: expression.typeSymbol() - VariableDeclaration -> then ClassDefinition
-        ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol().typeSymbol();
+        ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
 
         result.instructions.addAll(right.instructions);
         result.instructions.addAll(leftIndex.instructions);
@@ -233,7 +232,7 @@ public final class ExpressionAssign implements Expression {
                 AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
                 AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
-                Symbol arrayDefinition = indexAccess.expression.typeSymbol().typeSymbol();
+                Symbol arrayDefinition = indexAccess.expression.typeSymbol();
                 FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
 
                 result.instructions.addAll(leftIndex.instructions);

@@ -28,6 +28,11 @@ import com.germaniumhq.caffc.generated.caffcParser;
  * A language expression.
  */
 public interface Expression extends Statement {
+    /**
+     * The Type that will be returned by the evaluation of the expression.
+     * This typeSymbol is a reference to the actual type (i.e. ClassDefinition)
+     * and not a reference to variables or fields.
+     */
     Symbol typeSymbol();
 
     static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExpressionContext expression) {

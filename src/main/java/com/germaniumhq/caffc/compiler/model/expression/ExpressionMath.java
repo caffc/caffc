@@ -5,10 +5,10 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -98,7 +98,7 @@ public final class ExpressionMath implements Expression {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
 
-        this.symbol = this.left.typeSymbol().typeSymbol();
+        this.symbol = this.left.typeSymbol();
     }
 
     @Override

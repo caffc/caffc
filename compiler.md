@@ -247,7 +247,7 @@ class A<U is Item> {
 ```
 When we have the following call:
 ```java
-A<CustomItem> a = new A<CustomItem>()  // here we don't know the typeName of T, but it's ok
+A<CustomItem> a = new A<CustomItem>()  // here T, is still generic for add<T>()
 list items = new list()                // default generics, T is obj
 
 var x = a.add<CustomItem>(items, new CustomItem()) // x is list<CustomItem> here
