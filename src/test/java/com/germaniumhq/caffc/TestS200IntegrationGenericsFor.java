@@ -49,7 +49,7 @@ class ArrayList<T> {
     if _this.length >= _this.items.size() {
       T[] new_items = new T[_this.items.size() + 8] // no multiplication yet lol
 
-      for i32 i = 0; i < items.size(); i = i + 1 {
+      for i32 i = 0; i < _this.items.size(); i = i + 1 {
         new_items[i] = _this.items[i]
       }
 

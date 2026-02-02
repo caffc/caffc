@@ -1,1 +1,1 @@
-return {{ ctx.what | render }}
+return{% if ctx.what != null %} {{ ctx.what | render }}{% endif %}

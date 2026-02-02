@@ -7,6 +7,8 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
@@ -114,6 +116,44 @@ public class ForInstruction implements Statement, Scope {
         this.forEndLabel = new AsmLabel("forEnd");
 
         AsmLinearFormResult result = new AsmLinearFormResult();
+
+        // variable declarations
+        if (this.variableDeclarations != null) {
+            for (var variableDeclaration: this.variableDeclarations) {
+                AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(block);
+                result.instructions.addAll(variableDeclarationLinear.instructions);
+            }
+        }
+
+        if (this.variableInitializationExpression != null) {
+            AsmLinearFormResult variableInitializationLinear =
+                this.variableInitializationExpression.asLinearForm(block);
+            result.instructions.addAll(variableInitializationLinear.instructions);
+        }
+
+        result.instructions.add(this.forBeginLabel);
+
+        // check
+        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
+        result.instructions.addAll(checkLinear.instructions);
+
+        result.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
+
+        // statements
+        for (Statement statement: statements) {
+            AsmLinearFormResult statementLinear = statement.asLinearForm(block);
+            result.instructions.addAll(statementLinear.instructions);
+        }
+
+        // increment
+        AsmLinearFormResult incrementLinear = this.incrementExpression.asLinearForm(block);
+        result.instructions.addAll(incrementLinear.instructions);
+
+        // continue the loop
+        result.instructions.add(new AsmJmp(this.forBeginLabel));
+
+        // exit the loop
+        result.instructions.add(this.forEndLabel);
 
         return result;
     }
