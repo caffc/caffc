@@ -43,8 +43,9 @@ public class Function implements CompileBlock, Scope, Symbol {
     /**
      * These are the variables used if the user has defined a function with
      * multiple returns. The actual values are packed _inside_ the return struct,
-     * however they are available in the language (not native blocks) as regular
-     * variables.
+     * named "result" however they are available in the language (not native
+     * blocks) as regular variables. In native blocks they are under the "result"
+     * struct, so "result.x", etc.
      */
     public Map<String, StructReturnVariableDefinition> _structReturnVariables = new LinkedHashMap<>();
 
@@ -53,6 +54,15 @@ public class Function implements CompileBlock, Scope, Symbol {
     private ArrayList<VariableDeclaration> objVariablesCache;
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructReturnVariables;
+
+    /**
+     * The current number used when allocating labels. This is so we keep track of
+     * AsmInstructions when serializing complex AST structures. It's easier to see
+     * `if1:`, `else1:,` `endif1:` labels, to know they are coming from the same
+     * instruction versus `if1:`, `else2:`, `endif3:`, especially when they would be
+     * nested those numbers would be jumping all around.
+     */
+    public int labelIndex;
 
     public static Function fromAntlr(
             CompilationUnit unit,

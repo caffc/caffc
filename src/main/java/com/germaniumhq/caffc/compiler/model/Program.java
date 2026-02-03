@@ -34,8 +34,6 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public int astColumn;
     public int astLine;
 
-    public long labelIndex;
-
     // Keeps track where something is defined. We have two kind of mappings kept in sync:
     //
     // name -> file.location:line

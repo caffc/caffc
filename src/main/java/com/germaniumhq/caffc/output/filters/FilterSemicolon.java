@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.output.filters;
 
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
@@ -37,6 +38,10 @@ public class FilterSemicolon implements Filter {
         }
 
         if (o instanceof AsmIfJmp) {
+            return "";
+        }
+
+        if (o instanceof AsmComment) {
             return "";
         }
 

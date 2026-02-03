@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
@@ -85,8 +86,11 @@ public final class ExpressionTernary implements Expression {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult linearFormResult = new AsmLinearFormResult();
-        AsmLabel ternaryElseLabel = new AsmLabel("ternaryElse");
-        AsmLabel ternaryEndLabel = new AsmLabel("ternaryEnd");
+
+        int labelIndex = AsmLabel.allocateNumber(this);
+        AsmComment ternaryStart = new AsmComment("ternaryStart", labelIndex);
+        AsmLabel ternaryElseLabel = new AsmLabel("ternaryElse", labelIndex);
+        AsmLabel ternaryEndLabel = new AsmLabel("ternaryEnd", labelIndex);
 
         BlockVariable resultAsmVar;
 
@@ -96,6 +100,8 @@ public final class ExpressionTernary implements Expression {
             resultAsmVar = block.addTempVar(this, this.falseExpression.typeSymbol());
         }
         linearFormResult.value = resultAsmVar;
+
+        linearFormResult.instructions.add(ternaryStart);
 
         // check
         AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);

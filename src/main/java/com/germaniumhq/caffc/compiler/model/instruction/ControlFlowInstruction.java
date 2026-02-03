@@ -66,7 +66,7 @@ public final class ControlFlowInstruction implements Statement {
         ForInstruction forInstruction = this.findAstParent(ForInstruction.class);
 
         if ("continue".equals(instruction)) {
-            result.instructions.add(new AsmJmp(forInstruction.forBeginLabel));
+            result.instructions.add(new AsmJmp(forInstruction.forCheckLabel));
         } else {
             result.instructions.add(new AsmJmp(forInstruction.forEndLabel));
         }

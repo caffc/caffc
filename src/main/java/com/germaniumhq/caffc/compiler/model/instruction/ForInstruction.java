@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
@@ -32,7 +33,7 @@ public class ForInstruction implements Statement, Scope {
     public int astColumn;
     public int astLine;
 
-    public AsmLabel forBeginLabel;
+    public AsmLabel forCheckLabel;
     public AsmLabel forEndLabel;
 
     public static ForInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ForBlockContext forAntlr) {
@@ -112,10 +113,14 @@ public class ForInstruction implements Statement, Scope {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        this.forBeginLabel = new AsmLabel("forBegin");
-        this.forEndLabel = new AsmLabel("forEnd");
+        int labelIndex = AsmLabel.allocateNumber(this);
+
+        this.forCheckLabel = new AsmLabel("forCheck", labelIndex);
+        this.forEndLabel = new AsmLabel("forEnd", labelIndex);
 
         AsmLinearFormResult result = new AsmLinearFormResult();
+
+        result.instructions.add(new AsmComment("forBegin", labelIndex));
 
         // variable declarations
         if (this.variableDeclarations != null) {
@@ -131,13 +136,15 @@ public class ForInstruction implements Statement, Scope {
             result.instructions.addAll(variableInitializationLinear.instructions);
         }
 
-        result.instructions.add(this.forBeginLabel);
+        result.instructions.add(this.forCheckLabel);
 
         // check
         AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
         result.instructions.addAll(checkLinear.instructions);
 
         result.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
+
+        result.instructions.add(new AsmComment("forBlock", labelIndex));
 
         // statements
         for (Statement statement: statements) {
@@ -150,7 +157,7 @@ public class ForInstruction implements Statement, Scope {
         result.instructions.addAll(incrementLinear.instructions);
 
         // continue the loop
-        result.instructions.add(new AsmJmp(this.forBeginLabel));
+        result.instructions.add(new AsmJmp(this.forCheckLabel));
 
         // exit the loop
         result.instructions.add(this.forEndLabel);

@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
@@ -97,9 +98,13 @@ public class IfInstruction implements Statement {
         AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(block);
         result.instructions.addAll(checkLinearForm.instructions);
 
-        AsmLabel elseLabel = new AsmLabel("else");
-        AsmLabel endIfLabel = new AsmLabel("endif");
+        int labelIndex = AsmLabel.allocateNumber(this);
 
+        AsmComment ifComment = new AsmComment("if", labelIndex);
+        AsmLabel elseLabel = new AsmLabel("else", labelIndex);
+        AsmLabel endIfLabel = new AsmLabel("endif", labelIndex);
+
+        result.instructions.add(ifComment);
         result.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
 
         for (Statement statement: statements) {

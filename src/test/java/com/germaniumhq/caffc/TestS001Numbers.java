@@ -79,7 +79,11 @@ public class TestS001Numbers {
                             """)}
         );
 
-        assertCodeContains(code, "u8var = 33 | i16default;",
+        assertCodeContains(code, """
+                i16default = 33;
+                _caffc_temp_caffc_i16_1 = 33 | i16default;
+                u8var = _caffc_temp_caffc_i16_1;
+                """,
                 "if a constant is declared into an expression, it should not" +
                         " be explicitly casted in the generated C code");
     }
