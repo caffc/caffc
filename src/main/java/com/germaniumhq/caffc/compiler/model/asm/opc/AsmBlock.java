@@ -18,6 +18,9 @@ import java.util.TreeMap;
  * the AST parser, but instead are created when breaking down complex
  * expressions into linear form, after both the AST parsing has
  * completed, and the recursive type resolving was finished.
+ *
+ * They exist only to make it easier to find variables that should be
+ * reused.
  */
 public final class AsmBlock implements Scope, AsmInstruction {
     public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
@@ -75,7 +78,8 @@ public final class AsmBlock implements Scope, AsmInstruction {
         }
 
         String cTypeName = FilterCName.getCType(typeSymbol.typeName());
-        Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
+        Integer index = this.getNextTypeIndex(cTypeName);
+        this.typeIndexes.put(cTypeName, index);
 
         String variableName = "_caffc_temp_" + cTypeName + "_" + index;
 
@@ -87,5 +91,18 @@ public final class AsmBlock implements Scope, AsmInstruction {
         this.blockVariables.put(variableName, result);
 
         return result;
+    }
+
+    public int getNextTypeIndex(String typeName) {
+        if (this.typeIndexes.containsKey(typeName)) {
+            return this.typeIndexes.get(typeName) + 1;
+        }
+
+        AsmBlock parentBlock = this.findAstParent(AsmBlock.class);
+        if (parentBlock != null) {
+            return parentBlock.getNextTypeIndex(typeName);
+        }
+
+        return 1;
     }
 }

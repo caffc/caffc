@@ -22,7 +22,7 @@ public class TestS100InstructionForLoop {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                    /* forBegin0: */
+                    /* forBegin0: */2
                     i = 0;
                     forCheck0:
                     _caffc_temp_caffc_bool_1 = i < 10;

@@ -1,9 +1,4 @@
 {
-/*
- * FIXME: blocks _must_ be collapsed, so the GC can deal with them.
- *        this exists only for debugging, we can't have blocks in the
- *        end-code.
- */
 {%- for variable in ctx.blockVariables %}
 {{ variable.value.typeSymbol | c_type_name }} {{ variable.value.name }};
 {%- endfor %}

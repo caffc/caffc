@@ -119,48 +119,52 @@ public class ForInstruction implements Statement, Scope {
         this.forEndLabel = new AsmLabel("forEnd", labelIndex);
 
         AsmLinearFormResult result = new AsmLinearFormResult();
+        AsmBlock forBlock = new AsmBlock(block);
 
-        result.instructions.add(new AsmComment("forBegin", labelIndex));
+        result.instructions.add(new AsmComment("forBlock", labelIndex));
+        result.instructions.add(forBlock);
+
+        forBlock.instructions.add(new AsmComment("forBegin", labelIndex));
 
         // variable declarations
         if (this.variableDeclarations != null) {
             for (var variableDeclaration: this.variableDeclarations) {
-                AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(block);
-                result.instructions.addAll(variableDeclarationLinear.instructions);
+                AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(forBlock);
+                forBlock.instructions.addAll(variableDeclarationLinear.instructions);
             }
         }
 
         if (this.variableInitializationExpression != null) {
             AsmLinearFormResult variableInitializationLinear =
-                this.variableInitializationExpression.asLinearForm(block);
-            result.instructions.addAll(variableInitializationLinear.instructions);
+                this.variableInitializationExpression.asLinearForm(forBlock);
+            forBlock.instructions.addAll(variableInitializationLinear.instructions);
         }
 
-        result.instructions.add(this.forCheckLabel);
+        forBlock.instructions.add(this.forCheckLabel);
 
         // check
-        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
-        result.instructions.addAll(checkLinear.instructions);
+        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(forBlock);
+        forBlock.instructions.addAll(checkLinear.instructions);
 
-        result.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
+        forBlock.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
 
-        result.instructions.add(new AsmComment("forBlock", labelIndex));
+        forBlock.instructions.add(new AsmComment("forBlock", labelIndex));
 
         // statements
         for (Statement statement: statements) {
-            AsmLinearFormResult statementLinear = statement.asLinearForm(block);
-            result.instructions.addAll(statementLinear.instructions);
+            AsmLinearFormResult statementLinear = statement.asLinearForm(forBlock);
+            forBlock.instructions.addAll(statementLinear.instructions);
         }
 
         // increment
-        AsmLinearFormResult incrementLinear = this.incrementExpression.asLinearForm(block);
-        result.instructions.addAll(incrementLinear.instructions);
+        AsmLinearFormResult incrementLinear = this.incrementExpression.asLinearForm(forBlock);
+        forBlock.instructions.addAll(incrementLinear.instructions);
 
         // continue the loop
-        result.instructions.add(new AsmJmp(this.forCheckLabel));
+        forBlock.instructions.add(new AsmJmp(this.forCheckLabel));
 
         // exit the loop
-        result.instructions.add(this.forEndLabel);
+        forBlock.instructions.add(this.forEndLabel);
 
         return result;
     }

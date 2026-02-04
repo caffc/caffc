@@ -93,37 +93,47 @@ public class IfInstruction implements Statement {
 
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        int labelIndex = AsmLabel.allocateNumber(this);
+
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(block);
-        result.instructions.addAll(checkLinearForm.instructions);
+        AsmBlock forBlock = new AsmBlock(block);
+        result.instructions.add(new AsmComment("ifBlock", labelIndex));
+        result.instructions.add(forBlock);
 
-        int labelIndex = AsmLabel.allocateNumber(this);
+        AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(forBlock);
+        forBlock.instructions.addAll(checkLinearForm.instructions);
 
         AsmComment ifComment = new AsmComment("if", labelIndex);
         AsmLabel elseLabel = new AsmLabel("else", labelIndex);
         AsmLabel endIfLabel = new AsmLabel("endif", labelIndex);
 
-        result.instructions.add(ifComment);
-        result.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
+        forBlock.instructions.add(ifComment);
+        forBlock.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
+
+        AsmBlock ifTrueBlock = new AsmBlock(forBlock);
+        forBlock.instructions.add(ifTrueBlock);
 
         for (Statement statement: statements) {
-            result.instructions.addAll(statement.asLinearForm(block).instructions);
+            ifTrueBlock.instructions.addAll(statement.asLinearForm(ifTrueBlock).instructions);
         }
 
         // if we have `else` instructions, we need to skip them now
         if (elseStatements != null) {
-            result.instructions.add(new AsmJmp(endIfLabel));
+            ifTrueBlock.instructions.add(new AsmJmp(endIfLabel));
         }
 
-        result.instructions.add(elseLabel);
+        forBlock.instructions.add(elseLabel);
 
         if (elseStatements != null) {
+            AsmBlock ifFalseBlock = new AsmBlock(forBlock);
+            forBlock.instructions.add(ifFalseBlock);
+
             for (Statement statement: elseStatements) {
-                result.instructions.addAll(statement.asLinearForm(block).instructions);
+                ifFalseBlock.instructions.addAll(statement.asLinearForm(ifFalseBlock).instructions);
             }
 
-            result.instructions.add(endIfLabel);
+            forBlock.instructions.add(endIfLabel);
         }
 
         return result;
