@@ -4,8 +4,8 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -79,13 +79,13 @@ public final class ExpressionNewObject implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         // first we flatten the parameters themselves
         List<AsmLinearFormResult> linearParameters = new ArrayList<>();
         for (Expression parameter: this.parameters) {
-            linearParameters.add(parameter.asLinearForm(function));
+            linearParameters.add(parameter.asLinearForm(block));
         }
 
         // add the parameters instructions + prepare the parameter values array for the asmNew
@@ -99,7 +99,7 @@ public final class ExpressionNewObject implements Expression {
         }
 
         AsmNew asmNew = new AsmNew(instantiatedType, callParameters);
-        asmNew.result = function.addTempVar(this, instantiatedType);
+        asmNew.result = block.addTempVar(this, instantiatedType);
 
         result.value = asmNew.result;
         result.instructions.add(asmNew);

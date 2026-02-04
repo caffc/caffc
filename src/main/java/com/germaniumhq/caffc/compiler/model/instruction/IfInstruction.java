@@ -5,8 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
@@ -92,10 +92,10 @@ public class IfInstruction implements Statement {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(function);
+        AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(block);
         result.instructions.addAll(checkLinearForm.instructions);
 
         int labelIndex = AsmLabel.allocateNumber(this);
@@ -108,7 +108,7 @@ public class IfInstruction implements Statement {
         result.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
 
         for (Statement statement: statements) {
-            result.instructions.addAll(statement.asLinearForm(function).instructions);
+            result.instructions.addAll(statement.asLinearForm(block).instructions);
         }
 
         // if we have `else` instructions, we need to skip them now
@@ -120,7 +120,7 @@ public class IfInstruction implements Statement {
 
         if (elseStatements != null) {
             for (Statement statement: elseStatements) {
-                result.instructions.addAll(statement.asLinearForm(function).instructions);
+                result.instructions.addAll(statement.asLinearForm(block).instructions);
             }
 
             result.instructions.add(endIfLabel);

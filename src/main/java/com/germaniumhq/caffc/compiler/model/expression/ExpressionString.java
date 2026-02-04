@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.*;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -64,7 +65,7 @@ public class ExpressionString implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         result.value = new AsmConstant(this.symbol, this.constant);

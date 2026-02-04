@@ -5,8 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -118,16 +118,16 @@ public final class ExpressionBitOperation implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult value1 = this.left.asLinearForm(function);
-        AsmLinearFormResult value2 = this.right.asLinearForm(function);
+        AsmLinearFormResult value1 = this.left.asLinearForm(block);
+        AsmLinearFormResult value2 = this.right.asLinearForm(block);
 
         result.instructions.addAll(value1.instructions);
         result.instructions.addAll(value2.instructions);
 
-        AsmVar resultValue = function.addTempVar(this, value1.value.typeSymbol());
+        AsmVar resultValue = block.addTempVar(this, value1.value.typeSymbol());
 
         result.instructions.add(new AsmBitOperation(resultValue, this.operator, value1.value, value2.value));
         result.value = resultValue;

@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
@@ -54,11 +55,10 @@ public interface Statement extends AstItem {
 
     /**
      * Returs the current statement as a linear form representation.
-     *
-     * @param function
+     * @param block
      * @return
      */
-    default AsmLinearFormResult asLinearForm(Function function) {
+    default AsmLinearFormResult asLinearForm(AsmBlock block) {
         CaffcCompiler.get().fatal(this, "linear form not implemented for " + this.getClass().getCanonicalName());
         return null; // not reached
     }

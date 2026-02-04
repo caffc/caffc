@@ -5,8 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AssignExpression;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
@@ -112,7 +112,7 @@ public class ForInstruction implements Statement, Scope {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         int labelIndex = AsmLabel.allocateNumber(this);
 
         this.forCheckLabel = new AsmLabel("forCheck", labelIndex);
@@ -125,21 +125,21 @@ public class ForInstruction implements Statement, Scope {
         // variable declarations
         if (this.variableDeclarations != null) {
             for (var variableDeclaration: this.variableDeclarations) {
-                AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(function);
+                AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(block);
                 result.instructions.addAll(variableDeclarationLinear.instructions);
             }
         }
 
         if (this.variableInitializationExpression != null) {
             AsmLinearFormResult variableInitializationLinear =
-                this.variableInitializationExpression.asLinearForm(function);
+                this.variableInitializationExpression.asLinearForm(block);
             result.instructions.addAll(variableInitializationLinear.instructions);
         }
 
         result.instructions.add(this.forCheckLabel);
 
         // check
-        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(function);
+        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
         result.instructions.addAll(checkLinear.instructions);
 
         result.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
@@ -148,12 +148,12 @@ public class ForInstruction implements Statement, Scope {
 
         // statements
         for (Statement statement: statements) {
-            AsmLinearFormResult statementLinear = statement.asLinearForm(function);
+            AsmLinearFormResult statementLinear = statement.asLinearForm(block);
             result.instructions.addAll(statementLinear.instructions);
         }
 
         // increment
-        AsmLinearFormResult incrementLinear = this.incrementExpression.asLinearForm(function);
+        AsmLinearFormResult incrementLinear = this.incrementExpression.asLinearForm(block);
         result.instructions.addAll(incrementLinear.instructions);
 
         // continue the loop

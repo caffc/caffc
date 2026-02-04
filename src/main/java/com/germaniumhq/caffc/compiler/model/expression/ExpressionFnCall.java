@@ -5,11 +5,11 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -126,7 +126,7 @@ public final class ExpressionFnCall implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
 
         AsmLinearFormResult result = new AsmLinearFormResult();
@@ -134,7 +134,7 @@ public final class ExpressionFnCall implements Expression {
         // first we flatten the parameters themselves
         List<AsmLinearFormResult> linearParameters = new ArrayList<>();
         for (Expression parameter: this.parameters) {
-            linearParameters.add(parameter.asLinearForm(function));
+            linearParameters.add(parameter.asLinearForm(block));
         }
 
         // add the parameters instructions + prepare the parameter values array for the call
@@ -151,7 +151,7 @@ public final class ExpressionFnCall implements Expression {
         AsmCall call = new AsmCall(functionDefinition, callParameters);
 
         if (!functionDefinition.isVoid()) {
-            call.result = function.addTempVar(this, functionDefinition.returnType);
+            call.result = block.addTempVar(this, functionDefinition.returnType);
             result.value = call.result;
         }
 

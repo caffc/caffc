@@ -5,7 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.Field;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -99,10 +100,10 @@ public final class ExpressionDotAccess implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult leftOfDotLinear = this.leftOfDot.asLinearForm(function);
+        AsmLinearFormResult leftOfDotLinear = this.leftOfDot.asLinearForm(block);
         result.instructions.addAll(leftOfDotLinear.instructions);
 
         Scope scope = (Scope) leftOfDotLinear.value.typeSymbol();

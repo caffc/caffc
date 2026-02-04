@@ -2,11 +2,11 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmShift;
-import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -70,16 +70,16 @@ public final class ExpressionShift implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult leftLinearForm = this.left.asLinearForm(function);
+        AsmLinearFormResult leftLinearForm = this.left.asLinearForm(block);
         result.instructions.addAll(leftLinearForm.instructions);
 
-        AsmLinearFormResult rightLinearForm = this.right.asLinearForm(function);
+        AsmLinearFormResult rightLinearForm = this.right.asLinearForm(block);
         result.instructions.addAll(rightLinearForm.instructions);
 
-        AsmVar value = function.addTempVar(this, this.left.typeSymbol());
+        BlockVariable value = block.addTempVar(this, this.left.typeSymbol());
         result.instructions.add(new AsmShift(value, leftLinearForm.value, rightLinearForm.value, this.operator));
         result.value = value;
 

@@ -5,9 +5,8 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
-import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -64,12 +63,12 @@ public class ExpressionBoolNot implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(Function function) {
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult linearExpression = this.expression.asLinearForm(function);
+        AsmLinearFormResult linearExpression = this.expression.asLinearForm(block);
 
-        AsmVar tempVar = function.addTempVar(this, linearExpression.value.typeSymbol());
+        BlockVariable tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
         result.instructions.addAll(linearExpression.instructions);
         result.instructions.add(new AsmBoolNot(tempVar, linearExpression.value));
         result.value = tempVar;

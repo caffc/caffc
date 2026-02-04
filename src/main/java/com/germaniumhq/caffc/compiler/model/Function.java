@@ -2,14 +2,12 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
-import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
-import com.germaniumhq.caffc.output.filters.FilterCName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 /**
  * A function in caffc.
@@ -57,11 +54,6 @@ public class Function implements CompileBlock, Scope, Symbol {
     private ArrayList<VariableDeclaration> objVariablesCache;
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructReturnVariables;
-
-    /**
-     * Used to keep track of temp variables allocated.
-     */
-    private Map<String, Integer> typeIndexes = new TreeMap<>();
 
     /**
      * The current number used when allocating labels. This is so we keep track of
@@ -237,34 +229,6 @@ public class Function implements CompileBlock, Scope, Symbol {
 
         return existingVariable;
     }
-
-    /**
-     * Add a temporary variable for linear form.
-     * @param owner
-     * @param typeSymbol
-     * @return
-     */
-    public AsmVar addTempVar(AstItem owner, Symbol typeSymbol) {
-        if (typeSymbol == null) {
-            throw new IllegalStateException("null type defined for the temp variable");
-        }
-
-        String cTypeName = FilterCName.getCType(typeSymbol.typeName());
-        Integer index = typeIndexes.compute(cTypeName, (it, old) -> old == null ? 1 : old + 1);
-
-        String variableName = "_caffc_temp_" + cTypeName + "_" + index;
-
-        VariableDeclaration result = new VariableDeclaration();
-        result.owner = owner;
-        result.name = variableName;
-        result.typeSymbol = typeSymbol;
-        result.isResolved = true;
-
-        this._variables.put(variableName, result);
-
-        return result;
-    }
-
 
     /**
      * Registers a variable as a return variable.
