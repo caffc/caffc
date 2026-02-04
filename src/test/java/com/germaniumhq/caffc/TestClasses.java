@@ -85,7 +85,10 @@ public class TestClasses {
         CodeAssertsStr.assertCodeNotContains(code, "main_B_constructor(_this)",
                 "new operator generation doesn't seem to be working for default constructors");
 
-        CodeAssertsStr.assertCodeContains(code, "main_A_print_field(main_A_new(3));",
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_main_A_1 = main_A_new(3);
+                main_A_print_field(_caffc_temp_main_A_1);
+                """,
                 "calling functions isn't working for class instances");
     }
 

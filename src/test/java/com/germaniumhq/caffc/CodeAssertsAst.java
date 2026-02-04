@@ -66,6 +66,7 @@ public class CodeAssertsAst {
         for (CompilationUnit compilationUnit: compilationUnits.values()) {
             compilationUnit.recurseResolveTypes();
         }
+
         program.recreateConstants();
 
         for (CompilationUnit compilationUnit: compilationUnits.values()) {

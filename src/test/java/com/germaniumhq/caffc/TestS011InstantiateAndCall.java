@@ -26,10 +26,9 @@ public class TestS011InstantiateAndCall {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                a_A_hello(a_A_new(), 3);
+                _caffc_temp_a_A_1 = a_A_new();
+                a_A_hello(_caffc_temp_a_A_1, 3);
                 """,
                 "the new call should go via the dynamic size function defined for _obj_a");
-
-        System.out.println(code);
     }
 }

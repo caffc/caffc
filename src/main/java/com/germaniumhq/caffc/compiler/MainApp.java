@@ -71,11 +71,11 @@ public class MainApp {
             compilationUnit.recurseResolveTypes();
         }
 
+        program.recreateConstants();
+
         for (CompilationUnit compilationUnit: compilationUnits) {
             LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
-
-        program.recreateConstants();
 
         for (CompilationUnit compilationUnit: compilationUnits) {
             renderCompilationUnit(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb", "c");

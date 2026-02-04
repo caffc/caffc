@@ -25,6 +25,7 @@ public class TestS011StringArray {
                 }
         );
 
+        // FIXME: this seems borked, the new array should be `caffc_obj_arr_new_array(2);`
         CodeAssertsStr.assertCodeContains(code, """
                 caffc_obj_arr_set((caffc_obj_arr*) x, 0, (caffc_ptr) (caffc_str*)&caffc_cstr_ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad);
                 """,

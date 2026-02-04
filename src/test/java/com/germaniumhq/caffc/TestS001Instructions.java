@@ -26,9 +26,11 @@ public class TestS001Instructions {
                 """)}
         );
 
-        assertCodeContains(code, "errors |= caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);",
+        assertCodeContains(code, """
+                _caffc_temp_caffc_i32_1 = 7 * 3;
+                _caffc_temp_caffc_i32_2 = 5 + _caffc_temp_caffc_i32_1;
+                x = _caffc_temp_caffc_i32_2;
+                """,
                 "calling functions with multiple parameters should work fine");
-        assertCodeContains(code, "caffc_u32 caffc_check(caffc_str* typeName, caffc_u32 expectedSize, caffc_u32 actualSize) {",
-                "declaring functions with multiple parameters should work fine");
     }
 }

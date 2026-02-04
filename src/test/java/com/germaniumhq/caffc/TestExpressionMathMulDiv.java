@@ -19,7 +19,10 @@ public class TestExpressionMathMulDiv {
                 }
                 """);
 
-        assertCodeContains(code, "return y - 3",
+        assertCodeContains(code, """
+                _caffc_temp_caffc_i32_1 = y - 3;
+                return _caffc_temp_caffc_i32_1;
+                """,
                 "operations should be working correctly");
     }
 }

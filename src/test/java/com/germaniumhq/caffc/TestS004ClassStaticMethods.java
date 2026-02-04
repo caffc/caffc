@@ -46,7 +46,10 @@ public class TestS004ClassStaticMethods {
                 "static methods shouldn't have the _this parameter");
         assertCodeContains(code, "caffc_str* caffc_A_getName(caffc_A* _this) {",
                 "non-static methods should have the _this parameter");
-        assertCodeContains(code, "a = caffc_A_newA();",
+        assertCodeContains(code, """
+                _caffc_temp_caffc_A_1 = caffc_A_newA();
+                a = _caffc_temp_caffc_A_1;
+                """,
                 "calls of static methods should be possible");
     }
 

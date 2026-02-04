@@ -209,7 +209,13 @@ public class Program implements ModuleProvider, AstItem, Scope {
     }
 
     public String constantName(String value) {
-        return stringConstantsMap.get(value).name;
+        StringConstant stringConstant = stringConstantsMap.get(value);
+
+        if (stringConstant == null) {
+            throw new IllegalArgumentException(value + " is not registered as a constant.");
+        }
+
+        return stringConstant.name;
     }
 
     @Override

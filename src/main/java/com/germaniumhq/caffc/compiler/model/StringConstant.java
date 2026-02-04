@@ -19,6 +19,7 @@ public class StringConstant {
         return Objects.hashCode(bytes);
     }
 
+    @UsedInTemplate("caffc/template/c/constants_c.peb")
     public String valueAsBytes() {
         StringBuilder result = new StringBuilder();
 

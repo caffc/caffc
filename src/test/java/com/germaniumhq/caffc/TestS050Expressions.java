@@ -88,7 +88,9 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
+                x = 0;
                 _caffc_temp_caffc_bool_1 = !x;
+                /* if0: */
                 if (! _caffc_temp_caffc_bool_1) { goto else0; }
                 return 1;
                 else0:
@@ -258,14 +260,16 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
+                /* ternaryStart0: */
                 _caffc_temp_caffc_bool_1 = x == 1;
                 if (! _caffc_temp_caffc_bool_1) { goto ternaryElse0; }
                 _caffc_temp_caffc_i32_1 = 3;
-                goto ternaryEnd1;
+                goto ternaryEnd0;
                 ternaryElse0:
                 _caffc_temp_caffc_i32_1 = 4;
-                ternaryEnd1:
+                ternaryEnd0:
                 y = _caffc_temp_caffc_i32_1;
+                return 0;
                 """,
                 "ternary operators should translate into the generated code");
     }
@@ -294,12 +298,13 @@ public class TestS050Expressions {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
+                /* ternaryStart0: */
                 if (! a) { goto ternaryElse0; }
                 _caffc_temp_main_A_2 = a;
-                goto ternaryEnd1;
+                goto ternaryEnd0;
                 ternaryElse0:
                 _caffc_temp_main_A_2 = b;
-                ternaryEnd1:
+                ternaryEnd0:
                 c = _caffc_temp_main_A_2;
                 """,
             "ternary operators should translate into the generated code");

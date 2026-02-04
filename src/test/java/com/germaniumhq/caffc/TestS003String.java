@@ -29,7 +29,9 @@ public class TestS003String {
                                         """)
                 });
 
-        CodeAssertsStr.assertCodeContains(code, "x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;",
+        CodeAssertsStr.assertCodeContains(code, """
+                x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;
+                """,
                 "string constants aren't generated correctly.");
     }
 
