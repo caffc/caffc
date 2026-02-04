@@ -4,8 +4,8 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -84,16 +84,16 @@ public class ExpressionBoolCompare implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult value1 = this.left.asLinearForm(block);
-        AsmLinearFormResult value2 = this.right.asLinearForm(block);
+        AsmLinearFormResult value1 = this.left.asLinearForm(function);
+        AsmLinearFormResult value2 = this.right.asLinearForm(function);
 
         result.instructions.addAll(value1.instructions);
         result.instructions.addAll(value2.instructions);
 
-        AsmVar resultValue = block.addTempVar(this, this.typeSymbol());
+        AsmVar resultValue = function.addTempVar(this, this.typeSymbol());
 
         result.instructions.add(new AsmBoolOperation(resultValue, this.operator, value1.value, value2.value));
         result.value = resultValue;

@@ -5,7 +5,7 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
@@ -111,12 +111,12 @@ public final class ExpressionMath implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        AsmLinearFormResult left = this.left.asLinearForm(block);
-        AsmLinearFormResult right = this.right.asLinearForm(block);
+    public AsmLinearFormResult asLinearForm(Function function) {
+        AsmLinearFormResult left = this.left.asLinearForm(function);
+        AsmLinearFormResult right = this.right.asLinearForm(function);
 
         AsmLinearFormResult result = new AsmLinearFormResult();
-        result.value = block.addTempVar(this, this.symbol);
+        result.value = function.addTempVar(this, this.symbol);
 
         // we add all the instructions for the left and right expressions
         result.instructions.addAll(left.instructions);

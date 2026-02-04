@@ -2,15 +2,15 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -84,7 +84,7 @@ public final class ExpressionTernary implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         AsmLinearFormResult linearFormResult = new AsmLinearFormResult();
 
         int labelIndex = AsmLabel.allocateNumber(this);
@@ -92,25 +92,25 @@ public final class ExpressionTernary implements Expression {
         AsmLabel ternaryElseLabel = new AsmLabel("ternaryElse", labelIndex);
         AsmLabel ternaryEndLabel = new AsmLabel("ternaryEnd", labelIndex);
 
-        BlockVariable resultAsmVar;
+        AsmVar resultAsmVar;
 
         if (this.trueExpression != null) {
-            resultAsmVar = block.addTempVar(this, this.trueExpression.typeSymbol());
+            resultAsmVar = function.addTempVar(this, this.trueExpression.typeSymbol());
         } else {
-            resultAsmVar = block.addTempVar(this, this.falseExpression.typeSymbol());
+            resultAsmVar = function.addTempVar(this, this.falseExpression.typeSymbol());
         }
         linearFormResult.value = resultAsmVar;
 
         linearFormResult.instructions.add(ternaryStart);
 
         // check
-        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
+        AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(function);
         linearFormResult.instructions.addAll(checkLinear.instructions);
         linearFormResult.instructions.add(new AsmIfZJmp(checkLinear.value, ternaryElseLabel));
 
         // true matches
         if (this.trueExpression != null) {
-            AsmLinearFormResult trueExpressionLinear = this.trueExpression.asLinearForm(block);
+            AsmLinearFormResult trueExpressionLinear = this.trueExpression.asLinearForm(function);
             linearFormResult.instructions.addAll(trueExpressionLinear.instructions);
             linearFormResult.instructions.add(new AsmAssign(resultAsmVar, trueExpressionLinear.value));
         } else {
@@ -122,7 +122,7 @@ public final class ExpressionTernary implements Expression {
         // else matches
         linearFormResult.instructions.add(ternaryElseLabel);
 
-        AsmLinearFormResult falseExpressionLinear = this.falseExpression.asLinearForm(block);
+        AsmLinearFormResult falseExpressionLinear = this.falseExpression.asLinearForm(function);
         linearFormResult.instructions.addAll(falseExpressionLinear.instructions);
 
         linearFormResult.instructions.add(new AsmAssign(resultAsmVar, falseExpressionLinear.value));

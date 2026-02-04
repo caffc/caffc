@@ -1,13 +1,13 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 
 public final class AsmBitNot implements AsmInstruction {
-    public final BlockVariable result;
+    public final AsmVar result;
     public final AsmValue value;
 
-    public AsmBitNot(BlockVariable tempVar, AsmValue value) {
+    public AsmBitNot(AsmVar tempVar, AsmValue value) {
         this.result = tempVar;
         this.value = value;
     }

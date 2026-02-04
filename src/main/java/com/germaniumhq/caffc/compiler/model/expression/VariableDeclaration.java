@@ -5,9 +5,9 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -138,11 +138,11 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         if (this.assignExpression != null) {
-            AsmLinearFormResult right = this.assignExpression.right.asLinearForm(block);
+            AsmLinearFormResult right = this.assignExpression.right.asLinearForm(function);
             result.instructions.addAll(right.instructions);
 
             result.instructions.add(new AsmAssign(this, right.value));

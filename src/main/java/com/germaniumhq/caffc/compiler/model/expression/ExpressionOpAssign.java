@@ -5,9 +5,9 @@ import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -73,11 +73,11 @@ public class ExpressionOpAssign implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult leftLinear = left.asLinearForm(block);
-        AsmLinearFormResult rightLinear = right.asLinearForm(block);
+        AsmLinearFormResult leftLinear = left.asLinearForm(function);
+        AsmLinearFormResult rightLinear = right.asLinearForm(function);
 
         if (!(leftLinear.value instanceof AsmVar)) {
             CaffcCompiler.get().fatal(this, "invalid left value: left expression is not a variable.");

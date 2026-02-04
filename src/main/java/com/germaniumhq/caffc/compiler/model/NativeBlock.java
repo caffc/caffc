@@ -1,7 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 final public class NativeBlock implements CompileBlock, Statement, AsmInstruction {
@@ -51,7 +50,7 @@ final public class NativeBlock implements CompileBlock, Statement, AsmInstructio
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         result.instructions.add(this);

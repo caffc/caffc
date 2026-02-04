@@ -147,38 +147,38 @@ public final class ExpressionAssign implements Expression {
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+    public AsmLinearFormResult asLinearForm(Function function) {
         // this is an indexed assign, i.e.: arr[i] = 3
         // we need to compute each expression (`arr`, `i` and `3`), then create the
         // setter call for the array.
         if (this.isIndex()) {
-            return getAsmLinearIndexAssign(block);
+            return getAsmLinearIndexAssign(function);
         }
 
         // this is a multi assign, i.e.: x, arr[i] = someCall()
         // someCall() returns a `struct` that needs destructured in the individual expressions
         // individual expressions can in turn also be simple assigns or indexed assigns
         if (this.isMultiReturn()) {
-            return getAsmLinearMultiReturnAssign(block);
+            return getAsmLinearMultiReturnAssign(function);
         }
 
         // this is a normal assign, i.e. a = 3
         // we just need to compute the expression and do the assign.
-        return getAsmLinearSimpleAssign(block);
+        return getAsmLinearSimpleAssign(function);
     }
 
     /**
      * Serialize as instructions an indexed assign. We need to make sure the
      * expressions are evaluated in the right order as well. (right to left)
      */
-    private AsmLinearFormResult getAsmLinearIndexAssign(AsmBlock block) {
+    private AsmLinearFormResult getAsmLinearIndexAssign(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) this.getLeft();
 
-        AsmLinearFormResult right = this.right.asLinearForm(block);
-        AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
-        AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+        AsmLinearFormResult right = this.right.asLinearForm(function);
+        AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(function);
+        AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(function);
 
         ClassDefinition leftTypeSymbol = (ClassDefinition) indexAccess.expression.typeSymbol();
 
@@ -197,11 +197,11 @@ public final class ExpressionAssign implements Expression {
         return result;
     }
 
-    private AsmLinearFormResult getAsmLinearSimpleAssign(AsmBlock block) {
+    private AsmLinearFormResult getAsmLinearSimpleAssign(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        AsmLinearFormResult right = this.right.asLinearForm(block);
-        AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
+        AsmLinearFormResult right = this.right.asLinearForm(function);
+        AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(function);
 
         result.instructions.addAll(right.instructions);
         result.instructions.addAll(left.instructions);
@@ -214,11 +214,11 @@ public final class ExpressionAssign implements Expression {
     /**
      * Serialize a struct deconstruction assignment.
      */
-    private AsmLinearFormResult getAsmLinearMultiReturnAssign(AsmBlock block) {
+    private AsmLinearFormResult getAsmLinearMultiReturnAssign(Function function) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         // this right expression since it's a multi-return holds a struct now.
-        AsmLinearFormResult right = this.right.asLinearForm(block);
+        AsmLinearFormResult right = this.right.asLinearForm(function);
         result.instructions.addAll(right.instructions);
         AsmVar rightStruct = (AsmVar) right.value;
 
@@ -229,8 +229,8 @@ public final class ExpressionAssign implements Expression {
             if ((left instanceof ExpressionIndexAccess)) {
                 ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) left;
 
-                AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
-                AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+                AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(function);
+                AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(function);
 
                 Symbol arrayDefinition = indexAccess.expression.typeSymbol();
                 FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
@@ -246,7 +246,7 @@ public final class ExpressionAssign implements Expression {
                     rightAsmVar           // value
                 ));
             } else {
-                AsmLinearFormResult leftLinear = left.asLinearForm(block);
+                AsmLinearFormResult leftLinear = left.asLinearForm(function);
                 result.instructions.addAll(leftLinear.instructions);
                 result.instructions.add(new AsmAssign((AsmVar) leftLinear.value, rightAsmVar));
             }
