@@ -248,7 +248,9 @@ public final class ExpressionAssign implements Expression {
             } else {
                 AsmLinearFormResult leftLinear = left.asLinearForm(block);
                 result.instructions.addAll(leftLinear.instructions);
-                result.instructions.add(new AsmAssign((AsmVar) leftLinear.value, rightAsmVar));
+                result.instructions.add(new AsmAssign(
+                    (AsmVar) leftLinear.value,
+                    rightAsmVar));
             }
 
             // after the assignment in the individual variables is done, we don't want the

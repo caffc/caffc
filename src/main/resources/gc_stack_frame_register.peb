@@ -1,12 +1,35 @@
 {# needs a function as root context -#}
 
+{%- for variable in ctx.variables %}
+    {%- if variable.typeName.isPrimitive and variable.typeSymbol.name == "ptr" %}
+        {{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
+    {%- elseif variable.typeName.isPrimitive %}
+        {{ variable.typeSymbol | c_type }} {{ variable.name }} = 0;
+    {%- elseif variable.typeName.dataType == "OBJECT" %}
+        {{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
+    {%- elseif variable.typeName.dataType == "ARRAY" %}
+        {{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
+    {%- elseif variable.typeName.dataType == "STRUCT" %}
+        {{ variable.typeSymbol | c_type }} {{ variable.name }} = {
+        {%- for entry in variable.typeSymbol.fields -%}
+            {%- if entry.typeName.isPrimitive and variable.typeSymbol.name == "ptr" -%}
+            caffc_void
+            {%- elseif entry.typeName.isPrimitive -%}
+            0
+            {%- elseif entry.typeName.dataType == "OBJECT" -%}
+            caffc_null
+            {%- elseif entry.typeName.dataType == "ARRAY" -%}
+            caffc_null
+            {%- endif -%}
+            {%- if not loop.last %}, {% endif -%}
+        {%- endfor -%}
+    };
+    {%- endif %}
+{%- endfor %}
+
 {%- if ctx.gcVariableCount() > 0 %}
 /* GC managed variables */
 caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];
-
-{# FIXME: this is currently borked #}
-{%- for item in ctx.objParametersAndVariables %}
-{%- endfor %}
 
 _caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});
 

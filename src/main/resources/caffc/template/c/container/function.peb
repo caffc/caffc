@@ -5,7 +5,7 @@
   {{ instruction | render }}{{ instruction | semicolon }}
 {%- endfor -%}
 
-{# if it's a void function, we need to make sure we have the unregister, since
+{#- if it's a void function, we need to make sure we have the unregister, since
    it's not 100% clear if we have a return statement in the code -#}
 {%- if ctx.definition.returnType.name == "void" %}
 {% include "gc_stack_frame_unregister.peb" %}

@@ -166,4 +166,29 @@ public class TestS012FunctionMultiReturn {
                 """,
             "the struct type should be generated for multiple returns in the module header");
     }
+
+    @Test
+    public void testReturnMultiConstants() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                        module main
+                        
+                        getOrigin() -> u32 x, u32 y {
+                            return 0, 0
+                        }
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_caffc_getOrigin_structreturn_1.x = 0;
+                _caffc_temp_caffc_getOrigin_structreturn_1.y = 0;
+                return _caffc_temp_caffc_getOrigin_structreturn_1;
+                """,
+            "the return fields should be assigned correctly");
+    }
 }

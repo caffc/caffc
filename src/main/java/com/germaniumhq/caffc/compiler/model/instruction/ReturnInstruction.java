@@ -12,6 +12,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -110,7 +111,8 @@ public final class ReturnInstruction implements Statement {
             for (NamedReturn namedReturn: this.returns) {
                 AsmLinearFormResult namedReturnLinearForm = namedReturn.value.asLinearForm(block);
                 instructions.addAll(namedReturnLinearForm.instructions);
-                instructions.add(new AsmAssign(structVar, namedReturnLinearForm.value));
+                AsmFieldVar structFieldVar = new AsmFieldVar(structVar, namedReturn.value.typeSymbol(), namedReturn.name);
+                instructions.add(new AsmAssign(structFieldVar, namedReturnLinearForm.value));
             }
 
             instructions.add(new AsmReturn(structVar));

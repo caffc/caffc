@@ -38,7 +38,7 @@ public class TestS049Assign {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_multi_structreturn _caffc_temp_caffc_multi_structreturn_1;
+                caffc_multi_structreturn _caffc_temp_caffc_multi_structreturn_1 = {0, 0};
                 """,
             "there should be a local variable declaration for the struct response");
 
