@@ -160,7 +160,7 @@ public class TestS012FunctionMultiReturn {
 
         CodeAssertsStr.assertCodeContains(code, """
                 typedef struct {
-                  caffc_i32 x;
+                  caffc_u8 x;
                   caffc_str* s;
                 } caffc_getPoint_structreturn;
                 """,

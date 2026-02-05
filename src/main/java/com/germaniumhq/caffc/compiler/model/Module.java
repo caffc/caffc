@@ -196,4 +196,14 @@ public class Module implements AstItem, Scope, Symbol {
     public void renderAst(AstItemCodeRenderer codeRenderer) {
         throw new IllegalStateException("BUG: render ast can only be used on modules");
     }
+
+    public void registerStruct(Struct struct) {
+        this.structures.compute(struct.name(), (key, oldValue) -> {
+            if (oldValue != null) {
+                throw new IllegalArgumentException("struct " + struct.name() + " already exists");
+            }
+
+            return struct;
+        });
+    }
 }

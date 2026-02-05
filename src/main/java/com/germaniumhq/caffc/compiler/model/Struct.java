@@ -36,6 +36,9 @@ public class Struct implements GenericsDefinitionsSymbol, Scope {
      */
     public GenericDefinitions generics = null;
 
+    // private constructor
+    private Struct() {}
+
     public static Struct fromDefinition(AstItem owner, String module, String name, LinkedHashMap<String, Symbol> keyNames) {
         Struct struct = new Struct();
 
@@ -46,6 +49,8 @@ public class Struct implements GenericsDefinitionsSymbol, Scope {
         for (Map.Entry<String, Symbol> entry: keyNames.entrySet()) {
             struct.fields.add(Field.fromDefinition(struct, entry.getValue(), entry.getKey()));
         }
+
+        Program.get().getModule(module).registerStruct(struct);
 
         return struct;
     }

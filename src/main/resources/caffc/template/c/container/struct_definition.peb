@@ -1,5 +1,5 @@
 typedef struct {
-{%- for entry in ctx.returnTypes %}
-  {{ entry.value.typeName | c_type }} {{ entry.key }};
+{%- for entry in ctx.fields %}
+  {{ entry.typeName | c_type }} {{ entry.name }};
 {%- endfor %}
 } {{ ctx.typeName | c_name }};
