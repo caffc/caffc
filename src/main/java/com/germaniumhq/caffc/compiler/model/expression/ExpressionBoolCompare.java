@@ -12,7 +12,7 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionBoolCompare implements Expression {
+public final class ExpressionBoolCompare implements Expression {
     public AstItem owner;
     public Expression left;
     public Expression right;

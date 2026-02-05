@@ -10,7 +10,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 /**
  * A string constant.
  */
-public class ExpressionString implements Expression {
+public final class ExpressionString implements Expression {
     public AstItem owner;
     public String constant;
 

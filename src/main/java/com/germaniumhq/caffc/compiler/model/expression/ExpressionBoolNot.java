@@ -10,7 +10,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionBoolNot implements Expression {
+public final class ExpressionBoolNot implements Expression {
     public Expression expression;
     public AstItem owner;
     public Symbol symbol;

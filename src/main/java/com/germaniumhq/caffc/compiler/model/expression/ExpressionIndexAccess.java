@@ -15,7 +15,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionIndexAccess implements Expression, AstItem {
+public final class ExpressionIndexAccess implements Expression, AstItem {
     private AstItem owner;
     public Expression expression;
     public Expression index;

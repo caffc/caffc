@@ -16,7 +16,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IfInstruction implements Statement {
+public final class IfInstruction implements Statement {
     public AstItem owner;
     public Expression checkExpression;
     public List<Statement> statements = new ArrayList<>();

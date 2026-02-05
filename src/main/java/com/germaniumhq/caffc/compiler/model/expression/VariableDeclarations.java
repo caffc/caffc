@@ -10,7 +10,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VariableDeclarations {
+public final class VariableDeclarations {
     public static <T extends Statement> List<T> fromAntlr(
             CompilationUnit unit,
             AstItem owner,

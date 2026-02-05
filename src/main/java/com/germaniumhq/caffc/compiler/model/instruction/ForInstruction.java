@@ -20,7 +20,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ForInstruction implements Statement, Scope {
+public final class ForInstruction implements Statement, Scope {
     public AstItem owner;
 
     public List<VariableDeclaration> variableDeclarations;

@@ -6,7 +6,7 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionUnaryMinus implements Expression {
+public final class ExpressionUnaryMinus implements Expression {
     public Expression expression;
     public AstItem owner;
     public Symbol symbol;

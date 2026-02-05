@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Instantiate an array that can be uni or multi-dimensional.
  */
-public class ExpressionNewArray implements Expression {
+public final class ExpressionNewArray implements Expression {
     public AstItem owner;
     public List<Expression> countExpressions = new ArrayList<>();
 

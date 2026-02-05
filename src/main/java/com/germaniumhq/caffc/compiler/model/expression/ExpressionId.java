@@ -17,7 +17,7 @@ import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public class ExpressionId implements Expression {
+public final class ExpressionId implements Expression {
     public String name;
     public AstItem owner;
     public Symbol symbol;
