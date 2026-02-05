@@ -4,15 +4,15 @@ import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public final class ReturnInstruction implements Statement {
 
         if (this.getFunction().definition.isMultiReturn()) {
             List<AsmInstruction> instructions = new ArrayList<>();
-            BlockVariable structVar = block.addTempVar(this.getFunction(), this.getFunction().definition.returnType);
+            AsmVar structVar = block.addTempVar(this.getFunction(), this.getFunction().definition.returnType);
 
             for (NamedReturn namedReturn: this.returns) {
                 AsmLinearFormResult namedReturnLinearForm = namedReturn.value.asLinearForm(block);

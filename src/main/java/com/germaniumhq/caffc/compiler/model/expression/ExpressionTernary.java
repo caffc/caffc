@@ -2,7 +2,6 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
@@ -11,6 +10,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -92,7 +92,7 @@ public final class ExpressionTernary implements Expression {
         AsmLabel ternaryElseLabel = new AsmLabel("ternaryElse", labelIndex);
         AsmLabel ternaryEndLabel = new AsmLabel("ternaryEnd", labelIndex);
 
-        BlockVariable resultAsmVar;
+        AsmVar resultAsmVar;
 
         if (this.trueExpression != null) {
             resultAsmVar = block.addTempVar(this, this.trueExpression.typeSymbol());

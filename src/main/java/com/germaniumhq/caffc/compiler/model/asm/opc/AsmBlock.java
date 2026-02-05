@@ -2,13 +2,14 @@ package com.germaniumhq.caffc.compiler.model.asm.opc;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
+import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.output.filters.FilterCName;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,11 +20,11 @@ import java.util.TreeMap;
  * expressions into linear form, after both the AST parsing has
  * completed, and the recursive type resolving was finished.
  *
- * They exist only to make it easier to find variables that should be
+ * They exist only to make it easier to find variables that could be
  * reused.
  */
 public final class AsmBlock implements Scope, AsmInstruction {
-    public Map<String, BlockVariable> blockVariables = new LinkedHashMap<>();
+    public Map<String, VariableDeclaration> blockVariables = new HashMap<>();
     public List<AsmInstruction> instructions = new ArrayList<>();
 
     private Map<String, Integer> typeIndexes = new TreeMap<>();
@@ -72,10 +73,13 @@ public final class AsmBlock implements Scope, AsmInstruction {
         });
     }
 
-    public BlockVariable addTempVar(AstItem owner, Symbol typeSymbol) {
+    public VariableDeclaration addTempVar(AstItem owner, Symbol typeSymbol) {
         if (typeSymbol == null) {
             throw new IllegalStateException("null type defined for the temp variable");
         }
+
+        // FIXME: since variables can be managed by the GC does it make sense
+        //        to set the variable to 0 when exiting the block?
 
         String cTypeName = FilterCName.getCType(typeSymbol.typeName());
         Integer index = this.getNextTypeIndex(cTypeName);
@@ -83,14 +87,12 @@ public final class AsmBlock implements Scope, AsmInstruction {
 
         String variableName = "_caffc_temp_" + cTypeName + "_" + index;
 
-        BlockVariable result = new BlockVariable(
-            owner,
-            typeSymbol,
-            variableName);
+        VariableDeclaration variable = this.findAstParent(Function.class)
+            .ensureVariableExists(owner, variableName, typeSymbol);
 
-        this.blockVariables.put(variableName, result);
+        this.blockVariables.put(variableName, variable);
 
-        return result;
+        return variable;
     }
 
     public int getNextTypeIndex(String typeName) {

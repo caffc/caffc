@@ -211,7 +211,8 @@ public class Function implements CompileBlock, Scope, Symbol {
 
         VariableDeclaration existingVariable = (VariableDeclaration) existing;
 
-        if (existingVariable != null && !existingVariable.typeSymbol().equals(resolvedType)) {
+        if (existingVariable != null &&
+            !existingVariable.typeSymbol().equals(resolvedType.typeSymbol())) {
             CaffcCompiler.get().error(owner,
                 "conflicting types for variable " + name +
                     ": existing " + existing + ", requested: " + resolvedType);

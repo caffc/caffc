@@ -3,15 +3,14 @@ package com.germaniumhq.caffc.compiler.model.expression;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
-import com.germaniumhq.caffc.compiler.model.GenericDefinition;
 import com.germaniumhq.caffc.compiler.model.HasMethods;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -104,7 +103,7 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
             CaffcCompiler.get().fatal(this, "no `get` function defined for " + classDefinition);
         }
 
-        BlockVariable resultValue = block.addTempVar(this, this.symbol);
+        AsmVar resultValue = block.addTempVar(this, this.symbol);
 
         result.value = resultValue;
         AsmCall asmCall = new AsmCall(getFunction, expressionLinear.value, indexLinear.value);

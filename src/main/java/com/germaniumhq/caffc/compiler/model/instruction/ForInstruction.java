@@ -120,8 +120,6 @@ public final class ForInstruction implements Statement, Scope {
 
         AsmLinearFormResult result = new AsmLinearFormResult();
         AsmBlock forBlock = new AsmBlock(block);
-
-        result.instructions.add(new AsmComment("forBlock", labelIndex));
         result.instructions.add(forBlock);
 
         forBlock.instructions.add(new AsmComment("forBegin", labelIndex));

@@ -3,6 +3,8 @@ package com.germaniumhq.caffc.compiler.model;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
+import java.util.Objects;
+
 /**
  * A symbol that's just a type wrapper for primitives + void.
  */
@@ -70,5 +72,24 @@ public class TypeSymbol implements Symbol, AstItem {
         String generics = "";
 
         codeRenderer.text(fqdn + generics);
+    }
+
+    @Override
+    public String toString() {
+        return "TypeSymbol{" +
+            "typeName=" + typeName +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TypeSymbol that = (TypeSymbol) o;
+        return Objects.equals(typeName, that.typeName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(typeName);
     }
 }

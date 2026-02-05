@@ -31,7 +31,10 @@ public class TestS012FunctionMultiReturn {
             "the return type should be the type for the single unnamed return");
 
         CodeAssertsStr.assertCodeContains(code,
-            "x = main_getPoint();",
+            """
+            _caffc_temp_caffc_i32_1 = main_getPoint();
+            x = _caffc_temp_caffc_i32_1;
+            """,
             "the call for a single unnamed return should not be unpacked");
 
     }
@@ -59,13 +62,16 @@ public class TestS012FunctionMultiReturn {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                i32 main_getPoint() {
+                caffc_i32 main_getPoint() {
                 """,
             "the return type should be still just the type for the single unnamed return," +
                 "since the \"name\" of the variable can be thought to be the function names");
 
         CodeAssertsStr.assertCodeContains(code,
-                "x = main_getPoint();",
+            """
+                _caffc_temp_caffc_i32_1 = main_getPoint();
+                x = _caffc_temp_caffc_i32_1;
+                """,
                 "the call for a single named return should not be unpacked");
     }
 
@@ -104,27 +110,27 @@ public class TestS012FunctionMultiReturn {
             "the return type should be a struct for multiple returns");
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_getFile_structreturn_ret = main_getFile();
+                _caffc_temp_caffc_getFile_structreturn_1 = main_getFile();
                 """,
             "the result of the call should be copied in the structure first");
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_i32_arr_set(sizesArray, 0, caffc_getFile_structreturn_ret.size);
+                caffc_u8_arr_set(sizesArray, 0, _caffc_temp_caffc_getFile_structreturn_1.size);
                 """,
             "the value x of the struct should be unpacked (primitive array)");
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_obj_arr_set((caffc_obj_arr*) namesArray, 0, (caffc_ptr) caffc_getFile_structreturn_ret.name);
+                caffc_obj_arr_set(namesArray, 0, _caffc_temp_caffc_getFile_structreturn_1.name);
                 """,
             "the value y of the struct should be unpacked (object array)");
 
         CodeAssertsStr.assertCodeContains(code, """
-                fileSize = caffc_getFile_structreturn_ret.size;
+                fileSize = _caffc_temp_caffc_getFile_structreturn_2.size;
                 """,
             "the value x of the struct should be unpacked (primitive)");
 
         CodeAssertsStr.assertCodeContains(code, """
-                fileName = caffc_getFile_structreturn_ret.name;
+                fileName = _caffc_temp_caffc_getFile_structreturn_2.name;
                 """,
             "the value y of the struct should be unpacked (object)");
     }

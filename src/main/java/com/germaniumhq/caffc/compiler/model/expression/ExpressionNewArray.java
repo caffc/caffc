@@ -2,12 +2,12 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNewArray;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -107,7 +107,7 @@ public final class ExpressionNewArray implements Expression {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
-        BlockVariable resultValue = block.addTempVar(this, this.symbol);
+        AsmVar resultValue = block.addTempVar(this, this.symbol);
 
         result.value = resultValue;
         List<AsmValue> dimensions = new ArrayList<>();

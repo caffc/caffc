@@ -152,4 +152,12 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "VariableDeclaration{" +
+            "typeSymbol=" + typeSymbol +
+            ", name='" + name + '\'' +
+            '}';
+    }
 }

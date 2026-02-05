@@ -98,7 +98,6 @@ public final class IfInstruction implements Statement {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         AsmBlock forBlock = new AsmBlock(block);
-        result.instructions.add(new AsmComment("ifBlock", labelIndex));
         result.instructions.add(forBlock);
 
         AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(forBlock);

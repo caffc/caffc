@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -68,7 +69,7 @@ public final class ExpressionBoolNot implements Expression {
 
         AsmLinearFormResult linearExpression = this.expression.asLinearForm(block);
 
-        BlockVariable tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
+        AsmVar tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
         result.instructions.addAll(linearExpression.instructions);
         result.instructions.add(new AsmBoolNot(tempVar, linearExpression.value));
         result.value = tempVar;

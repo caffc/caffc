@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -92,7 +93,7 @@ public final class ExpressionBoolOperation implements Expression {
         AsmLinearFormResult leftLinearForm = this.left.asLinearForm(block);
         AsmLinearFormResult rightLinearForm = this.right.asLinearForm(block);
 
-        BlockVariable resultVar = block.addTempVar(this, new TypeSymbol(TypeName.BOOL));
+        AsmVar resultVar = block.addTempVar(this, new TypeSymbol(TypeName.BOOL));
 
         linearFormResult.instructions.addAll(leftLinearForm.instructions);
         linearFormResult.instructions.addAll(rightLinearForm.instructions);

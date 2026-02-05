@@ -109,9 +109,9 @@ public class TestS101InstructionIfElse {
                 if (! _caffc_temp_caffc_bool_2) { goto else1; }
                 goto forCheck0;
                 else1:
-                _caffc_temp_caffc_bool_3 = i == 2;
+                _caffc_temp_caffc_bool_2 = i == 2;
                 /* if2: */
-                if (! _caffc_temp_caffc_bool_3) { goto else2; }
+                if (! _caffc_temp_caffc_bool_2) { goto else2; }
                 goto forCheck0;
                 else2:
                 i = i + 1;
@@ -156,9 +156,9 @@ public class TestS101InstructionIfElse {
                 if (! _caffc_temp_caffc_bool_2) { goto else1; }
                 goto forEnd0;
                 else1:
-                _caffc_temp_caffc_bool_3 = i == 2;
+                _caffc_temp_caffc_bool_2 = i == 2;
                 /* if2: */
-                if (! _caffc_temp_caffc_bool_3) { goto else2; }
+                if (! _caffc_temp_caffc_bool_2) { goto else2; }
                 goto forEnd0;
                 else2:
                 i = i + 1;
@@ -203,9 +203,9 @@ public class TestS101InstructionIfElse {
             if (! _caffc_temp_caffc_bool_2) { goto else1; }
             return;
             else1:
-            _caffc_temp_caffc_bool_3 = i == 2;
+            _caffc_temp_caffc_bool_2 = i == 2;
             /* if2: */
-            if (! _caffc_temp_caffc_bool_3) { goto else2; }
+            if (! _caffc_temp_caffc_bool_2) { goto else2; }
             return;
             else2:
             i = i + 1;

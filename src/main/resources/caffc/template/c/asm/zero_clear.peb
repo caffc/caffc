@@ -1,1 +1,6 @@
-caffc_bzero(&{{ ctx.variable | render }}, sizeof({{ ctx.variable | render }}))
+{# caffc_bzero(&{{ ctx.variable | render }}, sizeof({{ ctx.variable | render }})) -#}
+{%- if ctx.variable.typeSymbol.typeName.dataType == "PRIMITIVE" -%}
+{{ ctx.variable | render }} = 0
+{%- else -%}
+{{ ctx.variable | render }} = caffc_null
+{%- endif -%}
