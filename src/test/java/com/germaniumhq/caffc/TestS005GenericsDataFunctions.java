@@ -19,7 +19,7 @@ public class TestS005GenericsDataFunctions {
                                 """
                                 module caffc
     
-                                class obj {}
+                                interface obj {}
     
                                 get<T>(T t) -> T {
                                   T x = t

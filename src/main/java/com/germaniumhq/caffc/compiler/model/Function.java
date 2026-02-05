@@ -77,6 +77,10 @@ public class Function implements CompileBlock, Scope, Symbol {
         function.owner = owner;
         function.definition.module = unit.module.name;
 
+        if (ctx.ID() == null) {
+            CaffcCompiler.get().fatal(function, "null function ID");
+        }
+
         function.definition.antlrFillReturnType(unit, owner, ctx.returnType());
         function.definition.name = ctx.ID().getText();
 

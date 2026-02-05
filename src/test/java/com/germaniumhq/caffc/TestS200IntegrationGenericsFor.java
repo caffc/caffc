@@ -18,7 +18,7 @@ public class TestS200IntegrationGenericsFor {
 module caffc
 
 class str {}
-class obj {}
+interface obj {}
 class obj_arr<T> {
   get(i32 i) -> T {}
   set(i32 i, T value) {}

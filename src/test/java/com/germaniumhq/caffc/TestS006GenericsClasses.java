@@ -24,7 +24,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
     
                                 class A<T> {
                                   T item
@@ -47,7 +47,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
 
-                                class obj {}
+                                interface obj {}
                                 class str {}
     
                                 class A<T is str> {
@@ -71,7 +71,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
 
-                                class obj {}
+                                interface obj {}
 
                                 class A<T> {
                                   classFunction() -> T {
@@ -96,7 +96,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 class str {}
                                 
                                 class A<T is str> {
@@ -122,7 +122,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 
                                 class A<T> {
                                   classFunction(T t) -> T {
@@ -147,7 +147,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 class str {}
                                 
                                 class A<T is str> {
@@ -173,7 +173,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 
                                 class A<T> {
                                   classFunction() -> T {
@@ -199,7 +199,7 @@ public class TestS006GenericsClasses {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 class str {}
                                 
                                 class A<T is str> {

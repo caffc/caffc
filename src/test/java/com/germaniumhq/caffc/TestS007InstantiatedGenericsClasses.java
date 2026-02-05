@@ -16,7 +16,7 @@ public class TestS007InstantiatedGenericsClasses {
                                 """
                                 module caffc
     
-                                class obj {}
+                                interface obj {}
                                 class str {}
     
                                 class A<T> {

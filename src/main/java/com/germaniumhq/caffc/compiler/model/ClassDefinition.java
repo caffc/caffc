@@ -208,7 +208,17 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
         }
 
         for (SymbolSearch symbolSearch : implementedInterfacesSearch) {
-            InterfaceDefinition interfaceDefinition = SymbolResolver.mustResolveSymbol(this, symbolSearch);
+            Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, symbolSearch);
+
+            if (!(implementedSymbol instanceof InterfaceDefinition)) {
+                CaffcCompiler.get().fatal(this, String.format(
+                    "%s is not an interface but a %s",
+                    symbolSearch,
+                    implementedSymbol
+                ));
+            }
+
+            InterfaceDefinition interfaceDefinition = (InterfaceDefinition) implementedSymbol;
             implementedInterfaces.add(interfaceDefinition);
 
             interfaceDefinition.recurseResolveTypes();

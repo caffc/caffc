@@ -18,7 +18,7 @@ public class TestS009InstantiatedGenericsClassUsingArray {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
     
                                 class A<T> {
                                   T item
@@ -41,7 +41,7 @@ public class TestS009InstantiatedGenericsClassUsingArray {
                                 """
                                 module caffc
                                 
-                                class obj {}
+                                interface obj {}
                                 class str {}
                                 class obj_arr {}
                                 
@@ -76,7 +76,7 @@ public class TestS009InstantiatedGenericsClassUsingArray {
                                 module caffc
                                 
                                 class str {}
-                                class obj {}
+                                interface obj {}
                                 class obj_arr {}
                                 
                                 class A<T is str> {

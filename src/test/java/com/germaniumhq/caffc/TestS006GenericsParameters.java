@@ -63,7 +63,7 @@ public class TestS006GenericsParameters {
                                 """
                                 module caffc
 
-                                class obj {}
+                                interface obj {}
                                 class str {}
                                 class ArrayList<T> {}
 

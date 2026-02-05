@@ -87,6 +87,7 @@ public class TestS003InterfaceFunctions {
                                 """
                 module main
 
+                interface obj {}
                 class str{}
 
                 interface I {
