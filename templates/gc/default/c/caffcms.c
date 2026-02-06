@@ -30,11 +30,20 @@ void caffc_gc_ms_mark() {
 
     for (i = 0; i < _caffc_call_stack->call_count; i++) {
         for (j = 0; j < _caffc_call_stack->frames[i].var_count; j++) {
-            /* the data_frame points to a pointer list. each pointer in that list points to an actual
-             * object reference; that reference is also a pointer. we need to get the object reference
-             * pointer.*/
+            /*
+            main_A* a = caffc_null;                                         v-- _caffc_locals / data_frame
+            caffc_ptr _caffc_locals[1];  // void** _caffc_locals            [ptr, ptr, ..] -> ptr -> var ptr -> actual object data
+            _caffc_locals[0] = &_caffc_temp_main_A_1;                                                ^-- we check this to be != null
+            _caffc_stack_frame_register("createA", _caffc_locals, 1);
+
+            `_caffc_call_stack->frames[i].data_frame` is the function's `_caffc_locals`.
+            */
             void*** data_frame_ptr = _caffc_call_stack->frames[i].data_frame;
-            caffc_gc_pointer_list_add(&work_list, **(data_frame_ptr + j));
+            caffc_ptr p = **(data_frame_ptr + j);
+
+            if (p) {
+                caffc_gc_pointer_list_add(&work_list, p);
+            }
         }
     }
 
