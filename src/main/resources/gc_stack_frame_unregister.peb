@@ -1,5 +1,5 @@
-{%- if ctx.gcVariableCount() > 0 %}
+{%- if ctx.gcVariableCount() > 0 -%}
 _caffc_stack_frame_unregister(&_caffc_locals);
-{%- else %}
+{%- else -%}
 _caffc_stack_frame_unregister(caffc_null);
 {%- endif -%}

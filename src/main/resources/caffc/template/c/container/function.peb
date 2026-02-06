@@ -2,7 +2,7 @@
 {% include "gc_stack_frame_register.peb" %}
 
 {%- for instruction in ctx.instructions %}
-  {{ instruction | render }}{{ instruction | semicolon }}
+{{ instruction | render }}{{ instruction | semicolon }}
 {%- endfor -%}
 
 {#- if it's a void function, we need to make sure we have the unregister, since

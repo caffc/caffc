@@ -185,9 +185,10 @@ public class TestS012FunctionMultiReturn {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_getOrigin_structreturn_1.x = 0;
-                _caffc_temp_caffc_getOrigin_structreturn_1.y = 0;
-                return _caffc_temp_caffc_getOrigin_structreturn_1;
+_caffc_temp_caffc_getOrigin_structreturn_1.x = 0;
+_caffc_temp_caffc_getOrigin_structreturn_1.y = 0;
+_caffc_stack_frame_unregister(caffc_null);
+return _caffc_temp_caffc_getOrigin_structreturn_1;
                 """,
             "the return fields should be assigned correctly");
     }

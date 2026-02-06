@@ -68,19 +68,19 @@ public class TestClasses {
             }
             """);
 
-        CodeAssertsStr.assertCodeContains(code, " _this->some_field = x;",
+        CodeAssertsStr.assertCodeContains(code, "_this->some_field = x;",
                 "local function resolving, or local property resolving, doesn't seem to be working");
 
         CodeAssertsStr.assertCodeContains(code, "void main_A_constructor(main_A* _this, caffc_i32 x) {",
                 "new operator generation doesn't seem to be working for constructors with parameters");
-        CodeAssertsStr.assertCodeContains(code, " main_A* _this = (main_A*) caffc_new(&main_A_type, sizeof(main_A));",
+        CodeAssertsStr.assertCodeContains(code, "main_A* _this = (main_A*) caffc_new(&main_A_type, sizeof(main_A));",
                 "new operator generation doesn't seem to be working for constructors with parameters");
         CodeAssertsStr.assertCodeContains(code, "main_A_constructor(_this, x);",
                 "new operator generation doesn't seem to be working for constructors with parameters");
 
         CodeAssertsStr.assertCodeContains(code, "main_B* main_B_new() {",
                 "new operator generation doesn't seem to be working for default constructors");
-        CodeAssertsStr.assertCodeContains(code, " main_B* _this = (main_B*) caffc_new(&main_B_type, sizeof(main_B));",
+        CodeAssertsStr.assertCodeContains(code, "main_B* _this = (main_B*) caffc_new(&main_B_type, sizeof(main_B));",
                 "new operator generation doesn't seem to be working for default constructors");
         CodeAssertsStr.assertCodeNotContains(code, "main_B_constructor(_this)",
                 "new operator generation doesn't seem to be working for default constructors");

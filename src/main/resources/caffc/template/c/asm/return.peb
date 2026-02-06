@@ -1,1 +1,2 @@
-return{% if ctx.what != null %} {{ ctx.what | render }}{% endif %}
+{% include "gc_stack_frame_unregister.peb" %}
+return{% if ctx.what != null %} {{ ctx.what | render }}{% endif -%}

@@ -35,11 +35,12 @@ public class TestS001MultipleParameters {
         );
 
         assertCodeContains(code, """
-                i8size = 0;
-                errors = 0;
-                _caffc_temp_caffc_u32_1 = caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);
-                errors = errors | _caffc_temp_caffc_u32_1;
-                return 0;
+i8size = 0;
+errors = 0;
+_caffc_temp_caffc_u32_1 = caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);
+errors = errors | _caffc_temp_caffc_u32_1;
+_caffc_stack_frame_unregister(&_caffc_locals);
+return 0;
                 """,
                 "calling functions with multiple parameters should work fine");
         assertCodeContains(code, "caffc_u32 caffc_check(caffc_str* typeName, caffc_u32 expectedSize, caffc_u32 actualSize) {",

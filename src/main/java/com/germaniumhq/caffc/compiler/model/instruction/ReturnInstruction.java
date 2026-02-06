@@ -28,6 +28,7 @@ public final class ReturnInstruction implements Statement {
 
     public int astColumn;
     public int astLine;
+    public Function function;
 
     public static ReturnInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ReturnContext ctx) {
         ReturnInstruction result = new ReturnInstruction();
@@ -37,13 +38,13 @@ public final class ReturnInstruction implements Statement {
         result.astLine = ctx.getStart().getLine();
         result.astColumn = ctx.getStart().getCharPositionInLine();
 
-        if (ctx.expression() != null) {
-            Function function = result.getFunction();
+        result.function = AstItem.findParentOrSelf(owner, Function.class);
 
+        if (ctx.expression() != null) {
             for (int i = 0; i < ctx.expression().size(); i++) {
                 NamedReturn namedReturn = new NamedReturn();
 
-                namedReturn.name = function.definition.getReturnName(i);
+                namedReturn.name = result.function.definition.getReturnName(i);
                 namedReturn.value = Expression.fromAntlr(unit, result, ctx.expression(i));
 
                 result.returns.add(namedReturn);
@@ -101,7 +102,7 @@ public final class ReturnInstruction implements Statement {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         if (this.getFunction().definition.isReturnEmpty()) {
-            return new AsmLinearFormResult(List.of(new AsmReturn(null)));
+            return new AsmLinearFormResult(List.of(new AsmReturn(this.function, null)));
         }
 
         if (this.getFunction().definition.isMultiReturn()) {
@@ -115,7 +116,7 @@ public final class ReturnInstruction implements Statement {
                 instructions.add(new AsmAssign(structFieldVar, namedReturnLinearForm.value));
             }
 
-            instructions.add(new AsmReturn(structVar));
+            instructions.add(new AsmReturn(this.function, structVar));
 
             return new AsmLinearFormResult(instructions);
         }
@@ -125,7 +126,7 @@ public final class ReturnInstruction implements Statement {
 
         AsmLinearFormResult linearForm = ret.value.asLinearForm(block);
         instructions.addAll(linearForm.instructions);
-        instructions.add(new AsmReturn(linearForm.value));
+        instructions.add(new AsmReturn(this.function, linearForm.value));
 
         return new AsmLinearFormResult(instructions);
     }
