@@ -18,7 +18,7 @@ caffc_class_header {{ array | c_name }}_type = {
 {# we create a generic ccaf array, and we patch its header for NEW constructs #}
 /* array constructors */
 {%- for array in ctx.registeredArrays %}
-{%- if ctx.resolve(array.name) == null %}
+{%- if array.arrayDimensions == 1 %}
 {{ array | c_name }}* {{ array | c_name }}_new(caffc_i32 size) {
     caffc_obj_arr* _this = caffc_obj_arr_new(size);
     _this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
@@ -27,23 +27,19 @@ caffc_class_header {{ array | c_name }}_type = {
 }
 
 {# we create the multi instantiation as well -#}
-{%- if array.arrayDimensions > 1 %}
-{{ array | c_name }}* {{ array | c_name }}_multi_new({% for i in range(1, array.arrayDimensions) %}caffc_i32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}) {
+{%- elseif array.arrayDimensions > 1 %}
+{{ array | c_type }} {{ array | c_name }}_new({% for i in range(1, array.arrayDimensions) %}caffc_i32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}) {
     caffc_i32 i;
-    {{ array | c_name }}* result = {{ array | c_name }}_new(s1);
+    {{ array | c_type }} _this = ({{ array | c_type }}) caffc_obj_arr_new(s1);
+    _this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
 
     for (i = 0; i < s1; i++) {
-    {%- if array.childType.arrayDimensions > 1 %}
-        caffc_obj_arr_set(result, i, (caffc_ptr) {{ array.childType | c_name }}_multi({% for i in range(2, array.arrayDimensions) %}s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}));
-    {%- elseif array.childType.arrayDimensions == 1 %}
-        caffc_obj_arr_set(result, i, (caffc_ptr) {{ array.childType | c_name }}_new(s2));
-    {%- endif %}
+        caffc_obj_arr_set(_this, i, (caffc_ptr) {{ array.childType | c_name }}_new({% for i in range(2, array.arrayDimensions) %}s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}));
     }
 
-    return result;
+    return _this;
 }
 {%- endif %}{# array.arrayDimensions > 1 #}
-{%- endif %}{# if ctx.resolve(array.name) == null #}
 {%- endfor %}{# for array in ctx.registeredArrays #}
 
 #ifdef __cplusplus

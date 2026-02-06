@@ -70,60 +70,6 @@ public class TestS010Array {
     }
 
     @Test
-    public void testArrayInstantiation() {
-        String code = CodeAssertsStr.compileFullCaffcProgram(
-                "caffc/template/c/compilation_unit_c.peb",
-                "a/a.caffc",
-                new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-                        
-                        class obj_arr {}
-                        """),
-                        new TestUnit("a/a.caffc", """
-                        module yolo
-
-                        class Swag {
-                        }
-
-                        test() {
-                          u8[] primitive_unidimensional = new u8[2]
-                          u8[][][] primitive_multidimensional = new u8[1][2][3]
-
-                          yolo.Swag[] class_unidimensional = new yolo.Swag[2]
-                          yolo.Swag[][][] class_multidimensional = new yolo.Swag[1][2][3]
-
-                          class_multidimensional[0][1][2] = new yolo.Swag()
-                          primitive_multidimensional[0][1][2] = 3
-                        }
-
-                        """)
-                }
-        );
-
-        CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_u8_arr_1 = caffc_u8_arr_new_array(2);
-                primitive_unidimensional = _caffc_temp_caffc_u8_arr_1;
-                """,
-                "unidimensional primitive array new generation isn't working");
-        CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_u8_arr_arr_arr_1 = caffc_u8_arr_arr_arr_new_array(1, 2, 3);
-                primitive_multidimensional = _caffc_temp_caffc_u8_arr_arr_arr_1;
-                """,
-                "multidimensional primitive array new generation isn't working");
-        CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_yolo_Swag_arr_1 = yolo_Swag_arr_new_array(2);
-                class_unidimensional = _caffc_temp_yolo_Swag_arr_1;
-                """,
-                "unidimensional object array new generation isn't working");
-        CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_yolo_Swag_arr_arr_arr_1 = yolo_Swag_arr_arr_arr_new_array(1, 2, 3);
-                class_multidimensional = _caffc_temp_yolo_Swag_arr_arr_arr_1;
-                """,
-                "multidimensional primitive array new generation isn't working");
-    }
-
-    @Test
     public void testArrayTypeCreationNonPrimitive() {
         // FIXME: generation of the multi arrays has a potential ubg since the
         //        values are not managed by the GC:
@@ -248,7 +194,7 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_u8_arr_arr_arr_1 = caffc_u8_arr_arr_arr_new_array(1, 2, 3);
+                _caffc_temp_caffc_u8_arr_arr_arr_1 = (caffc_u8_arr_arr_arr*) caffc_u8_arr_arr_arr_new(1, 2, 3);
                 primitive_multidimensional = _caffc_temp_caffc_u8_arr_arr_arr_1;
                 _caffc_temp_caffc_u8_arr_arr_1 = caffc_obj_arr_get(primitive_multidimensional, 0);
                 _caffc_temp_caffc_u8_arr_1 = caffc_obj_arr_get(_caffc_temp_caffc_u8_arr_arr_1, 1);
@@ -279,7 +225,7 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-            _caffc_temp_yolo_Swag_arr_arr_arr_1 = yolo_Swag_arr_arr_arr_new_array(1, 2, 3);
+            _caffc_temp_yolo_Swag_arr_arr_arr_1 = (yolo_Swag_arr_arr_arr*) yolo_Swag_arr_arr_arr_new(1, 2, 3);
             class_multidimensional = _caffc_temp_yolo_Swag_arr_arr_arr_1;
             _caffc_temp_yolo_Swag_1 = yolo_Swag_new();
             _caffc_temp_yolo_Swag_arr_arr_1 = caffc_obj_arr_get(class_multidimensional, 0);
@@ -289,4 +235,111 @@ public class TestS010Array {
             "index assignment isn't working");
 
     }
+
+    /**
+     * Checks if calls for things such as `new u8[x]` would generate correct C code
+     */
+    @Test
+    public void testArrayPrimitiveNew() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[]{
+                new TestUnit("a/a.caffc", """
+                        module yolo
+
+                        test() {
+                          u8[] primitive_unidimensional = new u8[2]
+                        }
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_caffc_u8_arr_1 = (caffc_u8_arr*) caffc_u8_arr_new(2);
+                primitive_unidimensional = _caffc_temp_caffc_u8_arr_1;
+                """,
+            "unidimensional primitive array new generation isn't working");
+    }
+
+    @Test
+    public void testArrayObjectNew() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[]{
+                new TestUnit("a/a.caffc", """
+                        module yolo
+
+                        class Swag {
+                        }
+
+                        test() {
+                          yolo.Swag[] object_unidimensional = new yolo.Swag[2]
+                        }
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                _caffc_temp_yolo_Swag_arr_1 = (yolo_Swag_arr*) yolo_Swag_arr_new(2);
+                object_unidimensional = _caffc_temp_yolo_Swag_arr_1;
+                """,
+            "multidimensional primitive array new generation isn't working");
+    }
+
+    @Test
+    public void testArrayPrimitiveIndexAssign() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[]{
+                new TestUnit("a/a.caffc", """
+                        module yolo
+
+                        test() {
+                          u8[] primitive_unidimensional = new u8[2]
+                          primitive_unidimensional[1] = 3
+                        }
+
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                primitive_unidimensional = _caffc_temp_caffc_u8_arr_1;
+                caffc_u8_arr_set(primitive_unidimensional, 1, 3);
+                """,
+            "multidimensional primitive array index assign isn't working");
+    }
+
+    @Test
+    public void testArrayObjectIndexAssign() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[]{
+                new TestUnit("a/a.caffc", """
+                    module yolo
+                    
+                    class Swag {
+                    }
+                    
+                    test() {
+                      yolo.Swag[] class_unidimensional = new yolo.Swag[2]
+                      class_unidimensional[1] = 0
+                    }
+                    
+                    """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                class_unidimensional = _caffc_temp_yolo_Swag_arr_1;
+                caffc_obj_arr_set(class_unidimensional, 1, 0);
+                """,
+            "unidimensional object array index assign isn't working");
+    }
+
+
 }
