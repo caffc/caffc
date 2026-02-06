@@ -13,7 +13,9 @@ extern "C" {
 
 #include "module_caffc.h"
 
-/* forward definitions */
+/* **************************************************************
+  forward definitions
+  ************************************************************** */
 {%- for clazz in ctx.classDefinitions %}
 struct {{ clazz.typeName | c_name }};
 {%- endfor %}
@@ -21,7 +23,9 @@ struct {{ clazz.typeName | c_name }};
 struct {{ clazz.typeName | c_name }};
 {%- endfor %}
 
-/* forward array definitions */
+/* **************************************************************
+  forward array definitions
+  ************************************************************** */
 {%- for array in ctx.registeredArrays %}
 {%- if ctx.resolve(array.name) == null %}
 #define {{ array | c_name }} caffc_obj_arr
@@ -29,32 +33,44 @@ extern caffc_class_header {{ array | c_name }}_type;
 {%- endif %}
 {%- endfor %}
 
-/* includes for used modules */
+/* **************************************************************
+  includes for used modules
+  ************************************************************** */
 {%- for module in ctx.usedModules %}
 #include "{{ module | c_global_header }}"
 {%- endfor %}
 
-/* module {{ ctx.name }} multi-return struct definitions */
+/* **************************************************************
+  module {{ ctx.name }} multi-return struct definitions
+  ************************************************************** */
 {%- for clazz in ctx.structDefinitions %}
 {{ clazz | render }}
 {%- endfor %}
 
-/* module {{ ctx.name }} interface definitions */
+/* **************************************************************
+  module {{ ctx.name }} interface definitions
+  ************************************************************** */
 {%- for clazz in ctx.interfaceDefinitions %}
 {{ clazz | render }}
 {%- endfor %}
 
-/* module {{ ctx.name }} class definitions */
+/* **************************************************************
+  module {{ ctx.name }} class definitions
+  ************************************************************** */
 {%- for clazz in ctx.classDefinitions %}
 {{ clazz | render }}
 {%- endfor %}
 
-/* module {{ ctx.name }} function definitions */
+/* **************************************************************
+  module {{ ctx.name }} function definitions
+  ************************************************************** */
 {%- for function in ctx.functionDefinitions %}
 {{ function | c_function_signature }};
 {%- endfor %}
 
-/* module {{ ctx.name }} array constructors */
+/* **************************************************************
+  module {{ ctx.name }} array constructors
+  ************************************************************** */
 {%- for array in ctx.registeredArrays %}
 {{ array | c_name }}* {{ array | c_name }}_new({% for i in range(1, array.arrayDimensions) %}caffc_i32 s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %});
 {%- endfor %}

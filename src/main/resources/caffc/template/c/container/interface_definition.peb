@@ -2,6 +2,9 @@ typedef struct {
     caffc_class_header* _caffc_class_header;
 } {{ ctx.typeName | c_name }};
 
+/* FIXME: needed? there isn't such a thing anyway */
+extern caffc_class_header {{ ctx.typeName | c_name }}_type;
+
 /* interface functions */
 {%- for f in ctx.functions %}
 {{  f | c_function_signature }};

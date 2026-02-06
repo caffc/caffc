@@ -1,4 +1,10 @@
-{#  class functions #}
+{# class typeName definition #}
+caffc_class_header {{ ctx.definition.typeName | c_name }}_type = {
+    /* fqdn        */ "{{ ctx.definition.typeName.fqdn }}",
+    /* field_count */ 0                   /* n/a for interfaces */
+};
+
+{#  interface functions #}
 {%- for f in ctx.definition.functions %}
 {{ f | c_function_signature }} {
 {%- for implementation in ctx.definition.concreteImplementations %}
