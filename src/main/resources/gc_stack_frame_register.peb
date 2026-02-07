@@ -32,11 +32,7 @@
 caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];
 
 {%- for item in ctx.objParametersAndVariables %}
-{%- if item.typeName.dataType == "STRUCT" %}
-_caffc_locals[{{ loop.index }}] = &{{ item.owner.name }}.{{ item.name }};
-{%- else %}
-_caffc_locals[{{ loop.index }}] = &{{ item.name }};
-{%- endif %}
+_caffc_locals[{{ loop.index }}] = &{{ item | render }};
 {%- endfor %}
 
 _caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});

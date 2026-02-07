@@ -6,12 +6,12 @@ greeting(str name) -> str header, str footer {
   footer = "have a good day "
   footer = footer.add(name)
 
-  return
+  return header, footer
 }
 
 hello(str name) -> str header, str footer {
-  header = "hello "
-  footer = "have a good day "
+  str header = "hello "
+  str footer = "have a good day "
 
   return header.add(name), footer.add(name)
 }

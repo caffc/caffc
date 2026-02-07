@@ -192,4 +192,63 @@ return _caffc_temp_caffc_getOrigin_structreturn_1;
                 """,
             "the return fields should be assigned correctly");
     }
+
+    @Test
+    public void testMultiReturnObjectFieldsAreGcManaged() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                        module main
+
+                        getData() -> obj x, u32 y {
+                            return 0, 0
+                        }
+
+                        test() {
+                          obj x
+                          u32 y
+
+                          x, y = getData()
+                        }
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+            _caffc_locals[1] = &_caffc_temp_caffc_getData_structreturn_1.x;
+            """,
+            "the x obj field from the getData return struct since it's an object should be handled by gc");
+    }
+
+    @Test
+    public void testMultiReturnResultsAreDeclaredAsLocalVariables() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                        module main
+
+                        greeting(str name) -> str header, str footer {
+                            header = "hello "
+                            header = header.add(name)
+                            footer = "have a good day "
+                            footer = footer.add(name)
+
+                            return header, footer
+                        }
+                        """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+                caffc_str* header = caffc_null;
+                caffc_str* footer = caffc_null;
+                """,
+            "the return result should be declared as local variables");
+    }
 }

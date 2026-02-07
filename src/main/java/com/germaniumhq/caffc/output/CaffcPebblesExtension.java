@@ -137,6 +137,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
                 .withMapping(Parameter.class, "c/asm/parameter.peb")
+                .withMapping(StructReturnVariableDefinition.class, "c/asm/struct_return_variable.peb")
 
                 // statements
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")

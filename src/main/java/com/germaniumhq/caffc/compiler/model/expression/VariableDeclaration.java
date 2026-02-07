@@ -75,6 +75,20 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         result.astFilePath = owner.getFilePath();
         result.astLine = owner.getLineNumber();
         result.astColumn = owner.getColumnNumber();
+        result.isResolved = true;
+
+        return result;
+    }
+
+    public static VariableDeclaration fromReturn(AstItem owner, SymbolSearch symbolSearch, String variableName) {
+        VariableDeclaration result = new VariableDeclaration();
+
+        result.name = variableName;
+        result.typeSymbolSearch = symbolSearch;
+        result.owner = owner;
+        result.astFilePath = owner.getFilePath();
+        result.astLine = owner.getLineNumber();
+        result.astColumn = owner.getColumnNumber();
 
         return result;
     }
@@ -106,7 +120,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         }
 
         this.isResolved = true;
-        this.typeSymbol = SymbolResolver.resolveInstantiatedSymbol(this, this.typeSymbolSearch);
+        this.typeSymbol = SymbolResolver.mustResolveSymbol(this, this.typeSymbolSearch);
 
         if (this.assignExpression != null) {
             this.assignExpression.recurseResolveTypes();

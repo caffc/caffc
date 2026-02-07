@@ -123,14 +123,6 @@ public final class ExpressionAssign implements Expression {
         for (Expression leftExpression: this.leftExpressions) {
             leftExpression.recurseResolveTypes();
         }
-
-        if (this.leftExpressions.size() > 1) {
-            String cType = FilterCTypeName.getCType(this.right.typeSymbol().typeName());
-            AstItem.findParentOrSelf(this.owner, Function.class)
-                .ensureVariableExists(this, cType + "_ret", this.right.typeSymbol());
-        }
-
-        // FIXME: check if the type is assignable from right to left
     }
 
     // #UsedInTemplate("assign.peb")

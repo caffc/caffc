@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -11,6 +12,7 @@ import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,11 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
 
     public String name;
     public LinkedHashMap<String, Symbol> returnTypes;
+
+    /**
+     * Contains a mapping of the type searches for the variables declared as return.
+     * The mapping is from the name of the variable to the symbol search.
+     */
     public LinkedHashMap<String, SymbolSearch> returnTypeSearches = new LinkedHashMap<>();
     public String[] returnNames;
 
@@ -43,10 +50,12 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
 
     public Symbol returnType;
 
-    public void antlrFillReturnType(
+    public List<VariableDeclaration> antlrFillReturnType(
         CompilationUnit unit,
         AstItem owner,
         caffcParser.ReturnTypeContext returnTypeContext) {
+
+        List<VariableDeclaration> result = new ArrayList<>();
 
         if (returnTypeContext == null || returnTypeContext.VOID() != null) {
             // NOTHING on purpose, function is void
@@ -56,10 +65,15 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         } else if (returnTypeContext.namedTypeTuple() != null) {
             caffcParser.NamedTypeTupleContext namedTypeTupleContext = returnTypeContext.namedTypeTuple();
             for (int i = 0; i < namedTypeTupleContext.typeName().size(); i++) {
+                SymbolSearch symbolSearch = SymbolSearch.fromAntlr(unit, namedTypeTupleContext.typeName(i));
+                String variableName = namedTypeTupleContext.ID(i).getText();
+
                 this.returnTypeSearches.put(
-                    namedTypeTupleContext.ID(i).getText(),
-                    SymbolSearch.fromAntlr(unit, namedTypeTupleContext.typeName(i))
+                    variableName,
+                    symbolSearch
                 );
+
+                result.add(VariableDeclaration.fromReturn(owner, symbolSearch, variableName));
             }
         } else {
             CaffcCompiler.get().fatal(owner, "unsupported function return type");
@@ -67,6 +81,8 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         }
 
         returnNames = this.returnTypeSearches.keySet().toArray(new String[0]);
+
+        return result;
     }
 
     @Override
