@@ -12,22 +12,30 @@ public class MultiOptimizations {
 
     private static List<BaseOptimization> buildOptimizationList() {
         var result = new ArrayList<BaseOptimization>();
-        result.add(new OptimizeSimpleBinaryOperations());
+        result.add(new MathFoldingOptimization());
         result.add(new BasicBlockOptimization());
         return result;
     }
 
-    public static void optimize(CompilationUnit astOps) {
+    public static boolean optimize(CompilationUnit astOps) {
+        boolean foundOptimization = false;
+        var foundOnce = false;
+        do {
+            foundOnce = applyOptimizationsOnce(astOps);
+            foundOptimization |= foundOnce;
+        } while (foundOnce);
+        return foundOptimization;
+    }
+
+    private static boolean applyOptimizationsOnce(CompilationUnit astOps) {
         var foundOptimization = false;
-        for(BaseOptimization optimization : optimizations){
-            for (var compileBlock : astOps.getCompileBlocks()){
+        for (BaseOptimization optimization : optimizations) {
+            for (var compileBlock : astOps.getCompileBlocks()) {
                 if (compileBlock instanceof Function function) {
                     foundOptimization |= optimization.optimize(function);
                 }
             }
         }
-        if (foundOptimization) {
-            System.out.println("Optimizations applied");
-        }
+        return foundOptimization;
     }
 }

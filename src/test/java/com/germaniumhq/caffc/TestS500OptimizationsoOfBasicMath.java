@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestS500OptimizationsoOfBasicMath {
     @Test
-    public void testBasicLinearForm() {
+    public void testSimpleOptimizations() {
         CompilationUnit astOps = CodeAssertsAst.compileCaffcUnitsAst(
             "a/a.caffc",
             new TestUnit[] {

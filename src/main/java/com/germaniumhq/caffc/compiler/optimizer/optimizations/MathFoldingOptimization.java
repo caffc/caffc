@@ -8,34 +8,34 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 
 import java.util.List;
 
-public class OptimizeSimpleBinaryOperations extends BaseOptimization {
+public class MathFoldingOptimization extends BaseOptimization {
     @Override
     public boolean optimize(Function function) {
-
+        boolean found = false;
         List<AsmInstruction> instructions = function.instructions;
         for (int i = 0; i < instructions.size(); i++) {
             var op = instructions.get(i);
-            if (!(op instanceof AsmMath asmMath)) {
+            if (!isConstantMathOp(op)) {
                 continue;
             }
-            if (!(asmMath.value1 instanceof AsmConstant constant1)) {
-                continue;
-            }
+            AsmMath asmMath = (AsmMath) op;
+            AsmConstant constant1 = (AsmConstant) asmMath.value1;
+            AsmConstant constant2 = (AsmConstant) asmMath.value2;
 
-            if (!(asmMath.value2 instanceof AsmConstant constant2)) {
-                continue;
-            }
-
-            var apply = applyOpOnConstants(asmMath.operator.name(), constant1, constant2);
+            String operatorName = asmMath.operator.name();
+            var apply = applyOpOnConstants(operatorName, constant1, constant2);
             if (apply == null) {
                 continue;
             }
             instructions.set(i, new AsmAssign(asmMath.lValue, apply));
 
-            System.out.println(asmMath);
+            found = true;
         }
 
-        return false;
+        return found;
+    }
+    boolean isConstantMathOp(AsmInstruction op) {
+        return op instanceof AsmMath asmMath && asmMath.value1 instanceof AsmConstant && asmMath.value2 instanceof AsmConstant;
     }
 
     AsmConstant applyOpOnConstants(String op, AsmConstant constant1, AsmConstant constant2) {
@@ -43,8 +43,20 @@ public class OptimizeSimpleBinaryOperations extends BaseOptimization {
         switch (op) {
             case "MULTIPLY":
                 return applyMultiply(constant1, constant2, expressionType);
+            case "PLUS":
+                return applyPlus(constant1, constant2, expressionType);
             default:
                 System.out.println("BUG: unsupported operation " + op);
+        }
+        return null;
+    }
+
+    private AsmConstant applyPlus(AsmConstant constant1, AsmConstant constant2, String expressionType) {
+        switch (expressionType) {
+            case "i32":
+                return new AsmConstant(constant1.type, Integer.toString(Integer.parseInt(constant1.value) + Integer.parseInt(constant2.value)));
+            default:
+                System.out.println("BUG: unsupported type " + expressionType);
         }
         return null;
     }
