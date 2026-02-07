@@ -31,4 +31,9 @@ final public class AsmConstant implements AsmValue {
     public Symbol typeSymbol() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }
