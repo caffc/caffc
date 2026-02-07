@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
   _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
 
-  arr = caffc_str_arr_new(argc);
+  arr = caffc_str_arr_newa(argc);
 
   for (i = 0; i < argc; i++) {
     caffc_obj_arr_set(
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 
   _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
 
-  arr = caffc_str_arr_new(argc);
+  arr = caffc_str_arr_newa(argc);
 
   for (i = 0; i < argc; i++) {
     caffc_obj_arr_set(
