@@ -21,12 +21,17 @@ array constructors
 ************************************************************** */
 {%- for array in ctx.registeredArrays %}
 {%- if array.arrayDimensions == 1 %}
+
+{%- if array.childType.dataType == "PRIMITIVE" -%}
+#define {{ array | c_name }}_newa(size) {{ array | c_name }}_new(size)
+{%- else %}
 {{ array | c_name }}* {{ array | c_name }}_newa(caffc_i32 size) {
     caffc_obj_arr* _this = caffc_obj_arr_new(size);
     _this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
 
     return ({{ array | c_name }}*) _this;
 }
+{%- endif %}
 
 {# we create the multi instantiation as well -#}
 {%- elseif array.arrayDimensions > 1 %}
@@ -36,7 +41,7 @@ array constructors
     _this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
 
     for (i = 0; i < s1; i++) {
-        caffc_obj_arr_set(_this, i, (caffc_ptr) {{ array.childType | c_name }}_new({% for i in range(2, array.arrayDimensions) %}s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}));
+        caffc_obj_arr_set(_this, i, (caffc_ptr) {{ array.childType | c_name }}_newa({% for i in range(2, array.arrayDimensions) %}s{{ i }}{% if not loop.last %}, {% endif %}{% endfor %}));
     }
 
     return _this;
