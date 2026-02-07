@@ -194,8 +194,6 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_u8_arr_arr_arr_1 = (caffc_u8_arr_arr_arr*) caffc_u8_arr_arr_arr_new(1, 2, 3);
-                primitive_multidimensional = _caffc_temp_caffc_u8_arr_arr_arr_1;
                 _caffc_temp_caffc_u8_arr_arr_1 = caffc_obj_arr_get(primitive_multidimensional, 0);
                 _caffc_temp_caffc_u8_arr_1 = caffc_obj_arr_get(_caffc_temp_caffc_u8_arr_arr_1, 1);
                 caffc_obj_arr_set(_caffc_temp_caffc_u8_arr_1, 2, 3);
@@ -225,9 +223,6 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-            _caffc_temp_yolo_Swag_arr_arr_arr_1 = (yolo_Swag_arr_arr_arr*) yolo_Swag_arr_arr_arr_new(1, 2, 3);
-            class_multidimensional = _caffc_temp_yolo_Swag_arr_arr_arr_1;
-            _caffc_temp_yolo_Swag_1 = yolo_Swag_new();
             _caffc_temp_yolo_Swag_arr_arr_1 = caffc_obj_arr_get(class_multidimensional, 0);
             _caffc_temp_yolo_Swag_arr_1 = caffc_obj_arr_get(_caffc_temp_yolo_Swag_arr_arr_1, 1);
             caffc_obj_arr_set(_caffc_temp_yolo_Swag_arr_1, 2, _caffc_temp_yolo_Swag_1);
@@ -256,7 +251,7 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_u8_arr_1 = (caffc_u8_arr*) caffc_u8_arr_new(2);
+                _caffc_temp_caffc_u8_arr_1 = (caffc_u8_arr*) caffc_u8_arr_newa(2);
                 primitive_unidimensional = _caffc_temp_caffc_u8_arr_1;
                 """,
             "unidimensional primitive array new generation isn't working");
@@ -282,7 +277,7 @@ public class TestS010Array {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_yolo_Swag_arr_1 = (yolo_Swag_arr*) yolo_Swag_arr_new(2);
+                _caffc_temp_yolo_Swag_arr_1 = (yolo_Swag_arr*) yolo_Swag_arr_newa(2);
                 object_unidimensional = _caffc_temp_yolo_Swag_arr_1;
                 """,
             "multidimensional primitive array new generation isn't working");

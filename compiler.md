@@ -356,3 +356,19 @@ Block *.. AsmInstruction: instructions
 > If needed an expression can register a temporary variable in the block where it's defined. Temporary variables from blocks are later merged into the function variables.
 
 The linear form can add any instructions, including nested blocks, for things such as `for`, `if`, etc. They will be collapsed in the end, the variables extracted and merged to the parent function, and the instructions written in a serial fashion.
+
+## Random Notes
+
+Arrays are instantiated with `MODULE_ARRNAME_arr_newa()`, for each object
+array, that internally will defer to `caffc_obj_arr_new`.
+
+```c
+caffc_obj_arr* _this = caffc_obj_arr_new(size);
+_this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
+
+return ({{ array | c_name }}*) _this;
+```
+
+The reason is so in the future we can have actual type check on the insertion
+in the array. If the array type check should be disabled, the `MODULE_ARRNAME_arr_newa()`
+function should probably be a `#define` + cast call to `caffc_obj_arr_new`.

@@ -15,10 +15,11 @@ _caffc_obj_arr_size(i32 size) -> i32 {
  * Class that contains a bunch of objects. This is managed by the
  * garbage collector, including the references it contains.
  *
- * This is the only array class in the runtime, the other ones are
- * regular objects.
+ * This is the only array class in the runtime, every other class
+ * is a regular object.
  */
-#caffc_array("caffc_ptr") #caffc_object_array
+#caffc_array("caffc_ptr")
+#caffc_object_array
 #public class obj_arr<T> {
     i32 _caffc_array_size
 

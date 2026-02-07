@@ -1,4 +1,4 @@
-{{ ctx.result | render }} = ({{ ctx.instantiatedType | c_type }}) {{ ctx.instantiatedType | c_name }}_new(
+{{ ctx.result | render }} = ({{ ctx.instantiatedType | c_type }}) {{ ctx.instantiatedType | c_name }}_newa(
 {%- for d in ctx.dimensions -%}
   {{ d | render }}
   {%- if not loop.last %}, {% endif -%}
