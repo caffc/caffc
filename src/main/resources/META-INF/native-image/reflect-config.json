@@ -84,6 +84,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.output.filters.FilterSemicolon",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.output.filters.FilterCName",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -108,7 +114,19 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.output.functions.FunctionIsIndex",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.output.functions.FunctionIsBlockStatement",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.output.functions.FunctionGet",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -324,12 +342,6 @@
     "allDeclaredFields": true
   },
   {
-    "name": "com.germaniumhq.caffc.generated.caffcParser$TypeTupleContext",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true,
-    "allDeclaredFields": true
-  },
-  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$TagContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -373,6 +385,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.generated.caffcParser$ExStringContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$AssignExpressionContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -439,12 +457,6 @@
   },
   {
     "name": "com.germaniumhq.caffc.generated.caffcParser$ReturnTypeContext",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "com.germaniumhq.caffc.generated.caffcParser$TryCatchBlockContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -612,6 +624,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$NamedTypeTupleContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$VariableDeclarationContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -702,6 +720,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.Statement",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -768,7 +792,163 @@
     "allDeclaredFields": true
   },
   {
-    "name": "com.germaniumhq.caffc.compiler.model.DefaultAstItem",
+    "name": "com.germaniumhq.caffc.compiler.model.UsedInTemplate",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmBlockVar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmNewArray",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmShift",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.AsmLinearFormResult",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -918,6 +1098,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction$NamedReturn",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -937,6 +1123,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.ModuleProvider",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.HasMethods",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -972,6 +1164,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.Struct",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.Clazz",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -997,6 +1195,24 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.AstItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.BlockVariable",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.AssignExpression",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -1044,6 +1260,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.Module",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -1051,6 +1273,18 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.StringConstant",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.source.SourceItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.source.DefaultSouceItem",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -1069,12 +1303,6 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.Field",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true,
-    "allDeclaredFields": true
-  },
-  {
-    "name": "com.germaniumhq.caffc.compiler.model.ast.FqdnAstItem",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
