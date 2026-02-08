@@ -24,7 +24,7 @@ tests as well are ran against this jar.
 ge_java_native_binary(
   name="caffc",
   deps=[":caffc.jar"],
-  out="caff",
+  out="caffc",
   help="caffc native binary (native via graalvm)"
 )
 
