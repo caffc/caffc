@@ -142,7 +142,7 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     /**
-     * Ensures the array is registered, and its definition exists. This is for stage1 resolving (type restricted)
+     * Ensures the array is registered, and its definition exists.
      * @return
      */
     public Symbol ensureArray(Symbol symbol, int arrayDimensions) {
@@ -157,11 +157,11 @@ public class Module implements AstItem, Scope, Symbol {
         }
 
         if (arrayDimensions <= 0) {
-            CaffcCompiler.get().fatal((AstItem) symbol, "ensure array created with 0 array dimensions");
+            CaffcCompiler.get().fatal((AstItem) symbol, "ensure array created with <0 array dimensions: " + arrayDimensions);
         }
 
         Symbol containedSymbol = symbol;
-        String uniDimensionArrayName = symbol.typeName().isPrimitive() && arrayDimensions == 1 ?
+        String uniDimensionArrayName = symbol.typeName().isPrimitive() ?
             symbol.typeName().name + "_arr" :
             "obj_arr";
         ClassDefinition result = null;
@@ -170,7 +170,7 @@ public class Module implements AstItem, Scope, Symbol {
             // SymbolResolver.resolveSymbol(this, SymbolSearch.ofName("obj_arr"));
             // the symbol might be a generics definition, so we need the type of it
             TypeName arrayTypeName = this.registerArray(symbol.typeName(), i);
-            String searchArrayName = i == arrayDimensions ? uniDimensionArrayName : "obj_arr";
+            String searchArrayName = i == 1 ? uniDimensionArrayName : "obj_arr";
             ClassDefinition arrayClassDefinition = Program.get()
                 .getModule("caffc").clazzes.get(
                     searchArrayName

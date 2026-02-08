@@ -65,8 +65,6 @@ public class TestS010Array {
                   caffc__obj_a_constructor(_this, size);
                 """,
                 "the new call should go via the dynamic size function defined for _obj_a");
-
-        System.out.println(code);
     }
 
     @Test
@@ -110,7 +108,8 @@ public class TestS010Array {
                         """)
                 });
 
-        System.out.println(code);
+        // FIXME: here we just check if the generation comes through
+        CodeAssertsStr.assertCodeContains(code, "");
     }
 
     @Test
@@ -143,7 +142,8 @@ public class TestS010Array {
                         """)
                 });
 
-        System.out.println(code);
+        // FIXME: here we just check if the generation comes through
+        CodeAssertsStr.assertCodeContains(code, "");
     }
 
     @Test
@@ -196,7 +196,7 @@ public class TestS010Array {
         CodeAssertsStr.assertCodeContains(code, """
                 _caffc_temp_caffc_u8_arr_arr_1 = caffc_obj_arr_get(primitive_multidimensional, 0);
                 _caffc_temp_caffc_u8_arr_1 = caffc_obj_arr_get(_caffc_temp_caffc_u8_arr_arr_1, 1);
-                caffc_obj_arr_set(_caffc_temp_caffc_u8_arr_1, 2, 3);
+                caffc_u8_arr_set(_caffc_temp_caffc_u8_arr_1, 2, 3);
                 """,
             "index assignment isn't working");
 

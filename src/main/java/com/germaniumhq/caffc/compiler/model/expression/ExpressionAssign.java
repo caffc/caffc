@@ -179,8 +179,10 @@ public final class ExpressionAssign implements Expression {
         result.instructions.addAll(leftExpression.instructions);
 
         // array call
+        FunctionDefinition setterFunction = leftTypeSymbol.getFunction("set");
+
         result.instructions.add(new AsmCall(
-            leftTypeSymbol.getFunction("set"),
+            setterFunction,
             leftExpression.value, // _this
             leftIndex.value,      // index
             right.value           // value
