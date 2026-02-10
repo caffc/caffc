@@ -51,6 +51,10 @@ public class CaffcCompiler {
 
 
     public static String fileLocation(SourceItem sourceItem) {
+        if (sourceItem == null) {
+            return "?:?:?";
+        }
+
         return String.format("%s:%d:%d",
             sourceItem.getFilePath(),
             sourceItem.getLineNumber(),

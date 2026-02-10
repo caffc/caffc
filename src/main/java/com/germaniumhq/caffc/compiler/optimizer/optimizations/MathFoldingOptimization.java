@@ -4,11 +4,12 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 
 import java.util.List;
 
-public class MathFoldingOptimization extends BaseOptimization {
+public final class MathFoldingOptimization implements BaseOptimization {
     @Override
     public boolean optimize(Function function) {
         boolean found = false;
@@ -22,8 +23,7 @@ public class MathFoldingOptimization extends BaseOptimization {
             AsmConstant constant1 = (AsmConstant) asmMath.value1;
             AsmConstant constant2 = (AsmConstant) asmMath.value2;
 
-            String operatorName = asmMath.operator.name();
-            var apply = applyOpOnConstants(operatorName, constant1, constant2);
+            var apply = applyOpOnConstants(asmMath.operator, constant1, constant2);
             if (apply == null) {
                 continue;
             }
@@ -38,12 +38,12 @@ public class MathFoldingOptimization extends BaseOptimization {
         return op instanceof AsmMath asmMath && asmMath.value1 instanceof AsmConstant && asmMath.value2 instanceof AsmConstant;
     }
 
-    AsmConstant applyOpOnConstants(String op, AsmConstant constant1, AsmConstant constant2) {
+    AsmConstant applyOpOnConstants(AsmMathOperator op, AsmConstant constant1, AsmConstant constant2) {
         String expressionType = constant1.type.name();
         switch (op) {
-            case "MULTIPLY":
+            case MULTIPLY:
                 return applyMultiply(constant1, constant2, expressionType);
-            case "PLUS":
+            case PLUS:
                 return applyPlus(constant1, constant2, expressionType);
             default:
                 System.out.println("BUG: unsupported operation " + op);

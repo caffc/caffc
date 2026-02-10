@@ -4,6 +4,7 @@ import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
+import com.germaniumhq.caffc.compiler.optimizer.MultiOptimizations;
 import com.germaniumhq.caffc.output.PebbleTemplater;
 
 import java.io.File;
@@ -157,6 +158,26 @@ public class CodeAssertsStr {
         }
     }
 
+    /**
+     * Compile multiple units, however output a single file.
+     * Files can even be in different modules.
+     * Optimizations are executed only on the output file.
+     */
+    public static String compileCaffcProgramWithOptimizations(
+        String template,
+        String unit,
+        TestUnit[] testUnits) {
+        Program program = Program.reset();
+        CaffcCompiler.get().hasErrors = false;
+
+        try {
+            return compileCaffcUnitsWithOptimizations(program, template, unit, testUnits);
+        } catch (CancelCompilationException e) {
+            CodeAssertsStr.printUnitWithLineNumbers(unit, testUnits);
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void printUnitWithLineNumbers(String unitName, TestUnit[] testUnits) {
         for (TestUnit testUnit: testUnits) {
             if (testUnit.unitPath.equals(unitName)) {
@@ -191,11 +212,32 @@ public class CodeAssertsStr {
             CaffcCompiler.get().fatal(compilationUnit, "Errors found in compilation");
         }
 
+        return renderCode(template, unit, compilationUnit);
+    }
+
+    private static String compileCaffcUnitsWithOptimizations(
+        Program program,
+        String template,
+        String unit,
+        TestUnit[] testUnits) {
+        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(program, unit, testUnits);
+
+        if (CaffcCompiler.get().hasErrors) {
+            CaffcCompiler.get().fatal(compilationUnit, "Errors found in compilation");
+        }
+
+        MultiOptimizations.optimize(compilationUnit);
+
+        return renderCode(template, unit, compilationUnit);
+    }
+
+
+    private static String renderCode(String template, String unit, CompilationUnit compilationUnit) {
         try {
             Map<String, Object> renderContext = PebbleTemplater.createRenderContext(
                     template.contains("module") ?
                             compilationUnit.module :
-                            compilationUnit);
+                        compilationUnit);
 
             String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
 
