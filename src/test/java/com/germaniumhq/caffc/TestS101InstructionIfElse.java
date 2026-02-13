@@ -218,4 +218,30 @@ public class TestS101InstructionIfElse {
             """,
             "generating an if that has a simple return should work");
     }
+
+
+    @Test
+    public void testBoolNotHasABooleanType() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                            module main
+        
+                            test() {
+                              str x
+                              if (not x) {}
+                            }
+                            """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code,
+            """
+            _caffc_temp_caffc_bool_1 = !x;
+            """,
+            "`not` on an object should return a boolean type, not the original object type");
+    }
 }
