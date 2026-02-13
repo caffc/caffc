@@ -44,7 +44,7 @@ main() -> i32 {
     f64size = (caffc_i32) sizeof(caffc_f64);
   }
 
-  errors |= check("bool", 1, i8size)
+  errors |= check("bool", 1, boolsize)
   errors |= check("i8"  , 1, i8size)
   errors |= check("u8"  , 1, u8size)
   errors |= check("i16" , 2, i16size)
