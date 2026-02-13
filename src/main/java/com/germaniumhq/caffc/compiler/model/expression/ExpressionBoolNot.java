@@ -2,13 +2,14 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolNot;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ExpressionBoolNot implements Expression {
@@ -29,6 +30,7 @@ public final class ExpressionBoolNot implements Expression {
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, boolNotContext.expression());
+        result.symbol = new TypeSymbol(TypeName.BOOL);
 
         return result;
     }
@@ -69,7 +71,7 @@ public final class ExpressionBoolNot implements Expression {
 
         AsmLinearFormResult linearExpression = this.expression.asLinearForm(block);
 
-        AsmVar tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
+        AsmVar tempVar = block.addTempVar(this, this.symbol);
         result.instructions.addAll(linearExpression.instructions);
         result.instructions.add(new AsmBoolNot(tempVar, linearExpression.value));
         result.value = tempVar;

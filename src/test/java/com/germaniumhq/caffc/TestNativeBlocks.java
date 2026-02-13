@@ -32,7 +32,6 @@ public class TestNativeBlocks {
             "native code outside functions should work.");
         assertCodeContains(code, "printf(\"hello world!\\n\");",
                 "native code inside functions should work.");
-        System.out.println(code);
     }
 
     @Test

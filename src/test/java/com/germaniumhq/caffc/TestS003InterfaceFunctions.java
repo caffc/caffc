@@ -125,7 +125,5 @@ public class TestS003InterfaceFunctions {
             }
             """,
     "interfaces should be generated correctly");
-
-        System.out.println(code);
     }
 }

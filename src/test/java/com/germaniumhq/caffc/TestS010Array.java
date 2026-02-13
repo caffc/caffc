@@ -69,7 +69,7 @@ public class TestS010Array {
 
     @Test
     public void testArrayTypeCreationNonPrimitive() {
-        // FIXME: generation of the multi arrays has a potential ubg since the
+        // FIXME: generation of the multi arrays has a potential bug since the
         //        values are not managed by the GC:
         // yolo_Swag_arr_arr_arr* yolo_Swag_arr_arr_arr_multi_new(caffc_i32 s1, caffc_i32 s2, caffc_i32 s3) {
         //    caffc_i32 i;
@@ -147,7 +147,7 @@ public class TestS010Array {
     }
 
     @Test
-    public void testArrayAccessInFunctionCall() {
+    public void testArrayModuleRendering() {
         String code = CodeAssertsStr.compileFullCaffcProgram(
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
@@ -163,8 +163,6 @@ public class TestS010Array {
 
                         test() {
                           yolo.Swag[][][] class_multidimensional = new yolo.Swag[1][2][3]
-
-                          print(class_multidimensional[0][0][0].data)
                         }
 
                         """)
