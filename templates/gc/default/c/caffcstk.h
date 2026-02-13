@@ -34,7 +34,8 @@ typedef struct caffc_call_stack_struct {
  *
  * _caffc_stack_frame_register("main", _caffc_locals, 1);
  */
-void _caffc_stack_frame_register(caffc_u8* function_name, caffc_ptr data_frame, caffc_u32 var_count);
+/* FIXME: this should be a `str` reference, not a char* */
+void _caffc_stack_frame_register(char* function_name, caffc_ptr data_frame, caffc_u32 var_count);
 
 /**
  * Unregister a stack frame call. The data_frame is the same pointer that was
