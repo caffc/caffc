@@ -112,4 +112,26 @@ public class TestS003String {
                     " so C can allocate them at compile time.");
 
     }
+
+    @Test
+    public void testStringEscapeEnter() {
+        String code = compileFullCaffcProgram(
+            "caffc/template/c/constants_c.peb", /* template         */
+            "test.caffc",                              /* compilation unit */
+            new TestUnit[]{
+                new TestUnit("test.caffc",
+                    """
+                            module main
+                            
+                            main() -> i32 {
+                              str x = "string escapes: \\n\\t\\r\\"\\\\"
+                              return 0
+                            }
+                            """)
+            });
+
+        CodeAssertsStr.assertCodeContains(code,
+            "{ 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x65, 0x73, 0x63, 0x61, 0x70, 0x65, 0x73, 0x3a, 0x20, 0x0a, 0x09, 0x0d, 0x22, 0x5c, 0x00 }",
+            "string escapes aren't processed correctly.");
+    }
 }

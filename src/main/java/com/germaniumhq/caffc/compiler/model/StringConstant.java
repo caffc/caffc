@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class StringConstant {
     public String name;
+    public String value;
     public byte[] bytes;
     public int bytesSize;
 
@@ -25,7 +26,8 @@ public class StringConstant {
 
         for (int i = 0; i < bytes.length; i++) {
             int unsignedByte = bytes[i] & 0xFF;
-            result.append("0x").append(Integer.toHexString(unsignedByte));
+            String hexString = Integer.toHexString(unsignedByte);
+            result.append("0x").append(hexString.length() == 1 ? "0" + hexString : hexString);
             result.append(", ");
         }
 

@@ -129,10 +129,20 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
         // removes the surrounding quotes
         String actualStr = it.substring(1, it.length() - 1);
-        byte[] bytes = actualStr.getBytes(StandardCharsets.UTF_8);
+        String stringValue = actualStr;
+
+        stringValue = stringValue
+            .replace("\\n", "\n")
+            .replace("\\r", "\r")
+            .replace("\\t", "\t")
+            .replace("\\\"", "\"")
+            .replace("\\\\", "\\");
+
+        byte[] bytes = stringValue.getBytes(StandardCharsets.UTF_8);
         stringConstant.name = "caffc_cstr_" + bytesToHex(sha256Digest.digest(bytes));
         stringConstant.bytes = bytes;
         stringConstant.bytesSize = bytes.length + 1; // we add the null terminator
+        stringConstant.value = actualStr;
 
         return stringConstant;
     }
