@@ -40,5 +40,5 @@ main() {
   test_add()
   test_slice()
   test_indexOf()
-  print("\033[2mall good\033[0m")
+  print("✅ \033[2mall good\033[0m")
 }

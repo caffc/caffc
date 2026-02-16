@@ -1,6 +1,5 @@
 package com.germaniumhq.caffc.compiler.model.asm.vars;
 
-import com.germaniumhq.caffc.compiler.model.Program;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -23,7 +22,7 @@ final public class AsmConstant implements AsmValue {
                 return;
             }
 
-            this.value = "(caffc_str*)&" + Program.get().constantName(value);
+            this.value = "(caffc_str*)&" + value;
         }
     }
 
