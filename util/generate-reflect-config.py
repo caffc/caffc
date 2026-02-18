@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import click
 import os
 import zipfile
@@ -45,4 +47,3 @@ def main(jar_file: str, out_file: str) -> None:
 
 if __name__ == "__main__":
     main()
-
