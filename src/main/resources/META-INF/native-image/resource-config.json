@@ -1,5 +1,10 @@
 {
   "resources":{
+  "include": [{
+    "glob": "**/*.peb"
+  }, {
+    "glob": "**/services/*"
+  }],
   "includes":[{
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
   }, {
