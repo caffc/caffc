@@ -1,18 +1,13 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,19 +49,9 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public List<TypeResolveRequest> typeResolveRequests = new ArrayList<>();
     private Map<TypeName, Symbol> primitiveSymbols = new HashMap<>();
 
-    private final MessageDigest sha256Digest;
-    public Map<String, StringConstant> stringConstantsMap = new LinkedHashMap<>();
+    private Set<StringConstant> stringConstants = new LinkedHashSet<>();
 
     private Program() {
-        try {
-            this.sha256Digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            CaffcCompiler.get().fatal(
-                    SourceItem.fromFilePath("?"),
-                    "sha256 issue: " + e.getMessage());
-            throw new RuntimeException(e); // not reached
-        }
-
         for (TypeName primitiveTypeName : TypeName.PRIMITIVE_TYPES) {
             primitiveSymbols.put(primitiveTypeName, new TypeSymbol(primitiveTypeName));
         }
@@ -111,52 +96,8 @@ public class Program implements ModuleProvider, AstItem, Scope {
      * Resolve all the type requests
      */
     public void recreateConstants() {
-        recreateStringConstants();
-    }
-
-    private void recreateStringConstants() {
-        this.stringConstantsMap.clear();
-
-        for (Module module: modules.values()) {
-            for (String stringConstant: module.stringConstants) {
-                stringConstantsMap.computeIfAbsent(stringConstant, this::newStringConstant);
-            }
-        }
-    }
-
-    private StringConstant newStringConstant(String it) {
-        StringConstant stringConstant = new StringConstant();
-
-        // removes the surrounding quotes
-        String actualStr = it.substring(1, it.length() - 1);
-        String stringValue = actualStr;
-
-        stringValue = stringValue
-            .replace("\\n", "\n")
-            .replace("\\r", "\r")
-            .replace("\\t", "\t")
-            .replace("\\\"", "\"")
-            .replace("\\\\", "\\");
-
-        byte[] bytes = stringValue.getBytes(StandardCharsets.UTF_8);
-        stringConstant.name = "caffc_cstr_" + bytesToHex(sha256Digest.digest(bytes));
-        stringConstant.bytes = bytes;
-        stringConstant.bytesSize = bytes.length + 1; // we add the null terminator
-        stringConstant.value = actualStr;
-
-        return stringConstant;
-    }
-
-    private static String bytesToHex(byte[] hash) {
-        StringBuilder hexString = new StringBuilder(2 * hash.length);
-        for (int i = 0; i < hash.length; i++) {
-            String hex = Integer.toHexString(0xff & hash[i]);
-            if(hex.length() == 1) {
-                hexString.append('0');
-            }
-            hexString.append(hex);
-        }
-        return hexString.toString();
+        // empty now, since string constants are already created as constants by each module
+        // to ensure parsing is correct.
     }
 
     private String extractNonArrayTypeName(String name) {
@@ -193,7 +134,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public Collection<Integer> strStructBytesSizes() {
         TreeSet<Integer> sizes = new TreeSet<>();
 
-        for (StringConstant stringConstant: stringConstantsMap.values()) {
+        for (StringConstant stringConstant: stringConstants) {
             sizes.add(stringConstant.bytesSize);
         }
 
@@ -214,17 +155,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
         return null;
     }
 
-    public Collection<StringConstant> stringConstants() {
-        return stringConstantsMap.values();
-    }
-
-    public String constantName(String value) {
-        StringConstant stringConstant = stringConstantsMap.get(value);
-
-        if (stringConstant == null) {
-            throw new IllegalArgumentException(value + " is not registered as a constant.");
-        }
-
+    public String constantName(StringConstant stringConstant) {
         return stringConstant.name;
     }
 
@@ -256,5 +187,13 @@ public class Program implements ModuleProvider, AstItem, Scope {
         INSTANCE = new Program();
 
         return INSTANCE;
+    }
+
+    public Set<StringConstant> getStringConstants() {
+        return stringConstants;
+    }
+
+    public void addStringConstant(StringConstant stringConstant) {
+        this.stringConstants.add(stringConstant);
     }
 }

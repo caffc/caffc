@@ -114,7 +114,7 @@ public class TestS003String {
     }
 
     @Test
-    public void testStringEscapeEnter() {
+    public void testStringEscapeCharacterSet() {
         String code = compileFullCaffcProgram(
             "caffc/template/c/constants_c.peb", /* template         */
             "test.caffc",                              /* compilation unit */
@@ -124,14 +124,40 @@ public class TestS003String {
                             module main
                             
                             main() -> i32 {
-                              str x = "string escapes: \\n\\t\\r\\"\\\\"
+                              str x = "string escapes: \\a\\b\\e\\f\\n\\r\\t\\v\\\\'\\"\\?\\033\\x44"
                               return 0
                             }
                             """)
             });
 
         CodeAssertsStr.assertCodeContains(code,
-            "{ 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x65, 0x73, 0x63, 0x61, 0x70, 0x65, 0x73, 0x3a, 0x20, 0x0a, 0x09, 0x0d, 0x22, 0x5c, 0x00 }",
+            "{ 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x65, 0x73, 0x63, 0x61, 0x70, 0x65, 0x73, 0x3a, 0x20, 0x07, 0x08, 0x1b, 0x0c, 0x0a, 0x0d, 0x09, 0x0b, 0x5c, 0x27, 0x22, 0x3f, 0x1b, 0x44, 0x00 }",
+            "string escapes aren't processed correctly.");
+    }
+
+    /**
+     * We check to see if escapes that appear after an emoji are correctly
+     * escaped. \\033 should be still the octal for 0x1b.
+     */
+    @Test
+    public void testStringEscapeColorsNotShowingAfterEmoji() {
+        String code = compileFullCaffcProgram(
+            "caffc/template/c/constants_c.peb", /* template         */
+            "test.caffc",                              /* compilation unit */
+            new TestUnit[]{
+                new TestUnit("test.caffc",
+                    """
+                            module main
+                            
+                            main() -> i32 {
+                              str x = "✅ \\033[2mtest passed\\033[0m"
+                              return 0
+                            }
+                            """)
+            });
+
+        CodeAssertsStr.assertCodeContains(code,
+            "{ 0xe2, 0x9c, 0x85, 0x20, 0x1b, 0x5b, 0x32, 0x6d, 0x74, 0x65, 0x73, 0x74, 0x20, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x1b, 0x5b, 0x30, 0x6d, 0x00 }",
             "string escapes aren't processed correctly.");
     }
 }

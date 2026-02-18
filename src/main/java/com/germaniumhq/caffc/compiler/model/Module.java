@@ -6,7 +6,13 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * All the things that exist in a module are defined here. Like
@@ -22,7 +28,7 @@ public class Module implements AstItem, Scope, Symbol {
     public Map<String, InterfaceDefinition> interfaces = new LinkedHashMap<>();
     public Map<String, Struct> structures = new LinkedHashMap<>();
     public Set<Module> usedModules = new LinkedHashSet<>();
-    public Set<String> stringConstants = new LinkedHashSet<>();
+    public Set<StringConstant> stringConstants = new LinkedHashSet<>();
 
     public Map<TypeName, Integer> moduleArrays = new LinkedHashMap<>();
 
@@ -117,7 +123,7 @@ public class Module implements AstItem, Scope, Symbol {
         return result;
     }
 
-    public void registerConstant(String constant) {
+    public void registerConstant(StringConstant constant) {
         this.stringConstants.add(constant);
     }
 
