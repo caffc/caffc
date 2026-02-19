@@ -1,0 +1,66 @@
+module caffc
+
+/**
+ * Contains the data of a single StackFrame from our stack
+ * trace.
+ */
+class StackFrame {
+  /**
+   * Function or method name where the call is.
+   */
+  #public str name
+
+  /**
+   * File name where the execution is.
+   */
+  #public str file
+
+  /**
+   * Line number where the execution is.
+   */
+  #public i32 line
+}
+
+/**
+ * Exceptions being thrown must implement this interface.
+ * The constructor of such a class will be augmented by the
+ * compiler with the stack information.
+ */
+#public
+interface exception {
+  #public message() -> str
+  #public cause() -> Exception
+  #public stack() -> StackFrame[]
+}
+
+#public
+class Exception implements exception {
+  str _message
+  exception _cause
+  StackFrame[] _frames
+
+  constructor(str msg, exception cause) {
+    _this._message = message
+    _this._cause = cause
+    _this._frames = stackDump()
+  }
+
+  #public message() -> str {
+    return _this._message
+  }
+
+  #public cause() -> exception {
+    return _this._cause
+  }
+
+  #public frames() -> StackFrame[] {
+    return _this._frames
+  }
+}
+
+/**
+ * Gets a dump of the stack.
+ * # FIXME: this should not be in the default caffc module.
+ */
+stackDump() -> StackFrame[] {
+}
