@@ -14,8 +14,12 @@ caffc_call_stack* _caffc_call_stack = caffc_null;
  * being passed in the var_count. The data_frame can be null if there's no
  * variables that are handled by the gc.
  */
-void _caffc_stack_frame_register(char* function_name, caffc_ptr data_frame, caffc_u32 var_count) {
+void _caffc_stack_frame_register(
+      struct caffc_str* function_name,
+      caffc_ptr data_frame,
+      caffc_u32 var_count) {
     caffc_stack_frame* new_frame = &(_caffc_call_stack->frames[_caffc_call_stack->call_count]);
+    new_frame->function_name = function_name;
     new_frame->data_frame = data_frame;
     new_frame->var_count = var_count;
 

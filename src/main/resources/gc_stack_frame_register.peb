@@ -35,8 +35,14 @@ caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];
 _caffc_locals[{{ loop.index }}] = &{{ item | render }};
 {%- endfor %}
 
-_caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});
+_caffc_stack_frame_register(
+  {{ ctx.stringConstantName | render }},
+  _caffc_locals,
+  {{ ctx.gcVariableCount() }});
 
 {%- else %}
-_caffc_stack_frame_register("{{ ctx.name }}", caffc_null, 0);
+_caffc_stack_frame_register(
+  {{ ctx.stringConstantName | render }},
+  caffc_null,
+  0);
 {% endif %}

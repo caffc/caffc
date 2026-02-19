@@ -46,6 +46,8 @@ public class Function implements CompileBlock, Scope, Symbol {
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructVariables;
 
+    public StringConstant stringConstantName;
+
     /**
      * The current number used when allocating labels. This is so we keep track of
      * AsmInstructions when serializing complex AST structures. It's easier to see
@@ -141,6 +143,9 @@ public class Function implements CompileBlock, Scope, Symbol {
                     function.definition
             );
         }
+
+        function.stringConstantName = StringConstant.newStringConstant(function, function.definition.name);
+        function.findAstParent(Module.class).registerConstant(function.stringConstantName);
 
         return function;
     }

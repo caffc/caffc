@@ -26,11 +26,15 @@ public class StringConstant {
     }
 
 
-    public static StringConstant newStringConstant(SourceItem owner, String it) {
-        StringConstant stringConstant = new StringConstant();
-
+    public static StringConstant newStringConstantFromAntlr(SourceItem owner, String antlrString) {
         // removes the surrounding quotes
-        String stringWithoutQuotes = it.substring(1, it.length() - 1);
+        String stringWithoutQuotes = antlrString.substring(1, antlrString.length() - 1);
+
+        return newStringConstant(owner, stringWithoutQuotes);
+    }
+
+    public static StringConstant newStringConstant(SourceItem owner, String stringWithoutQuotes) {
+        StringConstant stringConstant = new StringConstant();
         String inputString = stringWithoutQuotes;
 
         // the actual data can only be shorter than this, after escapes
@@ -58,7 +62,7 @@ public class StringConstant {
             // ar we at the end of the string?
             if (inIndex == inputString.length() - 1) {
                 CaffcCompiler.get().fatal(owner, "unterminated string escape");
-                return null; // not reached
+                return null;
             }
 
             char nextChar = inputString.charAt(inIndex + 1);

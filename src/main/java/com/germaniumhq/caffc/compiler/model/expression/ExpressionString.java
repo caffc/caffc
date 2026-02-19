@@ -33,7 +33,7 @@ public final class ExpressionString implements Expression {
         result.astLine = stringExpression.getStart().getLine();
         result.astColumn = stringExpression.getStart().getCharPositionInLine();
         result.symbol = new TypeSymbol(TypeName.STR);
-        result.constant = StringConstant.newStringConstant(result, stringExpression.STRING().getText());
+        result.constant = StringConstant.newStringConstantFromAntlr(result, stringExpression.STRING().getText());
 
         unit.module.registerConstant(result.constant);
 
