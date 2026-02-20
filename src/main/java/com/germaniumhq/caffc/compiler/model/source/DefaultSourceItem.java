@@ -2,13 +2,12 @@ package com.germaniumhq.caffc.compiler.model.source;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
 
-// FIXME: remove if not used
-public class DefaultSouceItem implements AstItem {
+public class DefaultSourceItem implements AstItem {
     public String astFilePath;
     public int astLineNumber;
     public int astColumnNumber;
 
-    public DefaultSouceItem(
+    public DefaultSourceItem(
             String astFilePath,
             int astLineNumber,
             int astColumnNumber) {

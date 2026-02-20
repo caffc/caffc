@@ -24,7 +24,7 @@ public interface SourceItem {
     int getColumnNumber();
 
     static SourceItem fromAntlr(String filePath, ParserRuleContext antlrParserRuleContext) {
-        return new DefaultSouceItem(
+        return new DefaultSourceItem(
             filePath,
             antlrParserRuleContext.getStart().getLine(),
             antlrParserRuleContext.getStart().getCharPositionInLine()
@@ -32,10 +32,10 @@ public interface SourceItem {
     }
 
     static SourceItem fromFilePath(String file) {
-        return new DefaultSouceItem(file, 1, 1);
+        return new DefaultSourceItem(file, 1, 1);
     }
 
     static SourceItem fromData(String filePath, int line, int charPositionInLine) {
-        return new DefaultSouceItem(filePath, line, charPositionInLine);
+        return new DefaultSourceItem(filePath, line, charPositionInLine);
     }
 }

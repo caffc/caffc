@@ -1,8 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.model.source.DefaultSouceItem;
 import com.germaniumhq.caffc.compiler.model.source.SourceItem;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * An item in the AST. Every item in our AST implements this.
