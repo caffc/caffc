@@ -1,12 +1,13 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.HasSourceItem;
 import com.germaniumhq.caffc.compiler.model.source.SourceItem;
 
 /**
  * An item in the AST. Every item in our AST implements this.
  * A program is the top "AST" item, and its owner is null.
  */
-public interface AstItem extends SourceItem {
+public interface AstItem extends HasSourceItem {
     /**
      * Get the owner of the current AST item. The top program has null as parent.
      */
@@ -42,7 +43,8 @@ public interface AstItem extends SourceItem {
     }
 
     static String debugInfo(AstItem owner) {
-        return owner.getFilePath() + ":" + owner.getLineNumber() + ":" + owner.getColumnNumber();
+        SourceItem sourceItem = owner.getSourceItem();
+        return sourceItem.getFilePath() + ":" + sourceItem.getLineNumber() + ":" + sourceItem.getColumnNumber();
     }
 
     /**
