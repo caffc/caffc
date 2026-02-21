@@ -21,7 +21,7 @@ public class StringConstant {
         try {
             StringConstant.sha256Digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            CaffcCompiler.get().fatal(null, "sha256 issue: " + e.getMessage());
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(""), "sha256 issue: " + e.getMessage());
         }
     }
 

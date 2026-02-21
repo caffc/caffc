@@ -47,7 +47,7 @@ public interface Statement extends AstItem {
         }
 
         CaffcCompiler.get().fatal(
-                SourceLocation.fromAntlr(unit.astFilePath, antlrStatement),
+                SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrStatement),
                 "unknown statement: " + antlrStatement.getText() + " with class " + antlrStatement.getClass().getCanonicalName());
 
         return null; // not reached
@@ -59,7 +59,7 @@ public interface Statement extends AstItem {
      * @return
      */
     default AsmLinearFormResult asLinearForm(AsmBlock block) {
-        CaffcCompiler.get().fatal(this, "linear form not implemented for " + this.getClass().getCanonicalName());
+        CaffcCompiler.get().fatal(this.getSourceLocation(), "linear form not implemented for " + this.getClass().getCanonicalName());
         return null; // not reached
     }
 }

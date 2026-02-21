@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
@@ -19,18 +20,14 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
     public Expression expression;
     public Expression index;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     private Symbol symbol;
     private Symbol arraySymbol;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExIndexAccessContext indexAccessExpression) {
         ExpressionIndexAccess result = new ExpressionIndexAccess();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = indexAccessExpression.getStart().getLine();
-        result.astColumn = indexAccessExpression.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, indexAccessExpression);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, indexAccessExpression.arraryExpression);
@@ -50,18 +47,8 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

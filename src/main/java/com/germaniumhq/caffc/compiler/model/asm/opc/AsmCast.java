@@ -1,10 +1,12 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 
 public final class AsmCast implements AsmInstruction {
+    public SourceLocation sourceLocation;
     public Symbol castType;
     public AsmVar left;
     public AsmValue right;
@@ -13,5 +15,10 @@ public final class AsmCast implements AsmInstruction {
         this.castType = castType;
         this.left = left;
         this.right = right;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 }

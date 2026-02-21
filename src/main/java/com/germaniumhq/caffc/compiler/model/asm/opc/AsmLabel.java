@@ -1,9 +1,11 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.Function;
 
 final public class AsmLabel implements AsmInstruction {
+    public SourceLocation sourceLocation;
     public String name;
 
     public AsmLabel(String name, int index) {
@@ -20,5 +22,10 @@ final public class AsmLabel implements AsmInstruction {
     public static int allocateNumber(AstItem owner) {
         Function f = AstItem.findParentOrSelf(owner, Function.class);
         return f.labelIndex++;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 }

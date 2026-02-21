@@ -27,6 +27,14 @@ public class SourceLocation {
         );
     }
 
+    public static SourceLocation fromFilePath(String filePath) {
+        return new SourceLocation(filePath, 0, 0);
+    }
+
+    public static SourceLocation fromData(String filePath, int lineNumber, int columnNumber) {
+        return new SourceLocation(filePath, lineNumber, columnNumber);
+    }
+
     public String getFilePath() {
         return filePath;
     }

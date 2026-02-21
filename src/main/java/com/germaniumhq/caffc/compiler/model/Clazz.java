@@ -67,9 +67,7 @@ public class Clazz implements CompileBlock, AstItem, Scope {
                 if (!function.definition.isStatic) {
                     // we syntheticaly add the `_this` parameter to the function pointing to the class.
                     Parameter thisParameter = new Parameter(function.definition, "_this");
-                    thisParameter.astFilePath = function.getFilePath(); // we set the function coordinates
-                    thisParameter.astLine = function.getLineNumber();
-                    thisParameter.astColumn = function.getColumnNumber();
+                    thisParameter.sourceLocation = function.getSourceLocation(); // we set the function coordinates
 
                     function.definition.parameters.add(0, thisParameter);
                     // FIXME: check for existing `_this` parameters.

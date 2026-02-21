@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.error;
 
+import com.germaniumhq.caffc.compiler.model.source.HasSourceLocation;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 
 public class CaffcCompiler {
@@ -24,6 +25,10 @@ public class CaffcCompiler {
         throw new CancelCompilationException(errorMessage);
     }
 
+    public void fatal(HasSourceLocation hasSourceLocation, String message) {
+        fatal(hasSourceLocation.getSourceLocation(), message);
+    }
+
     /**
      * Reports the error to the user, execution continues.
      * Code won't be generated anymore.
@@ -35,6 +40,10 @@ public class CaffcCompiler {
         this.hasErrors = true;
         System.err.format("%s: %s: %s\n",
                 fileLocation(sourceLocation), "ERROR", message);
+    }
+
+    public void error(HasSourceLocation hasSourceLocation, String message) {
+        error(hasSourceLocation.getSourceLocation(), message);
     }
 
     /**
@@ -49,6 +58,9 @@ public class CaffcCompiler {
                 fileLocation(sourceLocation), "WARN ", message);
     }
 
+    public void warning(HasSourceLocation hasSourceLocation, String message) {
+        warning(hasSourceLocation.getSourceLocation(), message);
+    }
 
     public static String fileLocation(SourceLocation sourceLocation) {
         return String.format("%s:%d:%d",
@@ -56,5 +68,9 @@ public class CaffcCompiler {
             sourceLocation.getLineNumber(),
             sourceLocation.getColumnNumber()
         );
+    }
+
+    public static String fileLocation(HasSourceLocation hasSourceLocation) {
+        return fileLocation(hasSourceLocation.getSourceLocation());
     }
 }

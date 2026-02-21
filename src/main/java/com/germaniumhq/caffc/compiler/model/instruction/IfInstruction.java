@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -21,17 +22,13 @@ public final class IfInstruction implements Statement {
     public Expression checkExpression;
     public List<Statement> statements = new ArrayList<>();
     public List<Statement> elseStatements = null;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static IfInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.IfBlockContext ifAntlr) {
         IfInstruction result = new IfInstruction();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = ifAntlr.getStart().getLine();
-        result.astColumn = ifAntlr.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ifAntlr);
         result.checkExpression = Expression.fromAntlr(unit, result, ifAntlr.expression());
 
         if (ifAntlr.trueBlock != null) {
@@ -62,18 +59,8 @@ public final class IfInstruction implements Statement {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

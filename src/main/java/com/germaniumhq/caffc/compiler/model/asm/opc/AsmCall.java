@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 
 /**
@@ -8,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
  * the value returned will be assigned into a temp variable as the `result`.
  */
 public final class AsmCall implements AsmInstruction {
+    public SourceLocation sourceLocation;
     public AsmValue result;
     public FunctionDefinition function;
     public AsmValue[] parameters;
@@ -19,5 +21,10 @@ public final class AsmCall implements AsmInstruction {
 
         this.function = function;
         this.parameters = parameters;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 }

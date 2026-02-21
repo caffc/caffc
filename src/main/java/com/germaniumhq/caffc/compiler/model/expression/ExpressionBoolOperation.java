@@ -2,13 +2,13 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -19,16 +19,12 @@ public final class ExpressionBoolOperation implements Expression {
     public Expression right;
     public String operator;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static ExpressionBoolOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolAndContext exBoolAndContext) {
         ExpressionBoolOperation result = new ExpressionBoolOperation();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = exBoolAndContext.getStart().getLine();
-        result.astColumn = exBoolAndContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exBoolAndContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, exBoolAndContext.leftExpression);
@@ -42,9 +38,7 @@ public final class ExpressionBoolOperation implements Expression {
     public static ExpressionBoolOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolOrContext exBoolOrContext) {
         ExpressionBoolOperation result = new ExpressionBoolOperation();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = exBoolOrContext.getStart().getLine();
-        result.astColumn = exBoolOrContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exBoolOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, exBoolOrContext.leftExpression);
@@ -66,18 +60,8 @@ public final class ExpressionBoolOperation implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
