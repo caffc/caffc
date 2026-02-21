@@ -20,7 +20,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -143,12 +143,12 @@ public interface Expression extends Statement {
 
         if (expression == null) {
             CaffcCompiler.get().fatal(
-                    owner,
+                    owner.getSourceLocation(),
                     "null expression passed from owner");
         }
 
         CaffcCompiler.get().fatal(
-                SourceItem.fromAntlr(unit.astFilePath, expression),
+                SourceLocation.fromAntlr(unit.sourceLocation.filePath, expression),
                 "unsupported expression: " + expression.getText());
 
         return null; // not reached

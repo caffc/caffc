@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -25,9 +26,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     public SymbolSearch typeSymbolSearch;
     public Symbol typeSymbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public boolean isResolved;
 
@@ -39,9 +38,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         VariableDeclaration result = new VariableDeclaration();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = variableDeclarationContext.getStart().getLine();
-        result.astColumn = variableDeclarationContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, variableDeclarationContext);
 
         result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();
@@ -51,9 +48,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         if (expressionContext != null) {
             result.assignExpression = new ExpressionAssign();
 
-            result.assignExpression.astFilePath = result.getFilePath();
-            result.assignExpression.astLine = result.getLineNumber();
-            result.assignExpression.astColumn = result.getColumnNumber();
+            result.assignExpression.sourceLocation = result.getSourceLocation();
 
             result.assignExpression.owner = result;
             result.assignExpression.leftExpressions.add(
@@ -72,9 +67,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         result.name = name;
         result.typeSymbol = typeSymbol;
         result.owner = owner;
-        result.astFilePath = owner.getFilePath();
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
         result.isResolved = true;
 
         return result;
@@ -86,9 +79,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         result.name = variableName;
         result.typeSymbolSearch = symbolSearch;
         result.owner = owner;
-        result.astFilePath = owner.getFilePath();
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
 
         return result;
     }
@@ -99,18 +90,8 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

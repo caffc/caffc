@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -21,10 +22,6 @@ public class Struct implements GenericsDefinitionsSymbol, Scope {
     private AstItem owner;
     private String name;
     private String module;
-
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
 
     /**
      * A list of fields defined within this class.
@@ -61,18 +58,8 @@ public class Struct implements GenericsDefinitionsSymbol, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return this.owner.getFilePath();
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.owner.getLineNumber();
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.owner.getColumnNumber();
+    public SourceLocation getSourceLocation() {
+        return this.owner.getSourceLocation();
     }
 
     @Override
@@ -137,10 +124,6 @@ public class Struct implements GenericsDefinitionsSymbol, Scope {
         copy.owner = this.owner;
         copy.module = this.module;
         copy.name = this.name;
-
-        copy.astColumn = this.astColumn;
-        copy.astLine = this.astLine;
-        copy.astFilePath = this.astFilePath;
 
         for (Field f : fields) {
             copy.fields.add(f.newGenericsCopy(resolvedGenerics));

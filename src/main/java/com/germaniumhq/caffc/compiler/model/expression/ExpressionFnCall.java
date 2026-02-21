@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -27,9 +28,7 @@ public final class ExpressionFnCall implements Expression {
     public List<Expression> parameters = new ArrayList<>();
     private Symbol symbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
@@ -45,9 +44,7 @@ public final class ExpressionFnCall implements Expression {
         ExpressionFnCall result = new ExpressionFnCall();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = fnCallExpression.getStart().getLine();
-        result.astColumn = fnCallExpression.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, fnCallExpression);
         result.functionExpression = Expression.fromAntlr(unit, result, fnCallExpression.expression());
         result.genericsInstantiations = GenericInstantiations.fromAntlr(unit, result, fnCallExpression.genericsInstantiations());
 
@@ -73,18 +70,8 @@ public final class ExpressionFnCall implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

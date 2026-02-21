@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -18,17 +19,13 @@ public final class ExpressionMath implements Expression {
     public String operator;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     public Symbol symbol;
 
     public static ExpressionMath fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAddSubContext addSubExpression) {
         ExpressionMath result = new ExpressionMath();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = addSubExpression.getStart().getLine();
-        result.astColumn = addSubExpression.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, addSubExpression);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, addSubExpression.leftExpression);
@@ -41,9 +38,7 @@ public final class ExpressionMath implements Expression {
     public static ExpressionMath fromAntlrMulMod(CompilationUnit unit, AstItem owner, caffcParser.ExMulModContext mulModContext) {
         ExpressionMath result = new ExpressionMath();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = mulModContext.getStart().getLine();
-        result.astColumn = mulModContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, mulModContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, mulModContext.leftExpression);
@@ -56,9 +51,7 @@ public final class ExpressionMath implements Expression {
     public static ExpressionMath fromAntlrDiv(CompilationUnit unit, AstItem owner, caffcParser.ExDivContext divContext) {
         ExpressionMath result = new ExpressionMath();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = divContext.getStart().getLine();
-        result.astColumn = divContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, divContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, divContext.leftExpression);
@@ -79,18 +72,8 @@ public final class ExpressionMath implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -16,9 +17,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
     public static Interface fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.InterfaceDefinitionContext antlrInterfaceDefinition) {
         Interface _interface = new Interface();
 
-        _interface.definition.astFilePath = unit.astFilePath;
-        _interface.definition.astLine = antlrInterfaceDefinition.getStart().getLine();
-        _interface.definition.astColumn = antlrInterfaceDefinition.getStart().getCharPositionInLine();
+        _interface.definition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrInterfaceDefinition);
 
         _interface.owner = unit;
 
@@ -53,9 +52,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
 
                 // we syntheticaly add the `_this` parameter to the function pointing to the class.
                 Parameter thisParameter = new Parameter(functionDefinition, "_this");
-                thisParameter.astFilePath = functionDefinition.getFilePath(); // we set the function coordinates
-                thisParameter.astLine = functionDefinition.getLineNumber();
-                thisParameter.astColumn = functionDefinition.getColumnNumber();
+                thisParameter.sourceLocation = functionDefinition.getSourceLocation(); // we set the function coordinates
 
                 functionDefinition.parameters.add(0, thisParameter);
                 // FIXME: check for existing `_this` parameters.
@@ -83,9 +80,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
             caffcParser.FunctionDeclarationContext ctx) {
         FunctionDefinition functionDefinition = new FunctionDefinition();
 
-        functionDefinition.astFilePath = unit.astFilePath;
-        functionDefinition.astLine = ctx.getStart().getLine();
-        functionDefinition.astColumn = ctx.getStart().getCharPositionInLine();
+        functionDefinition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
 
         functionDefinition.owner = owner;
         functionDefinition.clazz = owner.definition;
@@ -130,18 +125,8 @@ public class Interface implements CompileBlock, AstItem, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return this.definition.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.definition.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.definition.astColumn;
+    public SourceLocation getSourceLocation() {
+        return this.definition.sourceLocation;
     }
 
     @Override

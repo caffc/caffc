@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -19,17 +20,13 @@ public final class ExpressionOpAssign implements Expression {
     public String operator;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     public Symbol symbol;
 
     public static ExpressionOpAssign fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExOpAssignContext opAssignContext) {
         ExpressionOpAssign result = new ExpressionOpAssign();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = opAssignContext.getStart().getLine();
-        result.astColumn = opAssignContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, opAssignContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, opAssignContext.leftExpression);
@@ -50,18 +47,8 @@ public final class ExpressionOpAssign implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

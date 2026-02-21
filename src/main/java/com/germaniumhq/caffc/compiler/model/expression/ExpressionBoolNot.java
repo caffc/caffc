@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -17,16 +18,12 @@ public final class ExpressionBoolNot implements Expression {
     public AstItem owner;
     public Symbol symbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolNotContext boolNotContext) {
         ExpressionBoolNot result = new ExpressionBoolNot();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = boolNotContext.getStart().getLine();
-        result.astColumn = boolNotContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, boolNotContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, boolNotContext.expression());
@@ -46,18 +43,8 @@ public final class ExpressionBoolNot implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

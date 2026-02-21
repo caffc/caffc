@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -13,12 +14,11 @@ public class TypeSymbol implements Symbol, AstItem {
 
     private final TypeName typeName;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public TypeSymbol(TypeName typeName) {
         this.typeName = typeName;
+        this.sourceLocation = new SourceLocation("builtin", 0, 0);
     }
 
     @Override
@@ -42,18 +42,8 @@ public class TypeSymbol implements Symbol, AstItem {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

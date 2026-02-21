@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -25,9 +26,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public Map<String, Module> modules = new HashMap<>();
     public Map<TypeName, Symbol> registeredTypes = new HashMap<>();
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation = new SourceLocation("program", 0, 0);
 
     // Keeps track where something is defined. We have two kind of mappings kept in sync:
     //
@@ -160,18 +159,8 @@ public class Program implements ModuleProvider, AstItem, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.GenericsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -17,9 +18,8 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
     public String name;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
+
     private SymbolSearch typeSearch;
 
     public Field(AstItem owner, String name) {
@@ -33,9 +33,11 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
         for (TerminalNode name: fieldDeclarationContext.ID()) {
             Field field = new Field(owner, name.getText());
 
-            field.astFilePath = unit.astFilePath;
-            field.astLine = name.getSymbol().getLine();
-            field.astColumn = name.getSymbol().getCharPositionInLine();
+            field.sourceLocation = new SourceLocation(
+                unit.sourceLocation.filePath,
+                name.getSymbol().getLine(),
+                name.getSymbol().getCharPositionInLine()
+            );
 
             field.typeSearch = SymbolSearch.fromAntlr(unit, fieldDeclarationContext.typeName());
 
@@ -73,18 +75,8 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -104,9 +96,7 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
         // name
         // owner
 
-        newField.astFilePath = this.astFilePath;
-        newField.astColumn = this.astColumn;
-        newField.astLine = this.astLine;
+        newField.sourceLocation = this.sourceLocation;
 
         if (newField.typeSymbol instanceof GenericDefinition typeSymbolGenericDefinition) {
             Symbol resolvedReturnType = resolvedGenerics.get(typeSymbolGenericDefinition.name);

@@ -1,7 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -21,16 +21,20 @@ public class StringConstant {
         try {
             StringConstant.sha256Digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            CaffcCompiler.get().fatal(null, "sha256 issue: " + e.getMessage());
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(""), "sha256 issue: " + e.getMessage());
         }
     }
 
 
-    public static StringConstant newStringConstant(SourceItem owner, String it) {
-        StringConstant stringConstant = new StringConstant();
-
+    public static StringConstant newStringConstantFromAntlr(SourceLocation owner, String antlrString) {
         // removes the surrounding quotes
-        String stringWithoutQuotes = it.substring(1, it.length() - 1);
+        String stringWithoutQuotes = antlrString.substring(1, antlrString.length() - 1);
+
+        return newStringConstant(owner, stringWithoutQuotes);
+    }
+
+    public static StringConstant newStringConstant(SourceLocation owner, String stringWithoutQuotes) {
+        StringConstant stringConstant = new StringConstant();
         String inputString = stringWithoutQuotes;
 
         // the actual data can only be shorter than this, after escapes
@@ -58,7 +62,7 @@ public class StringConstant {
             // ar we at the end of the string?
             if (inIndex == inputString.length() - 1) {
                 CaffcCompiler.get().fatal(owner, "unterminated string escape");
-                return null; // not reached
+                return null;
             }
 
             char nextChar = inputString.charAt(inIndex + 1);
@@ -148,10 +152,10 @@ public class StringConstant {
         return stringConstant;
     }
 
-    private static byte parseCharFromOctalNumbers(SourceItem owner,
-                                           char firstOctalChar,
-                                           char secondOctalChar,
-                                           char thirdOctalChar) {
+    private static byte parseCharFromOctalNumbers(SourceLocation owner,
+                                                  char firstOctalChar,
+                                                  char secondOctalChar,
+                                                  char thirdOctalChar) {
         byte result;
 
         result = byteFromOctal(owner, firstOctalChar);
@@ -163,7 +167,7 @@ public class StringConstant {
         return result;
     }
 
-    private static byte byteFromOctal(SourceItem owner, char octalChar) {
+    private static byte byteFromOctal(SourceLocation owner, char octalChar) {
         byte result = 0;
 
         if (octalChar >= '0' && octalChar <= '7') {
@@ -175,7 +179,7 @@ public class StringConstant {
         return result;
     }
 
-    private static byte parseCharFromHexNumbers(SourceItem owner, char firstHexChar, char secondHexChar) {
+    private static byte parseCharFromHexNumbers(SourceLocation owner, char firstHexChar, char secondHexChar) {
         byte result;
 
         result = byteFromHex(owner, firstHexChar);
@@ -185,7 +189,7 @@ public class StringConstant {
         return result;
     }
 
-    private static byte byteFromHex(SourceItem owner, char firstHexChar) {
+    private static byte byteFromHex(SourceLocation owner, char firstHexChar) {
         byte result = 0;
 
         if (firstHexChar >= '0' && firstHexChar <= '9') {

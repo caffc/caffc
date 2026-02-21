@@ -1,0 +1,11 @@
+{
+  "server_url": "https://www.plantuml.com/plantuml",
+  "header": "",
+  "debounce": 3,
+  "localJar": "/home/raptor/programs/plantuml-1.2025.2.jar",
+  "javaPath": "/home/raptor/.sdkman/candidates/java/current/bin/java",
+  "dotPath": "/usr/bin/dot",
+  "defaultProcessor": "png",
+  "cache": 60,
+  "exportPath": ""
+}
