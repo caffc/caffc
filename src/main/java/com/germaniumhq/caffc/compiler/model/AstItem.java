@@ -1,14 +1,13 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.model.source.DefaultSouceItem;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
-import org.antlr.v4.runtime.ParserRuleContext;
+import com.germaniumhq.caffc.compiler.model.source.HasSourceLocation;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 
 /**
  * An item in the AST. Every item in our AST implements this.
  * A program is the top "AST" item, and its owner is null.
  */
-public interface AstItem extends SourceItem {
+public interface AstItem extends HasSourceLocation {
     /**
      * Get the owner of the current AST item. The top program has null as parent.
      */
@@ -44,7 +43,8 @@ public interface AstItem extends SourceItem {
     }
 
     static String debugInfo(AstItem owner) {
-        return owner.getFilePath() + ":" + owner.getLineNumber() + ":" + owner.getColumnNumber();
+        SourceLocation sourceLocation = owner.getSourceLocation();
+        return sourceLocation.getFilePath() + ":" + sourceLocation.getLineNumber() + ":" + sourceLocation.getColumnNumber();
     }
 
     /**

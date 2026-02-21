@@ -6,7 +6,6 @@ import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
@@ -15,11 +14,11 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
-import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +32,14 @@ public final class ExpressionAssign implements Expression {
     public List<Expression> leftExpressions = new ArrayList<>();
     public Expression right;
 
-    public String astFilePath;
-    public int astLine;
-    public int astColumn;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAssignContext assignExpression) {
         ExpressionAssign expression = new ExpressionAssign();
 
-        expression.astFilePath = unit.astFilePath;
-        expression.astLine = assignExpression.getStart().getLine();
-        expression.astColumn = assignExpression.getStart().getCharPositionInLine();
+        expression.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, assignExpression);
 
         expression.owner = owner;
 
@@ -65,9 +60,7 @@ public final class ExpressionAssign implements Expression {
         result.leftExpressions.add(left);
         result.right = right;
 
-        result.astFilePath = owner.getFilePath();
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
 
         return result;
     }
@@ -96,18 +89,8 @@ public final class ExpressionAssign implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

@@ -1,15 +1,24 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 
 public final class AsmNew implements AsmInstruction{
-    public AsmValue result;
+    public final SourceLocation sourceLocation;
+    public final AsmValue result;
     public final Symbol instantiatedType;
     public final AsmValue[] parameters;
 
-    public AsmNew(Symbol instantiatedType, AsmValue[] parameters) {
+    public AsmNew(SourceLocation sourceLocation, Symbol instantiatedType, AsmValue[] parameters) {
+        this.sourceLocation = sourceLocation;
+        this.result = null;
         this.instantiatedType = instantiatedType;
         this.parameters = parameters;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 }

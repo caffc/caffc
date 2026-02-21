@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
@@ -42,9 +43,7 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
 
     // AstItem info is filled by the Function creation
     public AstItem owner;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
@@ -113,18 +112,8 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return this.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.astColumn;
+    public SourceLocation getSourceLocation() {
+        return this.sourceLocation;
     }
 
     @Override

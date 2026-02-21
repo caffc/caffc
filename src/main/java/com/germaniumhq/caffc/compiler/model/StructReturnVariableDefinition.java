@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -38,18 +39,8 @@ public class StructReturnVariableDefinition implements Symbol {
     }
 
     @Override
-    public String getFilePath() {
-        return owner.getFilePath();
-    }
-
-    @Override
-    public int getLineNumber() {
-        return owner.getLineNumber();
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return owner.getColumnNumber();
+    public SourceLocation getSourceLocation() {
+        return owner.getSourceLocation();
     }
 
     @Override

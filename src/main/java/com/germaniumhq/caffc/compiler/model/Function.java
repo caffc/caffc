@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
@@ -46,6 +47,8 @@ public class Function implements CompileBlock, Scope, Symbol {
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructVariables;
 
+    public StringConstant stringConstantName;
+
     /**
      * The current number used when allocating labels. This is so we keep track of
      * AsmInstructions when serializing complex AST structures. It's easier to see
@@ -61,9 +64,7 @@ public class Function implements CompileBlock, Scope, Symbol {
             caffcParser.FunctionContext ctx) {
         Function function = new Function();
 
-        function.definition.astFilePath = unit.astFilePath;
-        function.definition.astLine = ctx.getStart().getLine();
-        function.definition.astColumn = ctx.getStart().getCharPositionInLine();
+        function.definition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
 
         function.owner = owner;
         function.definition.module = unit.module.name;
@@ -141,6 +142,9 @@ public class Function implements CompileBlock, Scope, Symbol {
                     function.definition
             );
         }
+
+        function.stringConstantName = StringConstant.newStringConstant(function.getSourceLocation(), function.definition.name);
+        function.findAstParent(Module.class).registerConstant(function.stringConstantName);
 
         return function;
     }
@@ -228,18 +232,8 @@ public class Function implements CompileBlock, Scope, Symbol {
     }
 
     @Override
-    public String getFilePath() {
-        return definition.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return definition.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return definition.astColumn;
+    public SourceLocation getSourceLocation() {
+        return definition.sourceLocation;
     }
 
     @Override

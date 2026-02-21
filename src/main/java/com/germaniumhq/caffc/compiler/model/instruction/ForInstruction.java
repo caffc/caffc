@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AssignExpression;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -29,9 +30,7 @@ public final class ForInstruction implements Statement, Scope {
     public Expression incrementExpression;
 
     public List<Statement> statements = new ArrayList<>();
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public AsmLabel forCheckLabel;
     public AsmLabel forEndLabel;
@@ -40,9 +39,7 @@ public final class ForInstruction implements Statement, Scope {
         ForInstruction result = new ForInstruction();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = forAntlr.getStart().getLine();
-        result.astColumn = forAntlr.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, forAntlr);
 
         if (forAntlr.variableDeclarations() != null) {
             result.variableDeclarations =
@@ -72,18 +69,8 @@ public final class ForInstruction implements Statement, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

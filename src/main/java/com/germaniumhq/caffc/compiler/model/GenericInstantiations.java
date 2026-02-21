@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -16,9 +17,7 @@ import java.util.Map;
  */
 public class GenericInstantiations implements AstItem {
     public AstItem owner;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     GenericInstantiation[] generics;
 
@@ -36,9 +35,7 @@ public class GenericInstantiations implements AstItem {
 
         result.owner = owner;
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = genericsInstantiationContext.getStart().getLine();
-        result.astColumn = genericsInstantiationContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericsInstantiationContext);
 
         if (genericsInstantiationContext instanceof caffcParser.GenericsInstantiationEmptyContext) {
             result.generics = new GenericInstantiation[0];
@@ -65,18 +62,8 @@ public class GenericInstantiations implements AstItem {
     }
 
     @Override
-    public String getFilePath() {
-        return this.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

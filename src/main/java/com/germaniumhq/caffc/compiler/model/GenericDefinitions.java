@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.HashMap;
@@ -10,9 +11,7 @@ import java.util.Map;
  */
 public class GenericDefinitions implements AstItem {
     public AstItem owner;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     Map<String, GenericDefinition> definitions = new HashMap<>();
     GenericDefinition[] generics;
@@ -27,9 +26,7 @@ public class GenericDefinitions implements AstItem {
 
         result.owner = owner;
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = genericsDeclarationsContext.getStart().getLine();
-        result.astColumn = genericsDeclarationsContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericsDeclarationsContext);
 
         int genericCount = genericsDeclarationsContext.genericDeclaration().size();
         int genericIndex = 0;
@@ -51,18 +48,8 @@ public class GenericDefinitions implements AstItem {
     }
 
     @Override
-    public String getFilePath() {
-        return this.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

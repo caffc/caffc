@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.GenericsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -15,9 +16,7 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
     public Symbol typeSymbol;
     public String name;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private SymbolSearch symbolSearch;
     private boolean isResolved;
@@ -31,9 +30,7 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         String name = parameter.ID().getText();
         Parameter result = new Parameter(owner, name);
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = parameter.getStart().getLine();
-        result.astColumn = parameter.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, parameter);
 
         result.symbolSearch = SymbolSearch.fromAntlr(unit, parameter.typeName());
 
@@ -61,18 +58,8 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -103,9 +90,7 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         // name
         // owner
 
-        newParameter.astFilePath = this.astFilePath;
-        newParameter.astColumn = this.astColumn;
-        newParameter.astLine = this.astLine;
+        newParameter.sourceLocation = this.sourceLocation;
 
         if (newParameter.typeSymbol instanceof GenericDefinition typeSymbolGenericDefinition) {
             Symbol resolvedReturnType = resolvedGenerics.get(typeSymbolGenericDefinition.name);

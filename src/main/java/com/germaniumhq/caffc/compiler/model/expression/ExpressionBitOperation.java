@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -17,9 +18,7 @@ public final class ExpressionBitOperation implements Expression {
     public String operator;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     public Symbol symbol;
 
     private boolean isResolved;
@@ -27,9 +26,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitOrContext bitOrContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = bitOrContext.getStart().getLine();
-        result.astColumn = bitOrContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitOrContext.leftExpression);
@@ -42,9 +39,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitAndContext bitAndContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = bitAndContext.getStart().getLine();
-        result.astColumn = bitAndContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitAndContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitAndContext.leftExpression);
@@ -57,9 +52,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitXorContext bitOrContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = bitOrContext.getStart().getLine();
-        result.astColumn = bitOrContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitOrContext.leftExpression);
@@ -80,18 +73,8 @@ public final class ExpressionBitOperation implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
