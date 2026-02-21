@@ -7,7 +7,7 @@ import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public interface Statement extends AstItem {
         }
 
         CaffcCompiler.get().fatal(
-                SourceItem.fromAntlr(unit.astFilePath, antlrStatement),
+                SourceLocation.fromAntlr(unit.astFilePath, antlrStatement),
                 "unknown statement: " + antlrStatement.getText() + " with class " + antlrStatement.getClass().getCanonicalName());
 
         return null; // not reached

@@ -3,7 +3,7 @@ package com.germaniumhq.caffc.output;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.Program;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
@@ -99,11 +99,11 @@ public class PebbleTemplater {
             return "<unknown>";
         }
 
-        if (!(ctx instanceof SourceItem)) {
+        if (!(ctx instanceof SourceLocation)) {
             return "<unknown>";
         }
 
-        SourceItem astItem = (SourceItem) ctx;
+        SourceLocation astItem = (SourceLocation) ctx;
 
         return String.format("%s:%d:%d", astItem.getFilePath(), astItem.getLineNumber(), astItem.getColumnNumber());
     }

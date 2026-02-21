@@ -17,9 +17,6 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
     public String name;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
     private SymbolSearch typeSearch;
 
     public Field(AstItem owner, String name) {
@@ -32,6 +29,7 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
 
         for (TerminalNode name: fieldDeclarationContext.ID()) {
             Field field = new Field(owner, name.getText());
+
 
             field.astFilePath = unit.astFilePath;
             field.astLine = name.getSymbol().getLine();

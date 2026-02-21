@@ -1,6 +1,11 @@
 package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.model.type.*;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
+import com.germaniumhq.caffc.compiler.model.type.Scope;
+import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -16,10 +21,7 @@ public class Clazz implements CompileBlock, AstItem, Scope {
     public static Clazz fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ClassDefinitionContext antlrClassDefinition) {
         Clazz clazz = new Clazz();
 
-        clazz.definition.astFilePath = unit.astFilePath;
-        clazz.definition.astLine = antlrClassDefinition.getStart().getLine();
-        clazz.definition.astColumn = antlrClassDefinition.getStart().getCharPositionInLine();
-
+        clazz.definition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrClassDefinition);
         clazz.owner = unit;
 
         clazz.definition.module = unit.module;
@@ -139,18 +141,8 @@ public class Clazz implements CompileBlock, AstItem, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return this.definition.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.definition.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.definition.astColumn;
+    public SourceLocation getSourceLocation() {
+        return this.definition.sourceLocation;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -27,8 +27,8 @@ public class BlockVariable implements Symbol, AsmVar {
     }
 
     @Override
-    public SourceItem getSourceItem() {
-        return owner.getSourceItem();
+    public SourceLocation getSourceLocation() {
+        return owner.getSourceLocation();
     }
 
     @Override

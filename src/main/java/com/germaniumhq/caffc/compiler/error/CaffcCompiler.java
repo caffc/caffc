@@ -1,6 +1,6 @@
 package com.germaniumhq.caffc.compiler.error;
 
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 
 public class CaffcCompiler {
     public boolean hasErrors;
@@ -12,12 +12,12 @@ public class CaffcCompiler {
 
     /**
      * Reports the error to the user, and terminates execution.
-     * @param sourceItem
+     * @param sourceLocation
      * @param message
      */
-    public void fatal(SourceItem sourceItem, String message) {
+    public void fatal(SourceLocation sourceLocation, String message) {
         String errorMessage = String.format("%s: %s: %s",
-                fileLocation(sourceItem), "FATAL", message);
+                fileLocation(sourceLocation), "FATAL", message);
         System.err.println(errorMessage);
         this.hasErrors = true;
 
@@ -28,33 +28,33 @@ public class CaffcCompiler {
      * Reports the error to the user, execution continues.
      * Code won't be generated anymore.
      *
-     * @param sourceItem
+     * @param sourceLocation
      * @param message
      */
-    public void error(SourceItem sourceItem, String message) {
+    public void error(SourceLocation sourceLocation, String message) {
         this.hasErrors = true;
         System.err.format("%s: %s: %s\n",
-                fileLocation(sourceItem), "ERROR", message);
+                fileLocation(sourceLocation), "ERROR", message);
     }
 
     /**
      * Report the warning to the user, execution continues.
      * Code will be generated.
      *
-     * @param sourceItem
+     * @param sourceLocation
      * @param message
      */
-    public void warning(SourceItem sourceItem, String message) {
+    public void warning(SourceLocation sourceLocation, String message) {
         System.err.format("%s: %s: %s\n",
-                fileLocation(sourceItem), "WARN ", message);
+                fileLocation(sourceLocation), "WARN ", message);
     }
 
 
-    public static String fileLocation(SourceItem sourceItem) {
+    public static String fileLocation(SourceLocation sourceLocation) {
         return String.format("%s:%d:%d",
-            sourceItem.getFilePath(),
-            sourceItem.getLineNumber(),
-            sourceItem.getColumnNumber()
+            sourceLocation.getFilePath(),
+            sourceLocation.getLineNumber(),
+            sourceLocation.getColumnNumber()
         );
     }
 }
