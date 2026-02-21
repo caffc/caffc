@@ -5,11 +5,12 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 
 public final class AsmBitNot implements AsmInstruction {
-    public SourceLocation sourceLocation;
+    public final SourceLocation sourceLocation;
     public final AsmVar result;
     public final AsmValue value;
 
-    public AsmBitNot(AsmVar tempVar, AsmValue value) {
+    public AsmBitNot(SourceLocation sourceLocation, AsmVar tempVar, AsmValue value) {
+        this.sourceLocation = sourceLocation;
         this.result = tempVar;
         this.value = value;
     }

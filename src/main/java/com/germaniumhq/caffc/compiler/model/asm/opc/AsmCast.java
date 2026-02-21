@@ -6,12 +6,13 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 
 public final class AsmCast implements AsmInstruction {
-    public SourceLocation sourceLocation;
-    public Symbol castType;
-    public AsmVar left;
-    public AsmValue right;
+    public final SourceLocation sourceLocation;
+    public final Symbol castType;
+    public final AsmVar left;
+    public final AsmValue right;
 
-    public AsmCast(Symbol castType, AsmVar left, AsmValue right) {
+    public AsmCast(SourceLocation sourceLocation, Symbol castType, AsmVar left, AsmValue right) {
+        this.sourceLocation = sourceLocation;
         this.castType = castType;
         this.left = left;
         this.right = right;

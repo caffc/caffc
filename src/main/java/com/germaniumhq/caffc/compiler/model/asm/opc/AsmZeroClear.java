@@ -7,10 +7,11 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
  * Clears the given variable memory with 0.
  */
 public final class AsmZeroClear implements AsmInstruction {
-    public SourceLocation sourceLocation;
+    public final SourceLocation sourceLocation;
     public final AsmVar variable;
 
-    public AsmZeroClear(AsmVar variable) {
+    public AsmZeroClear(SourceLocation sourceLocation, AsmVar variable) {
+        this.sourceLocation = sourceLocation;
         this.variable = variable;
     }
 

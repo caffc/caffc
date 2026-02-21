@@ -7,12 +7,13 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import java.util.List;
 
 public final class AsmNewArray implements AsmInstruction{
-    public SourceLocation sourceLocation;
-    public AsmValue result;
+    public final SourceLocation sourceLocation;
+    public final AsmValue result;
     public final Symbol instantiatedType;
     public final List<AsmValue> dimensions;
 
-    public AsmNewArray(AsmValue result, Symbol instantiatedType, List<AsmValue> dimensions) {
+    public AsmNewArray(SourceLocation sourceLocation, AsmValue result, Symbol instantiatedType, List<AsmValue> dimensions) {
+        this.sourceLocation = sourceLocation;
         this.result = result;
         this.instantiatedType = instantiatedType;
         this.dimensions = dimensions;

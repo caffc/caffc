@@ -8,10 +8,11 @@ import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
  * blocks such as if/ternary if/for begin and end.
  */
 public class AsmComment implements AsmInstruction {
-    public SourceLocation sourceLocation;
-    public String comment;
+    public final SourceLocation sourceLocation;
+    public final String comment;
 
-    public AsmComment(String label, int labelIndex) {
+    public AsmComment(SourceLocation sourceLocation, String label, int labelIndex) {
+        this.sourceLocation = sourceLocation;
         this.comment = label + labelIndex + ":";
     }
 

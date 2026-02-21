@@ -8,13 +8,14 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
  * Does a boolean operation.
  */
 final public class AsmBoolOperation implements AsmInstruction {
-    public SourceLocation sourceLocation;
-    public AsmVar lValue;
-    public String operator;
-    public AsmValue value1;
-    public AsmValue value2;
+    public final SourceLocation sourceLocation;
+    public final AsmVar lValue;
+    public final String operator;
+    public final AsmValue value1;
+    public final AsmValue value2;
 
-    public AsmBoolOperation(AsmVar lValue, String operator, AsmValue value1, AsmValue value2) {
+    public AsmBoolOperation(SourceLocation sourceLocation, AsmVar lValue, String operator, AsmValue value1, AsmValue value2) {
+        this.sourceLocation = sourceLocation;
         this.lValue = lValue;
         this.operator = operator;
         this.value1 = value1;

@@ -9,11 +9,12 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
  * struct, object or array reference.
  */
 final public class AsmReturn implements AsmInstruction {
-    public SourceLocation sourceLocation;
+    public final SourceLocation sourceLocation;
     private final Function function;
-    public AsmValue what;
+    public final AsmValue what;
 
-    public AsmReturn(Function f, AsmValue what) {
+    public AsmReturn(SourceLocation sourceLocation, Function f, AsmValue what) {
+        this.sourceLocation = sourceLocation;
         this.function = f;
         this.what = what;
     }

@@ -5,10 +5,11 @@ import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.Function;
 
 final public class AsmLabel implements AsmInstruction {
-    public SourceLocation sourceLocation;
-    public String name;
+    public final SourceLocation sourceLocation;
+    public final String name;
 
-    public AsmLabel(String name, int index) {
+    public AsmLabel(SourceLocation sourceLocation, String name, int index) {
+        this.sourceLocation = sourceLocation;
         this.name = name + index;
     }
 
