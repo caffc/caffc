@@ -41,11 +41,12 @@ public class CodeAssertsStr {
 
     private static void assertCodeContainsMultiLine(String code, String[] containedCodeLines, String errorMessage) {
         String[] codeLines = code.split("\n");
+        String[] filteredCodeLines = filterLineDirectives(codeLines);
 
         nextLine:
-        for (int i = 0; i < codeLines.length - containedCodeLines.length + 1; i++) {
+        for (int i = 0; i < filteredCodeLines.length - containedCodeLines.length + 1; i++) {
             for (int j = i; j - i < containedCodeLines.length; j++) {
-                if (!codeLines[j].contains(containedCodeLines[j - i])) {
+                if (!filteredCodeLines[j].contains(containedCodeLines[j - i])) {
                     continue nextLine;
                 }
             }
@@ -55,6 +56,16 @@ public class CodeAssertsStr {
 
         System.out.println(code);
         throw new AssertionError(errorMessage + "\nmissing:  `" + String.join("\n", containedCodeLines) + "`");
+    }
+
+    private static String[] filterLineDirectives(String[] codeLines) {
+        List<String> filtered = new ArrayList<>();
+        for (String line : codeLines) {
+            if (!line.trim().startsWith("#line")) {
+                filtered.add(line);
+            }
+        }
+        return filtered.toArray(new String[0]);
     }
 
     public static void assertCodeNotContains(String code, String containedCode, String errorMessage) {

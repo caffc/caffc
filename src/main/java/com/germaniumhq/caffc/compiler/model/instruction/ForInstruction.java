@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AssignExpression;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -29,9 +30,7 @@ public final class ForInstruction implements Statement, Scope {
     public Expression incrementExpression;
 
     public List<Statement> statements = new ArrayList<>();
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public AsmLabel forCheckLabel;
     public AsmLabel forEndLabel;
@@ -40,9 +39,7 @@ public final class ForInstruction implements Statement, Scope {
         ForInstruction result = new ForInstruction();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = forAntlr.getStart().getLine();
-        result.astColumn = forAntlr.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, forAntlr);
 
         if (forAntlr.variableDeclarations() != null) {
             result.variableDeclarations =
@@ -72,18 +69,8 @@ public final class ForInstruction implements Statement, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -115,14 +102,14 @@ public final class ForInstruction implements Statement, Scope {
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         int labelIndex = AsmLabel.allocateNumber(this);
 
-        this.forCheckLabel = new AsmLabel("forCheck", labelIndex);
-        this.forEndLabel = new AsmLabel("forEnd", labelIndex);
+        this.forCheckLabel = new AsmLabel(null, "forCheck", labelIndex);
+        this.forEndLabel = new AsmLabel(null, "forEnd", labelIndex);
 
         AsmLinearFormResult result = new AsmLinearFormResult();
         AsmBlock forBlock = new AsmBlock(block);
         result.instructions.add(forBlock);
 
-        forBlock.instructions.add(new AsmComment("forBegin", labelIndex));
+        forBlock.instructions.add(new AsmComment(null, "forBegin", labelIndex));
 
         // variable declarations
         if (this.variableDeclarations != null) {
@@ -144,9 +131,9 @@ public final class ForInstruction implements Statement, Scope {
         AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(forBlock);
         forBlock.instructions.addAll(checkLinear.instructions);
 
-        forBlock.instructions.add(new AsmIfZJmp(checkLinear.value, this.forEndLabel));
+        forBlock.instructions.add(new AsmIfZJmp(this.sourceLocation, checkLinear.value, this.forEndLabel));
 
-        forBlock.instructions.add(new AsmComment("forBlock", labelIndex));
+        forBlock.instructions.add(new AsmComment(null, "forBlock", labelIndex));
 
         // statements
         for (Statement statement: statements) {
@@ -159,7 +146,7 @@ public final class ForInstruction implements Statement, Scope {
         forBlock.instructions.addAll(incrementLinear.instructions);
 
         // continue the loop
-        forBlock.instructions.add(new AsmJmp(this.forCheckLabel));
+        forBlock.instructions.add(new AsmJmp(this.sourceLocation, this.forCheckLabel));
 
         // exit the loop
         forBlock.instructions.add(this.forEndLabel);

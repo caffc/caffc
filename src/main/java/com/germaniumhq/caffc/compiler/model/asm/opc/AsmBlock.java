@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.asm.opc;
 
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
@@ -24,6 +25,7 @@ import java.util.TreeMap;
  * reused.
  */
 public final class AsmBlock implements Scope, AsmInstruction {
+    public SourceLocation sourceLocation;
     public Map<String, VariableDeclaration> blockVariables = new HashMap<>();
     public List<AsmInstruction> instructions = new ArrayList<>();
 
@@ -46,18 +48,8 @@ public final class AsmBlock implements Scope, AsmInstruction {
     }
 
     @Override
-    public String getFilePath() {
-        return owner.getFilePath();
-    }
-
-    @Override
-    public int getLineNumber() {
-        return owner.getLineNumber();
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return owner.getColumnNumber();
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

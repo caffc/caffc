@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -19,9 +20,7 @@ public final class ExpressionString implements Expression {
     public AstItem owner;
     public StringConstant constant;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public TypeSymbol symbol;
 
@@ -29,11 +28,9 @@ public final class ExpressionString implements Expression {
         ExpressionString result = new ExpressionString();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = stringExpression.getStart().getLine();
-        result.astColumn = stringExpression.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, stringExpression);
         result.symbol = new TypeSymbol(TypeName.STR);
-        result.constant = StringConstant.newStringConstant(result, stringExpression.STRING().getText());
+        result.constant = StringConstant.newStringConstantFromAntlr(result.sourceLocation, stringExpression.STRING().getText());
 
         unit.module.registerConstant(result.constant);
 
@@ -51,18 +48,8 @@ public final class ExpressionString implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

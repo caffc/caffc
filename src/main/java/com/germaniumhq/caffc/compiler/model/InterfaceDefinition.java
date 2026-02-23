@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -56,9 +57,7 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     public Tags tags = new Tags();
 
     // AstItem info is filled by the class parsing
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
@@ -140,18 +139,8 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -192,9 +181,7 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         copy.name = this.name;
         copy.module = this.module;
 
-        copy.astColumn = this.astColumn;
-        copy.astLine = this.astLine;
-        copy.astFilePath = this.astFilePath;
+        copy.sourceLocation = this.sourceLocation;
 
         copy.typeName = this.typeName;
 
@@ -239,9 +226,7 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         result.typeName = this.typeName;
         result.name = this.name;
         result.module = this.module;
-        result.astColumn = this.astColumn;
-        result.astLine = this.astLine;
-        result.astFilePath = this.astFilePath;
+        result.sourceLocation = this.sourceLocation;
 
         result.generics = this.generics;
         result.tags = this.tags;

@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -17,9 +18,7 @@ public class CompilationUnit implements AstItem, Scope {
     public List<CompileBlock> compileBlocks = new ArrayList<>();
     public Map<String, String> usedModules = new LinkedHashMap<>();
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
@@ -28,10 +27,7 @@ public class CompilationUnit implements AstItem, Scope {
 
         String moduleName = antlrCompilationUnit.module().fqdn().getText();
         compilationUnit.module = moduleProvider.getModule(moduleName);
-
-        compilationUnit.astFilePath = filePath;
-        compilationUnit.astLine = antlrCompilationUnit.getStart().getLine();
-        compilationUnit.astColumn = antlrCompilationUnit.getStart().getCharPositionInLine();
+        compilationUnit.sourceLocation = SourceLocation.fromAntlr(filePath, antlrCompilationUnit);
 
         for (caffcParser.UseStatementContext useStatement : antlrCompilationUnit.useStatement()) {
             final String usedModule = useStatement.use().fqdn().getText();
@@ -92,18 +88,8 @@ public class CompilationUnit implements AstItem, Scope {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return this.sourceLocation;
     }
 
     @Override
@@ -122,7 +108,7 @@ public class CompilationUnit implements AstItem, Scope {
     @Override
     public String toString() {
         return "CompilationUnit{" +
-                "file='" + astFilePath + '\'' +
+                "file='" + this.sourceLocation.filePath + '\'' +
                 '}';
     }
 

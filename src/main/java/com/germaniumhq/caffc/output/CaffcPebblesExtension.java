@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.Parameter;
+import com.germaniumhq.caffc.compiler.model.StringConstant;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
@@ -133,6 +134,8 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmCall.class, "c/asm/call.peb")
                 .withMapping(AsmBlock.class, "c/asm/block.peb")
                 .withMapping(AsmReturn.class, "c/asm/return.peb")
+
+                .withMapping(StringConstant.class, "c/asm/string_constant.peb")
 
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")

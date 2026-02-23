@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
@@ -8,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +48,8 @@ public class Function implements CompileBlock, Scope, Symbol {
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructVariables;
 
+    public StringConstant stringConstantName;
+
     /**
      * The current number used when allocating labels. This is so we keep track of
      * AsmInstructions when serializing complex AST structures. It's easier to see
@@ -61,16 +65,16 @@ public class Function implements CompileBlock, Scope, Symbol {
             caffcParser.FunctionContext ctx) {
         Function function = new Function();
 
-        function.definition.astFilePath = unit.astFilePath;
-        function.definition.astLine = ctx.getStart().getLine();
-        function.definition.astColumn = ctx.getStart().getCharPositionInLine();
+        TerminalNode functionId = ctx.ID();
+
+        // for the function location, we get the name, so we jump over potential tags or decorators attached
+        function.definition.sourceLocation = new SourceLocation(
+            unit.sourceLocation.filePath,
+            functionId.getSymbol().getLine(),
+            functionId.getSymbol().getCharPositionInLine());
 
         function.owner = owner;
         function.definition.module = unit.module.name;
-
-        if (ctx.ID() == null) {
-            CaffcCompiler.get().fatal(function, "null function ID");
-        }
 
         // if the function has parameters, add them
         caffcParser.ParameterDefinitionsContext parameterDefinitions = ctx.parameterDefinitions();
@@ -141,6 +145,9 @@ public class Function implements CompileBlock, Scope, Symbol {
                     function.definition
             );
         }
+
+        function.stringConstantName = StringConstant.newStringConstant(function.getSourceLocation(), function.definition.name);
+        function.findAstParent(Module.class).registerConstant(function.stringConstantName);
 
         return function;
     }
@@ -228,18 +235,8 @@ public class Function implements CompileBlock, Scope, Symbol {
     }
 
     @Override
-    public String getFilePath() {
-        return definition.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return definition.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return definition.astColumn;
+    public SourceLocation getSourceLocation() {
+        return definition.sourceLocation;
     }
 
     @Override

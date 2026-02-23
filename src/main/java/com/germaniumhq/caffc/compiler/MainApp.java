@@ -7,7 +7,7 @@ import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.Program;
-import com.germaniumhq.caffc.compiler.model.source.SourceItem;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -114,7 +114,7 @@ public class MainApp {
 
                 compilationUnits.add(unit);
             } catch (IOException e) {
-                CaffcCompiler.get().fatal(SourceItem.fromFilePath(file),
+                CaffcCompiler.get().fatal(SourceLocation.fromFilePath(file),
                         "I/O exception: " + e.getMessage());
             }
         }
@@ -152,7 +152,7 @@ public class MainApp {
                 );
             } catch (IOException e) {
                 CaffcCompiler.get().fatal(
-                        SourceItem.fromFilePath(file),
+                        SourceLocation.fromFilePath(file),
                         "I/O exception: " + e.getMessage());
             }
         }
@@ -245,7 +245,7 @@ public class MainApp {
             writer.write(fileContent);
         } catch (IOException e) {
             CaffcCompiler.get().fatal(
-                    SourceItem.fromFilePath(outputName),
+                    SourceLocation.fromFilePath(outputName),
                     "I/O exception: " + e.getMessage());
         }
     }

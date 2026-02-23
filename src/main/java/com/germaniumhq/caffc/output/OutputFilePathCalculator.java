@@ -17,7 +17,7 @@ public class OutputFilePathCalculator {
     }
 
     private static String extractBaseName(CompilationUnit compilationUnit) {
-        String[] items = compilationUnit.astFilePath.split("/");
+        String[] items = compilationUnit.sourceLocation.filePath.split("/");
         String basename = items[items.length - 1];
         return basename.substring(0, basename.length() - ".caffc".length());
     }

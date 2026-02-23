@@ -11,6 +11,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -21,17 +22,13 @@ public final class IfInstruction implements Statement {
     public Expression checkExpression;
     public List<Statement> statements = new ArrayList<>();
     public List<Statement> elseStatements = null;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static IfInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.IfBlockContext ifAntlr) {
         IfInstruction result = new IfInstruction();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = ifAntlr.getStart().getLine();
-        result.astColumn = ifAntlr.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ifAntlr);
         result.checkExpression = Expression.fromAntlr(unit, result, ifAntlr.expression());
 
         if (ifAntlr.trueBlock != null) {
@@ -62,18 +59,8 @@ public final class IfInstruction implements Statement {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -103,12 +90,12 @@ public final class IfInstruction implements Statement {
         AsmLinearFormResult checkLinearForm = checkExpression.asLinearForm(forBlock);
         forBlock.instructions.addAll(checkLinearForm.instructions);
 
-        AsmComment ifComment = new AsmComment("if", labelIndex);
-        AsmLabel elseLabel = new AsmLabel("else", labelIndex);
-        AsmLabel endIfLabel = new AsmLabel("endif", labelIndex);
+        AsmComment ifComment = new AsmComment(null, "if", labelIndex);
+        AsmLabel elseLabel = new AsmLabel(null, "else", labelIndex);
+        AsmLabel endIfLabel = new AsmLabel(null, "endif", labelIndex);
 
         forBlock.instructions.add(ifComment);
-        forBlock.instructions.add(new AsmIfZJmp(checkLinearForm.value, elseLabel));
+        forBlock.instructions.add(new AsmIfZJmp(this.sourceLocation, checkLinearForm.value, elseLabel));
 
         AsmBlock ifTrueBlock = new AsmBlock(forBlock);
         forBlock.instructions.add(ifTrueBlock);
@@ -119,7 +106,7 @@ public final class IfInstruction implements Statement {
 
         // if we have `else` instructions, we need to skip them now
         if (elseStatements != null) {
-            ifTrueBlock.instructions.add(new AsmJmp(endIfLabel));
+            ifTrueBlock.instructions.add(new AsmJmp(this.sourceLocation, endIfLabel));
         }
 
         forBlock.instructions.add(elseLabel);
