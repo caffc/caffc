@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -16,17 +17,13 @@ public final class ExpressionShift implements Expression {
     public String operator;
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     public Symbol symbol;
 
     public static ExpressionShift fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExShiftContext shiftContext) {
         ExpressionShift result = new ExpressionShift();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = shiftContext.getStart().getLine();
-        result.astColumn = shiftContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, shiftContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, shiftContext.leftExpression);
@@ -47,18 +44,8 @@ public final class ExpressionShift implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -80,7 +67,7 @@ public final class ExpressionShift implements Expression {
         result.instructions.addAll(rightLinearForm.instructions);
 
         AsmVar value = block.addTempVar(this, this.left.typeSymbol());
-        result.instructions.add(new AsmShift(value, leftLinearForm.value, rightLinearForm.value, this.operator));
+        result.instructions.add(new AsmShift(this.sourceLocation, value, leftLinearForm.value, rightLinearForm.value, this.operator));
         result.value = value;
 
         return result;

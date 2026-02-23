@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.asm.vars;
 
 import com.germaniumhq.caffc.compiler.model.Field;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.UsedInTemplate;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
@@ -35,6 +36,11 @@ public final class AsmFieldVar implements AsmVar {
     @Override
     public Symbol typeSymbol() {
         return type;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return owner.getSourceLocation();
     }
 
     @UsedInTemplate("c/asm/field_var.peb")

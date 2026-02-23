@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
@@ -23,16 +24,12 @@ public final class ExpressionId implements Expression {
     public Symbol symbol;
     private Symbol _typeSymbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExIdContext idExpression) {
         ExpressionId result = new ExpressionId();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = idExpression.getStart().getLine();
-        result.astColumn = idExpression.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, idExpression);
 
         result.owner = owner;
         result.name = idExpression.getText();
@@ -43,9 +40,7 @@ public final class ExpressionId implements Expression {
     public static Expression fromName(CompilationUnit unit, AstItem owner, String name) {
         ExpressionId result = new ExpressionId();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
 
         result.owner = owner;
         result.name = name;
@@ -64,18 +59,8 @@ public final class ExpressionId implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

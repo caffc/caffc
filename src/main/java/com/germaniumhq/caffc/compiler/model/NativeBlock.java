@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -8,16 +9,12 @@ final public class NativeBlock implements CompileBlock, Statement, AsmInstructio
     public AstItem owner;
     public String text;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public static NativeBlock fromAntlr(CompilationUnit unit, caffcParser.NativeBlockContext ctx, AstItem owner) {
         NativeBlock result = new NativeBlock();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = ctx.getStart().getLine();
-        result.astColumn = ctx.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
 
         result.owner = owner;
         String nativeText = ctx.NATIVE().getText();
@@ -32,18 +29,8 @@ final public class NativeBlock implements CompileBlock, Statement, AsmInstructio
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

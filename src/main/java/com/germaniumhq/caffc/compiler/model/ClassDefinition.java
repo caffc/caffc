@@ -1,6 +1,8 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.HasSourceLocation;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -20,7 +22,7 @@ import java.util.Set;
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope {
+public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope, HasSourceLocation {
     /**
      * The name of the class.
      */
@@ -74,11 +76,17 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
      */
     public Tags tags = new Tags();
 
-    // AstItem info is filled by the class parsing
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    /**
+     * Source location is filled in the AST parsing.
+     */
+    public SourceLocation sourceLocation;
 
+    /**
+     * Is the class resolved or not - did the recurseResolveTypes already
+     * happened? The rationale is that items can have circular dependencies
+     * so we don't want to call the resolving multiple times when descending
+     * in the resolve calls.
+     */
     private boolean isResolved;
 
     /**
@@ -181,21 +189,6 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
-    }
-
-    @Override
     public void recurseResolveTypes() {
         if (this.isResolved) {
             return;
@@ -211,7 +204,7 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
             Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, symbolSearch);
 
             if (!(implementedSymbol instanceof InterfaceDefinition)) {
-                CaffcCompiler.get().fatal(this, String.format(
+                CaffcCompiler.get().fatal(this.sourceLocation, String.format(
                     "%s is not an interface but a %s",
                     symbolSearch,
                     implementedSymbol
@@ -273,9 +266,7 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
         copy.name = this.name;
         copy.module = this.module;
 
-        copy.astColumn = this.astColumn;
-        copy.astLine = this.astLine;
-        copy.astFilePath = this.astFilePath;
+        copy.sourceLocation = this.sourceLocation;
         copy.gcFieldsCount = this.gcFieldsCount;
 
         copy.typeName = this.typeName;
@@ -297,15 +288,15 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     @Override
     public GenericDefinition getGenericDefinition(int index) {
         if (generics == null) {
-            CaffcCompiler.get().fatal(this, "class has no generics");
+            CaffcCompiler.get().fatal(this.sourceLocation, "class has no generics");
         }
 
         if (index < 0) {
-            CaffcCompiler.get().fatal(this, "index out of bounds");
+            CaffcCompiler.get().fatal(this.sourceLocation, "index out of bounds");
         }
 
         if (index >= generics.generics.length) {
-            CaffcCompiler.get().fatal(this, "too many generics in the class instantiation");
+            CaffcCompiler.get().fatal(this.sourceLocation, "too many generics in the class instantiation");
         }
 
         return generics.generics[index];
@@ -333,9 +324,7 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
         result.typeName = this.typeName;
         result.name = this.name;
         result.module = this.module;
-        result.astColumn = this.astColumn;
-        result.astLine = this.astLine;
-        result.astFilePath = this.astFilePath;
+        result.sourceLocation = this.sourceLocation;
 
         result.generics = this.generics;
         result.tags = this.tags;
@@ -362,5 +351,10 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
         }
 
         return false;
+    }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return this.sourceLocation;
     }
 }

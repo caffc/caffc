@@ -1,6 +1,7 @@
 {# needs a function as root context -#}
 
 {%- for variable in ctx.variables %}
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
     {%- if variable.typeName.isPrimitive and variable.typeSymbol.name == "ptr" %}
         {{ variable.typeSymbol | c_type }} {{ variable.name }} = caffc_null;
     {%- elseif variable.typeName.isPrimitive %}
@@ -32,11 +33,14 @@
 caffc_ptr _caffc_locals[{{ ctx.objParametersAndVariables.size() }}];
 
 {%- for item in ctx.objParametersAndVariables %}
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
 _caffc_locals[{{ loop.index }}] = &{{ item | render }};
 {%- endfor %}
 
-_caffc_stack_frame_register("{{ ctx.name }}", _caffc_locals, {{ ctx.gcVariableCount() }});
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
+_caffc_stack_frame_register({{ ctx.stringConstantName | render }}, _caffc_locals, {{ ctx.gcVariableCount() }});
 
 {%- else %}
-_caffc_stack_frame_register("{{ ctx.name }}", caffc_null, 0);
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
+_caffc_stack_frame_register({{ ctx.stringConstantName | render }}, caffc_null, 0);
 {% endif %}

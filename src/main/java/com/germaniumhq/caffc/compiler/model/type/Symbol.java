@@ -74,12 +74,13 @@ public interface Symbol extends AstItem {
     }
 
     static String debugInfo(Symbol symbol) {
+        var loc = symbol.getSourceLocation();
         return String.format("%s %s defined at %s:%d:%d",
             typeOfSymbol(symbol),
             symbol.name(),
-            symbol.getFilePath(),
-            symbol.getLineNumber(),
-            symbol.getColumnNumber()
+            loc.getFilePath(),
+            loc.getLineNumber(),
+            loc.getColumnNumber()
         );
     }
 }

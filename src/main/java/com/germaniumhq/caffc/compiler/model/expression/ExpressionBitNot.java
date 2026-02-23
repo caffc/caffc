@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -15,18 +16,14 @@ public final class ExpressionBitNot implements Expression {
     public AstItem owner;
     public Symbol symbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     private boolean isResolved;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitNotContext bitNotContext) {
         ExpressionBitNot result = new ExpressionBitNot();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = bitNotContext.getStart().getLine();
-        result.astColumn = bitNotContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitNotContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, bitNotContext.expression());
@@ -45,18 +42,8 @@ public final class ExpressionBitNot implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -79,7 +66,7 @@ public final class ExpressionBitNot implements Expression {
 
         AsmVar tempVar = block.addTempVar(this, linearExpression.value.typeSymbol());
         result.instructions.addAll(linearExpression.instructions);
-        result.instructions.add(new AsmBitNot(tempVar, linearExpression.value));
+        result.instructions.add(new AsmBitNot(this.sourceLocation, tempVar, linearExpression.value));
         result.value = tempVar;
 
         return result;

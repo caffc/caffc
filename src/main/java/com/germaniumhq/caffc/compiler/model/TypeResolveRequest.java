@@ -13,6 +13,7 @@ public class TypeResolveRequest {
 
     @Override
     public String toString() {
-        return String.format("%s:%d -> %s", owner.getFilePath(), owner.getLineNumber(), typeName);
+        var loc = owner.getSourceLocation();
+        return String.format("%s:%d -> %s", loc.getFilePath(), loc.getLineNumber(), typeName);
     }
 }

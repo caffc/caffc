@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -9,9 +10,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 
 public class GenericDefinition implements AstItem, Symbol {
     public AstItem owner;
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public String name;
     public SymbolSearch typeRestrictionSearch; // this will be implemented with type restrictions
@@ -27,9 +26,7 @@ public class GenericDefinition implements AstItem, Symbol {
 
         result.owner = owner;
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = genericDeclaration.getStart().getLine();
-        result.astColumn = genericDeclaration.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericDeclaration);
 
         if (genericDeclaration instanceof caffcParser.GenericDeclarationIdContext) {
             result.name = genericDeclaration.getText();
@@ -47,18 +44,8 @@ public class GenericDefinition implements AstItem, Symbol {
     }
 
     @Override
-    public String getFilePath() {
-        return this.astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return this.astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return this.astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override

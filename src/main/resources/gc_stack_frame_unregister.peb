@@ -1,5 +1,7 @@
 {%- if ctx.gcVariableCount() > 0 -%}
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
 _caffc_stack_frame_unregister(&_caffc_locals);
 {%- else -%}
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
 _caffc_stack_frame_unregister(caffc_null);
 {%- endif -%}

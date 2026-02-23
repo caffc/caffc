@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -21,17 +22,13 @@ public final class ExpressionTernary implements Expression {
 
     public AstItem owner;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
     public Symbol symbol;
 
     public static ExpressionTernary fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExTernaryContext shiftContext) {
         ExpressionTernary result = new ExpressionTernary();
 
-        result.astFilePath = unit.astFilePath;
-        result.astLine = shiftContext.getStart().getLine();
-        result.astColumn = shiftContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, shiftContext);
 
         result.owner = owner;
         result.checkExpression = Expression.fromAntlr(unit, result, shiftContext.checkExpression);
@@ -56,18 +53,8 @@ public final class ExpressionTernary implements Expression {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -88,9 +75,9 @@ public final class ExpressionTernary implements Expression {
         AsmLinearFormResult linearFormResult = new AsmLinearFormResult();
 
         int labelIndex = AsmLabel.allocateNumber(this);
-        AsmComment ternaryStart = new AsmComment("ternaryStart", labelIndex);
-        AsmLabel ternaryElseLabel = new AsmLabel("ternaryElse", labelIndex);
-        AsmLabel ternaryEndLabel = new AsmLabel("ternaryEnd", labelIndex);
+        AsmComment ternaryStart = new AsmComment(null, "ternaryStart", labelIndex);
+        AsmLabel ternaryElseLabel = new AsmLabel(null, "ternaryElse", labelIndex);
+        AsmLabel ternaryEndLabel = new AsmLabel(null, "ternaryEnd", labelIndex);
 
         AsmVar resultAsmVar;
 
@@ -106,18 +93,18 @@ public final class ExpressionTernary implements Expression {
         // check
         AsmLinearFormResult checkLinear = this.checkExpression.asLinearForm(block);
         linearFormResult.instructions.addAll(checkLinear.instructions);
-        linearFormResult.instructions.add(new AsmIfZJmp(checkLinear.value, ternaryElseLabel));
+        linearFormResult.instructions.add(new AsmIfZJmp(this.sourceLocation, checkLinear.value, ternaryElseLabel));
 
         // true matches
         if (this.trueExpression != null) {
             AsmLinearFormResult trueExpressionLinear = this.trueExpression.asLinearForm(block);
             linearFormResult.instructions.addAll(trueExpressionLinear.instructions);
-            linearFormResult.instructions.add(new AsmAssign(resultAsmVar, trueExpressionLinear.value));
+            linearFormResult.instructions.add(new AsmAssign(this.sourceLocation, resultAsmVar, trueExpressionLinear.value));
         } else {
-            linearFormResult.instructions.add(new AsmAssign(resultAsmVar, checkLinear.value));
+            linearFormResult.instructions.add(new AsmAssign(this.sourceLocation, resultAsmVar, checkLinear.value));
         }
 
-        linearFormResult.instructions.add(new AsmJmp(ternaryEndLabel));
+        linearFormResult.instructions.add(new AsmJmp(null, ternaryEndLabel));
 
         // else matches
         linearFormResult.instructions.add(ternaryElseLabel);
@@ -125,7 +112,7 @@ public final class ExpressionTernary implements Expression {
         AsmLinearFormResult falseExpressionLinear = this.falseExpression.asLinearForm(block);
         linearFormResult.instructions.addAll(falseExpressionLinear.instructions);
 
-        linearFormResult.instructions.add(new AsmAssign(resultAsmVar, falseExpressionLinear.value));
+        linearFormResult.instructions.add(new AsmAssign(this.sourceLocation, resultAsmVar, falseExpressionLinear.value));
 
         // end of ternary
         linearFormResult.instructions.add(ternaryEndLabel);

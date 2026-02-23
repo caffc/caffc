@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
@@ -23,20 +24,16 @@ import java.util.Map;
 
 public final class ReturnInstruction implements Statement {
     public AstItem owner;
-    public String astFilePath;
+    public SourceLocation sourceLocation;
     public List<NamedReturn> returns = new ArrayList<>();
 
-    public int astColumn;
-    public int astLine;
     public Function function;
 
     public static ReturnInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ReturnContext ctx) {
         ReturnInstruction result = new ReturnInstruction();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = ctx.getStart().getLine();
-        result.astColumn = ctx.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
 
         result.function = AstItem.findParentOrSelf(owner, Function.class);
 
@@ -60,18 +57,8 @@ public final class ReturnInstruction implements Statement {
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -102,7 +89,7 @@ public final class ReturnInstruction implements Statement {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         if (this.getFunction().definition.isReturnEmpty()) {
-            return new AsmLinearFormResult(List.of(new AsmReturn(this.function, null)));
+            return new AsmLinearFormResult(List.of(new AsmReturn(this.sourceLocation, this.function, null)));
         }
 
         if (this.getFunction().definition.isMultiReturn()) {
@@ -113,10 +100,10 @@ public final class ReturnInstruction implements Statement {
                 AsmLinearFormResult namedReturnLinearForm = namedReturn.value.asLinearForm(block);
                 instructions.addAll(namedReturnLinearForm.instructions);
                 AsmFieldVar structFieldVar = new AsmFieldVar(structVar, namedReturn.value.typeSymbol(), namedReturn.name);
-                instructions.add(new AsmAssign(structFieldVar, namedReturnLinearForm.value));
+                instructions.add(new AsmAssign(this.sourceLocation, structFieldVar, namedReturnLinearForm.value));
             }
 
-            instructions.add(new AsmReturn(this.function, structVar));
+            instructions.add(new AsmReturn(this.sourceLocation, this.function, structVar));
 
             return new AsmLinearFormResult(instructions);
         }
@@ -126,7 +113,7 @@ public final class ReturnInstruction implements Statement {
 
         AsmLinearFormResult linearForm = ret.value.asLinearForm(block);
         instructions.addAll(linearForm.instructions);
-        instructions.add(new AsmReturn(this.function, linearForm.value));
+        instructions.add(new AsmReturn(this.sourceLocation, this.function, linearForm.value));
 
         return new AsmLinearFormResult(instructions);
     }

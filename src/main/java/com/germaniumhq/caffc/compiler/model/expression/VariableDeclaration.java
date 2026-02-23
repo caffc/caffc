@@ -10,6 +10,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -25,9 +26,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     public SymbolSearch typeSymbolSearch;
     public Symbol typeSymbol;
 
-    public String astFilePath;
-    public int astColumn;
-    public int astLine;
+    public SourceLocation sourceLocation;
 
     public boolean isResolved;
 
@@ -39,9 +38,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         VariableDeclaration result = new VariableDeclaration();
 
         result.owner = owner;
-        result.astFilePath = unit.astFilePath;
-        result.astLine = variableDeclarationContext.getStart().getLine();
-        result.astColumn = variableDeclarationContext.getStart().getCharPositionInLine();
+        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, variableDeclarationContext);
 
         result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();
@@ -51,9 +48,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         if (expressionContext != null) {
             result.assignExpression = new ExpressionAssign();
 
-            result.assignExpression.astFilePath = result.getFilePath();
-            result.assignExpression.astLine = result.getLineNumber();
-            result.assignExpression.astColumn = result.getColumnNumber();
+            result.assignExpression.sourceLocation = result.getSourceLocation();
 
             result.assignExpression.owner = result;
             result.assignExpression.leftExpressions.add(
@@ -72,9 +67,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         result.name = name;
         result.typeSymbol = typeSymbol;
         result.owner = owner;
-        result.astFilePath = owner.getFilePath();
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
         result.isResolved = true;
 
         return result;
@@ -86,9 +79,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         result.name = variableName;
         result.typeSymbolSearch = symbolSearch;
         result.owner = owner;
-        result.astFilePath = owner.getFilePath();
-        result.astLine = owner.getLineNumber();
-        result.astColumn = owner.getColumnNumber();
+        result.sourceLocation = owner.getSourceLocation();
 
         return result;
     }
@@ -99,18 +90,8 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     }
 
     @Override
-    public String getFilePath() {
-        return astFilePath;
-    }
-
-    @Override
-    public int getLineNumber() {
-        return astLine;
-    }
-
-    @Override
-    public int getColumnNumber() {
-        return astColumn;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     @Override
@@ -159,9 +140,9 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
             AsmLinearFormResult right = this.assignExpression.right.asLinearForm(block);
             result.instructions.addAll(right.instructions);
 
-            result.instructions.add(new AsmAssign(this, right.value));
+            result.instructions.add(new AsmAssign(this.sourceLocation, this, right.value));
         } else {
-            result.instructions.add(new AsmAssign(this, new AsmConstant(this.typeSymbol, "0")));
+            result.instructions.add(new AsmAssign(this.sourceLocation, this, new AsmConstant(this.typeSymbol, "0")));
         }
 
         return result;
