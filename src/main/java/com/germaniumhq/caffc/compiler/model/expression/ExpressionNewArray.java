@@ -33,7 +33,7 @@ public final class ExpressionNewArray implements Expression {
     public static ExpressionNewArray fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExNewArrayContext newArrayExpression) {
         ExpressionNewArray result = new ExpressionNewArray();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, newArrayExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, newArrayExpression);
         result.owner = owner;
 
         final String baseType = newArrayExpression.newType().getText();

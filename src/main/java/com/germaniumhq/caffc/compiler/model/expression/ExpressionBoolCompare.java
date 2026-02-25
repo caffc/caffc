@@ -24,7 +24,7 @@ public final class ExpressionBoolCompare implements Expression {
     public static ExpressionBoolCompare fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExEqNeqContext eqNeqExpression) {
         ExpressionBoolCompare result = new ExpressionBoolCompare();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, eqNeqExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, eqNeqExpression);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, eqNeqExpression.leftExpression);
@@ -37,7 +37,7 @@ public final class ExpressionBoolCompare implements Expression {
     public static Expression fromAntlr2(CompilationUnit unit, AstItem owner, caffcParser.ExLtLteGtGteContext ltLteGtGteExpression) {
         ExpressionBoolCompare result = new ExpressionBoolCompare();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ltLteGtGteExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ltLteGtGteExpression);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, ltLteGtGteExpression.leftExpression);

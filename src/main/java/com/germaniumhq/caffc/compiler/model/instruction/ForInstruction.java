@@ -39,7 +39,7 @@ public final class ForInstruction implements Statement, Scope {
         ForInstruction result = new ForInstruction();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, forAntlr);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, forAntlr);
 
         if (forAntlr.variableDeclarations() != null) {
             result.variableDeclarations =

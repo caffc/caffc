@@ -26,7 +26,7 @@ public final class ExpressionOpAssign implements Expression {
     public static ExpressionOpAssign fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExOpAssignContext opAssignContext) {
         ExpressionOpAssign result = new ExpressionOpAssign();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, opAssignContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, opAssignContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, opAssignContext.leftExpression);

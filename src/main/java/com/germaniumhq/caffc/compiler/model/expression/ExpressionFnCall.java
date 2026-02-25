@@ -44,7 +44,7 @@ public final class ExpressionFnCall implements Expression {
         ExpressionFnCall result = new ExpressionFnCall();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, fnCallExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, fnCallExpression);
         result.functionExpression = Expression.fromAntlr(unit, result, fnCallExpression.expression());
         result.genericsInstantiations = GenericInstantiations.fromAntlr(unit, result, fnCallExpression.genericsInstantiations());
 

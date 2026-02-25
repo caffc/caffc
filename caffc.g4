@@ -36,14 +36,16 @@ returnType
   ;
 
 classDefinition:
-    tags? CLASS name genericsDeclarations? (IMPLEMENTS interfaceImplementations)? '{'
+    tags? CLASS name genericsDeclarations? (IMPLEMENTS interfaceImplementations)? CURLY_OPEN
         fieldDeclaration*
         function*
-    '}'
+    CURLY_CLOSE
     ;
 
 interfaceDefinition:
-    tags? INTERFACE name genericsDeclarations? (EXTENDS interfaceImplementations )? '{' interfaceStatements '}'
+    tags? INTERFACE name genericsDeclarations? (EXTENDS interfaceImplementations )? CURLY_OPEN
+        interfaceStatements
+    CURLY_CLOSE
     ;
 
 name: ID;
@@ -74,7 +76,7 @@ functionDeclaration:
     tags? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)?;
 
 tagDefinition:
-    tags? TAG ID '{' fieldDeclaration* '}'
+    tags? TAG ID CURLY_OPEN fieldDeclaration* CURLY_CLOSE
     ;
 
 fieldDeclaration: typeName ID (',' ID)*;
@@ -93,7 +95,7 @@ statement:
   expression |
   assignExpression;
 
-block: '{' statement* '}';
+block: CURLY_OPEN statement* CURLY_CLOSE;
 
 whileBlock: WHILE expression block;
 forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
@@ -318,6 +320,9 @@ F64: 'f64';
 // KEYWORDS
 NATIVE: 'native' WS+ NATIVE_FRAGMENT;
 fragment NATIVE_FRAGMENT: '{' ((~'}') | NATIVE_FRAGMENT)* '}';
+
+CURLY_OPEN: '{';
+CURLY_CLOSE: '}';
 
 // other
 FN: 'fn';

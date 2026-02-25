@@ -26,7 +26,7 @@ public class GenericDefinitions implements AstItem {
 
         result.owner = owner;
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericsDeclarationsContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, genericsDeclarationsContext);
 
         int genericCount = genericsDeclarationsContext.genericDeclaration().size();
         int genericIndex = 0;

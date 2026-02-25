@@ -33,7 +33,7 @@ public final class ReturnInstruction implements Statement {
         ReturnInstruction result = new ReturnInstruction();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
 
         result.function = AstItem.findParentOrSelf(owner, Function.class);
 

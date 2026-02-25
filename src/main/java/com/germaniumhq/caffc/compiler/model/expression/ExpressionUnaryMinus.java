@@ -17,7 +17,7 @@ public final class ExpressionUnaryMinus implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExUnaryMinusContext exUnaryMinusContext) {
         ExpressionUnaryMinus result = new ExpressionUnaryMinus();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exUnaryMinusContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, exUnaryMinusContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, exUnaryMinusContext.expression());

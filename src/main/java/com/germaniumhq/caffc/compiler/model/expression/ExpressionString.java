@@ -28,7 +28,7 @@ public final class ExpressionString implements Expression {
         ExpressionString result = new ExpressionString();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, stringExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, stringExpression);
         result.symbol = new TypeSymbol(TypeName.STR);
         result.constant = StringConstant.newStringConstantFromAntlr(result.sourceLocation, stringExpression.STRING().getText());
 

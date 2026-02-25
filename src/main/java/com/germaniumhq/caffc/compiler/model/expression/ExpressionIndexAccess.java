@@ -27,7 +27,7 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExIndexAccessContext indexAccessExpression) {
         ExpressionIndexAccess result = new ExpressionIndexAccess();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, indexAccessExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, indexAccessExpression);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, indexAccessExpression.arraryExpression);

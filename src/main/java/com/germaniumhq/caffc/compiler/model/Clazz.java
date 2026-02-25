@@ -21,7 +21,7 @@ public class Clazz implements CompileBlock, AstItem, Scope {
     public static Clazz fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ClassDefinitionContext antlrClassDefinition) {
         Clazz clazz = new Clazz();
 
-        clazz.definition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrClassDefinition);
+        clazz.definition.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrClassDefinition);
         clazz.owner = unit;
 
         clazz.definition.module = unit.module;

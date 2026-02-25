@@ -14,7 +14,7 @@ final public class NativeBlock implements CompileBlock, Statement, AsmInstructio
     public static NativeBlock fromAntlr(CompilationUnit unit, caffcParser.NativeBlockContext ctx, AstItem owner) {
         NativeBlock result = new NativeBlock();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
 
         result.owner = owner;
         String nativeText = ctx.NATIVE().getText();

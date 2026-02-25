@@ -47,7 +47,7 @@ public interface Statement extends AstItem {
         }
 
         CaffcCompiler.get().fatal(
-                SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrStatement),
+                SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrStatement),
                 "unknown statement: " + antlrStatement.getText() + " with class " + antlrStatement.getClass().getCanonicalName());
 
         return null; // not reached

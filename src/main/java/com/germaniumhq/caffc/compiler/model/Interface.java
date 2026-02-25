@@ -17,7 +17,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
     public static Interface fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.InterfaceDefinitionContext antlrInterfaceDefinition) {
         Interface _interface = new Interface();
 
-        _interface.definition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrInterfaceDefinition);
+        _interface.definition.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrInterfaceDefinition);
 
         _interface.owner = unit;
 
@@ -80,7 +80,7 @@ public class Interface implements CompileBlock, AstItem, Scope {
             caffcParser.FunctionDeclarationContext ctx) {
         FunctionDefinition functionDefinition = new FunctionDefinition();
 
-        functionDefinition.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
+        functionDefinition.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
 
         functionDefinition.owner = owner;
         functionDefinition.clazz = owner.definition;

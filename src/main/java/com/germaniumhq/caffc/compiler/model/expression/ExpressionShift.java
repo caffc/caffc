@@ -23,7 +23,7 @@ public final class ExpressionShift implements Expression {
     public static ExpressionShift fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExShiftContext shiftContext) {
         ExpressionShift result = new ExpressionShift();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, shiftContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, shiftContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, shiftContext.leftExpression);

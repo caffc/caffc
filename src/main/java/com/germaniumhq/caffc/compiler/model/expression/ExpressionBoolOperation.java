@@ -24,7 +24,7 @@ public final class ExpressionBoolOperation implements Expression {
     public static ExpressionBoolOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolAndContext exBoolAndContext) {
         ExpressionBoolOperation result = new ExpressionBoolOperation();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exBoolAndContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, exBoolAndContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, exBoolAndContext.leftExpression);
@@ -38,7 +38,7 @@ public final class ExpressionBoolOperation implements Expression {
     public static ExpressionBoolOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolOrContext exBoolOrContext) {
         ExpressionBoolOperation result = new ExpressionBoolOperation();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exBoolOrContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, exBoolOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, exBoolOrContext.leftExpression);

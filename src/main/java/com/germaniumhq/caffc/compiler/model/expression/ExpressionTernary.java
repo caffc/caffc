@@ -28,7 +28,7 @@ public final class ExpressionTernary implements Expression {
     public static ExpressionTernary fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExTernaryContext shiftContext) {
         ExpressionTernary result = new ExpressionTernary();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, shiftContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, shiftContext);
 
         result.owner = owner;
         result.checkExpression = Expression.fromAntlr(unit, result, shiftContext.checkExpression);

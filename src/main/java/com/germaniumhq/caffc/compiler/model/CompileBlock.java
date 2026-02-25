@@ -22,7 +22,7 @@ public interface CompileBlock extends AstItem {
             return Interface.fromAntlr(unit, owner, antlrCompileBlock.interfaceDefinition());
         }
 
-        CaffcCompiler.get().fatal(SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrCompileBlock),
+        CaffcCompiler.get().fatal(SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrCompileBlock),
                 "unsupported compile block: " + antlrCompileBlock.getText());
 
         return null; // not reached

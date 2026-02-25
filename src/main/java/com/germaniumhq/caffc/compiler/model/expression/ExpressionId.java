@@ -29,7 +29,7 @@ public final class ExpressionId implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExIdContext idExpression) {
         ExpressionId result = new ExpressionId();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, idExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, idExpression);
 
         result.owner = owner;
         result.name = idExpression.getText();

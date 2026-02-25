@@ -28,7 +28,7 @@ public final class ExpressionDotAccess implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExDotAccessContext exDotAccessContext) {
         ExpressionDotAccess expression = new ExpressionDotAccess();
 
-        expression.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, exDotAccessContext);
+        expression.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, exDotAccessContext);
 
         expression.owner = owner;
         expression.leftOfDot = Expression.fromAntlr(unit, expression, exDotAccessContext.expression());

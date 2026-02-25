@@ -18,7 +18,7 @@ public final class ExpressionParens implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExParensContext parensContext) {
         ExpressionParens result = new ExpressionParens();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, parensContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, parensContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, parensContext.expression());

@@ -96,7 +96,7 @@ public class SymbolSearch {
         }
 
         CaffcCompiler.get().fatal(
-                SourceLocation.fromAntlr(unit.sourceLocation.filePath, antlrParserRuleContext),
+                SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrParserRuleContext),
                 "unsupported expression: " + antlrParserRuleContext.getText() +
                         " of type " + antlrParserRuleContext.getClass().getSimpleName());
 
@@ -116,7 +116,7 @@ public class SymbolSearch {
         }
 
         CaffcCompiler.get().fatal(
-                SourceLocation.fromAntlr(unit.sourceLocation.filePath, typeContext),
+                SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, typeContext),
                 "unsupported vartype expression: " + typeContext.getText() +
                         " of type " + typeContext.getClass().getSimpleName());
         return null; // not reached

@@ -1,10 +1,10 @@
-#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}" {{ ctx.sourceLocation.columnNumber }}
+#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}"
 {{ ctx | c_function_signature }} {
 {% include "gc_stack_frame_register.peb" %}
 
 {%- for instruction in ctx.instructions %}
 {%- if instruction.sourceLocation != null %}
-#line {{ instruction.sourceLocation.lineNumber }} "{{ instruction.sourceLocation.filePath }}" {{ instruction.sourceLocation.columnNumber }}
+#line {{ instruction.sourceLocation.lineNumber }} "{{ instruction.sourceLocation.filePath }}"
 {%- endif %}
 {{ instruction | render }}{{ instruction | semicolon }}
 {%- endfor -%}
@@ -14,6 +14,7 @@
 {%- if ctx.definition.returnType.name == "void" %}
 {% include "gc_stack_frame_unregister.peb" %}
 {%- endif %}
+#line {{ ctx.sourceLocationCurlyClose.lineNumber }} "{{ ctx.sourceLocationCurlyClose.filePath }}"
 }
 
 {% if ctx.definition.name == "main" and ctx.definition.clazz == null %}

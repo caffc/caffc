@@ -39,7 +39,7 @@ public final class ExpressionAssign implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAssignContext assignExpression) {
         ExpressionAssign expression = new ExpressionAssign();
 
-        expression.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, assignExpression);
+        expression.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, assignExpression);
 
         expression.owner = owner;
 

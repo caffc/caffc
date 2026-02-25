@@ -25,7 +25,7 @@ public final class ExpressionMath implements Expression {
     public static ExpressionMath fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAddSubContext addSubExpression) {
         ExpressionMath result = new ExpressionMath();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, addSubExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, addSubExpression);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, addSubExpression.leftExpression);
@@ -38,7 +38,7 @@ public final class ExpressionMath implements Expression {
     public static ExpressionMath fromAntlrMulMod(CompilationUnit unit, AstItem owner, caffcParser.ExMulModContext mulModContext) {
         ExpressionMath result = new ExpressionMath();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, mulModContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, mulModContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, mulModContext.leftExpression);
@@ -51,7 +51,7 @@ public final class ExpressionMath implements Expression {
     public static ExpressionMath fromAntlrDiv(CompilationUnit unit, AstItem owner, caffcParser.ExDivContext divContext) {
         ExpressionMath result = new ExpressionMath();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, divContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, divContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, divContext.leftExpression);

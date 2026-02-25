@@ -20,7 +20,7 @@ public final class ControlFlowInstruction implements Statement {
         ControlFlowInstruction result = new ControlFlowInstruction();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ctx);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
 
         result.instruction = ctx.getText();
 
