@@ -29,7 +29,7 @@ public final class ExpressionNewObject implements Expression {
         ExpressionNewObject result = new ExpressionNewObject();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, newObject);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, newObject);
         result.instantiatedTypeSearch = SymbolSearch.fromAntlr(unit, newObject.newType());
 
         if (newObject.expressionTuple() != null) {

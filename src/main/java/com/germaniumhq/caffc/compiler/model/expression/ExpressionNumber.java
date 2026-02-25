@@ -30,7 +30,7 @@ public final class ExpressionNumber implements Expression {
         ExpressionNumber result = new ExpressionNumber();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, numberExpression);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, numberExpression);
 
         String numberExpressionText = numberExpression.getText();
 

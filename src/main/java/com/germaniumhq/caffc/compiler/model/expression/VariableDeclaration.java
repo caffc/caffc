@@ -38,7 +38,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         VariableDeclaration result = new VariableDeclaration();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, variableDeclarationContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, variableDeclarationContext);
 
         result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();

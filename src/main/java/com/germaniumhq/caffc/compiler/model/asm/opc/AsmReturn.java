@@ -27,5 +27,9 @@ final public class AsmReturn implements AsmInstruction {
     public SourceLocation getSourceLocation() {
         return sourceLocation;
     }
+
+    public SourceLocation getSourceLocationCurlyClose() {
+        return function.sourceLocationCurlyClose;
+    }
 }
 

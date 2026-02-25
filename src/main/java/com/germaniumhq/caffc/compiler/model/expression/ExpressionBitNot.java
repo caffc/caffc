@@ -23,7 +23,7 @@ public final class ExpressionBitNot implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitNotContext bitNotContext) {
         ExpressionBitNot result = new ExpressionBitNot();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitNotContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, bitNotContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, bitNotContext.expression());

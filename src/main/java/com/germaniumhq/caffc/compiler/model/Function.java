@@ -1,15 +1,14 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,19 +58,31 @@ public class Function implements CompileBlock, Scope, Symbol {
      */
     public int labelIndex;
 
+    /**
+     * We keep these source locations to have a place where to anchor the cursor
+     * when the instructions we're stepping over are defined in the GC wiring.
+     */
+    public SourceLocation sourceLocationCurlyOpen;
+    public SourceLocation sourceLocationCurlyClose;
+
     public static Function fromAntlr(
             CompilationUnit unit,
             AstItem owner,
             caffcParser.FunctionContext ctx) {
         Function function = new Function();
 
-        TerminalNode functionId = ctx.ID();
-
         // for the function location, we get the name, so we jump over potential tags or decorators attached
-        function.definition.sourceLocation = new SourceLocation(
+        function.definition.sourceLocation = SourceLocation.fromAntlrToken(
+            unit.sourceLocation.filePath, ctx.ID().getSymbol());
+
+        function.sourceLocationCurlyOpen = SourceLocation.fromAntlrToken(
             unit.sourceLocation.filePath,
-            functionId.getSymbol().getLine(),
-            functionId.getSymbol().getCharPositionInLine());
+            ctx.block().CURLY_OPEN().getSymbol()
+        );
+        function.sourceLocationCurlyClose = SourceLocation.fromAntlrToken(
+            unit.sourceLocation.filePath,
+            ctx.block().CURLY_CLOSE().getSymbol()
+        );
 
         function.owner = owner;
         function.definition.module = unit.module.name;

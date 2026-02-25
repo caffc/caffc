@@ -26,7 +26,7 @@ public final class ExpressionCast implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExCastContext castContext) {
         ExpressionCast result = new ExpressionCast();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, castContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, castContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, castContext.expression());

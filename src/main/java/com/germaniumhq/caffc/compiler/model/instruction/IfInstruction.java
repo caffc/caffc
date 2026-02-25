@@ -28,7 +28,7 @@ public final class IfInstruction implements Statement {
         IfInstruction result = new IfInstruction();
 
         result.owner = owner;
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, ifAntlr);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ifAntlr);
         result.checkExpression = Expression.fromAntlr(unit, result, ifAntlr.expression());
 
         if (ifAntlr.trueBlock != null) {

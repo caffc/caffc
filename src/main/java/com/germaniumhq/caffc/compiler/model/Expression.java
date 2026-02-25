@@ -148,7 +148,7 @@ public interface Expression extends Statement {
         }
 
         CaffcCompiler.get().fatal(
-                SourceLocation.fromAntlr(unit.sourceLocation.filePath, expression),
+                SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, expression),
                 "unsupported expression: " + expression.getText());
 
         return null; // not reached

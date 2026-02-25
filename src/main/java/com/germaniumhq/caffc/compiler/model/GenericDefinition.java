@@ -26,7 +26,7 @@ public class GenericDefinition implements AstItem, Symbol {
 
         result.owner = owner;
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericDeclaration);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, genericDeclaration);
 
         if (genericDeclaration instanceof caffcParser.GenericDeclarationIdContext) {
             result.name = genericDeclaration.getText();

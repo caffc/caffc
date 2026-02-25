@@ -5,9 +5,7 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Contains all the generic instantiation for a class instantiation
@@ -35,7 +33,7 @@ public class GenericInstantiations implements AstItem {
 
         result.owner = owner;
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, genericsInstantiationContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, genericsInstantiationContext);
 
         if (genericsInstantiationContext instanceof caffcParser.GenericsInstantiationEmptyContext) {
             result.generics = new GenericInstantiation[0];

@@ -27,7 +27,7 @@ public class CompilationUnit implements AstItem, Scope {
 
         String moduleName = antlrCompilationUnit.module().fqdn().getText();
         compilationUnit.module = moduleProvider.getModule(moduleName);
-        compilationUnit.sourceLocation = SourceLocation.fromAntlr(filePath, antlrCompilationUnit);
+        compilationUnit.sourceLocation = SourceLocation.fromAntlrContext(filePath, antlrCompilationUnit);
 
         for (caffcParser.UseStatementContext useStatement : antlrCompilationUnit.useStatement()) {
             final String usedModule = useStatement.use().fqdn().getText();

@@ -30,7 +30,7 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         String name = parameter.ID().getText();
         Parameter result = new Parameter(owner, name);
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, parameter);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, parameter);
 
         result.symbolSearch = SymbolSearch.fromAntlr(unit, parameter.typeName());
 

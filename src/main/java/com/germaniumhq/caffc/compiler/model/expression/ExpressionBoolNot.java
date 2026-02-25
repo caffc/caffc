@@ -23,7 +23,7 @@ public final class ExpressionBoolNot implements Expression {
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBoolNotContext boolNotContext) {
         ExpressionBoolNot result = new ExpressionBoolNot();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, boolNotContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, boolNotContext);
 
         result.owner = owner;
         result.expression = Expression.fromAntlr(unit, result, boolNotContext.expression());

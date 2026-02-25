@@ -26,7 +26,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitOrContext bitOrContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitOrContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, bitOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitOrContext.leftExpression);
@@ -39,7 +39,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitAndContext bitAndContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitAndContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, bitAndContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitAndContext.leftExpression);
@@ -52,7 +52,7 @@ public final class ExpressionBitOperation implements Expression {
     public static ExpressionBitOperation fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExBitXorContext bitOrContext) {
         ExpressionBitOperation result = new ExpressionBitOperation();
 
-        result.sourceLocation = SourceLocation.fromAntlr(unit.sourceLocation.filePath, bitOrContext);
+        result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, bitOrContext);
 
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, bitOrContext.leftExpression);
