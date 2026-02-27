@@ -79,7 +79,7 @@ tagDefinition:
     tags? TAG ID CURLY_OPEN fieldDeclaration* CURLY_CLOSE
     ;
 
-fieldDeclaration: typeName ID (',' ID)*;
+fieldDeclaration: tags? typeName ID (',' ID)*;
 
 statement:
   // decoratorCall |

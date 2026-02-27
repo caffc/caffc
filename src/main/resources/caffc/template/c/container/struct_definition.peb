@@ -1,4 +1,4 @@
-typedef struct {
+typedef struct {{ ctx.typeName | c_name }}_struct {
 {%- for entry in ctx.fields %}
   {{ entry.typeName | c_type }} {{ entry.name }};
 {%- endfor %}

@@ -15,7 +15,7 @@ caffc_call_stack* _caffc_call_stack = caffc_null;
  * variables that are handled by the gc.
  */
 void _caffc_stack_frame_register(
-      struct caffc_str* function_name,
+      caffc_str* function_name,
       caffc_ptr data_frame,
       caffc_u32 var_count) {
     caffc_stack_frame* new_frame = &(_caffc_call_stack->frames[_caffc_call_stack->call_count]);

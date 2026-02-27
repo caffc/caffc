@@ -359,6 +359,15 @@ The linear form can add any instructions, including nested blocks, for things su
 
 ## Random Notes
 
+### C Object Types
+
+For every CaffC class there's two things generated:
+
+1. a `struct <obj_name>_struct;` that contains the actual struct definition, and
+2. a `typedef struct <obj_name>_struct <obj_name>;` that allows us to use just the object name without always prefixing it with `struct`.
+
+### Arrays
+
 Arrays are instantiated with `MODULE_ARRNAME_arr_newa()`, for each object
 array, that internally will defer to `caffc_obj_arr_new`.
 

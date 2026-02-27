@@ -1,0 +1,96 @@
+module caffc
+
+/**
+ * Contains the data of a single StackFrame from our stack
+ * trace.
+ */
+class StackFrame {
+  /**
+   * Function or method name where the call is.
+   */
+  #public
+  str name
+
+  /**
+   * File name where the execution is.
+   */
+  #public
+  str file
+
+  /**
+   * Line number where the execution is.
+   */
+  #public
+  i32 line
+}
+
+/**
+ * Exceptions being thrown must implement this interface.
+ * The constructor of such a class will be augmented by the
+ * compiler with the stack information.
+ */
+#public
+interface exception {
+  #public message() -> str
+  #public cause() -> Exception
+  #public stack() -> StackFrame[]
+}
+
+#public
+class Exception implements exception {
+  str _message
+  exception _cause
+  StackFrame[] _frames
+
+  constructor(str msg, exception cause) {
+    _this._message = msg
+    _this._cause = cause
+    _this._frames = stackDump()
+  }
+
+  #public message() -> str {
+    return _this._message
+  }
+
+  #public cause() -> exception {
+    return _this._cause
+  }
+
+  #public stack() -> StackFrame[] {
+    return _this._frames
+  }
+}
+
+/**
+ * Gets a dump of the current stack.
+ */
+stackDump() -> StackFrame[] {
+  i32 callCount = 0
+
+  native {
+    if (_caffc_call_stack != 0) {
+      callCount = (caffc_i32) _caffc_call_stack->call_count;
+    }
+  }
+
+  if callCount == 0 {
+    return 0
+  }
+
+  StackFrame[] result = new StackFrame[callCount]
+
+  for i32 i = 0; i < callCount; i += 1 {
+    StackFrame frame = new StackFrame()
+
+    native {
+      frame->name = _caffc_call_stack->frames[i].function_name;
+    }
+
+    frame.file = 0     // FIXME: implement
+    frame.line = 0     // FIXME: implement
+
+    result[i] = frame
+  }
+
+  return result
+}
