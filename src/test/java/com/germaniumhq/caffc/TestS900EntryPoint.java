@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
-  _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
+  /* FIXME: add <entrypoint> as a caffc.str */
+  _caffc_stack_frame_register(caffc_null, _caffc_locals, 1);
 
   arr = caffc_str_arr_newa(argc);
 
@@ -82,7 +83,8 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
-  _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
+  /* FIXME: add <entrypoint> as a caffc.str */
+  _caffc_stack_frame_register(caffc_null, _caffc_locals, 1);
 
   arr = caffc_str_arr_newa(argc);
 
@@ -127,7 +129,8 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
-  _caffc_stack_frame_register("#entrypoint", caffc_null, 0);
+  /* FIXME: add <entrypoint> as a caffc.str */
+  _caffc_stack_frame_register(caffc_null, caffc_null, 0);
 
   result = main_main();
 

@@ -17,10 +17,12 @@ extern "C" {
   forward definitions
   ************************************************************** */
 {%- for clazz in ctx.classDefinitions %}
-struct {{ clazz.typeName | c_name }};
+struct {{ clazz.typeName | c_name }}_struct;
+typedef struct {{ clazz.typeName | c_name }}_struct {{ clazz.typeName | c_name }};
 {%- endfor %}
 {%- for clazz in ctx.interfaceDefinitions %}
-struct {{ clazz.typeName | c_name }};
+struct {{ clazz.typeName | c_name }}_struct;
+typedef struct {{ clazz.typeName | c_name }}_struct {{ clazz.typeName | c_name }};
 {%- endfor %}
 
 /* **************************************************************

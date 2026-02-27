@@ -30,6 +30,8 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
     public static List<Field> fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.FieldDeclarationContext fieldDeclarationContext) {
         List<Field> fields = new ArrayList<>();
 
+        // FIXME: read and add tags
+
         for (TerminalNode name: fieldDeclarationContext.ID()) {
             Field field = new Field(owner, name.getText());
 

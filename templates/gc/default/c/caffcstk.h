@@ -8,10 +8,11 @@
  * Forward declaration for the `caffc.str` since that one will come
  * from the `module_caffc.h` later, that depends on this file.
  */
-struct caffc_str;
+struct caffc_str_struct;
+typedef struct caffc_str_struct caffc_str;
 
 typedef struct caffc_stack_frame_struct {
-  struct caffc_str* function_name;
+  caffc_str* function_name;
   caffc_ptr data_frame;
   caffc_u32 var_count;
 } caffc_stack_frame;
@@ -43,7 +44,7 @@ typedef struct caffc_call_stack_struct {
  * _caffc_stack_frame_register("main", _caffc_locals, 1);
  */
 void _caffc_stack_frame_register(
-  struct caffc_str* function_name,
+  caffc_str* function_name,
   caffc_ptr data_frame,
   caffc_u32 var_count);
 

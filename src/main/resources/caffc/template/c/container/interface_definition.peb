@@ -1,4 +1,4 @@
-typedef struct {
+typedef struct {{ ctx.typeName | c_name }}_struct {
     caffc_class_header* _caffc_class_header;
 } {{ ctx.typeName | c_name }};
 

@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
 
   {%- if not ctx.definition.parameters.isEmpty() %}
 
-  _caffc_stack_frame_register("#entrypoint", _caffc_locals, 1);
+  /* FIXME: add <entrypoint> as a caffc.str */
+  _caffc_stack_frame_register(caffc_null, _caffc_locals, 1);
 
   arr = caffc_str_arr_newa(argc);
 
@@ -48,7 +49,8 @@ int main(int argc, char* argv[]) {
   }
   {%- else %}
 
-  _caffc_stack_frame_register("#entrypoint", caffc_null, 0);
+  /* FIXME: add <entrypoint> as a caffc.str */
+  _caffc_stack_frame_register(caffc_null, caffc_null, 0);
   {%- endif %}
 
   {% if ctx.definition.returnType.typeSymbol.name != "void" %}result = {% endif %}{{ ctx.definition.module }}_{{ ctx.definition.name }}({% if not ctx.definition.parameters.isEmpty() %}arr{% endif %});

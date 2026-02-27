@@ -1,0 +1,30 @@
+module main
+
+
+main() {
+  StackFrame[] frames = callStackDump()
+
+  for i32 i = 0; i < frames.size(); i += 1 {
+    if frames[i].name {
+      print(frames[i].name)
+    }
+  }
+}
+
+callStackDump() -> StackFrame[] {
+  return a()
+}
+
+a() -> StackFrame[] {
+  return b()
+}
+
+b() -> StackFrame[] {
+  return c()
+}
+
+c() -> StackFrame[] {
+  StackFrame[] sf = stackDump()
+  return sf
+}
+
