@@ -78,6 +78,48 @@ Uses Pebble templates (`*.peb` files) for code generation. Templates are in:
 
 Templates receive objects like `Module`, `CompilationUnit`, `Function`, `Field`, etc. Use `|c_name` filter to get C name representations.
 
+### Template Filters
+
+The following filters are available in Pebble templates (mapped in `CaffcPebblesExtension`):
+
+| Filter | Rendered Text |
+|--------|-------------|
+| `c_header` | The corresponding C header file for the Module |
+| `c_global_header` | Global header guard wrapper |
+| `c_header_guard` | Header guard macro name |
+| `c_function_signature` | C function signature with parameters |
+| `c_resolve_id` | Resolve identifier from context |
+| `c_name` | C type/identifier name (e.g., `caffc_i32`) |
+| `c_type_name` | C type name without pointer (always) |
+| `c_type` | C type with pointer markers for non-primitives |
+| `c_constructor_parameters` | Constructor parameters (skips `_this`) |
+| `c_constructor_parameters_call` | Constructor call arguments |
+| `semicolon` | Add semicolon unless context is blocks, labels, comments, or jumps |
+| `render` | Render nested template for object based on type mapping |
+
+### Template Functions
+
+| Function | Description |
+|----------|-------------|
+| `isBlockStatement(obj)` | Returns true if obj is a block-level statement |
+| `isIndex(obj)` | Returns true if obj represents an array index |
+| `get(collection, key)` | Get item from list/map by key/index |
+
+### Template Context Objects
+
+Common objects passed to templates:
+- `Module` - Module container with functions, classes, and string constants
+- `CompilationUnit` - Single source file with module, imports, and AST nodes
+- `Function` - Function with statements and variables
+- `ClassDefinition` / `InterfaceDefinition` / `Struct` - Type definitions
+- `Field`, `Parameter` - Variable definitions
+- `AsmBlock`, `AsmInstruction` - Linear assembly instructions
+- `Expression` subclasses - All expression types (math, bool, bit, ternary, etc.)
+
+### Debugging
+
+Set `CAFFC_DEBUG_TEMPLATES` environment variable to see template names in output.
+
 ## Cursor/Copilot Rules
 
 No Cursor or Copilot rules defined. Follow Java OpenJDK style and the project-specific conventions above.
