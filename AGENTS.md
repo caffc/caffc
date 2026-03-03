@@ -65,7 +65,7 @@ Tests use JUnit 5 (JUnit Jupiter). Use the `CodeAssertsStr` utility class to com
 
 The grammar is in `caffc.g4`. After changes, regenerate parser code:
 ```bash
-antlr4 -Dlanguage=Java -visitor -listener caffc.g4
+antlr4 -Dlanguage=Java --out-folder=src/main/java --package=com.germaniumhq.caffc.generated caffc.g4
 ```
 
 ## Template Engine
