@@ -49,6 +49,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionOpAssign;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionChar;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
@@ -152,9 +153,10 @@ public class CaffcPebblesExtension implements Extension {
 
                 // expressions
                 // keep in sync with Expression and caffc.g4
-                .withMapping(ExpressionNumber.class, "c/expression/number.peb")
-                .withMapping(ExpressionString.class, "c/expression/string.peb")
-                .withMapping(ExpressionId.class, "c/expression/id.peb")
+                 .withMapping(ExpressionNumber.class, "c/expression/number.peb")
+                 .withMapping(ExpressionChar.class, "c/expression/char.peb")
+                 .withMapping(ExpressionString.class, "c/expression/string.peb")
+                 .withMapping(ExpressionId.class, "c/expression/id.peb")
                 .withMapping(ExpressionParens.class, "c/expression/parens.peb")
                 .withMapping(ExpressionDotAccess.class, "c/expression/dot_access.peb")
                 .withMapping(ExpressionNewObject.class, "c/expression/new_object.peb")

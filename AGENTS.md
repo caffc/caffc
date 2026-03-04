@@ -2,6 +2,13 @@
 
 CaffC is a Java-like transpiler written itself in Java. It transpiles from CaffC files to C.
 
+## CaffC Rules
+
+- Unlike Java classes cannot be inherited in CaffC. This means that effectively every class is `final` by default.
+- Strings (see `str.caffc`) are stored natively as nul-terminated UTF-8 strings in memory.
+
+## Parsing
+
 The code is parsed in several stages:
 
 1. the source is tokenized + parsed into an abstract syntax tree (AST) by antlr (the grammar it's in `caffc.g4`)
@@ -65,7 +72,11 @@ Tests use JUnit 5 (JUnit Jupiter). Use the `CodeAssertsStr` utility class to com
 
 The grammar is in `caffc.g4`. After changes, regenerate parser code:
 ```bash
-antlr4 -Dlanguage=Java --out-folder=src/main/java --package=com.germaniumhq.caffc.generated caffc.g4
+# Download ANTLR (first time only)
+curl -o antlr4.jar https://www.antlr.org/download/antlr-4.13.1-complete.jar
+
+# Regenerate parser
+java -jar antlr4.jar -o src/main/java/com/germaniumhq/caffc/generated -package com.germaniumhq.caffc.generated -no-listener -no-visitor caffc.g4
 ```
 
 ## Template Engine

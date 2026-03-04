@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestS050Expressions {
     @Test
@@ -357,12 +358,123 @@ return 0;
                 "bit-xor assign should translate into the generated code");
         CodeAssertsStr.assertCodeContains(code, "x = x * y;",
                 "math mul assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x = x / y;",
-                "math div assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x = x + y;",
-                "math plus assign should translate into the generated code");
-        CodeAssertsStr.assertCodeContains(code, "x = x - y;",
-                "math minus assign should translate into the generated code");
-    }
+         CodeAssertsStr.assertCodeContains(code, "x = x / y;",
+                 "math div assign should translate into the generated code");
+         CodeAssertsStr.assertCodeContains(code, "x = x + y;",
+                 "math plus assign should translate into the generated code");
+         CodeAssertsStr.assertCodeContains(code, "x = x - y;",
+                 "math minus assign should translate into the generated code");
+     }
 
-}
+       @Test
+       public void testCharLiteral() {
+           String code = CodeAssertsStr.compileCaffcProgram(
+                   "caffc/template/c/compilation_unit_c.peb",
+                   "a/a.caffc",
+                   new TestUnit[] {
+                           new TestUnit("a/a.caffc",
+                                   """
+                                           module main
+
+                                           main() -> i32 {
+                                             u32 x = 'a'
+                                             u32 y = '\\n'
+                                             u32 z = '\\x32'
+                                             u32 unicode_char = '✅'
+
+                                             return 0
+                                           }
+                                           """)
+                   }
+           );
+
+           CodeAssertsStr.assertCodeContains(code, "x = 97;",
+                   "character 'a' should translate to ASCII value 97");
+           CodeAssertsStr.assertCodeContains(code, "y = 10;",
+                   "escaped newline '\\n' should translate to ASCII value 10");
+           CodeAssertsStr.assertCodeContains(code, "z = 50;",
+                   "hex escape '\\x32' should translate to value 50 (0x32)");
+           CodeAssertsStr.assertCodeContains(code, "unicode_char = 14851205;",
+               "character '✅' should translate to value 14851205, its bytes: 0xe29c85");
+       }
+
+       @Test
+       public void testCharLiteralMultipleCharactersFails() {
+           // Test that character literals with multiple characters are rejected
+           // We expect a runtime exception with the error message
+           try {
+               String code = CodeAssertsStr.compileCaffcProgram(
+                       "caffc/template/c/compilation_unit_c.peb",
+                       "a/a.caffc",
+                       new TestUnit[] {
+                               new TestUnit("a/a.caffc",
+                                       """
+                                               module main
+
+                                               main() -> i32 {
+                                                 u32 x = 'aa'
+                                                 return 0
+                                               }
+                                               """)
+                       }
+               );
+               fail("Should have thrown exception for multiple characters in char literal");
+           } catch (RuntimeException e) {
+               assertTrue(e.getMessage().contains("character literal contains multiple characters"));
+               assertTrue(e.getMessage().contains("'aa'"));
+           }
+       }
+
+       @Test
+       public void testCharLiteralHexEscapeTooLongFails() {
+           // Test that hex escape sequences with too few hex digits are rejected
+           // The lexer rejects incomplete escape sequences with ERROR level messages
+           try {
+               String code = CodeAssertsStr.compileCaffcProgram(
+                       "caffc/template/c/compilation_unit_c.peb",
+                       "a/a.caffc",
+                       new TestUnit[] {
+                               new TestUnit("a/a.caffc",
+                                       """
+                                               module main
+
+                                               main() -> i32 {
+                                                 u32 x = '\\x3'
+                                                 return 0
+                                               }
+                                               """)
+                       }
+               );
+               fail("Should have thrown exception for hex escape with too few digits");
+           } catch (RuntimeException e) {
+               assertTrue(e.getMessage().contains("Errors found"), "Expected compilation error but got: " + e.getMessage());
+           }
+       }
+
+       @Test
+       public void testCharLiteralOctalEscapeTooLongFails() {
+           // Test that octal escape sequences with too few octal digits are rejected
+           // The lexer rejects incomplete escape sequences with ERROR level messages
+           try {
+               String code = CodeAssertsStr.compileCaffcProgram(
+                       "caffc/template/c/compilation_unit_c.peb",
+                       "a/a.caffc",
+                       new TestUnit[] {
+                               new TestUnit("a/a.caffc",
+                                       """
+                                               module main
+
+                                               main() -> i32 {
+                                                 u32 x = '\\03'
+                                                 return 0
+                                               }
+                                               """)
+                       }
+               );
+               fail("Should have thrown exception for octal escape with too few digits");
+           } catch (RuntimeException e) {
+               assertTrue(e.getMessage().contains("Errors found"), "Expected compilation error but got: " + e.getMessage());
+           }
+       }
+  }
+
