@@ -116,12 +116,7 @@ public final class ExpressionChar implements Expression {
                     logicalCharCount++;
                     inIndex++;
                 }
-                
-                // If we already have more than one logical character, fail
-                if (logicalCharCount > 1) {
-                    CaffcCompiler.get().fatal(owner, "character literal contains multiple characters: '" + charText + "'");
-                    return 0;
-                }
+
             }
             
             // We should have exactly one logical character
@@ -140,6 +135,10 @@ public final class ExpressionChar implements Expression {
             if (c != '\\') {
                 byte[] utf8Bytes = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
 
+                if (utf8Bytes.length > 4) {
+                    CaffcCompiler.get().fatal(owner, "wrong UTF-8 byte sequence");
+                }
+
                 for (byte b : utf8Bytes) {
                     result = (result << 8) | (b & 0xFF);
                 }
@@ -148,7 +147,6 @@ public final class ExpressionChar implements Expression {
             } else {
                 if (inIndex >= inner.length() - 1) {
                     CaffcCompiler.get().fatal(owner, "unterminated character escape");
-                    return 0;
                 }
 
                 char nextChar = inner.charAt(inIndex + 1);

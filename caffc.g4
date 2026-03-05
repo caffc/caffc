@@ -248,23 +248,19 @@ namedTypeTuple:
 // * lexer
 // ***********************************************************************
 
-// a character is a single logical character: either a single non-escaped character,
-// or exactly one escape sequence (hex, octal, or simple escape). 
-// Multiple characters like 'aa' should be caught as an error at parse time.
+// chars are either simple characters, a single char escape (i.e. \r, \t, etc)
+// or escapes of the actual UTF-8 bytes, either as hex, or octal.
+// NOTE: all the bytes must be escaped the same way.
 CHAR:
-    '\'' ( ~[\\\r\n\f'] | SIMPLE_ESCAPE | HEX_ESCAPE | OCTAL_ESCAPE )+ '\''
+    '\'' (~[\\\r\n\f'] | SIMPLE_ESCAPE | HEX_ESCAPE+ | OCTAL_ESCAPE+) '\''
 ;
 
 STRING: SHORT_STRING | LONG_STRING;
 
-/// shortstring     ::=  '"' shortstringitem* '"'
-/// shortstringitem ::=  shortstringchar | escape
-/// shortstringchar ::=  <any source character except "\" or newline or the quote>
 fragment SHORT_STRING:
     '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"])* '"'
 ;
-/// longstring      ::=  "'''" longstringitem* "'''" | '"""' longstringitem* '"""'
-fragment LONG_STRING: '\'\'\'' LONG_STRING_ITEM*? '\'\'\'' | '"""' LONG_STRING_ITEM*? '"""';
+fragment LONG_STRING: '"""' LONG_STRING_ITEM*? '"""';
 
 /// longstringitem  ::=  longstringchar | stringescapeseq
 fragment LONG_STRING_ITEM: LONG_STRING_CHAR | STRING_ESCAPE_SEQ;
@@ -272,7 +268,6 @@ fragment LONG_STRING_ITEM: LONG_STRING_CHAR | STRING_ESCAPE_SEQ;
 /// longstringchar  ::=  <any source character except "\">
 fragment LONG_STRING_CHAR: ~'\\';
 
-/// escape for strings (more permissive than char escapes)
 SIMPLE_ESCAPE: '\\' ('a' | 'b' | 'e' | 'f' | 'n' | 'r' | 't' | 'v' | '\\' | '\'' | '"' | '?');
 HEX_ESCAPE: '\\' 'x' HexDigit HexDigit;
 OCTAL_ESCAPE: '\\' [0-3] OctalDigit OctalDigit;
