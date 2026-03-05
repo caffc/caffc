@@ -1,7 +1,9 @@
 package com.germaniumhq.caffc;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestS050Expressions {
     @Test
@@ -472,7 +474,8 @@ return 0;
             );
             fail("Should have thrown exception for hex escape with too many bytes in character");
         } catch (RuntimeException e) {
-            assertTrue(e.getMessage().contains("Errors found in compilation"), "Expected compilation error but got: " + e.getMessage());
+            assertTrue(e.getMessage().contains("too many characters in escape"),
+                "Expected too many characters in escape but got: " + e.getMessage());
         }
     }
 

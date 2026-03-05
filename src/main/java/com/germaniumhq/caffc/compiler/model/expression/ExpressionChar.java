@@ -7,7 +7,6 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
-import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -30,100 +29,23 @@ public final class ExpressionChar implements Expression {
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, charExpression);
         result.symbol = new TypeSymbol(TypeName.U32);
 
-        String charText = charExpression.getText();
-        result.value = charText;
-
-        result.charValue = parseCharLiteral(result.sourceLocation, charText);
+        result.value = charExpression.getText();
+        result.charValue = parseCharLiteral(result.sourceLocation, result.value);
 
         return result;
     }
 
-    private static long parseCharLiteral(SourceLocation owner, String charText) {
-        if (charText.length() < 3) {
+    private static long parseCharLiteral(SourceLocation owner, String charTextIncludingQuotes) {
+        if (charTextIncludingQuotes.length() < 3) {
             CaffcCompiler.get().fatal(owner, "empty character literal");
             return 0;
         }
 
-        String inner = charText.substring(1, charText.length() - 1);
+        String inner = charTextIncludingQuotes.substring(1, charTextIncludingQuotes.length() - 1);
 
         if (inner.isEmpty()) {
             CaffcCompiler.get().fatal(owner, "empty character literal");
             return 0;
-        }
-
-        // Validate that the character literal represents exactly one logical character.
-        // A single unescaped character like 'a' is valid.
-        // An escape sequence like '\n' or '\x32' is one logical character.
-        // Multiple characters like 'aa' or 'hello' are invalid.
-        if (inner.indexOf('\\') == -1) {
-            // No escape sequences - check if it's a single character
-            int charCount = inner.length();
-            if (charCount > 1) {
-                CaffcCompiler.get().fatal(owner, "character literal contains multiple characters: '" + charText + "'");
-                return 0;
-            }
-        } else {
-            // Has escape sequences - we need to count logical characters
-            // An escape sequence like \x32 or \n is ONE logical character
-            // A non-escape character like 'a' is ONE logical character
-            // We need to ensure we have exactly one logical character total
-            
-            int logicalCharCount = 0;
-            int inIndex = 0;
-            
-            while (inIndex < inner.length()) {
-                if (inner.charAt(inIndex) == '\\') {
-                    // This is an escape sequence - counts as one logical character
-                    if (inIndex >= inner.length() - 1) {
-                        CaffcCompiler.get().fatal(owner, "unterminated character escape");
-                        return 0;
-                    }
-                    
-                    char nextChar = inner.charAt(inIndex + 1);
-                    // Validate escape sequence
-                    switch (nextChar) {
-                        case 'a': case 'b': case 'e': case 'f': case 'n': 
-                        case 'r': case 't': case 'v': case '\\': case '\'': 
-                        case '"': case '?':
-                            // Simple escape - valid, one logical character
-                            logicalCharCount++;
-                            inIndex += 2;
-                            break;
-                        case 'x':
-                            // Hex escape - need 2 hex digits after \x
-                            if (inIndex + 4 > inner.length()) {
-                                CaffcCompiler.get().fatal(owner, "hex escape sequence too short");
-                                return 0;
-                            }
-                            logicalCharCount++;
-                            inIndex += 4;
-                            break;
-                        case '0': case '1': case '2': case '3':
-                            // Octal escape - need 3 octal digits after the initial \
-                            if (inIndex + 4 > inner.length()) {
-                                CaffcCompiler.get().fatal(owner, "octal escape sequence too short");
-                                return 0;
-                            }
-                            logicalCharCount++;
-                            inIndex += 4;
-                            break;
-                        default:
-                            CaffcCompiler.get().fatal(owner, "unknown character escape: \\" + nextChar);
-                            return 0;
-                    }
-                } else {
-                    // Non-escape character - counts as one logical character
-                    logicalCharCount++;
-                    inIndex++;
-                }
-
-            }
-            
-            // We should have exactly one logical character
-            if (logicalCharCount == 0) {
-                CaffcCompiler.get().fatal(owner, "empty character literal");
-                return 0;
-            }
         }
 
         long result = 0;
@@ -133,97 +55,97 @@ public final class ExpressionChar implements Expression {
             char c = inner.charAt(inIndex);
 
             if (c != '\\') {
+                // if we have a normal (i.e. non-escape sequence) character, we read it and we're done.
+                // the tokenizer already allowed _a single_ character to exist.
                 byte[] utf8Bytes = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
-
-                if (utf8Bytes.length > 4) {
-                    CaffcCompiler.get().fatal(owner, "wrong UTF-8 byte sequence");
-                }
 
                 for (byte b : utf8Bytes) {
                     result = (result << 8) | (b & 0xFF);
                 }
 
-                inIndex++;
-            } else {
-                if (inIndex >= inner.length() - 1) {
-                    CaffcCompiler.get().fatal(owner, "unterminated character escape");
-                }
+                return result;
+            }
 
-                char nextChar = inner.charAt(inIndex + 1);
+            if (inIndex >= inner.length() - 1) {
+                CaffcCompiler.get().fatal(owner, "unterminated character escape");
+                return 0;
+            }
 
-                switch (nextChar) {
-                    case 'a':
-                        result = 0x07;
-                        inIndex += 2;
-                        break;
-                    case 'b':
-                        result = 0x08;
-                        inIndex += 2;
-                        break;
-                    case 'e':
-                        result = 0x1B;
-                        inIndex += 2;
-                        break;
-                    case 'f':
-                        result = 0x0C;
-                        inIndex += 2;
-                        break;
-                    case 'n':
-                        result = 0x0A;
-                        inIndex += 2;
-                        break;
-                    case 'r':
-                        result = 0x0D;
-                        inIndex += 2;
-                        break;
-                    case 't':
-                        result = 0x09;
-                        inIndex += 2;
-                        break;
-                    case 'v':
-                        result = 0x0B;
-                        inIndex += 2;
-                        break;
-                    case '\\':
-                        result = 0x5C;
-                        inIndex += 2;
-                        break;
-                    case '\'':
-                        result = 0x27;
-                        inIndex += 2;
-                        break;
-                    case '"':
-                        result = 0x22;
-                        inIndex += 2;
-                        break;
-                    case '?':
-                        result = 0x3F;
-                        inIndex += 2;
-                        break;
-                    case 'x':
-                        result = parseHexEscape(owner, inner, inIndex);
-                        inIndex += 4;
-                        break;
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                        result = parseOctalEscape(owner, inner, inIndex);
-                        inIndex += 4;
-                        break;
-                    default:
-                        CaffcCompiler.get().fatal(owner, "unknown character escape: \\" + nextChar);
-                        return 0;
-                }
+            char nextChar = inner.charAt(inIndex + 1);
+
+            switch (nextChar) {
+                case 'a':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x07;
+                case 'b':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x08;
+                case 'e':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x1B;
+                case 'f':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x0C;
+                case 'n':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x0A;
+                case 'r':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x0D;
+                case 't':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x09;
+                case 'v':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x0B;
+                case '\\':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x5C;
+                case '\'':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x27;
+                case '"':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x22;
+                case '?':
+                    checkEscapeCharLength(owner, inIndex, inner.length());
+                    return 0x3F;
+                case 'x':
+                    checkHexOctEscapeLength(owner, inner.length());
+                    long hexValue = parseHexEscape(owner, inner, inIndex);
+                    result = (result << 8) | hexValue;
+                    inIndex += 4;
+                    break;
+                case '0': case '1': case '2': case '3':
+                    checkHexOctEscapeLength(owner, inner.length());
+                    long octalValue = parseOctalEscape(owner, inner, inIndex);
+                    result = (result << 8) | octalValue;
+                    inIndex += 4;
+                    break;
+                default:
+                    CaffcCompiler.get().fatal(owner, "unknown character escape: \\" + nextChar);
+                    return 0;
             }
         }
 
-        if (result > 0x7FFFffffL) {
+        if (result > 0xffffffffL) {
             CaffcCompiler.get().fatal(owner, "character value too large for u32: " + result);
             return 0;
         }
 
         return result;
+    }
+
+    private static void checkHexOctEscapeLength(SourceLocation owner, int length) {
+        if (length > 16) { // 4 bytes -> max UTF8 char sequence, every escaped byte is of size() 4 in str, i.e. \x32
+            CaffcCompiler.get().fatal(owner, "too many characters in escape sequence");
+        }
+    }
+
+    private static void checkEscapeCharLength(SourceLocation owner, int inIndex, int length) {
+        if (inIndex != 0 || length != 2) {
+            CaffcCompiler.get().fatal(owner, "too many characters in escape sequence");
+        }
     }
 
     private static long parseHexEscape(SourceLocation owner, String text, int startIndex) {
