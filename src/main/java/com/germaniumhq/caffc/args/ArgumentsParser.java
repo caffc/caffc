@@ -36,6 +36,9 @@ public class ArgumentsParser {
                 case "--templates":
                     buildConfig.setTemplatesFolder(arguments.remove(0));
                     break;
+                case "-onefile":
+                    buildConfig.setOneFile(arguments.remove(0));
+                    break;
                 default:
                     buildConfig.getInputSources().add(argument);
                     break;
@@ -58,6 +61,7 @@ public class ArgumentsParser {
         System.out.println("-v/--version             show the current version");
         System.out.println("-o/--output              output folder (default: .)");
         System.out.println("-t/--templates           templates folder (default: .)");
+        System.out.println("-onefile <file>          output all code to a single .c and .h file pair");
         System.out.println();
     }
 }

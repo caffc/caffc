@@ -55,8 +55,12 @@ public class MainApp {
 
         Set<CompilationUnit> compilationUnits = new HashSet<>();
 
+        boolean inOneFileMode = buildConfig.getOneFile() != null;
+
         for (String feature : features) {
-            copyCSources(buildConfig, feature);
+            if (!inOneFileMode) {
+                copyCSources(buildConfig, feature);
+            }
             compilationUnits.addAll( parseCaffcSources(program, buildConfig, feature) );
         }
 
@@ -77,17 +81,21 @@ public class MainApp {
             LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
 
-        for (CompilationUnit compilationUnit: compilationUnits) {
-            renderCompilationUnit(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb", "c");
-        }
+        if (buildConfig.getOneFile() != null) {
+            renderAllToOneFile(buildConfig, compilationUnits, program);
+        } else {
+            for (CompilationUnit compilationUnit: compilationUnits) {
+                renderCompilationUnit(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb", "c");
+            }
 
-        for (Module module: getModuleHeaders()) {
-            generateModuleHeader(buildConfig, module);
-            generateModuleC(buildConfig, module);
-        }
+            for (Module module: getModuleHeaders()) {
+                generateModuleHeader(buildConfig, module);
+                generateModuleC(buildConfig, module);
+            }
 
-        generateConstantsHeader(buildConfig, program);
-        generateConstantsC(buildConfig, program);
+            generateConstantsHeader(buildConfig, program);
+            generateConstantsC(buildConfig, program);
+        }
     }
 
     public static Collection<CompilationUnit> parseCaffcSources(Program program, BuildConfig buildConfig, String feature) {
@@ -246,6 +254,197 @@ public class MainApp {
         } catch (IOException e) {
             CaffcCompiler.get().fatal(
                     SourceLocation.fromFilePath(outputName),
+                    "I/O exception: " + e.getMessage());
+        }
+    }
+
+    private void renderAllToOneFile(BuildConfig buildConfig, Set<CompilationUnit> compilationUnits, Program program) throws IOException {
+        StringBuilder headers = new StringBuilder();
+        StringBuilder implementations = new StringBuilder();
+        
+        String[] features = {"common", "exception", "gc", "string"};
+
+        // Collect all core files and sort by dependency order
+        List<String> coreHeaders = new ArrayList<>();
+        List<String> coreImpls = new ArrayList<>();
+        
+        for (String feature : features) {
+            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String cFilesFolderString = String.format("%s/%s/%s/c",
+                    buildConfig.getTemplatesFolder(), feature, selectedOption);
+            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
+            
+            if (cFilesFolder.isDirectory()) {
+                for (String file : cFilesFolder.list()) {
+                    if (file.endsWith(".h")) {
+                        coreHeaders.add(file);
+                    } else if (file.endsWith(".c")) {
+                        coreImpls.add(file);
+                    }
+                }
+            }
+        }
+        
+        // Sort headers by dependency order
+        String[] headerOrder = {"caffcpt.h", "caffcc.h", "caffco.h", "caffca.h"};
+        List<String> sortedHeaders = new ArrayList<>();
+        for (String h : headerOrder) {
+            if (coreHeaders.contains(h)) {
+                sortedHeaders.add(h);
+            }
+        }
+        // Add any remaining headers
+        for (String h : coreHeaders) {
+            if (!sortedHeaders.contains(h)) {
+                sortedHeaders.add(h);
+            }
+        }
+        
+        // Process core headers
+        for (String feature : features) {
+            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String cFilesFolderString = String.format("%s/%s/%s/c",
+                    buildConfig.getTemplatesFolder(), feature, selectedOption);
+            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
+            
+            if (cFilesFolder.isDirectory()) {
+                for (String fileName : sortedHeaders) {
+                    String filePath = Paths.get(cFilesFolderString, fileName).toAbsolutePath().toString();
+                    if (Files.exists(Paths.get(filePath))) {
+                        String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath)));
+                        String[] lines = content.split("\n");
+                        for (String line : lines) {
+                            if (line.trim().startsWith("#include <")) {
+                                headers.append(line);
+                                headers.append("\n");
+                            } else if (!line.trim().startsWith("#include")) {
+                                headers.append(line);
+                                headers.append("\n");
+                            }
+                        }
+                        headers.append("\n");
+                    }
+                }
+            }
+        }
+        
+        // Sort impls by dependency order
+        String[] implOrder = {"caffca.c", "caffcmem.c", "caffcgcpl.c", "caffcgcps.c", 
+                               "caffcms.c", "caffcstk.c"};
+        List<String> sortedImpls = new ArrayList<>();
+        for (String i : implOrder) {
+            if (coreImpls.contains(i)) {
+                sortedImpls.add(i);
+            }
+        }
+        // Add any remaining impls
+        for (String i : coreImpls) {
+            if (!sortedImpls.contains(i)) {
+                sortedImpls.add(i);
+            }
+        }
+        
+        // Process core impls
+        for (String feature : features) {
+            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String cFilesFolderString = String.format("%s/%s/%s/c",
+                    buildConfig.getTemplatesFolder(), feature, selectedOption);
+            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
+            
+            if (cFilesFolder.isDirectory()) {
+                for (String fileName : sortedImpls) {
+                    String filePath = Paths.get(cFilesFolderString, fileName).toAbsolutePath().toString();
+                    if (Files.exists(Paths.get(filePath))) {
+                        String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath)));
+                        String[] lines = content.split("\n");
+                        for (String line : lines) {
+                            if (line.trim().startsWith("#include <")) {
+                                implementations.append(line);
+                                implementations.append("\n");
+                            } else if (!line.trim().startsWith("#include")) {
+                                implementations.append(line);
+                                implementations.append("\n");
+                            }
+                        }
+                        implementations.append("\n");
+                    }
+                }
+            }
+        }
+
+        for (Module module : getModuleHeaders()) {
+            String headerCode = renderCode(buildConfig, module, "caffc/template/c/module_h.peb");
+            String[] headerLines = headerCode.split("\n");
+            for (String line : headerLines) {
+                if (line.trim().startsWith("#include <")) {
+                    headers.append(line);
+                    headers.append("\n");
+                } else if (!line.trim().startsWith("#include")) {
+                    headers.append(line);
+                    headers.append("\n");
+                }
+            }
+            String implCode = renderCode(buildConfig, module, "caffc/template/c/module_c.peb");
+            String[] implLines = implCode.split("\n");
+            for (String line : implLines) {
+                if (line.trim().startsWith("#include <")) {
+                    implementations.append(line);
+                    implementations.append("\n");
+                } else if (!line.trim().startsWith("#include")) {
+                    implementations.append(line);
+                    implementations.append("\n");
+                }
+            }
+        }
+
+        String constantsHeaderCode = renderCode(buildConfig, program, "caffc/template/c/constants_h.peb");
+        String[] constHeaderLines = constantsHeaderCode.split("\n");
+        for (String line : constHeaderLines) {
+            if (line.trim().startsWith("#include <")) {
+                headers.append(line);
+                headers.append("\n");
+            } else if (!line.trim().startsWith("#include")) {
+                headers.append(line);
+                headers.append("\n");
+            }
+        }
+        String constantsImplCode = renderCode(buildConfig, program, "caffc/template/c/constants_c.peb");
+        String[] constLines = constantsImplCode.split("\n");
+        for (String line : constLines) {
+            if (line.trim().startsWith("#include <")) {
+                implementations.append(line);
+                implementations.append("\n");
+            } else if (!line.trim().startsWith("#include")) {
+                implementations.append(line);
+                implementations.append("\n");
+            }
+        }
+
+        for (CompilationUnit compilationUnit : compilationUnits) {
+            String implCode = renderCode(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb");
+            String[] unitLines = implCode.split("\n");
+            for (String line : unitLines) {
+                if (line.trim().startsWith("#include <")) {
+                    implementations.append(line);
+                    implementations.append("\n");
+                } else if (!line.trim().startsWith("#include")) {
+                    implementations.append(line);
+                    implementations.append("\n");
+                }
+            }
+        }
+
+        String outputFileName = new File(buildConfig.getOneFile()).getName();
+        String fullPath = new File(buildConfig.getOutputFolder(), outputFileName).getAbsolutePath();
+
+        try (FileWriter writer = new FileWriter(fullPath)) {
+            // Prepend headers first
+            writer.write(headers.toString());
+            writer.write("\n\n");
+            writer.write(implementations.toString());
+        } catch (IOException e) {
+            CaffcCompiler.get().fatal(
+                    SourceLocation.fromFilePath(fullPath),
                     "I/O exception: " + e.getMessage());
         }
     }

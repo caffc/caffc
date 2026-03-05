@@ -8,6 +8,12 @@ CaffC is a high-level language like Java, or C#. The idea is to have a high-leve
 but with low-level access when needed via `native` blocks. The language should be easy to
 learn and understand, and the code written in it comprehensible.
 
+## Usage
+
+```
+caffc [-onefile main.c] -o out_folder/ *.caffc
+```
+
 ## Features
 
 * CaffC code transpiles to _pure C_
