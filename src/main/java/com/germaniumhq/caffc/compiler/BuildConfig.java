@@ -14,6 +14,7 @@ public class BuildConfig {
     private String exeName;
     private String templatesFolder;
     private String outputFolder = "caffc-out";
+    private String oneFile;
     private List<String> inputSources = new ArrayList<>();
     private Map<String, String> features = new HashMap<>();
 
@@ -43,6 +44,14 @@ public class BuildConfig {
 
     public void setOutputFolder(String outputFolder) {
         this.outputFolder = outputFolder;
+    }
+
+    public String getOneFile() {
+        return oneFile;
+    }
+
+    public void setOneFile(String oneFile) {
+        this.oneFile = oneFile;
     }
 
     public String getFeatureSetting(String featureName, String defaultValue) {
