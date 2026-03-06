@@ -31,27 +31,6 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmShift;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolOperation;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionCast;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionIndexAccess;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewArray;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionOpAssign;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
-import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
@@ -149,30 +128,6 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(ReturnInstruction.class, "c/instruction/return.peb")
                 .withMapping(ControlFlowInstruction.class, "c/expression/control.peb")
                 .withMapping(VariableDeclarations.class, "c/expression/variable_declaration.peb")
-
-                // expressions
-                // keep in sync with Expression and caffc.g4
-                .withMapping(ExpressionNumber.class, "c/expression/number.peb")
-                .withMapping(ExpressionString.class, "c/expression/string.peb")
-                .withMapping(ExpressionId.class, "c/expression/id.peb")
-                .withMapping(ExpressionParens.class, "c/expression/parens.peb")
-                .withMapping(ExpressionDotAccess.class, "c/expression/dot_access.peb")
-                .withMapping(ExpressionNewObject.class, "c/expression/new_object.peb")
-                .withMapping(ExpressionNewArray.class, "c/expression/new_array.peb")
-                .withMapping(ExpressionFnCall.class, "c/expression/fn_call.peb")
-                .withMapping(ExpressionIndexAccess.class, "c/expression/index_access.peb")
-                .withMapping(ExpressionCast.class, "c/expression/cast.peb")
-                .withMapping(ExpressionBoolNot.class, "c/expression/bool_not.peb")
-                .withMapping(ExpressionBitNot.class, "c/expression/bit_not.peb")
-                .withMapping(ExpressionUnaryMinus.class, "c/expression/unary_minus.peb")
-                .withMapping(ExpressionMath.class, "c/expression/math.peb") // MulMod Div AddSub
-                .withMapping(ExpressionShift.class, "c/expression/shift.peb")
-                .withMapping(ExpressionBoolCompare.class, "c/expression/bool_compare.peb") // LtLteGtGte EqNeq
-                .withMapping(ExpressionBitOperation.class, "c/expression/bit_operation.peb") // BitAnd BitXor BitOr
-                .withMapping(ExpressionBoolOperation.class, "c/expression/bool_operation.peb") // BoolAnd BoolOr
-                .withMapping(ExpressionTernary.class, "c/expression/ternary.peb") // BoolAnd BoolOr
-                .withMapping(ExpressionAssign.class, "c/expression/assign.peb")
-                .withMapping(ExpressionOpAssign.class, "c/expression/operation_assign.peb") // BoolAnd BoolOr
                 ;
 
         // nested render
