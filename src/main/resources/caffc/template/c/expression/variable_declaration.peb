@@ -1,5 +1,0 @@
-{%- for declaration in ctx.declarations %}
-{%- if declaration.assignExpression != null %}
-{{ declaration.assignExpression | render }}
-{%- endif %}{% if not loop.last %};{% endif %}
-{%- endfor -%}

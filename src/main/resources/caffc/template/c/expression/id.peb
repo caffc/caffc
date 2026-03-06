@@ -1,1 +1,0 @@
-{{ ctx | c_resolve_id }}

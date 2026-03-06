@@ -137,7 +137,7 @@ tagParam:
   constExpression;
 
 constExpression:
-    NUMBER | STRING;
+    NUMBER | STRING | CHAR;
 
 fqdn:
   ID             # FqdnId
@@ -145,9 +145,10 @@ fqdn:
   ;
 
 // keep in sync with CaffcPebblesExtension and Expression
-expression:
-  NUMBER                                                                                           # ExNumber
+expression
+  : NUMBER                                                                                         # ExNumber
   | STRING                                                                                         # ExString
+  | CHAR   	                                                                                       # ExChar
   | ID                                                                                             # ExId
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
@@ -247,17 +248,19 @@ namedTypeTuple:
 // * lexer
 // ***********************************************************************
 
+// chars are either simple characters, a single char escape (i.e. \r, \t, etc)
+// or escapes of the actual UTF-8 bytes, either as hex, or octal.
+// NOTE: all the bytes must be escaped the same way.
+CHAR:
+  '\'' (~[\\\r\n\f'] | SIMPLE_ESCAPE | HEX_ESCAPE+ | OCTAL_ESCAPE+) '\''
+;
+
 STRING: SHORT_STRING | LONG_STRING;
 
-/// shortstring     ::=  "'" shortstringitem* "'" | '"' shortstringitem* '"'
-/// shortstringitem ::=  shortstringchar | stringescapeseq
-/// shortstringchar ::=  <any source character except "\" or newline or the quote>
 fragment SHORT_STRING:
-    '\'' (STRING_ESCAPE_SEQ | ~[\\\r\n\f'])* '\''
-    | '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"])* '"'
+    '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"])* '"'
 ;
-/// longstring      ::=  "'''" longstringitem* "'''" | '"""' longstringitem* '"""'
-fragment LONG_STRING: '\'\'\'' LONG_STRING_ITEM*? '\'\'\'' | '"""' LONG_STRING_ITEM*? '"""';
+fragment LONG_STRING: '"""' LONG_STRING_ITEM*? '"""';
 
 /// longstringitem  ::=  longstringchar | stringescapeseq
 fragment LONG_STRING_ITEM: LONG_STRING_CHAR | STRING_ESCAPE_SEQ;
@@ -265,8 +268,14 @@ fragment LONG_STRING_ITEM: LONG_STRING_CHAR | STRING_ESCAPE_SEQ;
 /// longstringchar  ::=  <any source character except "\">
 fragment LONG_STRING_CHAR: ~'\\';
 
-/// stringescapeseq ::=  "\" <any source character>
-fragment STRING_ESCAPE_SEQ: '\\' . | '\\' NEWLINE;
+SIMPLE_ESCAPE: '\\' ('a' | 'b' | 'e' | 'f' | 'n' | 'r' | 't' | 'v' | '\\' | '\'' | '"' | '?');
+HEX_ESCAPE: '\\' 'x' HexDigit HexDigit;
+OCTAL_ESCAPE: '\\' [0-3] OctalDigit OctalDigit;
+
+fragment STRING_ESCAPE_SEQ: SIMPLE_ESCAPE | HEX_ESCAPE | OCTAL_ESCAPE;
+
+fragment HexDigit: [0-9a-fA-F];
+fragment OctalDigit: [0-7];
 
 fragment NEWLINE: '\r\n' | '\r' | '\n';
 
@@ -355,7 +364,7 @@ fragment OctalConstant
     ;
 
 fragment HexadecimalConstant
-    : HexadecimalPrefix HexadecimalDigit+
+    : HexadecimalPrefix HexDigit+
     ;
 
 fragment HexadecimalPrefix
@@ -368,14 +377,6 @@ fragment Digit
 
 fragment NonzeroDigit
     : [1-9]
-    ;
-
-fragment OctalDigit
-    : [0-7]
-    ;
-
-fragment HexadecimalDigit
-    : [0-9a-fA-F]
     ;
 
 fragment FloatingConstant
@@ -422,16 +423,16 @@ DigitSequence
     ;
 
 fragment HexadecimalFractionalConstant
-    : HexadecimalDigitSequence? '.' HexadecimalDigitSequence
-    | HexadecimalDigitSequence '.'
+    : HexDigitSequence? '.' HexDigitSequence
+    | HexDigitSequence '.'
     ;
 
 fragment BinaryExponentPart
     : [pP] Sign? DigitSequence
     ;
 
-fragment HexadecimalDigitSequence
-    : HexadecimalDigit+
+fragment HexDigitSequence
+    : HexDigit+
     ;
 
 
