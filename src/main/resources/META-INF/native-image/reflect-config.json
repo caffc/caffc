@@ -360,6 +360,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExCharContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$NewTypeContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -954,6 +960,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionChar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionString",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -1278,13 +1290,13 @@
     "allDeclaredFields": true
   },
   {
-    "name": "com.germaniumhq.caffc.compiler.model.source.SourceItem",
+    "name": "com.germaniumhq.caffc.compiler.model.source.HasSourceLocation",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
-    "name": "com.germaniumhq.caffc.compiler.model.source.DefaultSouceItem",
+    "name": "com.germaniumhq.caffc.compiler.model.source.SourceLocation",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -3451,6 +3463,24 @@
   },
   {
     "name": "org.slf4j.spi.MDCAdapter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.slf4j.impl.StaticLoggerBinder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.slf4j.impl.StaticMDCBinder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.slf4j.impl.StaticMarkerBinder",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
