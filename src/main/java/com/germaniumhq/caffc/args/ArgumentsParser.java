@@ -49,7 +49,7 @@ public class ArgumentsParser {
     }
 
     private static void printVersion() {
-        System.out.println("caffc-native 0.0.5");
+        System.out.println("caffc-native 0.0.6");
     }
 
     private static void printHelp() {
