@@ -10,7 +10,7 @@ extern "C" {
 {%- if ctx.resolve(array.name) == null %}
 caffc_class_header {{ array | c_name }}_type = {
     /* fqdn        */ "{{ array.fqdn }}",
-    /* field_count */ 0,
+    /* field_count */ 0
 };
 {%- endif %}
 {%- endfor %}

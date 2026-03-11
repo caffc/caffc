@@ -12,7 +12,8 @@ caffc_bool caffc_is_array(caffc_ptr object) {
 
     caffc_obj = (caffc_object_header*) object;
 
-    return caffc_obj->_caffc_class_header == &caffc_obj_arr_type;
+    return caffc_obj->_caffc_type_id & CAFFC_OBJECT_TYPE_ID_FLAG_MASK ==
+           CAFFC_OBJECT_TYPE_ID_FLAG_ARRAY;
 }
 
 caffc_void caffc_bzero(caffc_ptr p, caffc_u32 size) {
