@@ -162,6 +162,7 @@ expression
   | '~' expression                                                                                 # ExBitNot
   | '-' expression                                                                                 # ExUnaryMinus
 //  | expression NOT? IN expression                                                                # ExNotIn
+  | leftExpression=expression INSTANCEOF rightExpression=expression                                # ExInstanceOf
   | leftExpression=expression ('*'|'%') rightExpression=expression                                 # ExMulMod
   | leftExpression=expression '/' rightExpression=expression                                       # ExDiv
   | leftExpression=expression ('+'|'-') rightExpression=expression                                 # ExAddSub
@@ -298,6 +299,7 @@ FOR: 'for';
 IF: 'if';
 IMPLEMENTS: 'implements';
 IN: 'in';
+INSTANCEOF: 'instanceof';
 INTERFACE: 'interface';
 IS: 'is';
 MODULE: 'module';

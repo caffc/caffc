@@ -7,6 +7,7 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.Map;
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope {
+public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope, TypeDefinitionSymbol {
     /**
      * The name of the class.
      */

@@ -52,7 +52,6 @@ All the "container" symbols have the `typeSymbol` pointing to themselves, since 
 ```plantuml
 class Program <<Scope, ModuleProvider, AstItem>> {
   + stringConstantMap: Map<String, StringConstant>
-  + requestTypeResolve(owner: AstItem, typeName: str): Type
 }
 
 class Module <<Scope, Symbol>> {

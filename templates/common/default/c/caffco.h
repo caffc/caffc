@@ -11,12 +11,16 @@
  *
  * The type_id holds as its first bit the type of the object:
  * regular object is 0, 1 this is an array.
+ *
+ * // FIXME: this should be packed in the type_id
  */
-#define CAFFC_OBJECT_TYPE_ID_FLAG_MASK   0x80000000
-#define CAFFC_OBJECT_TYPE_ID_FLAG_OBJECT 0x00000000
-#define CAFFC_OBJECT_TYPE_ID_FLAG_ARRAY  0x80000000
+#define CAFFC_OBJECT_TYPE_ID_FLAG_MASK   0x80
+#define CAFFC_OBJECT_FLAGS_ARRAY  0x80
+#define CAFFC_OBJECT_FLAGS_GC_MARKED 0x40
 
-#define CAFFC_OBJECT_TYPE_ID_TYPE_MASK   0x70000000
+#define CAFFC_BIT_SET(v, bitval) v = v | (bitval)
+#define CAFFC_BIT_CLEAR(v, bitval) v = v & ~(bitval)
+#define CAFFC_BIT_GET(v, bitval) (v & bitval)
 
 /**
  * An object is marked as used in the first pass, so it won't be
@@ -24,15 +28,13 @@
  * FIXME: I'm not sure I need the static, since static objects
  *        aren't in the allocation list.
  */
-#define CAFFC_OBJECT_FLAGS_GC_MARKED 0x01
-#define CAFFC_OBJECT_FLAGS_GC_STATIC 0x02
 
 /*
  * object header for a normal object (not array, not primitive)
  */
 typedef struct {
     caffc_u32 _caffc_type_id; // type ID of the object.
-    caffc_u8 _caffc_flags; /* FIXME: pack into the type_id? */
+    caffc_u8 _caffc_flags; /* FIXME: pack into the type_id */
     caffc_ptr _caffc_data[];
 } caffc_object_header;
 

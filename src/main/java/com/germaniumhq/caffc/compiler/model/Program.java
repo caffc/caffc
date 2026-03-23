@@ -3,6 +3,7 @@ package com.germaniumhq.caffc.compiler.model;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 import java.util.ArrayList;
@@ -24,7 +25,13 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public static Program INSTANCE = new Program();
 
     public Map<String, Module> modules = new HashMap<>();
-    public Map<TypeName, Symbol> registeredTypes = new HashMap<>();
+
+    /**
+     * Contains all the registered types of the programs. The reason for that is that they
+     * need to have allocated Type IDs. The Type IDs are what CaffC uses internally to
+     * track classes, and see if a class implements an interface.
+     */
+    public Map<TypeName, TypeDefinitionSymbol> registeredSymbols = new HashMap<>();
 
     public SourceLocation sourceLocation = new SourceLocation("program", 0, 0);
 
@@ -58,10 +65,8 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     @Override
     public Module getModule(String moduleName) {
-        Module result = modules.computeIfAbsent(moduleName, Module::new);
+        Module result = modules.computeIfAbsent(moduleName, (s) -> new Module(moduleName));
         result.program = this;
-
-        register(result.typeName(), result);
 
         return result;
     }
@@ -77,18 +82,18 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     /**
      * Register a definition of a type to a specific symbol. A symbol is a link to
-     * the full definition of the given type. For now a ClassDefinition, or a
-     * FunctionDefinition, since we need to match their signatures.
+     * the full _definition_ of the given type. For now a ClassDefinition, or an
+     * InterfaceDefinition.
      *
      * @param typeName
      * @param item
      */
-    public void register(TypeName typeName, Symbol item) {
-        this.registeredTypes.put(typeName, item);
+    public void register(TypeName typeName, TypeDefinitionSymbol item) {
+        this.registeredSymbols.put(typeName, item);
     }
 
-    public Symbol getTypeDefinition(TypeName typeName) {
-        return registeredTypes.get(typeName);
+    public TypeDefinitionSymbol getTypeDefinition(TypeName typeName) {
+        return registeredSymbols.get(typeName);
     }
 
     /**
@@ -99,37 +104,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
         // to ensure parsing is correct.
     }
 
-    private String extractNonArrayTypeName(String name) {
-        while (name.endsWith("[]")) {
-            name = name.substring(0, name.length() - 2);
-        }
-
-        return name;
-    }
-
-    private int extractArrayLevel(String name) {
-        int level = 0;
-
-        while (name.endsWith("[]")) {
-            name = name.substring(0, name.length() - 2);
-            level++;
-        }
-
-        return level;
-    }
-
-    /**
-     * Adds an item to be type resolved after all the AST trees are parsed.
-     */
-    public TypeName requestTypeResolve(AstItem owner, TypeName typeName) {
-        TypeName result = TypeName.copyOf(typeName);
-        TypeResolveRequest request = new TypeResolveRequest(owner, result);
-
-        typeResolveRequests.add(request);
-
-        return result;
-    }
-
+    @UsedInTemplate("constants.h")
     public Collection<Integer> strStructBytesSizes() {
         TreeSet<Integer> sizes = new TreeSet<>();
 
@@ -168,10 +143,19 @@ public class Program implements ModuleProvider, AstItem, Scope {
         throw new IllegalStateException("BUG: recurse resolve types can only start at compilation unit level");
     }
 
+    /**
+     * The currently compiled program instance. In case we're running integration tests, we're going
+     * to reset this.
+     * @return
+     */
     public static Program get() {
         return INSTANCE;
     }
 
+    /**
+     * When running test, we want a clean new instance of the program.
+     * @return
+     */
     public static Program reset() {
         INSTANCE = new Program();
 
