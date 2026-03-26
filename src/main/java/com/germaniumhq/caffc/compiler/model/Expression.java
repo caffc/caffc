@@ -11,6 +11,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionIndexAccess;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionInstanceOf;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewArray;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
@@ -92,6 +93,10 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExUnaryMinusContext unaryMinusContext) {
             return ExpressionUnaryMinus.fromAntlr(unit, owner, unaryMinusContext);
+        }
+
+        if (expression instanceof caffcParser.ExInstanceOfContext instanceOfContext) {
+            return ExpressionInstanceOf.fromAntlr(unit, owner, instanceOfContext);
         }
 
         if (expression instanceof caffcParser.ExMulModContext mulModContext) {
