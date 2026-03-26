@@ -13,8 +13,8 @@
  */
 typedef struct {
     caffc_u32 _caffc_type_id;
-    caffc_u32 _caffc_contained_type_id;
     caffc_u8 _caffc_flags; /* FIXME: pack into the type_id? */
+    caffc_u32 _caffc_contained_type_id;
     caffc_i32 _caffc_field_count;
     caffc_ptr _caffc_data[];
 } caffc_array_header;

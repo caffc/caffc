@@ -63,6 +63,11 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     private boolean isResolved;
 
     /**
+     * Type ID index in the class definition array.
+     */
+    private int typeId;
+
+    /**
      * Returns the name of the class.
      *
      * @return The name of the class.
@@ -259,5 +264,15 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         }
 
         return true;
+    }
+
+    @Override
+    public int typeId() {
+        return this.typeId;
+    }
+
+    @Override
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 }

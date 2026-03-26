@@ -23,7 +23,13 @@ import java.util.Set;
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope, HasSourceLocation, TypeDefinitionSymbol {
+public class ClassDefinition implements
+    HasMethods,
+    GenericsDefinitionsSymbol,
+    Scope,
+    HasSourceLocation,
+    TypeDefinitionSymbol        // this symbol is present in the class definition array
+{
     /**
      * The name of the class.
      */
@@ -89,6 +95,13 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
      * in the resolve calls.
      */
     private boolean isResolved;
+
+    /**
+     * The numerical index that identifies this class in the full program. All
+     * classes have their information kept into a class array. This would be
+     * the index into the said class array.
+     */
+    private int typeId;
 
     /**
      * Counts the number of fields that require garbage collection.
@@ -357,5 +370,15 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     @Override
     public SourceLocation getSourceLocation() {
         return this.sourceLocation;
+    }
+
+    @Override
+    public int typeId() {
+        return this.typeId;
+    }
+
+    @Override
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 }

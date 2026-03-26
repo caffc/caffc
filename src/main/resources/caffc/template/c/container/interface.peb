@@ -1,8 +1,7 @@
 {# class typeName definition #}
 caffc_class_header {{ ctx.definition.typeName | c_name }}_type = {
     /* fqdn        */ "{{ ctx.definition.typeName.fqdn }}",
-    /* field_count */ 0,                   /* n/a for interfaces */
-    /* type_id     */ {{ ctx.definition.typeName.typeId }}
+    /* field_count */ 0      /* n/a for interfaces */
 };
 
 {#  interface functions #}

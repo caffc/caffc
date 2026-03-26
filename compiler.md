@@ -356,16 +356,28 @@ Block *.. AsmInstruction: instructions
 
 The linear form can add any instructions, including nested blocks, for things such as `for`, `if`, etc. They will be collapsed in the end, the variables extracted and merged to the parent function, and the instructions written in a serial fashion.
 
-## Random Notes
+## C Notes
 
 ### C Object Types
 
-For every CaffC class there's two things generated:
+For every CaffC class there's generated:
 
-1. a `struct <obj_name>_struct;` that contains the actual struct definition, and
-2. a `typedef struct <obj_name>_struct <obj_name>;` that allows us to use just the object name without always prefixing it with `struct`.
+1. a `<name>_type` definition, which is the class definition, basically a `caffc_class_header` spec,
+   containing RTTI - fields count for GC, FQDN, inheritance array about the class. Interfaces 
+   also have this RTTI information generated, in the same array. All the types are collected
+   into the `_caffc_types` array, that holds the global RTTI info.
+2. a `struct <name>_struct;` that contains the actual object memory layout, with
+   the fields ordered at the beginning, immediately after the object header. When having an
+   object instance, it will be a reference to an instance of this struct. Each `<name>_struct`
+   has as its first field the `caffc_object_header` containing the `type_id` of the object - an index in the `_caffc_types` array.
+3. `typedef struct <name>_struct <name>;` that allows us to just use the object name
+   without always prefixing it with `struct`. 
+> [!Note] Arrays Use Different Headers
+> The `caffc_array_header` is present, if the object is an array (instead of `caffc_object_header`). The array header matches the structure with the object header. (for type_id/GC flags)
 
 ### Arrays
+
+The 
 
 Arrays are instantiated with `MODULE_ARRNAME_arr_newa()`, for each object
 array, that internally will defer to `caffc_obj_arr_new`.
