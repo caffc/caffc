@@ -8,7 +8,7 @@ public class TestS051InstanceOf {
      * Tests if `instanceof` correctly generates the code.
      */
     @Test
-    public void testAssignMulti() {
+    public void testInstanceOfRendering() {
         String code = CodeAssertsStr.compileCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
             "a/a.caffc",
@@ -31,15 +31,8 @@ public class TestS051InstanceOf {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_multi_structreturn _caffc_temp_caffc_multi_structreturn_1 = {0, 0};
+                _caffc_temp_caffc_bool_1 = caffc_instanceof_check(a, /* caffc:null:A:OBJECT */
                 """,
-            "there should be a local variable declaration for the struct response");
-
-        CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_multi_structreturn_1 = caffc_multi();
-                x = _caffc_temp_caffc_multi_structreturn_1.x;
-                caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
-                """,
-            "multi assign should be deconstructed from the struct response");
+            "There should be an instanceof check.");
     }
 }

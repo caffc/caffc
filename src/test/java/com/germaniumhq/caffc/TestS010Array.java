@@ -85,11 +85,6 @@ public class TestS010Array {
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-
-                        class obj_arr {}
-                        """),
                         new TestUnit("a/a.caffc", """
                         module yolo
 
@@ -118,11 +113,6 @@ public class TestS010Array {
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-
-                        class obj_arr {}
-                        """),
                         new TestUnit("a/a.caffc", """
                         module yolo
 

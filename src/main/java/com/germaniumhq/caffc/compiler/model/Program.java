@@ -52,10 +52,15 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public Map<String, String> nameToLocation = new HashMap<>(); // name -> file.location:line
     public Map<String, Set<String>> locationToNames = new HashMap<>(); // file.location -> [names]
 
-    public List<TypeResolveRequest> typeResolveRequests = new ArrayList<>();
     private Map<TypeName, Symbol> primitiveSymbols = new HashMap<>();
 
     private Set<StringConstant> stringConstants = new LinkedHashSet<>();
+
+    /**
+     * Counter for the type ids. Whenever a new class/interface is registered, this number gets incremented
+     * by one. This will mark the index of the class in our _caffc_types array.
+     */
+    private int lastTypeId;
 
     private Program() {
         for (TypeName primitiveTypeName : TypeName.PRIMITIVE_TYPES) {
@@ -89,7 +94,18 @@ public class Program implements ModuleProvider, AstItem, Scope {
      * @param item
      */
     public void register(TypeName typeName, TypeDefinitionSymbol item) {
+        if (registeredSymbols.containsKey(typeName)) {
+            // it's a problem if we register it twice, since the type_id generation is going to get borked
+            throw new IllegalStateException(String.format("Type %s is already registered", typeName));
+        }
+
+        item.setTypeId(this.nextTypeId());
+
         this.registeredSymbols.put(typeName, item);
+    }
+
+    public int nextTypeId() {
+        return lastTypeId++;
     }
 
     public TypeDefinitionSymbol getTypeDefinition(TypeName typeName) {
