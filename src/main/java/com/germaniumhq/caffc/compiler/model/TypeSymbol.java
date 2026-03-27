@@ -10,7 +10,21 @@ import java.util.Objects;
  * A symbol that's just a type wrapper for primitives + void.
  */
 public class TypeSymbol implements Symbol, AstItem {
+    public static final Symbol PTR = new TypeSymbol(TypeName.PTR);
+    public static final Symbol U8 = new TypeSymbol(TypeName.U8);
+    public static final Symbol I8 = new TypeSymbol(TypeName.I8);
+    public static final Symbol U16 = new TypeSymbol(TypeName.U16);
+    public static final Symbol I16 = new TypeSymbol(TypeName.I16);
+    public static final Symbol U32 = new TypeSymbol(TypeName.U32);
+    public static final Symbol I32 = new TypeSymbol(TypeName.I32);
+    public static final Symbol U64 = new TypeSymbol(TypeName.U64);
+    public static final Symbol I64 = new TypeSymbol(TypeName.I64);
+    public static final Symbol F32 = new TypeSymbol(TypeName.F32);
+    public static final Symbol F64 = new TypeSymbol(TypeName.F64);
+    public static final Symbol BOOL = new TypeSymbol(TypeName.BOOL);
     public static final Symbol VOID = new TypeSymbol(TypeName.VOID);
+    public static final Symbol STR = new TypeSymbol(TypeName.STR);
+    public static final Symbol OBJ = new TypeSymbol(TypeName.OBJ);
 
     private final TypeName typeName;
 
