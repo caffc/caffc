@@ -1,7 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
@@ -10,8 +9,8 @@ import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ExpressionOpAssign implements Expression {
@@ -21,7 +20,6 @@ public final class ExpressionOpAssign implements Expression {
     public AstItem owner;
 
     public SourceLocation sourceLocation;
-    public Symbol symbol;
 
     public static ExpressionOpAssign fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExOpAssignContext opAssignContext) {
         ExpressionOpAssign result = new ExpressionOpAssign();
@@ -38,7 +36,7 @@ public final class ExpressionOpAssign implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return this.symbol;
+        return TypeSymbol.VOID;
     }
 
     @Override
@@ -55,8 +53,6 @@ public final class ExpressionOpAssign implements Expression {
     public void recurseResolveTypes() {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
-
-        this.symbol = new TypeSymbol(TypeName.VOID);
     }
 
     @Override

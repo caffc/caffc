@@ -10,7 +10,6 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBoolOperation;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ExpressionBoolOperation implements Expression {
@@ -51,7 +50,7 @@ public final class ExpressionBoolOperation implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return new TypeSymbol(TypeName.BOOL);
+        return TypeSymbol.BOOL;
     }
 
     @Override
@@ -77,7 +76,7 @@ public final class ExpressionBoolOperation implements Expression {
         AsmLinearFormResult leftLinearForm = this.left.asLinearForm(block);
         AsmLinearFormResult rightLinearForm = this.right.asLinearForm(block);
 
-        AsmVar resultVar = block.addTempVar(this, new TypeSymbol(TypeName.BOOL));
+        AsmVar resultVar = block.addTempVar(this, TypeSymbol.BOOL);
 
         linearFormResult.instructions.addAll(leftLinearForm.instructions);
         linearFormResult.instructions.addAll(rightLinearForm.instructions);

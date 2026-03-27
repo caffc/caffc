@@ -15,13 +15,11 @@ import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
-import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ExpressionInstanceOf implements Expression {
     public SourceLocation sourceLocation;
     public AstItem owner;
-    private TypeSymbol typeSymbol;
 
     public Expression checkedObject;
 
@@ -36,14 +34,13 @@ public final class ExpressionInstanceOf implements Expression {
         result.owner = owner;
         result.instanceOfTypeSearch = SymbolSearch.fromAntlr(unit, instanceOfContext.newType());
         result.checkedObject = Expression.fromAntlr(unit, result, instanceOfContext.leftExpression);
-        result.typeSymbol = new TypeSymbol(TypeName.BOOL);
 
         return result;
     }
 
     @Override
     public Symbol typeSymbol() {
-        return this.typeSymbol;
+        return TypeSymbol.BOOL;
     }
 
     @Override
@@ -81,8 +78,7 @@ public final class ExpressionInstanceOf implements Expression {
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        // FIXME: create constants for the primitive type symbols
-        AsmVar resultValue = block.addTempVar(this, this.typeSymbol); // add a BOOL variable
+        AsmVar resultValue = block.addTempVar(this, TypeSymbol.BOOL); // add a BOOL variable
         result.value = resultValue;
 
         AsmLinearFormResult checkedObjectLinear = this.checkedObject.asLinearForm(block);

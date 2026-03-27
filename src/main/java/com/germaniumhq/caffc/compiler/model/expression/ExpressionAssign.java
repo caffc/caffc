@@ -80,7 +80,7 @@ public final class ExpressionAssign implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return new TypeSymbol(TypeName.VOID);
+        return TypeSymbol.VOID;
     }
 
     @Override
