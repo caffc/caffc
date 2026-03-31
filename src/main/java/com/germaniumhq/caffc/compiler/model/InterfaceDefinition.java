@@ -275,4 +275,9 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     public void setTypeId(int typeId) {
         this.typeId = typeId;
     }
+
+    @Override
+    public int getGcFieldsCount() {
+        return 0;
+    }
 }

@@ -16,4 +16,9 @@ public interface TypeDefinitionSymbol extends Symbol {
      * @param typeId
      */
     void setTypeId(int typeId);
+
+    /**
+     * How many fields from this are supposed to be handled by the GC.
+     */
+    int getGcFieldsCount();
 }

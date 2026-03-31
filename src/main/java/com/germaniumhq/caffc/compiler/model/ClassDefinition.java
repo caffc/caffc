@@ -48,7 +48,7 @@ public class ClassDefinition implements
     /**
      * The count of fields that require garbage collection.
      */
-    public int gcFieldsCount;
+    private int gcFieldsCount;
 
     /**
      * Only applicable for arrays, it points to the symbol definition
@@ -108,7 +108,7 @@ public class ClassDefinition implements
      *
      * @return The count of fields with data type OBJECT.
      */
-    public int countGcFieldsCount() {
+    private int countGcFieldsCount() {
         int i = 0;
 
         for (Field f : fields) {
@@ -380,5 +380,10 @@ public class ClassDefinition implements
     @Override
     public void setTypeId(int typeId) {
         this.typeId = typeId;
+    }
+
+    @Override
+    public int getGcFieldsCount() {
+        return this.gcFieldsCount;
     }
 }

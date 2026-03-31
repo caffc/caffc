@@ -1,12 +1,21 @@
 #include "module_caffc.h"
 
+caffc_class_header* _caffc_class_headers = {
+{%- for caffc_type in program.typeDefinitionSymbols %}
+    {
+        "{{ caffc_type.typeName }}",
+        /* gc fields */ {{ caffc_type.gcFieldsCount }},
+        &_caffc_inheritance_data_{{ caffc_type.typeId }}
+    }{% if not loop.last%},{% endif %}
+{%- endfor %}
+};
+
 /*
  * All strings are written with the data serialized already. When referring
  * to a constant, a cast to `(caffc_str*)&{constant.name}` will be performed.
  * This ensures there's no time spent into instantiating _native_ CaffC constant
  * strings.
  */
-
 {% for constant in program.stringConstants %}
 caffc_str_{{ constant.bytesSize }} {{ constant.name }} = {
     /* _caffc_class_header */ &caffc_str_type,

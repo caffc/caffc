@@ -64,7 +64,7 @@ void caffc_gc_ms_mark() {
             field_ptr = array_header->_caffc_data;
             field_count = array_header->_caffc_field_count;
         } else { /* regular object */
-            class_header = _caffc_type_ids[object_header->_caffc_type_id & CAFFC_OBJECT_TYPE_ID_TYPE_MASK];
+            class_header = _caffc_class_headers[object_header->_caffc_type_id];
             field_ptr = object_header->_caffc_data;
             field_count = class_header->field_count;
         }

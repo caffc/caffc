@@ -104,6 +104,15 @@ public class Program implements ModuleProvider, AstItem, Scope {
         this.registeredSymbols.put(typeName, item);
     }
 
+    @UsedInTemplate("constants_c.peb")
+    public List<TypeDefinitionSymbol> getTypeDefinitionSymbols() {
+        List<TypeDefinitionSymbol> result = new ArrayList<>();
+        result.addAll(registeredSymbols.values());
+        result.sort((o1, o2) -> o1.typeId() - o2.typeId());
+
+        return result;
+    }
+
     public int nextTypeId() {
         return lastTypeId++;
     }
