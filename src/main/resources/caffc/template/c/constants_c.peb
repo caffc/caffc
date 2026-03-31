@@ -1,11 +1,25 @@
 #include "module_caffc.h"
 
+{%- for caffc_type in program.typeDefinitionSymbols %}
+{%- if caffc_type.implementedTypes.size > 1 %}
+/* {{ caffc_type.typeName }} */
+caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance_data_{{ caffc_type.typeId }} = {
+    /* count */ {{ caffc_type.implementedTypes.size }},
+    {
+    {%- for implementedType in caffc_type.implementedTypes %}
+    {{ implementedType.typeId }}{% if not loop.last %},{% endif %} /* {{ implementedType.typeName }} */
+    {%- endfor %}
+    }
+};
+{%- endif %}
+{%- endfor %}
+
 caffc_class_header* _caffc_class_headers = {
 {%- for caffc_type in program.typeDefinitionSymbols %}
     {
         "{{ caffc_type.typeName }}",
         /* gc fields */ {{ caffc_type.gcFieldsCount }},
-        &_caffc_inheritance_data_{{ caffc_type.typeId }}
+        {% if caffc_type.implementedTypes.size > 1 %}&_caffc_inheritance_data_{{ caffc_type.typeId }}{% else %}caffc_null{% endif %}
     }{% if not loop.last%},{% endif %}
 {%- endfor %}
 };

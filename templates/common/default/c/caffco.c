@@ -4,9 +4,9 @@
  * Checks if a given object is an instance of a type.
  */
 caffc_bool caffc_instanceof_check(caffc_ptr o, caffc_u32 ancestor_type_id) {
-    caffc_object_header* header;
-    caffc_u32 i;
-    caffc_class_inheritance_data* inheritance_data;
+    caffc_object_header* header = caffc_null;
+    caffc_u32 i = 0;
+    caffc_inheritance_data* inheritance_data = caffc_null;
 
     /* null pointers can't be the instanceof anything */
     if (!o) {

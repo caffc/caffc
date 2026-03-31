@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents a class definition in the symbol table, implementing both Symbol and Scope interfaces.
@@ -102,6 +103,11 @@ public class ClassDefinition implements
      * the index into the said class array.
      */
     private int typeId;
+
+    /**
+     * A flattened list of the implemented type ids for an object.
+     */
+    private TreeSet<TypeDefinitionSymbol> _implementedTypeIds;
 
     /**
      * Counts the number of fields that require garbage collection.
@@ -385,5 +391,23 @@ public class ClassDefinition implements
     @Override
     public int getGcFieldsCount() {
         return this.gcFieldsCount;
+    }
+
+    @Override
+    public TreeSet<TypeDefinitionSymbol> getImplementedTypes() {
+        if (this._implementedTypeIds != null) {
+            return this._implementedTypeIds;
+        }
+
+        this._implementedTypeIds = new TreeSet<>((o1, o2) -> {
+            return o1.typeId() - o2.typeId();
+        });
+
+        this._implementedTypeIds.add(this);
+        for (InterfaceDefinition interfaceDefinition : implementedInterfaces) {
+            this._implementedTypeIds.addAll(interfaceDefinition.getImplementedTypes());
+        }
+
+        return this._implementedTypeIds;
     }
 }

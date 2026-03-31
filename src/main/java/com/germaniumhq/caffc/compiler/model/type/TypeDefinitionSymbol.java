@@ -1,5 +1,7 @@
 package com.germaniumhq.caffc.compiler.model.type;
 
+import java.util.TreeSet;
+
 /**
  * A TypeDefinition is a class/interface registered type where we need to know its type id.
  * There's only two things right now that implement this: classes and interfaces.
@@ -21,4 +23,6 @@ public interface TypeDefinitionSymbol extends Symbol {
      * How many fields from this are supposed to be handled by the GC.
      */
     int getGcFieldsCount();
+
+    TreeSet<TypeDefinitionSymbol> getImplementedTypes();
 }

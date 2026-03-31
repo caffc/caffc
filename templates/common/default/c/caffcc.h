@@ -7,7 +7,7 @@
 typedef struct {
     caffc_u32 count;
     caffc_u32 implemented_type_ids[];
-} caffc_class_inheritance_data;
+} caffc_inheritance_data;
 
 /*
  * class header for objects (all except primitives)
@@ -26,13 +26,14 @@ typedef struct {
      * NOTE: This is not used in object arrays, arrays have their own field count,
      *       nor in interfaces as they don't have such fields.
      * // FIXME: move out into its own array? interfaces don't need to loose 4 bytes
+     * //        for no reason.
      */
     caffc_i32 field_count;
 
     /**
      * RTTI Inheritance information, for `instanceof`.
      */
-    caffc_class_inheritance_data* inheritance_data;
+    caffc_inheritance_data* inheritance_data;
 } caffc_class_header;
 
 /*

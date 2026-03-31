@@ -13,6 +13,7 @@ import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Represents a class definition in the symbol table, implementing both Symbol and Scope interfaces.
@@ -66,6 +67,8 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
      * Type ID index in the class definition array.
      */
     private int typeId;
+
+    private TreeSet<TypeDefinitionSymbol> _implementedTypes;
 
     /**
      * Returns the name of the class.
@@ -279,5 +282,23 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     @Override
     public int getGcFieldsCount() {
         return 0;
+    }
+
+    @Override
+    public TreeSet<TypeDefinitionSymbol> getImplementedTypes() {
+        if (this._implementedTypes != null) {
+            return this._implementedTypes;
+        }
+
+        this._implementedTypes = new TreeSet<>((o1, o2) -> {
+            return o1.typeId() - o2.typeId();
+        });
+
+        this._implementedTypes.add(this);
+        for (InterfaceDefinition interfaceDefinition : implementedInterfaces) {
+            this._implementedTypes.addAll(interfaceDefinition.getImplementedTypes());
+        }
+
+        return this._implementedTypes;
     }
 }
