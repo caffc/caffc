@@ -27,7 +27,7 @@ array constructors
 {%- else %}
 {{ array | c_name }}* {{ array | c_name }}_newa(caffc_i32 size) {
     caffc_obj_arr* _this = caffc_obj_arr_new(size);
-    _this->_caffc_contained_class_header = &{{ array.childType | c_name }}_type;
+    /* _this->_caffc_contained_type_id = {{ array.childType }}; {{ array.childType }} */
 
     return ({{ array | c_name }}*) _this;
 }

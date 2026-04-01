@@ -140,6 +140,19 @@ public class Program implements ModuleProvider, AstItem, Scope {
         return sizes;
     }
 
+    @UsedInTemplate("constants.h")
+    public Collection<Integer> inheritanceDataSizes() {
+        TreeSet<Integer> sizes = new TreeSet<>();
+
+        for (TypeDefinitionSymbol type : getTypeDefinitionSymbols()) {
+            if (type.getImplementedTypes().size() > 1) {
+                sizes.add(type.getImplementedTypes().size());
+            }
+        }
+
+        return sizes;
+    }
+
     @Override
     public Symbol resolve(String name) {
         if (modules.containsKey(name)) {

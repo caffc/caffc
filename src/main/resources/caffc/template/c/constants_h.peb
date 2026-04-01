@@ -20,4 +20,19 @@ typedef struct {
 extern caffc_str_{{ constant.bytesSize }} {{ constant.name }};
 {% endfor %}
 
+/* inheritance data structs */
+{%- for inheritanceDataSize in program.inheritanceDataSizes %}
+typedef struct {
+    caffc_u32 count;
+    caffc_u32 implemented_type_ids[{{ inheritanceDataSize }}];
+} caffc_inheritance_data_{{ inheritanceDataSize }};
+{% endfor %}
+
+/* inheritance data variables */
+{%- for caffc_type in program.typeDefinitionSymbols %}
+{%- if caffc_type.implementedTypes.size > 1 %}
+extern caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance_data_{{ caffc_type.typeId }};
+{%- endif %}
+{%- endfor %}
+
 #endif /* caffc_program_constants */

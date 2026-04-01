@@ -22,12 +22,8 @@ caffc_u32 total_allocated = 0;
 /* forward declarations */
 void caffc_gc_perform();
 
-caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object_size) {
+caffc_object_header* caffc_new(caffc_u32 object_type_id, caffc_u32 object_size) {
     caffc_object_header* result;
-
-    if (!object_type) {
-        return caffc_null;
-    }
 
     if (object_size < sizeof(caffc_object_header)) {
         printf("invalid malloc, prepare to die. requested object size: %ud, "
@@ -43,7 +39,7 @@ caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object
     result = malloc(object_size);
 
     memset(result, 0, object_size);
-    result->_caffc_class_header = object_type;
+    result->_caffc_type_id = object_type_id;
 
     /* add the current pointer */
     caffc_gc_pointer_list_add(&caffc_all_objects, result);
