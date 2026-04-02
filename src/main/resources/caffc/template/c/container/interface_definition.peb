@@ -1,5 +1,5 @@
 typedef struct {{ ctx.typeName | c_name }}_struct {
-    caffc_class_header* _caffc_class_header;
+    caffc_u32 _caffc_type_id;
 } {{ ctx.typeName | c_name }};
 
 /* FIXME: needed? there isn't such a thing anyway */

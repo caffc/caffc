@@ -1,4 +1,5 @@
 #include "caffco.h"
+#include "caffc_program_constants.h"
 
 /**
  * Checks if a given object is an instance of a type.
@@ -22,6 +23,12 @@ caffc_bool caffc_instanceof_check(caffc_ptr o, caffc_u32 ancestor_type_id) {
         if (inheritance_data->implemented_type_ids[i] == ancestor_type_id) {
             return caffc_true;
         }
+    }
+
+    /* everything implements the `obj` interface. we search it last because it's unlikely
+       anyone actually calls it. */
+    if (header->_caffc_type_id == CAFFC_OBJ_TYPE_ID) {
+        return caffc_true;
     }
 
     return caffc_false;

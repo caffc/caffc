@@ -1,5 +1,20 @@
 #include "module_caffc.h"
 
+/* NAME data ***************************************************** */
+char* caffc_type_id_name[] = {
+{%- for symbol in program.typeDefinitionSymbols %}
+  /* {{ symbol.typeId }} */, "{{symbol.typeName}}"{%if not loop.last %},{%endif%}
+{%- endfor %}
+}
+
+/* GC_COUNT data ************************************************* */
+/* FIXME: move to u8? 200 fields is already excessive */
+caffc_u32 caffc_type_id_gc_count[] = {
+{%- for symbol in program.typeDefinitionSymbols %}
+  /* {{ symbol.typeId }}: {{symbol.typeName}} */, {{symbol.gcFieldsCount}}{%if not loop.last %},{%endif%}
+{%- endfor %}
+}
+
 {%- for caffc_type in program.typeDefinitionSymbols %}
 {%- if caffc_type.implementedTypes.size > 1 %}
 /* {{ caffc_type.typeName }} */
@@ -14,15 +29,15 @@ caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance
 {%- endif %}
 {%- endfor %}
 
-caffc_class_header* _caffc_class_headers = {
-{%- for caffc_type in program.typeDefinitionSymbols %}
-    {
-        "{{ caffc_type.typeName }}",
-        /* gc fields */ {{ caffc_type.gcFieldsCount }},
-        {% if caffc_type.implementedTypes.size > 1 %}&_caffc_inheritance_data_{{ caffc_type.typeId }}{% else %}caffc_null{% endif %}
-    }{% if not loop.last%},{% endif %}
+caffc_inheritance_data caffc_type_id_inheritance[] = {
+{%- for symbol in program.typeDefinitionSymbols %}
+  {%- if symbol.implementedTypes.size > 1 %}
+/* {{ symbol.typeId }}: {{symbol.typeName}} */, (caffc_inheritance_data*)_caffc_inheritance_data_{{ symbol.typeId }}{%if not loop.last %},{%endif%}
+  {%- else %}
+/* {{ symbol.typeId }}: {{symbol.typeName}} */, caffc_null{%if not loop.last %},{%endif%}
+  {%- endif %}
 {%- endfor %}
-};
+}
 
 /*
  * All strings are written with the data serialized already. When referring
@@ -32,7 +47,7 @@ caffc_class_header* _caffc_class_headers = {
  */
 {% for constant in program.stringConstants %}
 caffc_str_{{ constant.bytesSize }} {{ constant.name }} = {
-    /* _caffc_class_header */ &caffc_str_type,
+    /* _caffc_type_id */ CAFFC_STR_TYPE_ID,
     /* _caffc_flags */ 0,
     /* size */ {{ constant.bytesSize }},
     { {{ constant.valueAsBytes }} }

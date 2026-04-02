@@ -33,7 +33,7 @@
  * object header for a normal object (not array, not primitive)
  */
 typedef struct {
-    caffc_u32 _caffc_type_id; // type ID of the object.
+    caffc_u32 _caffc_type_id; /* type ID of the object. */
     caffc_u8 _caffc_flags; /* FIXME: pack into the type_id */
     caffc_ptr _caffc_data[];
 } caffc_object_header;

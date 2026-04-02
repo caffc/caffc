@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -9,6 +10,7 @@ import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
      * need to have allocated Type IDs. The Type IDs are what CaffC uses internally to
      * track classes, and see if a class implements an interface.
      */
-    public Map<TypeName, TypeDefinitionSymbol> registeredSymbols = new HashMap<>();
+    public Map<TypeName, TypeDefinitionSymbol> registeredSymbols = new LinkedHashMap<>();
 
     public SourceLocation sourceLocation = new SourceLocation("program", 0, 0);
 
@@ -206,5 +208,27 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     public void addStringConstant(StringConstant stringConstant) {
         this.stringConstants.add(stringConstant);
+    }
+
+    @UsedInTemplate("constants_h.peb")
+    public Integer getObjTypeId() {
+        TypeDefinitionSymbol objSymbol = this.registeredSymbols.get(TypeName.OBJ);
+
+        if (objSymbol == null) {
+            CaffcCompiler.get().fatal((SourceLocation) null, "BUG?: Unable to find `obj` in symbols.");
+        }
+
+        return objSymbol.typeId();
+    }
+
+    @UsedInTemplate("constants_h.peb")
+    public Integer getStrTypeId() {
+        TypeDefinitionSymbol strSymbol = this.registeredSymbols.get(TypeName.STR);
+
+        if (strSymbol == null) {
+            CaffcCompiler.get().fatal((SourceLocation) null, "BUG?: Unable to find `str` in symbols.");
+        }
+
+        return strSymbol.typeId();
     }
 }

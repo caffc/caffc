@@ -1,8 +1,5 @@
 #include "caffca.h"
 
-/* defined in the module_caffc.h */
-extern caffc_class_header caffc_obj_arr_type;
-
 caffc_bool caffc_is_array(caffc_ptr object) {
     caffc_object_header* caffc_obj;
 
