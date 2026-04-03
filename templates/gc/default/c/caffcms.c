@@ -22,7 +22,6 @@ caffc_gc_pointer_list caffc_all_objects;
 void caffc_gc_ms_mark() {
     caffc_gc_pointer_list work_list;
     caffc_object_header* object_header = caffc_null;
-    caffc_class_header* class_header = caffc_null;
     caffc_u32 i = 0, j = 0;
     caffc_ptr field_ptr = caffc_null;
     caffc_u32 field_count = 0;

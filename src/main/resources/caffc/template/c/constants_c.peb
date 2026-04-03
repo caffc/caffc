@@ -3,17 +3,17 @@
 /* NAME data ***************************************************** */
 char* caffc_type_id_name[] = {
 {%- for symbol in program.typeDefinitionSymbols %}
-  /* {{ symbol.typeId }} */, "{{symbol.typeName}}"{%if not loop.last %},{%endif%}
+  /* {{ symbol.typeId }} */ "{{symbol.typeName}}"{%if not loop.last %},{%endif%}
 {%- endfor %}
-}
+};
 
 /* GC_COUNT data ************************************************* */
 /* FIXME: move to u8? 200 fields is already excessive */
 caffc_u32 caffc_type_id_gc_count[] = {
 {%- for symbol in program.typeDefinitionSymbols %}
-  /* {{ symbol.typeId }}: {{symbol.typeName}} */, {{symbol.gcFieldsCount}}{%if not loop.last %},{%endif%}
+  /* {{ symbol.typeId }}: {{symbol.typeName}} */ {{symbol.gcFieldsCount}}{%if not loop.last %},{%endif%}
 {%- endfor %}
-}
+};
 
 {%- for caffc_type in program.typeDefinitionSymbols %}
 {%- if caffc_type.implementedTypes.size > 1 %}
@@ -32,12 +32,12 @@ caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance
 caffc_inheritance_data* caffc_type_id_inheritance[] = {
 {%- for symbol in program.typeDefinitionSymbols %}
   {%- if symbol.implementedTypes.size > 1 %}
-/* {{ symbol.typeId }}: {{symbol.typeName}} */, (caffc_inheritance_data*)&_caffc_inheritance_data_{{ symbol.typeId }}{%if not loop.last %},{%endif%}
+/* {{ symbol.typeId }}: {{symbol.typeName}} */ (caffc_inheritance_data*)&_caffc_inheritance_data_{{ symbol.typeId }}{%if not loop.last %},{%endif%}
   {%- else %}
-/* {{ symbol.typeId }}: {{symbol.typeName}} */, caffc_null{%if not loop.last %},{%endif%}
+/* {{ symbol.typeId }}: {{symbol.typeName}} */ caffc_null{%if not loop.last %},{%endif%}
   {%- endif %}
 {%- endfor %}
-}
+};
 
 /*
  * All strings are written with the data serialized already. When referring
