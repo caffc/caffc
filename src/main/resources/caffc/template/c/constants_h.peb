@@ -10,7 +10,7 @@
 
 /* The data is split into multiple arrays, with an array for each
  field we'd normally be interested in. Each array name is prefixed by:
- caffc_type_id_<key>
+ caffc_type_id_<key>. The following arrays are defined:
    name:     the name of the type
    gc_count: how many variables are tracked by the GC
    inherit:  inheritance data struct pointer
@@ -44,7 +44,7 @@ extern caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inhe
 {%- endif %}
 {%- endfor %}
 
-extern caffc_inheritance_data caffc_type_id_inheritance[];
+extern caffc_inheritance_data* caffc_type_id_inheritance[];
 
 /* ******************************************************************
  * STRING constants

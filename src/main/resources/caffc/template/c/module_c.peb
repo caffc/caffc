@@ -5,16 +5,6 @@ extern "C" {
 
 #include "{{ ctx | c_global_header }}"
 
-/* registered array typeName definitions */
-{%- for array in ctx.registeredArrays %}
-{%- if ctx.resolve(array.name) == null %}
-caffc_class_header {{ array | c_name }}_type = {
-    /* fqdn        */ "{{ array.fqdn }}",
-    /* field_count */ 0
-};
-{%- endif %}
-{%- endfor %}
-
 {# we create a generic ccaf array, and we patch its header for NEW constructs #}
 /* **************************************************************
 array constructors

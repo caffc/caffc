@@ -29,10 +29,10 @@ caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance
 {%- endif %}
 {%- endfor %}
 
-caffc_inheritance_data caffc_type_id_inheritance[] = {
+caffc_inheritance_data* caffc_type_id_inheritance[] = {
 {%- for symbol in program.typeDefinitionSymbols %}
   {%- if symbol.implementedTypes.size > 1 %}
-/* {{ symbol.typeId }}: {{symbol.typeName}} */, (caffc_inheritance_data*)_caffc_inheritance_data_{{ symbol.typeId }}{%if not loop.last %},{%endif%}
+/* {{ symbol.typeId }}: {{symbol.typeName}} */, (caffc_inheritance_data*)&_caffc_inheritance_data_{{ symbol.typeId }}{%if not loop.last %},{%endif%}
   {%- else %}
 /* {{ symbol.typeId }}: {{symbol.typeName}} */, caffc_null{%if not loop.last %},{%endif%}
   {%- endif %}

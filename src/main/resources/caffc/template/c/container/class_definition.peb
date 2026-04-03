@@ -24,8 +24,6 @@ typedef struct {{ ctx.typeName | c_name }}_struct {
 {% endif %}
 } {{ ctx.typeName | c_name }};
 
-extern caffc_class_header {{ ctx.typeName | c_name }}_type;
-
 /* new operator */
 {%- set constructor = ctx.getFunction("constructor") %}
 {{ ctx.typeName | c_name }}* {{ ctx.typeName | c_name }}_new({{ constructor | c_constructor_parameters }});

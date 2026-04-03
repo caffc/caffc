@@ -2,7 +2,6 @@
 #define __caffco_h
 
 #include "caffcpt.h"  /* primitive types */
-#include "caffcc.h"   /* caffc class      */
 
 /**
  * The first bit of the type_id keeps if the object we're seeing

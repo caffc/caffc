@@ -17,11 +17,14 @@ caffc_bool caffc_instanceof_check(caffc_ptr o, caffc_u32 ancestor_type_id) {
     header = (caffc_object_header*) o;
 
     /* check ancestor_type_id bounds? */
-    inheritance_data = _caffc_class_headers[header->_caffc_type_id].inheritance_data;
+    inheritance_data = (caffc_inheritance_data*)
+        caffc_type_id_inheritance[header->_caffc_type_id];
 
-    for (i = 0; i < inheritance_data->count; i++) {
-        if (inheritance_data->implemented_type_ids[i] == ancestor_type_id) {
-            return caffc_true;
+    if (inheritance_data) {
+        for (i = 0; i < inheritance_data->count; i++) {
+            if (inheritance_data->implemented_type_ids[i] == ancestor_type_id) {
+                return caffc_true;
+            }
         }
     }
 

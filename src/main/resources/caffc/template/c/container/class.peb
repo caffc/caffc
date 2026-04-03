@@ -1,8 +1,3 @@
-{# class typeName definition #}
-caffc_class_header {{ ctx.definition.typeName | c_name }}_type = {
-    /* fqdn        */ "{{ ctx.definition.typeName.fqdn }}",
-    /* field_count */ {{ ctx.definition.gcFieldsCount }}
-};
 {# new operator for the class. if the class has a constructor it will be called #}
 {%- set constructor = ctx.getFunction("constructor") %}
 {{ ctx.definition.typeName | c_name }}* {{ ctx.definition.typeName | c_name }}_new({{ constructor | c_constructor_parameters }}) {
