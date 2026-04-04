@@ -16,7 +16,34 @@ class B implements I {
   }
 }
 
+die(str message) {
+  print(message)
+  exit(1)
+}
+
+checkInstanceOf() {
+  I i = new A()
+
+  if not i instanceof A {
+    die("i instanceof A failed")
+  }
+
+  if i not instanceof I {
+    die("i instanceof I failed")
+  }
+
+  if i not instanceof obj {
+    die("i instanceof obj failed")
+  }
+
+  if i instanceof B {
+    die("i instanceof B shouldn't be true")
+  }
+}
+
 main() {
+  checkInstanceOf()
+
   I a = new A()
   I b = new B()
 

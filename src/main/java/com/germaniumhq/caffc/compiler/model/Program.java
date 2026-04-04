@@ -1,13 +1,16 @@
 package com.germaniumhq.caffc.compiler.model;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,13 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public static Program INSTANCE = new Program();
 
     public Map<String, Module> modules = new HashMap<>();
-    public Map<TypeName, Symbol> registeredTypes = new HashMap<>();
+
+    /**
+     * Contains all the registered types of the programs. The reason for that is that they
+     * need to have allocated Type IDs. The Type IDs are what CaffC uses internally to
+     * track classes, and see if a class implements an interface.
+     */
+    public Map<TypeName, TypeDefinitionSymbol> registeredSymbols = new LinkedHashMap<>();
 
     public SourceLocation sourceLocation = new SourceLocation("program", 0, 0);
 
@@ -45,10 +54,15 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public Map<String, String> nameToLocation = new HashMap<>(); // name -> file.location:line
     public Map<String, Set<String>> locationToNames = new HashMap<>(); // file.location -> [names]
 
-    public List<TypeResolveRequest> typeResolveRequests = new ArrayList<>();
     private Map<TypeName, Symbol> primitiveSymbols = new HashMap<>();
 
     private Set<StringConstant> stringConstants = new LinkedHashSet<>();
+
+    /**
+     * Counter for the type ids. Whenever a new class/interface is registered, this number gets incremented
+     * by one. This will mark the index of the class in our _caffc_types array.
+     */
+    private int lastTypeId;
 
     private Program() {
         for (TypeName primitiveTypeName : TypeName.PRIMITIVE_TYPES) {
@@ -58,10 +72,8 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     @Override
     public Module getModule(String moduleName) {
-        Module result = modules.computeIfAbsent(moduleName, Module::new);
+        Module result = modules.computeIfAbsent(moduleName, (s) -> new Module(moduleName));
         result.program = this;
-
-        register(result.typeName(), result);
 
         return result;
     }
@@ -77,18 +89,38 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     /**
      * Register a definition of a type to a specific symbol. A symbol is a link to
-     * the full definition of the given type. For now a ClassDefinition, or a
-     * FunctionDefinition, since we need to match their signatures.
+     * the full _definition_ of the given type. For now a ClassDefinition, or an
+     * InterfaceDefinition.
      *
      * @param typeName
      * @param item
      */
-    public void register(TypeName typeName, Symbol item) {
-        this.registeredTypes.put(typeName, item);
+    public void register(TypeName typeName, TypeDefinitionSymbol item) {
+        if (registeredSymbols.containsKey(typeName)) {
+            // it's a problem if we register it twice, since the type_id generation is going to get borked
+            throw new IllegalStateException(String.format("Type %s is already registered", typeName));
+        }
+
+        item.setTypeId(this.nextTypeId());
+
+        this.registeredSymbols.put(typeName, item);
     }
 
-    public Symbol getTypeDefinition(TypeName typeName) {
-        return registeredTypes.get(typeName);
+    @UsedInTemplate("constants_c.peb")
+    public List<TypeDefinitionSymbol> getTypeDefinitionSymbols() {
+        List<TypeDefinitionSymbol> result = new ArrayList<>();
+        result.addAll(registeredSymbols.values());
+        result.sort((o1, o2) -> o1.typeId() - o2.typeId());
+
+        return result;
+    }
+
+    public int nextTypeId() {
+        return lastTypeId++;
+    }
+
+    public TypeDefinitionSymbol getTypeDefinition(TypeName typeName) {
+        return registeredSymbols.get(typeName);
     }
 
     /**
@@ -99,42 +131,25 @@ public class Program implements ModuleProvider, AstItem, Scope {
         // to ensure parsing is correct.
     }
 
-    private String extractNonArrayTypeName(String name) {
-        while (name.endsWith("[]")) {
-            name = name.substring(0, name.length() - 2);
-        }
-
-        return name;
-    }
-
-    private int extractArrayLevel(String name) {
-        int level = 0;
-
-        while (name.endsWith("[]")) {
-            name = name.substring(0, name.length() - 2);
-            level++;
-        }
-
-        return level;
-    }
-
-    /**
-     * Adds an item to be type resolved after all the AST trees are parsed.
-     */
-    public TypeName requestTypeResolve(AstItem owner, TypeName typeName) {
-        TypeName result = TypeName.copyOf(typeName);
-        TypeResolveRequest request = new TypeResolveRequest(owner, result);
-
-        typeResolveRequests.add(request);
-
-        return result;
-    }
-
+    @UsedInTemplate("constants.h")
     public Collection<Integer> strStructBytesSizes() {
         TreeSet<Integer> sizes = new TreeSet<>();
 
         for (StringConstant stringConstant: stringConstants) {
             sizes.add(stringConstant.bytesSize);
+        }
+
+        return sizes;
+    }
+
+    @UsedInTemplate("constants.h")
+    public Collection<Integer> inheritanceDataSizes() {
+        TreeSet<Integer> sizes = new TreeSet<>();
+
+        for (TypeDefinitionSymbol type : getTypeDefinitionSymbols()) {
+            if (!type.getImplementedTypes().isEmpty()) {
+                sizes.add(type.getImplementedTypes().size());
+            }
         }
 
         return sizes;
@@ -168,10 +183,19 @@ public class Program implements ModuleProvider, AstItem, Scope {
         throw new IllegalStateException("BUG: recurse resolve types can only start at compilation unit level");
     }
 
+    /**
+     * The currently compiled program instance. In case we're running integration tests, we're going
+     * to reset this.
+     * @return
+     */
     public static Program get() {
         return INSTANCE;
     }
 
+    /**
+     * When running test, we want a clean new instance of the program.
+     * @return
+     */
     public static Program reset() {
         INSTANCE = new Program();
 
@@ -184,5 +208,27 @@ public class Program implements ModuleProvider, AstItem, Scope {
 
     public void addStringConstant(StringConstant stringConstant) {
         this.stringConstants.add(stringConstant);
+    }
+
+    @UsedInTemplate("constants_h.peb")
+    public Integer getObjTypeId() {
+        TypeDefinitionSymbol objSymbol = this.registeredSymbols.get(TypeName.OBJ);
+
+        if (objSymbol == null) {
+            CaffcCompiler.get().fatal((SourceLocation) null, "BUG?: Unable to find `obj` in symbols.");
+        }
+
+        return objSymbol.typeId();
+    }
+
+    @UsedInTemplate("constants_h.peb")
+    public Integer getStrTypeId() {
+        TypeDefinitionSymbol strSymbol = this.registeredSymbols.get(TypeName.STR);
+
+        if (strSymbol == null) {
+            CaffcCompiler.get().fatal((SourceLocation) null, "BUG?: Unable to find `str` in symbols.");
+        }
+
+        return strSymbol.typeId();
     }
 }

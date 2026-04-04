@@ -18,10 +18,6 @@ import java.util.Map;
  * so we can test linear form generation.
  */
 public class CodeAssertsAst {
-    public static CompilationUnit compileCaffcUnitsAst(String unit, TestUnit[] testUnits) {
-        return compileCaffcUnitsAst(Program.get(), unit, testUnits);
-    }
-
     private static void printUnitWithLineNumbers(String unitName, TestUnit[] testUnits) {
         for (TestUnit testUnit: testUnits) {
             if (testUnit.unitPath.equals(unitName)) {
@@ -39,9 +35,11 @@ public class CodeAssertsAst {
      * but returns only the CompilationUnit.
      */
     public static CompilationUnit compileCaffcUnitsAst(
-            Program program,
             String unit,
             TestUnit[] testUnits) {
+        Program program = Program.reset();
+        CaffcCompiler.reset();
+
         Map<String, CompilationUnit> compilationUnits = new HashMap<>();
 
         for (int i = 0; i < testUnits.length; i++) {

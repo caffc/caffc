@@ -1,12 +1,13 @@
 #include <stdlib.h>
 
 #include "caffcgcpl.h" /* ptr list */
-#include "caffcc.h" /* class */
 #include "caffco.h" /* obj */
 #include "caffca.h" /* array */
 
 #include "caffcms.h"
 #include "caffcstk.h"
+
+#include "caffc_program_constants.h"
 
 #define caffc_gc_ms_is_marked(o) (((caffc_object_header*)o)->_caffc_flags & CAFFC_OBJECT_FLAGS_GC_MARKED)
 #define caffc_gc_ms_set_marked(o) ((caffc_object_header*)o)->_caffc_flags |= CAFFC_OBJECT_FLAGS_GC_MARKED
@@ -21,7 +22,6 @@ caffc_gc_pointer_list caffc_all_objects;
 void caffc_gc_ms_mark() {
     caffc_gc_pointer_list work_list;
     caffc_object_header* object_header = caffc_null;
-    caffc_class_header* class_header = caffc_null;
     caffc_u32 i = 0, j = 0;
     caffc_ptr field_ptr = caffc_null;
     caffc_u32 field_count = 0;
@@ -64,9 +64,8 @@ void caffc_gc_ms_mark() {
             field_ptr = array_header->_caffc_data;
             field_count = array_header->_caffc_field_count;
         } else { /* regular object */
-            class_header = object_header->_caffc_class_header;
             field_ptr = object_header->_caffc_data;
-            field_count = class_header->field_count;
+            field_count = caffc_type_id_gc_count[object_header->_caffc_type_id];
         }
 
         for (i = 0; i < field_count; i++) {

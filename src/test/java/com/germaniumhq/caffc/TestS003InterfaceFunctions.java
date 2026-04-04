@@ -115,13 +115,14 @@ public class TestS003InterfaceFunctions {
 
         assertCodeContains(code, """
             main_str* main_I_x(main_I* _this) {
-              if (_this->_caffc_class_header == &main_A_type) {
+              switch (_this->_caffc_type_id) {
+              case 3:
                 return main_A_x(_this);
-              }
-              if (_this->_caffc_class_header == &main_B_type) {
+              case 4:
                 return main_B_x(_this);
+              default: /* should not be reached */
+                return 0; /* FIXME: throw an error, _this isn't a valid pointer */
               }
-              return 0; /* FIXME: throw an error, _this isn't a valid pointer */
             }
             """,
     "interfaces should be generated correctly");

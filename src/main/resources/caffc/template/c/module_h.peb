@@ -31,7 +31,6 @@ typedef struct {{ clazz.typeName | c_name }}_struct {{ clazz.typeName | c_name }
 {%- for array in ctx.registeredArrays %}
 {%- if ctx.resolve(array.name) == null %}
 #define {{ array | c_name }} caffc_obj_arr
-extern caffc_class_header {{ array | c_name }}_type;
 {%- endif %}
 {%- endfor %}
 

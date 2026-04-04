@@ -5,10 +5,15 @@ import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 
 public class CaffcCompiler {
     public boolean hasErrors;
+    public boolean hasWarnings;
     private static CaffcCompiler INSTANCE = new CaffcCompiler();
 
     public static CaffcCompiler get() {
         return INSTANCE;
+    }
+
+    public static void reset() {
+        INSTANCE = new CaffcCompiler();
     }
 
     /**
@@ -54,6 +59,7 @@ public class CaffcCompiler {
      * @param message
      */
     public void warning(SourceLocation sourceLocation, String message) {
+        this.hasWarnings = true;
         System.err.format("%s: %s: %s\n",
                 fileLocation(sourceLocation), "WARN ", message);
     }

@@ -21,6 +21,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCast;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
@@ -103,6 +104,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmConstant.class, "c/asm/constant.peb")
                 .withMapping(AsmFieldVar.class, "c/asm/field_var.peb")
                 .withMapping(AsmIfZJmp.class, "c/asm/if_zjmp.peb")
+                .withMapping(AsmInstanceOf.class, "c/asm/instance_of.peb")
                 .withMapping(AsmJmp.class, "c/asm/jmp.peb")
                 .withMapping(AsmNew.class, "c/asm/new.peb")
                 .withMapping(AsmNewArray.class, "c/asm/new_array.peb")
