@@ -150,6 +150,7 @@ expression
   | STRING                                                                                         # ExString
   | CHAR   	                                                                                       # ExChar
   | ID                                                                                             # ExId
+  | NULL                                                                                           # ExNull
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
   | NEW newType '(' expressionTuple? ')'                                                           # ExNewObject
@@ -305,6 +306,7 @@ IS: 'is';
 MODULE: 'module';
 NEW: 'new';
 NOT: 'not';
+NULL: 'null';
 OR: 'or';
 RETURN: 'return';
 STATIC: 'static';

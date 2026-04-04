@@ -81,7 +81,7 @@ public class TestS049Assign {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-            u8array = 0;
+            u8array = caffc_null;
             caffc_u8_arr_set(u8array, 0, 3);
             """,
             "multi assign should be deconstructed from the struct response");
