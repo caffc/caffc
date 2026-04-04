@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model.asm.vars;
 
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
 
 /**
  * Holds a constant. Constants aren't backed by variables. They just hold a single value
@@ -16,13 +17,16 @@ final public class AsmConstant implements AsmValue {
         this.value = value;
 
         // FIXME: this looks like a massive hack that needs a massive refactoring
-        if (TypeName.STR.equals(type.typeName())) {
+        TypeName typeName = type.typeName();
+        if (TypeName.STR.equals(typeName) || TypeName.OBJ.equals(typeName) || typeName.dataType == DataType.ARRAY) {
             if ("0".equals(value)) {
                 this.value = "caffc_null";
                 return;
             }
-
-            this.value = "(caffc_str*)&" + value;
+            
+            if (TypeName.STR.equals(typeName)) {
+                this.value = "(caffc_str*)&" + value;
+            }
         }
     }
 
