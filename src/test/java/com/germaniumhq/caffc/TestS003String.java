@@ -62,7 +62,7 @@ public class TestS003String {
         CodeAssertsStr.assertCodeContains(code,
                 """
                 caffc_str_13 caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9 = {
-                    /* _caffc_class_header */ &caffc_str_type,
+                    /* _caffc_type_id */ CAFFC_STR_TYPE_ID,
                     /* _caffc_flags */ 0,
                     /* size */ 13,
                     { 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x00 }
@@ -101,13 +101,13 @@ public class TestS003String {
 
       CodeAssertsStr.assertCodeContains(code,
         """
-          typedef struct {
-              caffc_class_header* _caffc_class_header;
-              caffc_u8 _caffc_flags; /* FIXME: pack into the header pointer */
-              caffc_i32 _byte_length;
-              caffc_u8 _caffc_data[12];
-          } caffc_str_12;
-          """,
+        typedef struct {
+            caffc_u32 _caffc_type_id;
+            caffc_u8 _caffc_flags; /* FIXME: pack into the type id */
+            caffc_i32 _byte_length;
+            caffc_u8 _caffc_data[12];
+        } caffc_str_12;
+        """,
         "string constants should have their corresponding struct defined per each byte-size" +
                     " so C can allocate them at compile time.");
 

@@ -9,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 import java.util.ArrayList;
@@ -16,13 +17,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents a class definition in the symbol table, implementing both Symbol and Scope interfaces.
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope, HasSourceLocation {
+public class ClassDefinition implements
+    HasMethods,
+    GenericsDefinitionsSymbol,
+    Scope,
+    HasSourceLocation,
+    TypeDefinitionSymbol        // this symbol is present in the class definition array
+{
     /**
      * The name of the class.
      */
@@ -41,7 +49,7 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     /**
      * The count of fields that require garbage collection.
      */
-    public int gcFieldsCount;
+    private int gcFieldsCount;
 
     /**
      * Only applicable for arrays, it points to the symbol definition
@@ -90,11 +98,23 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     private boolean isResolved;
 
     /**
+     * The numerical index that identifies this class in the full program. All
+     * classes have their information kept into a class array. This would be
+     * the index into the said class array.
+     */
+    private int typeId;
+
+    /**
+     * A flattened list of the implemented type ids for an object.
+     */
+    private TreeSet<TypeDefinitionSymbol> _implementedTypeIds;
+
+    /**
      * Counts the number of fields that require garbage collection.
      *
      * @return The count of fields with data type OBJECT.
      */
-    public int countGcFieldsCount() {
+    private int countGcFieldsCount() {
         int i = 0;
 
         for (Field f : fields) {
@@ -356,5 +376,38 @@ public class ClassDefinition implements HasMethods, GenericsDefinitionsSymbol, S
     @Override
     public SourceLocation getSourceLocation() {
         return this.sourceLocation;
+    }
+
+    @Override
+    public int typeId() {
+        return this.typeId;
+    }
+
+    @Override
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    @Override
+    public int getGcFieldsCount() {
+        return this.gcFieldsCount;
+    }
+
+    @Override
+    public TreeSet<TypeDefinitionSymbol> getImplementedTypes() {
+        if (this._implementedTypeIds != null) {
+            return this._implementedTypeIds;
+        }
+
+        this._implementedTypeIds = new TreeSet<>((o1, o2) -> {
+            return o1.typeId() - o2.typeId();
+        });
+
+        for (InterfaceDefinition interfaceDefinition : implementedInterfaces) {
+            this._implementedTypeIds.add(interfaceDefinition);
+            this._implementedTypeIds.addAll(interfaceDefinition.getImplementedTypes());
+        }
+
+        return this._implementedTypeIds;
     }
 }

@@ -1,0 +1,1 @@
+{{ ctx.result | render }} = caffc_instanceof_check({{ ctx.objectPointer | render }}, /* {{ ctx.instanceOfType.typeName }} */ {{ ctx.instanceOfType.typeId }})

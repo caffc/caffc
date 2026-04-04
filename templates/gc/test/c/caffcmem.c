@@ -18,11 +18,7 @@ void caffc_done() {
 /*
  * This allocator is only for testing, since it leaks memory.
  */
-caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object_size) {
-    if (!object_type) {
-        return null;
-    }
-
+caffc_object_header* caffc_new(caffc_32 object_type_id, caffc_u32 object_size) {
     if (object_size < sizeof(caffc_object_header)) {
         printf("invalid malloc, prepare to die. requested object size: %ld, however object header size alone is: %ld\n", object_size, sizeof(caffc_object_header));
     }
@@ -30,7 +26,7 @@ caffc_object_header* caffc_new(caffc_class_header* object_type, caffc_u32 object
     caffc_object_header* result = malloc(object_size);
 
     memset(result, 0, object_size);
-    result->_caffc_class_header = object_type;
+    result->_caffc_type_id = object_type_id;
 
     return result;
 }

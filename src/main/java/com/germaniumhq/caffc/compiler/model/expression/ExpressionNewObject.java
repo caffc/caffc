@@ -1,16 +1,17 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public final class ExpressionNewObject implements Expression {
 
     public SourceLocation sourceLocation;
 
-    public Symbol instantiatedType;
+    public TypeDefinitionSymbol instantiatedType;
     private SymbolSearch instantiatedTypeSearch;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExNewObjectContext newObject) {

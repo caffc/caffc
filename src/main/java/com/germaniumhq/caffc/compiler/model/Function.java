@@ -147,14 +147,6 @@ public class Function implements CompileBlock, Scope, Symbol {
         // will get loaded from the class.
         if (function.definition.clazz == null) {
             unit.module.functions.put(function.definition.name, function.definition);
-            unit.module.program.register(
-                    TypeName.of(
-                            unit.module.name,
-                            function.definition.name,
-                            function.definition.clazz != null ? function.definition.clazz.name() : null,
-                            DataType.FUNCTION),
-                    function.definition
-            );
         }
 
         function.stringConstantName = StringConstant.newStringConstant(function.getSourceLocation(), function.definition.name);

@@ -2,15 +2,15 @@ package com.germaniumhq.caffc.compiler.model.asm.opc;
 
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
-import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 
 public final class AsmNew implements AsmInstruction{
     public final SourceLocation sourceLocation;
     public AsmValue result;
-    public final Symbol instantiatedType;
+    public final TypeDefinitionSymbol instantiatedType;
     public final AsmValue[] parameters;
 
-    public AsmNew(SourceLocation sourceLocation, Symbol instantiatedType, AsmValue[] parameters) {
+    public AsmNew(SourceLocation sourceLocation, TypeDefinitionSymbol instantiatedType, AsmValue[] parameters) {
         this.sourceLocation = sourceLocation;
         this.result = null;
         this.instantiatedType = instantiatedType;

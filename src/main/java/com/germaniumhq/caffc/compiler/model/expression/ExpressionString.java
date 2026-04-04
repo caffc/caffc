@@ -1,7 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
@@ -9,8 +8,8 @@ import com.germaniumhq.caffc.compiler.model.StringConstant;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 /**
@@ -22,14 +21,11 @@ public final class ExpressionString implements Expression {
 
     public SourceLocation sourceLocation;
 
-    public TypeSymbol symbol;
-
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExStringContext stringExpression) {
         ExpressionString result = new ExpressionString();
 
         result.owner = owner;
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, stringExpression);
-        result.symbol = new TypeSymbol(TypeName.STR);
         result.constant = StringConstant.newStringConstantFromAntlr(result.sourceLocation, stringExpression.STRING().getText());
 
         unit.module.registerConstant(result.constant);
@@ -39,7 +35,7 @@ public final class ExpressionString implements Expression {
 
     @Override
     public Symbol typeSymbol() {
-        return symbol;
+        return TypeSymbol.STR;
     }
 
     @Override
@@ -60,7 +56,7 @@ public final class ExpressionString implements Expression {
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        result.value = new AsmConstant(this.symbol, this.constant.name);
+        result.value = new AsmConstant(TypeSymbol.STR, this.constant.name);
 
         return result;
     }

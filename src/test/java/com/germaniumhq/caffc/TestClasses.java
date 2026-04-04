@@ -73,14 +73,22 @@ public class TestClasses {
 
         CodeAssertsStr.assertCodeContains(code, "void main_A_constructor(main_A* _this, caffc_i32 x) {",
                 "new operator generation doesn't seem to be working for constructors with parameters");
-        CodeAssertsStr.assertCodeContains(code, "main_A* _this = (main_A*) caffc_new(&main_A_type, sizeof(main_A));",
+        CodeAssertsStr.assertCodeContains(code, """
+                main_A* _this = (main_A*) caffc_new(
+                    /* main:null:A:OBJECT */ 0,
+                    sizeof(main_A));
+                """,
                 "new operator generation doesn't seem to be working for constructors with parameters");
         CodeAssertsStr.assertCodeContains(code, "main_A_constructor(_this, x);",
                 "new operator generation doesn't seem to be working for constructors with parameters");
 
         CodeAssertsStr.assertCodeContains(code, "main_B* main_B_new() {",
                 "new operator generation doesn't seem to be working for default constructors");
-        CodeAssertsStr.assertCodeContains(code, "main_B* _this = (main_B*) caffc_new(&main_B_type, sizeof(main_B));",
+        CodeAssertsStr.assertCodeContains(code, """
+                main_B* _this = (main_B*) caffc_new(
+                    /* main:null:B:OBJECT */ 1,
+                    sizeof(main_B));
+                """,
                 "new operator generation doesn't seem to be working for default constructors");
         CodeAssertsStr.assertCodeNotContains(code, "main_B_constructor(_this)",
                 "new operator generation doesn't seem to be working for default constructors");
@@ -117,11 +125,14 @@ public class TestClasses {
                 }
                 """);
 
-        CodeAssertsStr.assertCodeContains(code, "  caffc_ByteArray* _this = (caffc_ByteArray*) caffc_new(\n" +
-                        "      &caffc_ByteArray_type,\n" +
-                        "      (caffc_i32) caffc__caffc_ByteArray_size(size));\n" +
-                        "  caffc_ByteArray_constructor(_this, size);",
-                "instantiation should work with dynamic sizes for the objects");
+        CodeAssertsStr.assertCodeContains(code,
+            """
+            caffc_ByteArray* _this = (caffc_ByteArray*) caffc_new(
+                /* caffc:null:ByteArray:OBJECT */ 0,
+                (caffc_i32) caffc__caffc_ByteArray_size(size));
+            caffc_ByteArray_constructor(_this, size);
+            """,
+            "instantiation should work with dynamic sizes for the objects");
 
     }
 }

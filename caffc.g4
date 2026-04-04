@@ -158,6 +158,7 @@ expression
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
   | '(' typeName ')' expression                                                                    # ExCast
   | '(' expression ')'                                                                             # ExParens
+  | leftExpression=expression (NOT)? INSTANCEOF newType                                            # ExInstanceOf
   | ('!'|NOT) expression                                                                           # ExBoolNot
   | '~' expression                                                                                 # ExBitNot
   | '-' expression                                                                                 # ExUnaryMinus
@@ -298,6 +299,7 @@ FOR: 'for';
 IF: 'if';
 IMPLEMENTS: 'implements';
 IN: 'in';
+INSTANCEOF: 'instanceof';
 INTERFACE: 'interface';
 IS: 'is';
 MODULE: 'module';

@@ -157,11 +157,8 @@ public class CodeAssertsStr {
             String template,
             String unit,
             TestUnit[] testUnits) {
-        Program program = Program.reset();
-        CaffcCompiler.get().hasErrors = false;
-
         try {
-            return compileCaffcUnits(program, template, unit, testUnits);
+            return compileCaffcUnits(template, unit, testUnits);
         } catch (CancelCompilationException e) {
             CodeAssertsStr.printUnitWithLineNumbers(unit, testUnits);
             throw new RuntimeException(e);
@@ -185,18 +182,16 @@ public class CodeAssertsStr {
      * code with the <code>template</code> against the specified compilation
      * unit (<code>unit</code>)
      *
-     * @param program
      * @param template
      * @param unit
      * @param testUnits
      * @return
      */
     private static String compileCaffcUnits(
-            Program program,
             String template,
             String unit,
             TestUnit[] testUnits) {
-        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(program, unit, testUnits);
+        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(unit, testUnits);
 
         if (CaffcCompiler.get().hasErrors) {
             CaffcCompiler.get().fatal(compilationUnit, "Errors found in compilation");

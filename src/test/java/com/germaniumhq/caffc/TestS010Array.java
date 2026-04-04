@@ -60,7 +60,7 @@ public class TestS010Array {
         CodeAssertsStr.assertCodeContains(code, """
                 caffc__obj_a* caffc__obj_a_new(caffc_i32 size) {
                   caffc__obj_a* _this = (caffc__obj_a*) caffc_new(
-                      &caffc__obj_a_type,
+                      /* caffc:null:_obj_a:OBJECT */ 0,
                       (caffc_i32) caffc__caffc__obj_a_size(size));
                   caffc__obj_a_constructor(_this, size);
                 """,
@@ -85,11 +85,6 @@ public class TestS010Array {
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-
-                        class obj_arr {}
-                        """),
                         new TestUnit("a/a.caffc", """
                         module yolo
 
@@ -118,11 +113,6 @@ public class TestS010Array {
                 "caffc/template/c/module_c.peb",
                 "a/a.caffc",
                 new TestUnit[]{
-                        new TestUnit("caffc/arr.caffc", """
-                        module caffc
-
-                        class obj_arr {}
-                        """),
                         new TestUnit("a/a.caffc", """
                         module yolo
 

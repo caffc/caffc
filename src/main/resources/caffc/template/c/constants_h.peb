@@ -1,6 +1,55 @@
 #ifndef caffc_program_constants
 #define caffc_program_constants
 
+#define CAFFC_OBJ_TYPE_ID {{ program.objTypeId }}
+#define CAFFC_STR_TYPE_ID {{ program.strTypeId }}
+
+/* ******************************************************************
+ * CLASS types+inheritance
+ * ******************************************************************/
+
+/* The data is split into multiple arrays, with an array for each
+ field we'd normally be interested in. Each array name is prefixed by:
+ caffc_type_id_<key>. The following arrays are defined:
+   name:     the name of the type
+   gc_count: how many variables are tracked by the GC
+   inherit:  inheritance data struct pointer
+*/
+
+/* NAME data ***************************************************** */
+extern char* caffc_type_id_name[];
+
+/* GC_COUNT data ************************************************* */
+extern caffc_u32 caffc_type_id_gc_count[];
+
+/* INHERITANCE data structs ************************************** */
+
+/* generic struct for casting */
+typedef struct {
+    caffc_u32 count;
+    caffc_u32 implemented_type_ids[];
+} caffc_inheritance_data;
+
+{%- for inheritanceDataSize in program.inheritanceDataSizes %}
+typedef struct {
+    caffc_u32 count;
+    caffc_u32 implemented_type_ids[{{ inheritanceDataSize }}];
+} caffc_inheritance_data_{{ inheritanceDataSize }};
+{% endfor %}
+
+/* inheritance data variables */
+{%- for caffc_type in program.typeDefinitionSymbols %}
+{%- if caffc_type.implementedTypes.size > 1 %}
+extern caffc_inheritance_data_{{ caffc_type.implementedTypes.size }} _caffc_inheritance_data_{{ caffc_type.typeId }};
+{%- endif %}
+{%- endfor %}
+
+extern caffc_inheritance_data* caffc_type_id_inheritance[];
+
+/* ******************************************************************
+ * STRING constants
+ * ******************************************************************/
+
 /* Fake structs to allow for C keeping the bytes of the strings serialized
  * correctly as if they're instantiated with `new str(123)`. C requires them
  * to do the binary copy at compile time.
@@ -8,8 +57,8 @@
  */
 {%- for strStructBytesSize in program.strStructBytesSizes %}
 typedef struct {
-    caffc_class_header* _caffc_class_header;
-    caffc_u8 _caffc_flags; /* FIXME: pack into the header pointer */
+    caffc_u32 _caffc_type_id;
+    caffc_u8 _caffc_flags; /* FIXME: pack into the type id */
     caffc_i32 _byte_length;
     caffc_u8 _caffc_data[{{ strStructBytesSize }}];
 } caffc_str_{{ strStructBytesSize }};

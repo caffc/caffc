@@ -7,18 +7,20 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Represents a class definition in the symbol table, implementing both Symbol and Scope interfaces.
  * It holds information about the class's name, module, type, garbage collection field count,
  * functions, fields, and tags.
  */
-public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope {
+public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbol, Scope, TypeDefinitionSymbol {
     /**
      * The name of the class.
      */
@@ -60,6 +62,13 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
     public SourceLocation sourceLocation;
 
     private boolean isResolved;
+
+    /**
+     * Type ID index in the class definition array.
+     */
+    private int typeId;
+
+    private TreeSet<TypeDefinitionSymbol> _implementedTypes;
 
     /**
      * Returns the name of the class.
@@ -258,5 +267,38 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         }
 
         return true;
+    }
+
+    @Override
+    public int typeId() {
+        return this.typeId;
+    }
+
+    @Override
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    @Override
+    public int getGcFieldsCount() {
+        return 0;
+    }
+
+    @Override
+    public TreeSet<TypeDefinitionSymbol> getImplementedTypes() {
+        if (this._implementedTypes != null) {
+            return this._implementedTypes;
+        }
+
+        this._implementedTypes = new TreeSet<>((o1, o2) -> {
+            return o1.typeId() - o2.typeId();
+        });
+
+        for (InterfaceDefinition interfaceDefinition : implementedInterfaces) {
+            this._implementedTypes.add(interfaceDefinition);
+            this._implementedTypes.addAll(interfaceDefinition.getImplementedTypes());
+        }
+
+        return this._implementedTypes;
     }
 }

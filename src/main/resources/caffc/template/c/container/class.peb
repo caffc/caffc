@@ -1,18 +1,15 @@
-{# class typeName definition #}
-caffc_class_header {{ ctx.definition.typeName | c_name }}_type = {
-    /* fqdn        */ "{{ ctx.definition.typeName.fqdn }}",
-    /* field_count */ {{ ctx.definition.gcFieldsCount }}
-};
 {# new operator for the class. if the class has a constructor it will be called #}
 {%- set constructor = ctx.getFunction("constructor") %}
 {{ ctx.definition.typeName | c_name }}* {{ ctx.definition.typeName | c_name }}_new({{ constructor | c_constructor_parameters }}) {
 {%- set fn_new_size_calculator = ctx.getFunction("new") %}
 {%- if fn_new_size_calculator != null %}
   {{ ctx.definition.typeName | c_name }}* _this = ({{ ctx.definition.typeName | c_name }}*) caffc_new(
-      &{{ ctx.definition.typeName | c_name }}_type,
+      /* {{ ctx.definition.typeName }} */ {{ ctx.definition.typeId }},
       (caffc_i32) {{ fn_new_size_calculator.definition.typeName | c_name }}({{ fn_new_size_calculator | c_constructor_parameters_call  }}));
 {%- else %}
-  {{ ctx.definition.typeName | c_name }}* _this = ({{ ctx.definition.typeName | c_name }}*) caffc_new(&{{ ctx.definition.typeName | c_name }}_type, sizeof({{ ctx.definition.typeName | c_name }}));
+  {{ ctx.definition.typeName | c_name }}* _this = ({{ ctx.definition.typeName | c_name }}*) caffc_new(
+      /* {{ ctx.definition.typeName }} */ {{ ctx.definition.typeId }},
+      sizeof({{ ctx.definition.typeName | c_name }}));
 {%- endif %}
 {%- if constructor != null %}
   {{ ctx.definition.typeName | c_name }}_constructor({{ constructor | c_constructor_parameters_call }});
