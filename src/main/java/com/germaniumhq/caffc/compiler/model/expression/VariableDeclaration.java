@@ -142,7 +142,15 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
 
             result.instructions.add(new AsmAssign(this.sourceLocation, this, right.value));
         } else {
-            result.instructions.add(new AsmAssign(this.sourceLocation, this, new AsmConstant(this.typeSymbol, "0")));
+            AsmConstant nullValue;
+
+            if (this.typeSymbol.typeName().isPrimitive()) {
+                nullValue = new AsmConstant(this.typeSymbol, "0");
+            } else {
+                nullValue = new AsmConstant(this.typeSymbol, null);
+            }
+
+            result.instructions.add(new AsmAssign(this.sourceLocation, this, nullValue));
         }
 
         return result;

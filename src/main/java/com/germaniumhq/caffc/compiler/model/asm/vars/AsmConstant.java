@@ -15,13 +15,13 @@ final public class AsmConstant implements AsmValue {
         this.type = type;
         this.value = value;
 
+        if (value == null) {
+            this.value = "caffc_null";
+            return;
+        }
+
         // FIXME: this looks like a massive hack that needs a massive refactoring
         if (TypeName.STR.equals(type.typeName())) {
-            if ("0".equals(value)) {
-                this.value = "caffc_null";
-                return;
-            }
-
             this.value = "(caffc_str*)&" + value;
         }
     }
