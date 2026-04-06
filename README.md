@@ -4,7 +4,7 @@ CaffC is Caffeinated C.
 
 ## Introduction
 
-CaffC is a high-level language like Java, or C#. The idea is to have a high-level language,
+CaffC is a high-level language like Java or C#. The idea is to have a high-level language,
 but with low-level access when needed via `native` blocks. The language should be easy to
 learn and understand, and the code written in it comprehensible.
 
@@ -44,6 +44,11 @@ CaffC offers also a `ptr` type, that has its size unspecified, and is
 actually a `void*`. This exists only to allow classes to keep a reference
 to a memory address somewhere. `ptr` references are not managed by the GC.
 
+## Strings
+
+Strings are regular immutable objects. They hold internally the data as an
+UTF-8 `u8` array.
+
 ## Functions
 
 CaffC has functions. The notation is slightly different from C:
@@ -62,8 +67,9 @@ log(str what) {
 }
 ```
 
-Functions can return multiple things at once, and you get access to the
-`result` packed member variable as a regular local variable:
+Functions can return multiple things at once. If that's the case two things
+happen. First, the result is packed into a `struct`. Second, you get local
+variables with the same name available for the fields of the struct.
 
 ```caffc
 class Point {
@@ -72,10 +78,9 @@ class Point {
     ty = tx
 
     native {
-      // in native blocks, the result fields must be accessed via the
-      // `result` defined struct.
-      if (result.tx < 0.0f) {
-        result.tx = 0.0f;
+      // in native blocks you can use the variables with the same name
+      if (tx < 0.0f) {
+        tx = 0.0f;
       }
     }
 
@@ -115,7 +120,7 @@ createRectangle() {
 }
 ```
 
-There's three scopes for variables and methods:
+There are three scopes for variables and methods:
 
 * module-private (the default),
 * private - if prefixed with `_` in the name (i.e. the `_perimeter` method is private),
@@ -123,7 +128,7 @@ There's three scopes for variables and methods:
 
 A major difference to other programming languages is that _classes don't have inheritance_.
 You cannot extend another class. This avoids having abstract classes, forces composition,
-and eliminates all problems related to `super()` like calls.
+and eliminates all problems related to `super()`-like calls.
 
 Another difference, is that functions and methods, true to their C counterpart, _don't
 have overloading_. In the future, CaffC will have default parameters, and calls with
@@ -218,7 +223,7 @@ CaffC supports both primitive arrays, and object arrays. Object arrays are of
 course garbage collected. Multidimensional arrays are also supported. Arrays
 cannot be resized after creation.
 
-There's plans to have collection classes for the big three: dict, set and list.
+There are plans to have collection classes for the big three: dict, set and list.
 
 ```caffc
 main() {
@@ -238,13 +243,14 @@ main() {
 ## Garbage Collection
 
 Even if this transpiles to C, the memory allocated is managed. All objects, and
-arrays are garbage collected. Local variables, and parameters, are all handled
+arrays are garbage collected. Local variables and parameters are all handled
 by the GC.
 
-There shouldn't be any memory leaks, even if the program exits randomly with `exit(n)`.
+There shouldn't be any memory leaks, even if the program exits randomly with
+`exit(n)`.
 
 ```caffc
-main() -> i32 {
+main(str[] args) -> i32 {
   str[] x = new str[2]  // all these are GC now, even if we exit(0) somewhere
 
   x[0] = "abc"
@@ -255,20 +261,14 @@ main() -> i32 {
 
   return 0
 }
-
-native { // this will be generated in the future
-  int main(int argc, char** argv) {
-    atexit(caffc_done);
-    caffc_init();
-
-    return main_main();
-  }
-}
 ```
+
+> [NOTE]
+> If the function is called `main`, a corresponding `C` main function will be generated, that will convert the `char**` args to `str[]`, and wire the GC.
 
 ## native Blocks
 
-Anything passed in `native` blocks, gets sent to the C code _as is_, without modifications.
+Anything passed in `native` blocks gets sent to the C code _as is_, without modifications.
 
 Function parameters, local variables, the `_this` pointer and its fields, are also available
 in the `native` code with the same names. This makes interfacing with the underlying system
