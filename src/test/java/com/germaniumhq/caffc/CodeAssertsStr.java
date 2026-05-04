@@ -25,17 +25,24 @@ public class CodeAssertsStr {
         assertCodeContains(code, containedCode, "code isn't containing expected:  `" + containedCode + "`");
     }
 
-    public static void assertCodeContains(String code, String containedCode, String errorMessage) {
+    /**
+     * Checks if the code contains the expected code. Note that lines having only comments are implicitly removed
+     * from the code.
+     * @param code
+     * @param expectedCode
+     * @param errorMessage
+     */
+    public static void assertCodeContains(String code, String expectedCode, String errorMessage) {
         // multiline check?
-        if (containedCode.contains("\n")) {
-            String[] containedCodeLines = containedCode.split("\n");
+        if (expectedCode.contains("\n")) {
+            String[] containedCodeLines = expectedCode.split("\n");
             assertCodeContainsMultiLine(code, containedCodeLines, errorMessage);
             return;
         }
 
-        if (!code.contains(containedCode)) {
+        if (!code.contains(expectedCode)) {
             System.out.println(code);
-            throw new AssertionError(errorMessage + "\nmissing:  `" + containedCode + "`");
+            throw new AssertionError(errorMessage + "\nmissing:  `" + expectedCode + "`");
         }
     }
 
@@ -104,6 +111,7 @@ public class CodeAssertsStr {
         allUnits.addAll(caffcFeature("common", "default"));
         allUnits.addAll(caffcFeature("gc", "test"));
         allUnits.addAll(caffcFeature("string", "default"));
+        allUnits.addAll(caffcFeature("exception", "default"));
 
         return compileCaffcProgram(template, unit, allUnits.toArray(new TestUnit[0]));
     }

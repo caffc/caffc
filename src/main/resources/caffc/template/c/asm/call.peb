@@ -1,3 +1,6 @@
 {%- if ctx.result != null -%}
 {{ ctx.result | render }} = {% endif -%}
-{{ ctx.function | c_name }}({% for p in ctx.parameters %}{{ p | render }}{% if not loop.last %}, {% endif %}{% endfor %})
+{{ ctx.function | c_name }}({%
+  for p in ctx.parameters %}{{ p | render }}
+    {%- if not loop.last %}, {% endif %}
+{%- endfor %}); if (_caffc_exception) { goto _caffc_exception_handler; }

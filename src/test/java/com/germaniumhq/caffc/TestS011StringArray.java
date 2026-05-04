@@ -53,8 +53,14 @@ public class TestS011StringArray {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_str_1 = caffc_obj_arr_get(x, 0);
-                y = _caffc_temp_caffc_str_1;
+_caffc_temp_caffc_str_1 = caffc_obj_arr_get(x, 0);
+
+/* Check for exception and jump to handler if one occurred */
+if (_caffc_exception != NULL) {
+  goto _caffc_exception_handler;
+}
+;
+y = _caffc_temp_caffc_str_1;
                 """,
                 "reading string values from a string array should work");
     }

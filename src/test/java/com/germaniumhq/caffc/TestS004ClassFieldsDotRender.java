@@ -93,8 +93,14 @@ public class TestS004ClassFieldsDotRender {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_main_A_2 = main_A_getA(a);
-                _caffc_temp_caffc_i32_1 = main_A_getX(_caffc_temp_main_A_2);
+_caffc_temp_main_A_2 = main_A_getA(a);
+
+/* Check for exception and jump to handler if one occurred */
+if (_caffc_exception != NULL) {
+  goto _caffc_exception_handler;
+}
+;
+_caffc_temp_caffc_i32_1 = main_A_getX(_caffc_temp_main_A_2);
                 """,
             "dot access should translate into function access");
     }

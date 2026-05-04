@@ -10,10 +10,18 @@
 {%- endfor -%}
 
 {#- if it's a void function, we need to make sure we have the unregister, since
-   it's not 100% clear if we have a return statement in the code -#}
+    it's not 100% clear if we have a return statement in the code -#}
 {%- if ctx.definition.returnType.name == "void" %}
 {% include "gc_stack_frame_unregister.peb" %}
 {%- endif %}
+_caffc_exception_handler:
+  /* an uncaught exception was thrown: _caffc_exception */
+{% if ctx.definition.returnType.name == "void" %}
+  return;
+{% else %}
+  // For non-void functions, return a default value
+  return 0;
+{% endif %}
 #line {{ ctx.sourceLocationCurlyClose.lineNumber }} "{{ ctx.sourceLocationCurlyClose.filePath }}"
 }
 
@@ -54,21 +62,28 @@ int main(int argc, char* argv[]) {
   {%- endif %}
 
   {% if ctx.definition.returnType.typeSymbol.name != "void" %}result = {% endif %}{{ ctx.definition.module }}_{{ ctx.definition.name }}({% if not ctx.definition.parameters.isEmpty() %}arr{% endif %});
+   if (_caffc_exception != NULL) {
+     caffc_str* _caffc_exception_msg = ((caffc_exception*)_caffc_exception)->message((caffc_obj*)_caffc_exception);
+     if (_caffc_exception_msg != NULL) {
+       printf("Uncaught exception: %s\n", _caffc_exception_msg->_caffc_data);
+     }
+     exit(1);
+   }
 
-  {%- if not ctx.definition.parameters.isEmpty() %}
+   {%- if not ctx.definition.parameters.isEmpty() %}
 
-  _caffc_stack_frame_unregister(&_caffc_locals);
-  {%- else %}
+   _caffc_stack_frame_unregister(&_caffc_locals);
+   {%- else %}
 
-  _caffc_stack_frame_unregister(caffc_null);
-  {%- endif %}
+   _caffc_stack_frame_unregister(caffc_null);
+   {%- endif %}
 
-  {%- if ctx.definition.returnType.typeSymbol.name != "void" %}
+{%- if ctx.definition.returnType.typeSymbol.name != "void" %}
 
-  return result;
-  {%- else %}
+return result;
+{%- else %}
 
-  return 0;
-  {%- endif %}
+return 0;
+{%- endif %}
 }
 {% endif %}

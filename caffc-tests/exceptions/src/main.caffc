@@ -1,0 +1,19 @@
+module main
+
+main() {
+  try {
+    throwsException()
+    exit(1)
+  } catch (Exception e) {
+    print("no way")
+  } finally {
+    print("yes way")
+  }
+}
+
+throwsException() {
+  u32 x = 3
+
+  throw new Exception("problem", null)
+}
+

@@ -26,14 +26,14 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-            _caffc_temp_caffc_bool_1 = y > 0;
-            /* if0: */
-            if (! _caffc_temp_caffc_bool_1) { goto else0; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return y;
-            else0:
-            _caffc_stack_frame_unregister(caffc_null);
-            return 0;
+_caffc_temp_caffc_bool_1 = y > 0;
+/* if0: */
+if (! _caffc_temp_caffc_bool_1) { goto else0; }
+_caffc_stack_frame_unregister(caffc_null);
+return y;
+else0:
+_caffc_stack_frame_unregister(caffc_null);
+return 0;
             """,
             "generating an if should work");
     }
@@ -194,27 +194,27 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-            /* forBegin0: */
-            i = 0;
-            forCheck0:
-            _caffc_temp_caffc_bool_1 = i < 3;
-            if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-            /* forBlock0: */
-            _caffc_temp_caffc_bool_2 = i == 1;
-            /* if1: */
-            if (! _caffc_temp_caffc_bool_2) { goto else1; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return;
-            else1:
-            _caffc_temp_caffc_bool_2 = i == 2;
-            /* if2: */
-            if (! _caffc_temp_caffc_bool_2) { goto else2; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return;
-            else2:
-            i = i + 1;
-            goto forCheck0;
-            forEnd0:
+/* forBegin0: */
+i = 0;
+forCheck0:
+_caffc_temp_caffc_bool_1 = i < 3;
+if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
+/* forBlock0: */
+_caffc_temp_caffc_bool_2 = i == 1;
+/* if1: */
+if (! _caffc_temp_caffc_bool_2) { goto else1; }
+_caffc_stack_frame_unregister(caffc_null);
+return;
+else1:
+_caffc_temp_caffc_bool_2 = i == 2;
+/* if2: */
+if (! _caffc_temp_caffc_bool_2) { goto else2; }
+_caffc_stack_frame_unregister(caffc_null);
+return;
+else2:
+i = i + 1;
+goto forCheck0;
+forEnd0:
             """,
             "generating an if that has a simple return should work");
     }

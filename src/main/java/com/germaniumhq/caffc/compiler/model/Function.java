@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -364,5 +365,14 @@ public class Function implements CompileBlock, Scope, Symbol {
             + this.objParameters().size()
             + this.objStructVariables().size()
             ;
+    }
+
+    public boolean hasTryCatch() {
+        for (Statement statement : statements) {
+            if (statement instanceof TryCatchInstruction) {
+                return true;
+            }
+        }
+        return false;
     }
 }

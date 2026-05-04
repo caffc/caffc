@@ -7,6 +7,8 @@ import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.ThrowInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -32,6 +34,14 @@ public interface Statement extends AstItem {
 
         if (antlrStatement.ifBlock() != null) {
             return List.of(IfInstruction.fromAntlr(unit, owner, antlrStatement.ifBlock()));
+        }
+
+        if (antlrStatement.tryCatchBlock() != null) {
+            return List.of(TryCatchInstruction.fromAntlr(unit, owner, antlrStatement.tryCatchBlock()));
+        }
+
+        if (antlrStatement.throwStatement() != null) {
+            return List.of(ThrowInstruction.fromAntlr(unit, owner, antlrStatement.throwStatement()));
         }
 
         if (antlrStatement.forBlock() != null) {

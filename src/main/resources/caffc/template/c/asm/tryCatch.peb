@@ -1,0 +1,54 @@
+/* Try/Catch/Finally block */
+{
+  /* Save the current exception state */
+  caffc_obj* _caffc_saved_exception = _caffc_exception;
+  _caffc_exception = NULL;
+  
+  /* Try block */
+  {% for statement in ctx.tryStatements %}
+  {{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+  {%- endfor %}
+  
+  /* Jump over catch blocks */
+  goto _caffc_try_end_{{ ctx.sourceLocation.lineNumber }};
+  
+  /* Catch blocks */
+  {%- if ctx.catchBlocks.size > 0 %}
+  {%- for catchBlock in ctx.catchBlocks %}
+  _caffc_catch_{{ catchBlock.variableName }}_{{ ctx.sourceLocation.lineNumber }}:
+  if (caffc_instanceof_check((caffc_obj*)_caffc_exception,
+        /* {{ catchBlock.exceptionType.typeName }} */ {{ catchBlock.exceptionType.typeId }})) {
+    /* Assign exception to catch variable */
+    {{ catchBlock.exceptionType | c_name }} {{ catchBlock.variableName }} = ({{ catchBlock.exceptionType | c_name }})_caffc_exception;
+    _caffc_exception = NULL;
+    
+    /* Execute catch block */
+    {% for stmt in catchBlock.statements %}
+    {{ stmt | render }}{% if not isBlockStatement(stmt) %};{% endif %}
+    {%- endfor %}
+    
+    /* Check for exceptions during catch block execution */
+    {% include "caffc/template/c/asm/check_exception.peb" %}
+    
+    /* Jump to finally if present */
+    goto _caffc_finally_{{ ctx.sourceLocation.lineNumber }};
+  }
+  {%- endfor %}
+  
+  /* No catch block matched, rethrow current exception */
+  goto _caffc_exception_handler;
+  {%- endif %}
+  
+  _caffc_try_end_{{ ctx.sourceLocation.lineNumber }}:
+  
+  /* Finally block */
+  {%- if ctx.finallyStatements.size > 0 %}
+  _caffc_finally_{{ ctx.sourceLocation.lineNumber }}:
+  {% for statement in ctx.finallyStatements %}
+  {{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+  {%- endfor %}
+  {%- endif %}
+  
+  /* Restore exception and continue */
+  _caffc_exception = _caffc_saved_exception;
+}

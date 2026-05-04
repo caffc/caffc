@@ -48,10 +48,17 @@ int main(int argc, char* argv[]) {
   }
 
   result = main_main(arr);
+   if (_caffc_exception != NULL) {
+     caffc_str* _caffc_exception_msg = ((caffc_exception*)_caffc_exception)->message((caffc_obj*)_caffc_exception);
+     if (_caffc_exception_msg != NULL) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
+     exit(1);
+   }
 
   _caffc_stack_frame_unregister(&_caffc_locals);
 
-  return result;
+return result;
 }
         """);
     }
@@ -97,10 +104,17 @@ int main(int argc, char* argv[]) {
   }
 
   main_main(arr);
+   if (_caffc_exception != NULL) {
+     caffc_str* _caffc_exception_msg = ((caffc_exception*)_caffc_exception)->message((caffc_obj*)_caffc_exception);
+     if (_caffc_exception_msg != NULL) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
+     exit(1);
+   }
 
-  _caffc_stack_frame_unregister(&_caffc_locals);
+   _caffc_stack_frame_unregister(&_caffc_locals);
 
-  return 0;
+return 0;
 }
         """);
     }
@@ -133,10 +147,17 @@ int main(int argc, char* argv[]) {
   _caffc_stack_frame_register(caffc_null, caffc_null, 0);
 
   result = main_main();
+   if (_caffc_exception != NULL) {
+     caffc_str* _caffc_exception_msg = ((caffc_exception*)_caffc_exception)->message((caffc_obj*)_caffc_exception);
+     if (_caffc_exception_msg != NULL) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
+     exit(1);
+   }
 
-  _caffc_stack_frame_unregister(caffc_null);
+   _caffc_stack_frame_unregister(caffc_null);
 
-  return result;
+return result;
 }
         """);
     }

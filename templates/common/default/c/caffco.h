@@ -42,4 +42,16 @@ typedef struct {
  */
 caffc_void caffc_bzero(caffc_ptr p, caffc_u32 size);
 
+/**
+ * Global exception variable. When an exception is thrown, it's stored here.
+ * After each function call, this should be checked and if not NULL, jump
+ * to the exception handler.
+ */
+extern caffc_ptr _caffc_exception;
+
+/**
+ * Checks if an object is an instance of a type.
+ */
+caffc_bool caffc_instanceof_check(caffc_ptr o, caffc_u32 type_id);
+
 #endif  /* ifndef __caffco_o */

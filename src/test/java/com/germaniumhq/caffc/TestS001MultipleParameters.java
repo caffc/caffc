@@ -38,6 +38,12 @@ public class TestS001MultipleParameters {
 i8size = 0;
 errors = 0;
 _caffc_temp_caffc_u32_1 = caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);
+
+/* Check for exception and jump to handler if one occurred */
+if (_caffc_exception != NULL) {
+  goto _caffc_exception_handler;
+}
+
 errors = errors | _caffc_temp_caffc_u32_1;
 _caffc_stack_frame_unregister(&_caffc_locals);
 return 0;

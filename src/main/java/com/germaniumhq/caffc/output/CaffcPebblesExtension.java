@@ -11,6 +11,9 @@ import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.StringConstant;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
+import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.ThrowInstruction;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitNot;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation;
@@ -23,6 +26,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmThrow;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
@@ -115,8 +119,9 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmCall.class, "c/asm/call.peb")
                 .withMapping(AsmBlock.class, "c/asm/block.peb")
                 .withMapping(AsmReturn.class, "c/asm/return.peb")
+                 .withMapping(AsmThrow.class, "c/asm/throw.peb")
 
-                .withMapping(StringConstant.class, "c/asm/string_constant.peb")
+                 .withMapping(StringConstant.class, "c/asm/string_constant.peb")
 
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
@@ -124,13 +129,16 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(StructReturnVariableDefinition.class, "c/asm/struct_return_variable.peb")
 
                 // statements
-                .withMapping(IfInstruction.class, "c/instruction/if.peb")
-                .withMapping(ForInstruction.class, "c/instruction/for.peb")
-                .withMapping(NativeBlock.class, "c/instruction/native.peb")
-                .withMapping(ReturnInstruction.class, "c/instruction/return.peb")
-                .withMapping(ControlFlowInstruction.class, "c/expression/control.peb")
-                .withMapping(VariableDeclarations.class, "c/expression/variable_declaration.peb")
-                ;
+                 .withMapping(IfInstruction.class, "c/instruction/if.peb")
+                  .withMapping(ForInstruction.class, "c/instruction/for.peb")
+                  .withMapping(NativeBlock.class, "c/instruction/native.peb")
+                  .withMapping(ReturnInstruction.class, "c/instruction/return.peb")
+                  .withMapping(ControlFlowInstruction.class, "c/expression/control.peb")
+                  .withMapping(VariableDeclarations.class, "c/expression/variable_declaration.peb")
+                  .withMapping(TryCatchInstruction.class, "c/asm/tryCatch.peb")
+                  .withMapping(ThrowInstruction.class, "c/asm/throw.peb")
+                 .withMapping(AsmGlobalExceptionVar.class, "c/asm/global_exception.peb")
+                 ;
 
         // nested render
         filters.put("render", renderPebbleFilter);

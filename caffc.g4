@@ -91,9 +91,12 @@ statement:
   whileBlock |
   forBlock |
   ifBlock |
-  // tryCatchBlock |
+  tryCatchBlock |
+  throwStatement |
   expression |
   assignExpression;
+
+throwStatement: THROW expression;
 
 block: CURLY_OPEN statement* CURLY_CLOSE;
 
@@ -104,7 +107,9 @@ forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
               block;
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
-// tryCatchBlock: TRY block (CATCH '(' classType ID ')')? (FINALLY block)?;
+
+tryCatchBlock: TRY block (CATCH '(' classType ID ')' block)* FINALLY block? |
+  TRY block FINALLY block;
 
 return:
   RETURN expression (',' expression)* |

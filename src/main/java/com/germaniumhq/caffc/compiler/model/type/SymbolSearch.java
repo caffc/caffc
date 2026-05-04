@@ -95,6 +95,13 @@ public class SymbolSearch {
             return fromTypeContext(unit, typeContext);
         }
 
+        if (context instanceof caffcParser.ClassTypeContext classTypeContext) {
+            SymbolSearch symbolSearch = SymbolSearch.ofName(classTypeContext.fqdn().getText());
+            symbolSearch.generics = fromGenericsInstantiation(unit, classTypeContext.genericsInstantiations());
+
+            return symbolSearch;
+        }
+
         CaffcCompiler.get().fatal(
                 SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrParserRuleContext),
                 "unsupported expression: " + antlrParserRuleContext.getText() +

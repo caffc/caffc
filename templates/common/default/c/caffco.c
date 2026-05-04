@@ -2,6 +2,13 @@
 #include "caffc_program_constants.h"
 
 /**
+ * Global exception variable. When an exception is thrown, it's stored here.
+ * After each function call, this should be checked and if not NULL, jump
+ * to the exception handler.
+ */
+caffc_ptr _caffc_exception = caffc_null;
+
+/**
  * Checks if a given object is an instance of a type.
  */
 caffc_bool caffc_instanceof_check(caffc_ptr o, caffc_u32 ancestor_type_id) {

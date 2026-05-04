@@ -47,8 +47,14 @@ public class TestS004ClassStaticMethods {
         assertCodeContains(code, "caffc_str* caffc_A_getName(caffc_A* _this) {",
                 "non-static methods should have the _this parameter");
         assertCodeContains(code, """
-                _caffc_temp_caffc_A_1 = caffc_A_newA();
-                a = _caffc_temp_caffc_A_1;
+_caffc_temp_caffc_A_1 = caffc_A_newA();
+
+/* Check for exception and jump to handler if one occurred */
+if (_caffc_exception != NULL) {
+  goto _caffc_exception_handler;
+}
+;
+a = _caffc_temp_caffc_A_1;
                 """,
                 "calls of static methods should be possible");
     }
