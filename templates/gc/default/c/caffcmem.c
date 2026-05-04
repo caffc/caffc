@@ -52,6 +52,9 @@ void caffc_init() {
 
     caffc_gc_pointer_list_constructor(&caffc_all_objects, 16);
 
+    /* add the current pointer */
+    caffc_gc_pointer_list_add(&caffc_all_objects, &__caffc_exception);
+
     stack_size = sizeof(caffc_call_stack) + sizeof(caffc_stack_frame) * 1000;
     _caffc_call_stack = malloc(stack_size);
     memset(_caffc_call_stack, 0, stack_size);
