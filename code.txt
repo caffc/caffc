@@ -6,19 +6,12 @@ try1:
   doSomethingElse()
   if __caffc_exception goto catch1
 catch1:
-  // catch X x
+  // catch X x ....
   if __caffc_exception instanceof X {
     X* x = (X*) __caffc_exception
     __caffc_exception = null
     ...
-    goto finally1/finallyEnd1/tryEnd1
-  }
-
-  if __caffc_exception instanceof Y {
-    Y* y = (Y*) __caffc_exception
-    __caffc_exception = null
-    ...
-    goto finally1/finallyEnd1/tryEnd1
+    goto finally1/finallyEnd1
   }
 finally1:
   Exception* e = __caffc_exception

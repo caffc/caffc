@@ -8,13 +8,14 @@ import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
-import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -25,12 +26,17 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class TryCatchInstruction implements Statement {
+public final class TryCatchInstruction implements Statement, ExceptionHandler {
     public AstItem owner;
     public SourceLocation sourceLocation;
     public List<Statement> tryStatements = new ArrayList<>();
     public List<CatchBlock> catchBlocks = new ArrayList<>();
     public List<Statement> finallyStatements = new ArrayList<>();
+
+    private AsmLabel catchLabel;
+    private AsmLabel finallyLabel;
+    private AsmLabel rethrowLabel;
+    private AsmLabel tryEnd;
 
     public static class CatchBlock {
         public SymbolSearch exceptionTypeSearch;
@@ -71,6 +77,10 @@ public final class TryCatchInstruction implements Statement {
             for (caffcParser.StatementContext statementCtx : ctx.block(blockIndex).statement()) {
                 result.finallyStatements.addAll(Statement.fromAntlr(unit, result, statementCtx));
             }
+        }
+
+        if (result.catchBlocks.isEmpty() && result.finallyStatements.isEmpty()) {
+            CaffcCompiler.get().error(result.sourceLocation, "No `catch` nor `finally` found for try block.");
         }
 
         return result;
@@ -115,108 +125,109 @@ public final class TryCatchInstruction implements Statement {
         }
     }
 
-@Override
+    @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        // Try/catch/finally implementation in linear form:
-        // 1. Save current exception
-        // 2. Clear exception
-        // 3. Execute try block
-        // 4. Jump over catch blocks
-        // 5. Catch blocks check exception type
-        // 6. Execute finally block
-        // 7. Restore exception
-        
         AsmLinearFormResult result = new AsmLinearFormResult();
-        
-        // Generate unique labels
+
         int labelIndex = AsmLabel.allocateNumber(this);
-        AsmLabel tryEndLabel = new AsmLabel(this.sourceLocation, "try_end", labelIndex);
-        AsmLabel finallyLabel = new AsmLabel(this.sourceLocation, "finally", labelIndex);
-        AsmLabel finallyEndLabel = new AsmLabel(this.sourceLocation, "finally_end", labelIndex);
-        
-        // Save current exception
-        AsmVar savedExceptionVar = block.addTempVar(this, TypeSymbol.OBJ);
-        result.instructions.add(new AsmAssign(this.sourceLocation, savedExceptionVar, AsmGlobalExceptionVar.INSTANCE));
-        
-        // Clear exception
-        result.instructions.add(new AsmZeroClear(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE));
-        
-      // Add try block with exception checking after each statement
-        AsmLabel tryExceptionHandler = new AsmLabel(this.sourceLocation, "try_exception_" + labelIndex, AsmLabel.allocateNumber(this));
-        for (Statement statement : tryStatements) {
-            result.instructions.addAll(statement.asLinearForm(block).instructions);
-            // Add exception check after each statement
-            // If exception == NULL, continue to next statement
-            // If exception != NULL, jump to try's local exception handler
-            AsmLabel nextStatementLabel = new AsmLabel(this.sourceLocation, "next_stmt_" + labelIndex, AsmLabel.allocateNumber(this));
-            result.instructions.add(new AsmIfZJmp(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE, nextStatementLabel));
-            result.instructions.add(new AsmJmp(this.sourceLocation, tryExceptionHandler));
-            result.instructions.add(nextStatementLabel);
+
+        AsmComment tryStart = new AsmComment(null, "try", labelIndex);
+        // this.catchLabel -> gets created on demand if we have catch blocks
+        // this.finallyLabel -> gets created on demand if we have a finally block
+        this.rethrowLabel = new AsmLabel(null, "rethrow", labelIndex);
+        this.tryEnd = new AsmLabel(null, "tryEnd", labelIndex);
+
+        // add the try block
+        result.instructions.add(tryStart);
+
+        for (Statement tryStatement: tryStatements) {
+            AsmLinearFormResult tryStatementLinear = tryStatement.asLinearForm(block);
+            result.instructions.addAll(tryStatementLinear.instructions);
         }
-        
-        // Jump over catch blocks to finally
-        result.instructions.add(new AsmJmp(this.sourceLocation, finallyLabel));
-        
-        // Try's local exception handler - restore exception and rethrow to function's handler
-        result.instructions.add(tryExceptionHandler);
-        result.instructions.add(new AsmAssign(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE, savedExceptionVar));
-        result.instructions.add(new AsmJmp(this.sourceLocation, new AsmLabel(this.sourceLocation, "exception_handler", AsmLabel.allocateNumber(this))));
-        
-        // Add catch blocks
-        for (int i = 0; i < catchBlocks.size(); i++) {
-            CatchBlock catchBlock = catchBlocks.get(i);
-            AsmLabel catchLabel = new AsmLabel(this.sourceLocation, "catch_" + catchBlock.variableName, labelIndex);
-            AsmLabel nextCatchLabel = new AsmLabel(this.sourceLocation, "next_catch_" + i, labelIndex);
-            
+
+        // catch: blocks
+        if (!this.catchBlocks.isEmpty()) {
+            this.catchLabel = new AsmLabel(null, "catch", labelIndex);
             result.instructions.add(catchLabel);
-            
-            // Check if exception is not null
-            result.instructions.add(new AsmIfZJmp(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE, nextCatchLabel));
-            
-            // Check instanceof
-            AsmVar instanceofResult = block.addTempVar(this, TypeSymbol.BOOL);
-            result.instructions.add(new AsmInstanceOf(
-                this.sourceLocation,
-                instanceofResult,
-                AsmGlobalExceptionVar.INSTANCE,
-                catchBlock.exceptionType
-            ));
-            
-            // If instanceof fails, jump to next catch
-            result.instructions.add(new AsmIfZJmp(this.sourceLocation, instanceofResult, nextCatchLabel));
-            
-            // Clear exception
-            result.instructions.add(new AsmZeroClear(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE));
-            
-            // Execute catch block statements
-            for (Statement statement : catchBlock.statements) {
-                result.instructions.addAll(statement.asLinearForm(block).instructions);
+
+            // catch blocks should jump to the tryEnd: label
+            for (CatchBlock catchBlock : this.catchBlocks) {
+                this.renderCatchBlock(result, catchBlock);
             }
-            
-            // Jump to finally
-            result.instructions.add(new AsmJmp(this.sourceLocation, finallyLabel));
-            
-            // Next catch label
-            result.instructions.add(nextCatchLabel);
+
+            // no catch matched, we need to jump to finally/rethrow
+            result.instructions.add(new AsmJmp(null,
+                this.finallyLabel != null ? this.finallyLabel : this.rethrowLabel));
         }
-        
-        // No catch block matched - restore exception and rethrow
-        result.instructions.add(new AsmAssign(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE, savedExceptionVar));
-        result.instructions.add(new AsmJmp(this.sourceLocation, new AsmLabel(this.sourceLocation, "exception_handler", AsmLabel.allocateNumber(this))));
-        
-        // Finally block
-        result.instructions.add(finallyLabel);
-        
-        for (Statement statement : finallyStatements) {
-            result.instructions.addAll(statement.asLinearForm(block).instructions);
+
+        // finally: blocks
+        if (!this.finallyStatements.isEmpty()) {
+            this.finallyLabel = new AsmLabel(null, "finally", labelIndex);
+            this.renderFinallyBlock();
         }
-        
-        // Restore exception
-        result.instructions.add(new AsmAssign(this.sourceLocation, AsmGlobalExceptionVar.INSTANCE, savedExceptionVar));
-        
-        // End
-        result.instructions.add(finallyEndLabel);
+
+        // rethrow: (rethrow if we still got the exception)
+        result.instructions.add(this.rethrowLabel);
+        this.renderRethrow(result);
+
+        // tryEnd: jump label if a catch handled the exception
+        result.instructions.add(this.tryEnd);
         
         return result;
     }
- }
+
+    private void renderCatchBlock(AsmLinearFormResult result, int labelIndex, CatchBlock catchBlock, AsmBlock parentBlock) {
+        AsmBlock block = new AsmBlock(parentBlock);
+        AsmLabel catchEnd = new AsmLabel(null, "catchEnd", labelIndex);
+
+        VariableDeclaration isExceptionInstanceOf = block.addTempVar(this, TypeSymbol.BOOL);
+        block.instructions.add(new AsmInstanceOf(null, isExceptionInstanceOf,
+            AsmGlobalExceptionVar.INSTANCE, catchBlock.exceptionType));
+
+        // exception didn't match, we need to check the next exception
+        block.instructions.add(new AsmIfZJmp(null, isExceptionInstanceOf, catchEnd));
+
+        // save exception into local variable + clear global exception
+        VariableDeclaration exception = block.addTempVar(this, catchBlock.exceptionType);
+        block.instructions.add(new AsmAssign(null, exception, AsmGlobalExceptionVar.INSTANCE));
+        block.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
+
+        // catchEnd: were done with the handling
+        block.instructions.add(catchEnd);
+    }
+
+    private void renderFinallyBlock() {
+    }
+
+    /**
+     * We still have the exception, and we need to rethrow it further. We'll find the
+     * next exception handling target, and just jump there.
+     */
+    private void renderRethrow(AsmLinearFormResult result) {
+        result.instructions.add(new AsmIfZJmp(null, AsmGlobalExceptionVar.INSTANCE, tryEnd)); // FIXME: source location
+        ExceptionHandler exceptionHandler = this.findAstParent(ExceptionHandler.class);
+
+        if (exceptionHandler == null) {
+            CaffcCompiler.get().fatal(this, "BUG: catch exceptionHandler not found?");
+        }
+
+        // FIXME: source location
+        result.instructions.add(new AsmJmp(null, exceptionHandler.getExceptionHandlingTargetLabel()));
+    }
+
+    @Override
+    public AsmLabel getExceptionHandlingTargetLabel() {
+        // we have catch blocks
+        if (this.catchLabel != null) {
+            return this.catchLabel;
+        }
+
+        // we have a finally block we still got to execute
+        if (this.finallyLabel != null) {
+            return this.finallyLabel;
+        }
+
+        // our catch didn't catch the exception, and there's no finally block either
+        return this.rethrowLabel;
+    }
+}

@@ -3,6 +3,7 @@ package com.germaniumhq.caffc.compiler.model;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -21,7 +22,7 @@ import java.util.Objects;
 /**
  * A function in caffc.
  */
-public class Function implements CompileBlock, Scope, Symbol {
+public class Function implements CompileBlock, Scope, Symbol, ExceptionHandler {
     public AstItem owner;
     public FunctionDefinition definition = new FunctionDefinition();
 
@@ -365,14 +366,5 @@ public class Function implements CompileBlock, Scope, Symbol {
             + this.objParameters().size()
             + this.objStructVariables().size()
             ;
-    }
-
-    public boolean hasTryCatch() {
-        for (Statement statement : statements) {
-            if (statement instanceof TryCatchInstruction) {
-                return true;
-            }
-        }
-        return false;
     }
 }
