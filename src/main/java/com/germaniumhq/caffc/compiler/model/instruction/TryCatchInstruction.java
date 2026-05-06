@@ -22,6 +22,7 @@ import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.generated.caffcParser;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +34,17 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
     public List<CatchBlock> catchBlocks = new ArrayList<>();
     public List<Statement> finallyStatements = new ArrayList<>();
 
-    private AsmLabel catchLabel;
-    private AsmLabel finallyLabel;
-    private AsmLabel rethrowLabel;
-    private AsmLabel tryEnd;
+    public AsmLabel catchLabel;
+    public AsmLabel finallyLabel;
+    public AsmLabel rethrowLabel;
+    public AsmLabel tryEnd;
 
-    public static class CatchBlock {
+    public static class CatchBlock2 {
         public SymbolSearch exceptionTypeSearch;
         public TypeDefinitionSymbol exceptionType;
         public String variableName;
         public List<Statement> statements = new ArrayList<>();
+
     }
 
     public static TryCatchInstruction fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.TryCatchBlockContext ctx) {
@@ -57,19 +59,10 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         }
 
         // Process catch blocks
-        int blockIndex = 1;
-        for (int i = 0; i < ctx.CATCH().size(); i++) {
-            CatchBlock catchBlock = new CatchBlock();
-            
-            catchBlock.exceptionTypeSearch = SymbolSearch.fromAntlr(unit, ctx.classType(i));
-            catchBlock.variableName = ctx.ID(i).getText();
-            
-            for (caffcParser.StatementContext statementCtx : ctx.block(blockIndex).statement()) {
-                catchBlock.statements.addAll(Statement.fromAntlr(unit, result, statementCtx));
-            }
+        for (caffcParser.CatchBlockContext antlrCatchBlock: ctx.catchBlock()) {
+            CatchBlock catchBlock = CatchBlock.fromAntlr(unit, result, antlrCatchBlock);
             
             result.catchBlocks.add(catchBlock);
-            blockIndex++;
         }
 
         // Process finally block if present
@@ -132,8 +125,13 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         int labelIndex = AsmLabel.allocateNumber(this);
 
         AsmComment tryStart = new AsmComment(null, "try", labelIndex);
-        // this.catchLabel -> gets created on demand if we have catch blocks
-        // this.finallyLabel -> gets created on demand if we have a finally block
+
+        // this.catchLabel/finallyLabel -> get created on demand if we have catch/finally blocks
+        // we create them here since the catch needs the finally label for jumps.
+        this.catchLabel = !this.catchBlocks.isEmpty() ? null :
+            new AsmLabel(null, "catch", labelIndex);
+        this.finallyLabel = !this.finallyStatements.isEmpty() ? null :
+            new AsmLabel(null, "finally", labelIndex);
         this.rethrowLabel = new AsmLabel(null, "rethrow", labelIndex);
         this.tryEnd = new AsmLabel(null, "tryEnd", labelIndex);
 
@@ -196,7 +194,22 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         block.instructions.add(catchEnd);
     }
 
-    private void renderFinallyBlock() {
+    private void renderFinallyBlock(AsmLinearFormResult result, AsmBlock block) {
+        // if we don't have a finally block we don't save/restore the global exception
+        if (this.finallyStatements.isEmpty()) {
+            return;
+        }
+
+        VariableDeclaration exceptionCopy = block.addTempVar(this, TypeSymbol.OBJ);
+        result.instructions.add(new AsmAssign(null, exceptionCopy, AsmGlobalExceptionVar.INSTANCE));
+        result.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
+
+        for (Statement statement: this.finallyStatements) {
+            AsmLinearFormResult linearFormStatement = statement.asLinearForm(block);
+            result.instructions.addAll(linearFormStatement.instructions);
+        }
+
+        result.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, exceptionCopy));
     }
 
     /**

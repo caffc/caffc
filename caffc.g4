@@ -108,8 +108,14 @@ forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
 
-tryCatchBlock: TRY block (CATCH '(' classType ID ')' block)* FINALLY block? |
+tryCatchBlock: TRY block (catchBlock)* finallyBlock? |
   TRY block FINALLY block;
+
+catchBlock:
+  CATCH '(' classType ID ')' block;
+
+finallyBlock:
+  FINALLY block;
 
 return:
   RETURN expression (',' expression)* |
