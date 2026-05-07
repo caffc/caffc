@@ -1,9 +1,9 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
-import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
@@ -17,7 +17,6 @@ import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -30,9 +29,8 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
     public SourceLocation sourceLocation;
 
     private SymbolSearch exceptionTypeSearch;
-    private TypeDefinitionSymbol exceptionType;
 
-    private String variableName;
+    private VariableDeclaration exceptionVariable;
     private List<Statement> statements = new ArrayList<>();
 
     public static CatchBlock fromAntlr(CompilationUnit unit, TryCatchInstruction owner, caffcParser.CatchBlockContext ctx) {
@@ -42,11 +40,14 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
 
         result.exceptionTypeSearch = SymbolSearch.fromAntlr(unit, ctx.classType());
-        result.variableName = ctx.ID().getText();
+        String variableName = ctx.ID().getText();
 
         for (caffcParser.StatementContext statementCtx : ctx.block().statement()) {
             result.statements.addAll(Statement.fromAntlr(unit, result, statementCtx));
         }
+
+        result.exceptionVariable = VariableDeclaration.fromTypeSearch(result, result.exceptionTypeSearch, variableName);
+        result.findAstParent(Function.class).registerVariable(result.exceptionVariable);
 
         return result;
     }
@@ -77,14 +78,11 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
 
     @Override
     public void recurseResolveTypes() {
-        Symbol foundSymbol = SymbolResolver.mustResolveSymbol(this, this.exceptionTypeSearch);
+        this.exceptionVariable.recurseResolveTypes();
 
-        if (!(foundSymbol instanceof TypeDefinitionSymbol)) {
-            CaffcCompiler.get().error(this, "Exception type is not an actual object type, instead was: " + foundSymbol.typeName());
-            return;
+        for (Statement statement: statements) {
+            statement.recurseResolveTypes();
         }
-
-        this.exceptionType = (TypeDefinitionSymbol) foundSymbol;
     }
 
     @Override
@@ -95,24 +93,32 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
+        AsmBlock catchBlock = new AsmBlock(block);
 
+        int labelIndex = AsmLabel.allocateNumber(this);
         AsmLabel catchEnd = new AsmLabel(null, "catchEnd", labelIndex);
 
-        VariableDeclaration isExceptionInstanceOf = block.addTempVar(this, TypeSymbol.BOOL);
-        result.instructions.add(new AsmInstanceOf(null, isExceptionInstanceOf,
-            AsmGlobalExceptionVar.INSTANCE, this.exceptionType));
+        VariableDeclaration isExceptionInstanceOf = catchBlock.addTempVar(this, TypeSymbol.BOOL);
+        catchBlock.instructions.add(new AsmInstanceOf(null, isExceptionInstanceOf,
+            AsmGlobalExceptionVar.INSTANCE, (TypeDefinitionSymbol) this.exceptionVariable.typeSymbol()));
 
         // exception didn't match, we need to check the next exception
-        result.instructions.add(new AsmIfZJmp(null, isExceptionInstanceOf, catchEnd));
+        catchBlock.instructions.add(new AsmIfZJmp(null, isExceptionInstanceOf, catchEnd));
 
         // save exception into local variable + clear global exception
-        VariableDeclaration exception = block.addTempVar(this, this.exceptionType);
-        result.instructions.add(new AsmAssign(null, exception, AsmGlobalExceptionVar.INSTANCE));
-        result.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
+        VariableDeclaration exception = catchBlock.addTempVar(this, this.exceptionVariable.typeSymbol());
+        catchBlock.instructions.add(new AsmAssign(null, exception, AsmGlobalExceptionVar.INSTANCE));
+        catchBlock.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
+
+        // dump the catch instructions as statements
+        for (Statement statement: statements) {
+            catchBlock.instructions.addAll(statement.asLinearForm(catchBlock).instructions);
+        }
 
         // catchEnd: were done with the handling
-        result.instructions.add(catchEnd);
+        catchBlock.instructions.add(catchEnd);
 
+        result.instructions.add(catchBlock);
         return result;
     }
 }

@@ -5,9 +5,10 @@ import com.germaniumhq.caffc.compiler.model.Clazz;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.CompileBlock;
 import com.germaniumhq.caffc.compiler.model.Function;
-import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+
+import java.util.List;
 
 /**
  * This will transform the AST into a list of OPS. The OPS are still nodes
@@ -43,23 +44,16 @@ public class LinearFormConverter {
      */
     private static void convertStatementsToLinearForm(Function function) {
         AsmBlock block = new AsmBlock(function);
-
-        for (int i = 0; i < function.statements.size(); i++) {
-            Statement statement = function.statements.get(i);
-
-            AsmLinearFormResult linearStatement = statement.asLinearForm(block);
-
-            block.instructions.addAll(linearStatement.instructions);
-        }
+        AsmLinearFormResult result = function.asLinearForm(block);
 
         // this will flatten the blocks
-        addInstructionsToFunction(function, block);
+        addInstructionsToFunction(function, result.instructions);
     }
 
-    private static void addInstructionsToFunction(Function function, AsmBlock block) {
-        for (AsmInstruction instruction: block.instructions) {
+    private static void addInstructionsToFunction(Function function, List<AsmInstruction> instructions) {
+        for (AsmInstruction instruction: instructions) {
             if (instruction instanceof AsmBlock nestedBlock) {
-                addInstructionsToFunction(function, nestedBlock);
+                addInstructionsToFunction(function, nestedBlock.instructions);
             } else {
                 function.instructions.add(instruction);
             }

@@ -1,7 +1,11 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
@@ -22,7 +26,7 @@ import java.util.Objects;
 /**
  * A function in caffc.
  */
-public class Function implements CompileBlock, Scope, Symbol, ExceptionHandler {
+public class Function implements CompileBlock, Scope, Statement, Symbol, ExceptionHandler {
     public AstItem owner;
     public FunctionDefinition definition = new FunctionDefinition();
 
@@ -66,6 +70,11 @@ public class Function implements CompileBlock, Scope, Symbol, ExceptionHandler {
      */
     public SourceLocation sourceLocationCurlyOpen;
     public SourceLocation sourceLocationCurlyClose;
+
+    /**
+     * AsmLabel to jump to if there's an exception thrown, and we need to do a fast return
+     */
+    private AsmLabel uncaughtExceptionLabel;
 
     public static Function fromAntlr(
             CompilationUnit unit,
@@ -366,5 +375,28 @@ public class Function implements CompileBlock, Scope, Symbol, ExceptionHandler {
             + this.objParameters().size()
             + this.objStructVariables().size()
             ;
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        int index = AsmLabel.allocateNumber(this);
+        this.uncaughtExceptionLabel = new AsmLabel(this.getSourceLocation(), "uncaughtException", index);
+
+        for (Statement statement: this.statements) {
+            result.instructions.addAll(statement.asLinearForm(block).instructions);
+        }
+
+        result.instructions.add(this.uncaughtExceptionLabel);
+        // FIXME: I might need a new "AsmZero" constant type for structs & co?
+        result.instructions.add(new AsmReturn(null, this, AsmConstant.NULL));
+
+        return result;
+    }
+
+    @Override
+    public AsmLabel getExceptionHandlingTargetLabel() {
+        return uncaughtExceptionLabel;
     }
 }

@@ -73,7 +73,7 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
         return result;
     }
 
-    public static VariableDeclaration fromReturn(AstItem owner, SymbolSearch symbolSearch, String variableName) {
+    public static VariableDeclaration fromTypeSearch(AstItem owner, SymbolSearch symbolSearch, String variableName) {
         VariableDeclaration result = new VariableDeclaration();
 
         result.name = variableName;

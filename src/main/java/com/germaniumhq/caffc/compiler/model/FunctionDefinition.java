@@ -71,7 +71,7 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
                     symbolSearch
                 );
 
-                result.add(VariableDeclaration.fromReturn(owner, symbolSearch, variableName));
+                result.add(VariableDeclaration.fromTypeSearch(owner, symbolSearch, variableName));
             }
         } else {
             CaffcCompiler.get().fatal(owner, "unsupported function return type");

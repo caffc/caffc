@@ -10,19 +10,16 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
-import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.generated.caffcParser;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +63,9 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         }
 
         // Process finally block if present
-        if (ctx.FINALLY() != null) {
-            for (caffcParser.StatementContext statementCtx : ctx.block(blockIndex).statement()) {
-                result.finallyStatements.addAll(Statement.fromAntlr(unit, result, statementCtx));
+        if (ctx.finallyBlock() != null) {
+            for (caffcParser.StatementContext antlrStatement: ctx.finallyBlock().block().statement()) {
+                result.finallyStatements.addAll(Statement.fromAntlr(unit, result, antlrStatement));
             }
         }
 
@@ -98,18 +95,7 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
 
         // Resolve types in catch blocks
         for (CatchBlock catchBlock : catchBlocks) {
-            // Resolve the type from the stored SymbolSearch
-            Symbol searchedType = SymbolResolver.mustResolveSymbol(this, catchBlock.exceptionTypeSearch);
-
-            if (!(searchedType instanceof TypeDefinitionSymbol)) {
-                CaffcCompiler.get().fatal(this, "catch exception type is not a class/interface");
-            }
-
-            catchBlock.exceptionType = (TypeDefinitionSymbol) searchedType;
-
-            for (Statement statement : catchBlock.statements) {
-                statement.recurseResolveTypes();
-            }
+            catchBlock.recurseResolveTypes();
         }
 
         // Resolve types in finally statements
@@ -124,10 +110,9 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
 
         int labelIndex = AsmLabel.allocateNumber(this);
 
-        AsmComment tryStart = new AsmComment(null, "try", labelIndex);
-
         // this.catchLabel/finallyLabel -> get created on demand if we have catch/finally blocks
         // we create them here since the catch needs the finally label for jumps.
+        AsmComment tryStart = new AsmComment(null, "try", labelIndex);
         this.catchLabel = !this.catchBlocks.isEmpty() ? null :
             new AsmLabel(null, "catch", labelIndex);
         this.finallyLabel = !this.finallyStatements.isEmpty() ? null :
@@ -150,7 +135,7 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
 
             // catch blocks should jump to the tryEnd: label
             for (CatchBlock catchBlock : this.catchBlocks) {
-                this.renderCatchBlock(result, catchBlock);
+                this.renderCatchBlock(block, catchBlock);
             }
 
             // no catch matched, we need to jump to finally/rethrow
@@ -161,7 +146,7 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         // finally: blocks
         if (!this.finallyStatements.isEmpty()) {
             this.finallyLabel = new AsmLabel(null, "finally", labelIndex);
-            this.renderFinallyBlock();
+            this.renderFinallyBlock(block);
         }
 
         // rethrow: (rethrow if we still got the exception)
@@ -174,42 +159,31 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         return result;
     }
 
-    private void renderCatchBlock(AsmLinearFormResult result, int labelIndex, CatchBlock catchBlock, AsmBlock parentBlock) {
-        AsmBlock block = new AsmBlock(parentBlock);
-        AsmLabel catchEnd = new AsmLabel(null, "catchEnd", labelIndex);
-
-        VariableDeclaration isExceptionInstanceOf = block.addTempVar(this, TypeSymbol.BOOL);
-        block.instructions.add(new AsmInstanceOf(null, isExceptionInstanceOf,
-            AsmGlobalExceptionVar.INSTANCE, catchBlock.exceptionType));
-
-        // exception didn't match, we need to check the next exception
-        block.instructions.add(new AsmIfZJmp(null, isExceptionInstanceOf, catchEnd));
-
-        // save exception into local variable + clear global exception
-        VariableDeclaration exception = block.addTempVar(this, catchBlock.exceptionType);
-        block.instructions.add(new AsmAssign(null, exception, AsmGlobalExceptionVar.INSTANCE));
-        block.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
-
-        // catchEnd: were done with the handling
-        block.instructions.add(catchEnd);
+    private void renderCatchBlock(AsmBlock parentBlock, CatchBlock catchBlock) {
+        List<AsmInstruction> instructions = catchBlock.asLinearForm(parentBlock).instructions;
+        parentBlock.instructions.addAll(instructions);
     }
 
-    private void renderFinallyBlock(AsmLinearFormResult result, AsmBlock block) {
+    private void renderFinallyBlock(AsmBlock result) {
         // if we don't have a finally block we don't save/restore the global exception
         if (this.finallyStatements.isEmpty()) {
             return;
         }
 
-        VariableDeclaration exceptionCopy = block.addTempVar(this, TypeSymbol.OBJ);
-        result.instructions.add(new AsmAssign(null, exceptionCopy, AsmGlobalExceptionVar.INSTANCE));
-        result.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
+        AsmBlock finallyBlock = new AsmBlock(result);
+
+        VariableDeclaration exceptionCopy = finallyBlock.addTempVar(this, TypeSymbol.OBJ);
+        finallyBlock.instructions.add(new AsmAssign(null, exceptionCopy, AsmGlobalExceptionVar.INSTANCE));
+        finallyBlock.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
 
         for (Statement statement: this.finallyStatements) {
-            AsmLinearFormResult linearFormStatement = statement.asLinearForm(block);
-            result.instructions.addAll(linearFormStatement.instructions);
+            AsmLinearFormResult linearFormStatement = statement.asLinearForm(finallyBlock);
+            finallyBlock.instructions.addAll(linearFormStatement.instructions);
         }
 
-        result.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, exceptionCopy));
+        finallyBlock.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, exceptionCopy));
+
+        result.instructions.add(finallyBlock);
     }
 
     /**
