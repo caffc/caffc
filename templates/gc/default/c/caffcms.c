@@ -28,6 +28,21 @@ void caffc_gc_ms_mark() {
 
     caffc_gc_pointer_list_constructor(&work_list, 16);
 
+    /*
+       We do two passes. In the first one we add in the `work_list` all the unique
+       roots. In the second pass we do the actual graph traversal.
+
+       i.e. imagine an object that calls `_this.xxxx` methods. We'd have the `_this`
+       pointer multiple times in the work list. We want it only once in the work_list.
+    */
+
+    /* 1. add the global exception pointer as a root */
+    if (_caffc_exception) {
+        caffc_gc_ms_set_marked(_caffc_exception);
+        caffc_gc_pointer_list_add(&work_list, _caffc_exception);
+    }
+
+    /* 2. add all the pointers by traversing all the stack frames */
     for (i = 0; i < _caffc_call_stack->call_count; i++) {
         for (j = 0; j < _caffc_call_stack->frames[i].var_count; j++) {
             /*
@@ -41,12 +56,21 @@ void caffc_gc_ms_mark() {
             void*** data_frame_ptr = _caffc_call_stack->frames[i].data_frame;
             caffc_ptr p = **(data_frame_ptr + j);
 
-            if (p) {
+            if (p && !caffc_gc_ms_is_marked((caffc_object_header*) p)) {
+                caffc_gc_ms_set_marked((caffc_object_header*) p);
                 caffc_gc_pointer_list_add(&work_list, p);
             }
         }
     }
 
+    /* We have now the roots, clear the flag, and do the graph traversal */
+    for (i = 0; i < work_list.len; i++) {
+        caffc_ptr object = caffc_gc_pointer_list_get(&work_list, i);
+        object_header = (caffc_object_header*) object;
+        caffc_gc_ms_clear_marked(object);
+    }
+
+    /* Do the graph traversal */
     while (work_list.len) {
         caffc_ptr object = caffc_gc_pointer_list_remove(&work_list, work_list.len - 1);
         object_header = (caffc_object_header*) object;
@@ -102,4 +126,3 @@ void caffc_gc_ms_sweep() {
         }
     }
 }
-

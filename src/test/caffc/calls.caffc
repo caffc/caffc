@@ -12,7 +12,7 @@ native {
   main_myfn(3, const_str_abc, const_str_doe);
 }
 
-printf(str format, *list<obj> args, *map<str, obj> kw) {
+printf(str format, *List<obj> args, *map<str, obj> kw) {
 }
 
 // this call is resolved differently

@@ -8,9 +8,9 @@ click<T>(fn<<X, Y>,T> f, map<string, string> kw*) -> fn<<X,Y,Z>,T> {
     }
 }
 
-parameter(fn<<list<>, map<>>,> f, str name) -> fn<<list<>, map<>>,> {
+parameter(fn<<List<>, map<>>,> f, str name) -> fn<<List<>, map<>>,> {
   context.parameters.add(name)
-  return log(list<> args*, map<> kw*) {
+  return log(List<> args*, map<> kw*) {
     try {
       print("==>")
       f(args, kw)
@@ -20,7 +20,7 @@ parameter(fn<<list<>, map<>>,> f, str name) -> fn<<list<>, map<>>,> {
   }
 }
 
-parameter(str name, fn<<list<>, map<>>,> f) -> fn<<list<>, map<>>,> {
+parameter(str name, fn<<List<>, map<>>,> f) -> fn<<List<>, map<>>,> {
     createParamInstance(name)
     return f
 }
@@ -31,6 +31,6 @@ main_entrypoint(str name, str path) -> void {
     io.out.println("name: {name}")
 }
 
-main(list<str> args) -> int {
+main(List<str> args) -> int {
     return click.parse(args)
 }

@@ -1,0 +1,3 @@
+{%- for statement in ctx.statements %}
+{{ statement | render }}{% if not isBlockStatement(statement) %};{% endif %}
+{%- endfor %}

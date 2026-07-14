@@ -223,7 +223,7 @@ CaffC supports both primitive arrays, and object arrays. Object arrays are of
 course garbage collected. Multidimensional arrays are also supported. Arrays
 cannot be resized after creation.
 
-There are plans to have collection classes for the big three: dict, set and list.
+There are plans to have collection classes for the big three: Dict, Set and List.
 
 ```caffc
 main() {

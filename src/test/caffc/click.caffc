@@ -34,7 +34,7 @@ caffc_atoi(ptr s, i32 base) -> i32 {
     ret x
 }
 
-main(list<str> argv) {
+main(List<str> argv) {
     click.main(argv)
 }
 

@@ -1,13 +1,22 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstruction;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -20,7 +29,7 @@ import java.util.Objects;
 /**
  * A function in caffc.
  */
-public class Function implements CompileBlock, Scope, Symbol {
+public class Function implements CompileBlock, Scope, Statement, Symbol, ExceptionHandler {
     public AstItem owner;
     public FunctionDefinition definition = new FunctionDefinition();
 
@@ -65,6 +74,11 @@ public class Function implements CompileBlock, Scope, Symbol {
     public SourceLocation sourceLocationCurlyOpen;
     public SourceLocation sourceLocationCurlyClose;
 
+    /**
+     * AsmLabel to jump to if there's an exception thrown, and we need to do a fast return
+     */
+    private AsmLabel uncaughtExceptionLabel;
+
     public static Function fromAntlr(
             CompilationUnit unit,
             AstItem owner,
@@ -87,7 +101,7 @@ public class Function implements CompileBlock, Scope, Symbol {
         function.owner = owner;
         function.definition.module = unit.module.name;
 
-        // if the function has parameters, add them
+      // if the function has parameters, add them
         caffcParser.ParameterDefinitionsContext parameterDefinitions = ctx.parameterDefinitions();
 
         if (parameterDefinitions != null) {
@@ -103,7 +117,7 @@ public class Function implements CompileBlock, Scope, Symbol {
             function._variables.put(variableDefinition.name, variableDefinition);
         }
 
-        function.definition.name = ctx.ID().getText();
+       function.definition.name = ctx.ID().getText();
 
         if (ctx.STATIC() != null) {
             function.definition.isStatic = true;
@@ -171,19 +185,22 @@ public class Function implements CompileBlock, Scope, Symbol {
             }
         }
 
+        if (this.definition.generics != null) {
+            Symbol generic = this.definition.generics.getByName(name);
+            if (generic != null) {
+                return generic;
+            }
+        }
+
         VariableDeclaration variableDeclaration = this._variables.get(name);
         if (variableDeclaration != null) {
             return variableDeclaration;
         }
 
-        if (this.definition.generics != null) {
-            return this.definition.generics.getByName(name);
-        }
-
         return null;
     }
 
-    public void registerVariable(VariableDeclaration variableDeclaration) {
+public void registerVariable(VariableDeclaration variableDeclaration) {
         Symbol existing = this.resolve(variableDeclaration.name);
 
         if (existing != null) {
@@ -242,7 +259,7 @@ public class Function implements CompileBlock, Scope, Symbol {
         return definition.sourceLocation;
     }
 
-    @Override
+@Override
     public void recurseResolveTypes() {
         if (this.isResolved) {
             return;
@@ -251,12 +268,44 @@ public class Function implements CompileBlock, Scope, Symbol {
         this.isResolved = true;
         this.definition.recurseResolveTypes();
 
+        // Check for type name collisions BEFORE resolving variable types,
+        // because resolving may fail if a variable shadows its type name
+        checkVariableNameCollisions();
+
         for (VariableDeclaration variableDeclaration: this._variables.values()) {
             variableDeclaration.recurseResolveTypes();
         }
 
         for (Statement statement: this.statements) {
             statement.recurseResolveTypes();
+        }
+    }
+
+  private void checkVariableNameCollisions() {
+        // Only check within the same module - cross-module names don't conflict
+        Module ownModule = Program.get().modules.get(this.definition.module);
+        if (ownModule == null) return;
+
+        // Check parameters for name collisions within the same module
+        for (Parameter parameter : this.definition.parameters) {
+            Symbol collision = ownModule.resolveWithAnyName(parameter.name);
+            if (collision != null) {
+                CaffcCompiler.get().fatal(parameter,
+                        "parameter " + parameter.name + " shadows " +
+                            Symbol.typeOfSymbol(collision) + " " + collision.name() +
+                            " defined at " + CaffcCompiler.fileLocation(collision));
+            }
+        }
+
+        // Check local variables for name collisions within the same module
+        for (VariableDeclaration variableDeclaration : this._variables.values()) {
+            Symbol collision = ownModule.resolveWithAnyName(variableDeclaration.name);
+            if (collision != null) {
+                CaffcCompiler.get().fatal(variableDeclaration,
+                        "variable " + variableDeclaration.name + " shadows " +
+                            Symbol.typeOfSymbol(collision) + " " + collision.name() +
+                            " defined at " + CaffcCompiler.fileLocation(collision));
+            }
         }
     }
 
@@ -364,5 +413,43 @@ public class Function implements CompileBlock, Scope, Symbol {
             + this.objParameters().size()
             + this.objStructVariables().size()
             ;
+    }
+
+    @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        AsmLinearFormResult result = new AsmLinearFormResult();
+
+        int index = AsmLabel.allocateNumber(this);
+        this.uncaughtExceptionLabel = new AsmLabel(this.getSourceLocation(), "fnUncaughtException", index);
+
+        for (Statement statement: this.statements) {
+            result.instructions.addAll(statement.asLinearForm(block).instructions);
+        }
+
+        result.instructions.add(this.uncaughtExceptionLabel);
+
+        // value will be ignored at this stage
+        if (TypeName.VOID.equals(this.definition.returnType.typeName())) {
+            result.instructions.add(new AsmReturn(null, this, null));
+        } else if (this.definition.isMultiReturn()) {
+            AsmVar structVar = block.addTempVar(this, this.definition.returnType);
+            result.instructions.add(new AsmZeroClear(null, structVar));
+            result.instructions.add(new AsmReturn(null, this, structVar));
+        } else {
+            AsmValue defaultValue = null;
+            if (this.definition.returnType.typeName().dataType != DataType.PRIMITIVE) {
+                defaultValue = AsmConstant.NULL;
+            } else {
+                defaultValue = new AsmConstant(null, "0");
+            }
+            result.instructions.add(new AsmReturn(null, this, defaultValue));
+        }
+
+        return result;
+    }
+
+    @Override
+    public AsmLabel getExceptionHandlingTargetLabel() {
+        return uncaughtExceptionLabel;
     }
 }

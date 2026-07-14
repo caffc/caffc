@@ -5,7 +5,9 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
+import com.germaniumhq.caffc.compiler.model.Struct;
 
 /**
  * A symbol has a name and a type. It's what we get when we resolve something in a scope.
@@ -60,6 +62,10 @@ public interface Symbol extends AstItem {
 
         if (item instanceof ClassDefinition) {
             return "class";
+        } else if (item instanceof InterfaceDefinition) {
+            return "interface";
+        } else if (item instanceof Struct) {
+            return "struct";
         } else if (item instanceof FunctionDefinition fd && fd.clazz != null) {
             return "method";
         } else if (item instanceof FunctionDefinition) {

@@ -1,5 +1,2 @@
 {% include "gc_stack_frame_unregister.peb" %}
-{#- We need this #line statement, since the gc_stack_frame_unregister would have
-    changed the previous #line statemend designed for this instruction. #}
-#line {{ ctx.sourceLocation.lineNumber }} "{{ ctx.sourceLocation.filePath }}"
 return{% if ctx.what != null %} {{ ctx.what | render }}{% endif -%}

@@ -13,4 +13,5 @@ interface HasEquals {
 
 interface HasHash {
   hash() -> i32
+  equals(HasEquals other) -> bool
 }

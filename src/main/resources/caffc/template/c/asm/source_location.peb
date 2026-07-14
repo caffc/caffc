@@ -1,0 +1,9 @@
+{%- if settings.debug.cLineMacro != "none" %}
+{%- if settings.debug.cLineMacro == "comment" -%}
+/*
+{%- endif -%}
+#line {{ ctx.lineNumber }} "{{ ctx.filePath }}"
+{%- if settings.debug.cLineMacro == "comment" -%}
+*/
+{%- endif %}
+{% endif %}

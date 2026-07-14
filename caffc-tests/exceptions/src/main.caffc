@@ -1,0 +1,40 @@
+module main
+
+class YoloException implements exception {
+  message() -> str {
+    str result = "yolo"
+    return result
+  }
+
+  cause() -> exception {
+    return null
+  }
+
+  stack() -> StackFrame[] {
+    return null
+  }
+}
+
+main() {
+  try {
+    throwsException()
+    exit(1)
+  } catch (Exception e) {
+    print("no way")
+    str msg = e.message()
+    print(msg)
+  } catch (exception e) {
+    print("random exception")
+    str msg = e.message()
+    print(msg)
+  } finally {
+    print("yes way")
+  }
+}
+
+throwsException() {
+  u32 x = 3
+
+  throw new YoloException()
+}
+

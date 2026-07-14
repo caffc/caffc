@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc;
 
+import com.germaniumhq.caffc.compiler.error.CancelCompilationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -93,11 +94,11 @@ public class TestS050Expressions {
         CodeAssertsStr.assertCodeContains(code, """
 x = 0;
 _caffc_temp_caffc_bool_1 = !x;
-/* if0: */
-if (! _caffc_temp_caffc_bool_1) { goto else0; }
+/* if1: */
+if (! _caffc_temp_caffc_bool_1) { goto else1; }
 _caffc_stack_frame_unregister(caffc_null);
 return 1;
-else0:
+else1:
 _caffc_stack_frame_unregister(caffc_null);
 return 0;
                 """,
@@ -265,14 +266,14 @@ return 0;
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-/* ternaryStart0: */
+/* ternaryStart1: */
 _caffc_temp_caffc_bool_1 = x == 1;
-if (! _caffc_temp_caffc_bool_1) { goto ternaryElse0; }
+if (! _caffc_temp_caffc_bool_1) { goto ternaryElse1; }
 _caffc_temp_caffc_i32_1 = 3;
-goto ternaryEnd0;
-ternaryElse0:
+goto ternaryEnd1;
+ternaryElse1:
 _caffc_temp_caffc_i32_1 = 4;
-ternaryEnd0:
+ternaryEnd1:
 y = _caffc_temp_caffc_i32_1;
 _caffc_stack_frame_unregister(caffc_null);
 return 0;
@@ -304,13 +305,13 @@ return 0;
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                /* ternaryStart0: */
-                if (! a) { goto ternaryElse0; }
+                /* ternaryStart1: */
+                if (! a) { goto ternaryElse1; }
                 _caffc_temp_main_A_2 = a;
-                goto ternaryEnd0;
-                ternaryElse0:
+                goto ternaryEnd1;
+                ternaryElse1:
                 _caffc_temp_main_A_2 = b;
-                ternaryEnd0:
+                ternaryEnd1:
                 c = _caffc_temp_main_A_2;
                 """,
             "ternary operators should translate into the generated code");
@@ -370,7 +371,7 @@ return 0;
 
     @Test
     public void testCharLiteral() {
-       String code = CodeAssertsStr.compileCaffcProgram(
+        String code = CodeAssertsStr.compileCaffcProgram(
                "caffc/template/c/compilation_unit_c.peb",
                "a/a.caffc",
                new TestUnit[] {
@@ -388,23 +389,23 @@ return 0;
                                        }
                                        """)
                }
-       );
+        );
 
-       CodeAssertsStr.assertCodeContains(code, "x = 97;",
-               "character 'a' should translate to ASCII value 97");
-       CodeAssertsStr.assertCodeContains(code, "y = 10;",
-               "escaped newline '\\n' should translate to ASCII value 10");
-       CodeAssertsStr.assertCodeContains(code, "z = 50;",
-               "hex escape '\\x32' should translate to value 50 (0x32)");
-       CodeAssertsStr.assertCodeContains(code, "unicode_char = 14851205;",
-               "character '✅' should translate to value 14851205, its bytes: 0xe29c85");
+        CodeAssertsStr.assertCodeContains(code, "x = 97;",
+            "character 'a' should translate to ASCII value 97");
+        CodeAssertsStr.assertCodeContains(code, "y = 10;",
+            "escaped newline '\\n' should translate to ASCII value 10");
+        CodeAssertsStr.assertCodeContains(code, "z = 50;",
+            "hex escape '\\x32' should translate to value 50 (0x32)");
+        CodeAssertsStr.assertCodeContains(code, "unicode_char = 14851205;",
+            "character '✅' should translate to value 14851205, its bytes: 0xe29c85");
     }
 
     @Test
     public void testCharLiteralMultipleCharactersFails() {
-       // Test that character literals with multiple characters are rejected by the lexer
-       try {
-           String code = CodeAssertsStr.compileCaffcProgram(
+        // Test that character literals with multiple characters are rejected by the lexer
+        try {
+            String code = CodeAssertsStr.compileCaffcProgram(
                    "caffc/template/c/compilation_unit_c.peb",
                    "a/a.caffc",
                    new TestUnit[] {
@@ -418,11 +419,12 @@ return 0;
                                            }
                                            """)
                    }
-           );
-           fail("Should have thrown exception for multiple characters in char literal");
-       } catch (RuntimeException e) {
-           assertTrue(e.getMessage().contains("Errors found in compilation"), "Expected compilation error but got: " + e.getMessage());
-       }
+            );
+            fail("Should have thrown exception for multiple characters in char literal");
+        } catch (CancelCompilationException e) {
+            assertTrue(e.getMessage().contains("Errors found in parsing"),
+                "Expected `Errors found in parsing` but got: " + e.getMessage());
+        }
     }
 
     @Test
@@ -446,8 +448,8 @@ return 0;
                    }
            );
            fail("Should have thrown exception for hex escape with too few digits");
-       } catch (RuntimeException e) {
-           assertTrue(e.getMessage().contains("Errors found in compilation"), "Expected compilation error but got: " + e.getMessage());
+       } catch (CancelCompilationException e) {
+           assertTrue(e.getMessage().contains("Errors found in parsing"), "Expected parsing error but got: " + e.getMessage());
        }
     }
 
@@ -478,30 +480,137 @@ return 0;
         }
     }
 
-       @Test
-       public void testCharLiteralOctalEscapeTooShortFails() {
-           // Test that octal escape sequences with too few octal digits are rejected
-           // The lexer rejects incomplete escape sequences
-           try {
-               String code = CodeAssertsStr.compileCaffcProgram(
-                       "caffc/template/c/compilation_unit_c.peb",
-                       "a/a.caffc",
-                       new TestUnit[] {
-                               new TestUnit("a/a.caffc",
-                                       """
-                                               module main
+    @Test
+    public void testCharLiteralOctalEscapeTooShortFails() {
+        // Test that octal escape sequences with too few octal digits are rejected
+        // The lexer rejects incomplete escape sequences
+        try {
+            String code = CodeAssertsStr.compileCaffcProgram(
+                   "caffc/template/c/compilation_unit_c.peb",
+                   "a/a.caffc",
+                   new TestUnit[] {
+                           new TestUnit("a/a.caffc",
+                                   """
+                                           module main
 
-                                               main() -> i32 {
-                                                 u32 x = '\\03'
-                                                 return 0
-                                               }
-                                               """)
-                       }
-               );
-               fail("Should have thrown exception for octal escape with too few digits");
-           } catch (RuntimeException e) {
-               assertTrue(e.getMessage().contains("Errors found in compilation"), "Expected compilation error but got: " + e.getMessage());
-           }
-       }
-  }
+                                           main() -> i32 {
+                                             u32 x = '\\03'
+                                             return 0
+                                           }
+                                           """)
+                   }
+            );
+            fail("Should have thrown exception for octal escape with too few digits");
+        } catch (CancelCompilationException e) {
+            assertTrue(e.getMessage().contains("Errors found in parsing"),
+                "Expected `Errors found in parsing` but got: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testTrueLiteral() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                        new TestUnit("a/a.caffc",
+                                """
+                                        module main
+
+                                        main() -> i32 {
+                                          bool x = true
+
+                                          return 0
+                                        }
+                                        """)
+                }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, "x = 1;",
+                "true literal should translate to 1 in generated C code");
+    }
+
+    @Test
+    public void testFalseLiteral() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                        new TestUnit("a/a.caffc",
+                                """
+                                        module main
+
+                                        main() -> i32 {
+                                          bool x = false
+
+                                          return 0
+                                        }
+                                        """)
+                }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, "x = 0;",
+                "false literal should translate to 0 in generated C code");
+    }
+
+    @Test
+    public void testTrueFalseInIfStatement() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                        new TestUnit("a/a.caffc",
+                                """
+                                        module main
+
+                                        main() -> i32 {
+                                          bool x = true
+                                          bool y = false
+
+                                          if x {
+                                            return 1
+                                          }
+
+                                          if not y {
+                                            return 2
+                                          }
+
+                                          return 0
+                                        }
+                                        """)
+                }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, "x = 1;",
+                "true literal in if statement should be 1");
+        CodeAssertsStr.assertCodeContains(code, "y = 0;",
+                "false literal in if statement should be 0");
+    }
+
+    @Test
+    public void testTrueFalseAsBoolOperations() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                        new TestUnit("a/a.caffc",
+                                """
+                                        module main
+
+                                        main() -> i32 {
+                                          bool x = true and false
+                                          bool y = true or false
+
+                                          return 0
+                                        }
+                                        """)
+                }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, "_caffc_temp_caffc_bool_1 = 1 && 0;",
+                "true and false should translate to 1 && 0");
+        CodeAssertsStr.assertCodeContains(code, "_caffc_temp_caffc_bool_2 = 1 || 0;",
+                "true or false should translate to 1 || 0");
+    }
+}
 

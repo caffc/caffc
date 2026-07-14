@@ -1,6 +1,8 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
@@ -135,7 +137,8 @@ public final class ExpressionFnCall implements Expression {
         }
 
         // add call instruction
-        AsmCall call = new AsmCall(this.sourceLocation, functionDefinition, callParameters);
+        AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmCall call = new AsmCall(this.sourceLocation, exceptionLabel, functionDefinition, callParameters);
 
         if (!functionDefinition.isVoid()) {
             call.result = block.addTempVar(this, functionDefinition.returnType);

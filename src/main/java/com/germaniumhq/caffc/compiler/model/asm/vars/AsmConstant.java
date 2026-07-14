@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.asm.vars;
 
+import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -11,6 +12,8 @@ final public class AsmConstant implements AsmValue {
     public Symbol type;
     public String value;
 
+    public static final AsmConstant NULL = new AsmConstant(TypeSymbol.OBJ, null);
+
     public AsmConstant(Symbol type, String value) {
         this.type = type;
         this.value = value;
@@ -21,7 +24,7 @@ final public class AsmConstant implements AsmValue {
         }
 
         // FIXME: this looks like a massive hack that needs a massive refactoring
-        if (TypeName.STR.equals(type.typeName())) {
+        if (type != null && TypeName.STR.equals(type.typeName())) {
             this.value = "(caffc_str*)&" + value;
         }
     }

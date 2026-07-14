@@ -94,3 +94,18 @@ stackDump() -> StackFrame[] {
 
   return result
 }
+
+/**
+ * Throws a new exception using the given message (as a C string).
+ * After this call, any native block should cleanup its resources and
+ * end, _without_ calling other CaffC code.
+ */
+throw_exception(ptr message) {
+  str errorMessage = "<unknown c exception>"
+
+  if message {
+    errorMessage = str.fromPtr(message)
+  }
+
+  throw new Exception(errorMessage, null)
+}

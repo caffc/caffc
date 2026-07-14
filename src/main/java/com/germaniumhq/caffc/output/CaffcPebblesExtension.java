@@ -29,15 +29,22 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNew;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmNewArray;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmReturn;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmShift;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmThrow;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.ForInInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.ThrowInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.WhileInstruction;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.output.filters.AsHeader;
 import com.germaniumhq.caffc.output.filters.FilterCConstructorParameters;
 import com.germaniumhq.caffc.output.filters.FilterCConstructorParametersCall;
@@ -48,6 +55,7 @@ import com.germaniumhq.caffc.output.filters.FilterCName;
 import com.germaniumhq.caffc.output.filters.FilterCResolveId;
 import com.germaniumhq.caffc.output.filters.FilterCType;
 import com.germaniumhq.caffc.output.filters.FilterCTypeName;
+import com.germaniumhq.caffc.output.filters.FilterNullValue;
 import com.germaniumhq.caffc.output.filters.FilterSemicolon;
 import com.germaniumhq.caffc.output.filters.Render;
 import com.germaniumhq.caffc.output.functions.FunctionGet;
@@ -83,6 +91,7 @@ public class CaffcPebblesExtension implements Extension {
         filters.put("c_constructor_parameters", new FilterCConstructorParameters());
         filters.put("c_constructor_parameters_call", new FilterCConstructorParametersCall());
         filters.put("semicolon", new FilterSemicolon());
+        filters.put("null_value", new FilterNullValue());
 
         Render renderPebbleFilter = new Render()
                 // bigger containers functions/classes
@@ -115,21 +124,27 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmCall.class, "c/asm/call.peb")
                 .withMapping(AsmBlock.class, "c/asm/block.peb")
                 .withMapping(AsmReturn.class, "c/asm/return.peb")
-
+                .withMapping(AsmThrow.class, "c/asm/throw.peb")
                 .withMapping(StringConstant.class, "c/asm/string_constant.peb")
-
                 .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
                 .withMapping(Parameter.class, "c/asm/parameter.peb")
                 .withMapping(StructReturnVariableDefinition.class, "c/asm/struct_return_variable.peb")
 
-                // statements
+                // statements: FIXME: remove all of them, everything now is made only via asm instructions
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")
                 .withMapping(ForInstruction.class, "c/instruction/for.peb")
+                .withMapping(ForInInstruction.class, "c/instruction/for_in.peb")
+                .withMapping(WhileInstruction.class, "c/instruction/while.peb")
                 .withMapping(NativeBlock.class, "c/instruction/native.peb")
                 .withMapping(ReturnInstruction.class, "c/instruction/return.peb")
                 .withMapping(ControlFlowInstruction.class, "c/expression/control.peb")
                 .withMapping(VariableDeclarations.class, "c/expression/variable_declaration.peb")
+                .withMapping(TryCatchInstruction.class, "c/asm/tryCatch.peb")
+                .withMapping(ThrowInstruction.class, "c/asm/throw.peb")
+                .withMapping(AsmGlobalExceptionVar.class, "c/asm/global_exception.peb")
+
+                .withMapping(SourceLocation.class, "c/asm/source_location.peb") // debug
                 ;
 
         // nested render

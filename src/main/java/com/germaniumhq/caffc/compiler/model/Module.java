@@ -126,6 +126,62 @@ public class Module implements AstItem, Scope, Symbol {
         this.stringConstants.add(constant);
     }
 
+ /**
+      * Checks if the given name collides with a type name (class, interface, or struct)
+      * defined in this module. Returns the first colliding type symbol found, or null if no collision.
+      */
+     public Symbol resolveWithType(String name) {
+         if (clazzes.containsKey(name)) {
+             return clazzes.get(name);
+         }
+         if (interfaces.containsKey(name)) {
+             return interfaces.get(name);
+         }
+         if (structures.containsKey(name)) {
+             return structures.get(name);
+         }
+         return null;
+     }
+
+    /**
+     * Checks if the given name collides with any symbol (type or function)
+     * defined in this module. Returns the first colliding symbol found, or null if no collision.
+     */
+    public Symbol resolveWithAnyName(String name) {
+        if (clazzes.containsKey(name)) {
+            return clazzes.get(name);
+        }
+        if (interfaces.containsKey(name)) {
+            return interfaces.get(name);
+        }
+        if (structures.containsKey(name)) {
+            return structures.get(name);
+        }
+        if (functions.containsKey(name)) {
+            return functions.get(name);
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the given name collides with a type name defined in any registered module.
+     * Returns the first colliding type symbol found, or null if no collision.
+     */
+    public static Symbol resolveWithTypeAllModules(String name) {
+        Program program = Program.get();
+        if (program == null) {
+            return null;
+        }
+
+        for (Module module : program.modules.values()) {
+            Symbol collision = module.resolveWithType(name);
+            if (collision != null) {
+                return collision;
+            }
+        }
+        return null;
+    }
+
     @Override
     public SourceLocation getSourceLocation() {
         return sourceLocation;

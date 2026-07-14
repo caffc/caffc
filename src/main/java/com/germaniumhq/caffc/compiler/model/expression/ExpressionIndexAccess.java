@@ -1,7 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
@@ -11,7 +10,10 @@ import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.HasMethods;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -93,7 +95,8 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
         AsmVar resultValue = block.addTempVar(this, this.symbol);
 
         result.value = resultValue;
-        AsmCall asmCall = new AsmCall(this.sourceLocation, getFunction, expressionLinear.value, indexLinear.value);
+        AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmCall asmCall = new AsmCall(this.sourceLocation, exceptionLabel, getFunction, expressionLinear.value, indexLinear.value);
         asmCall.result = resultValue;
         result.instructions.add(asmCall);
 

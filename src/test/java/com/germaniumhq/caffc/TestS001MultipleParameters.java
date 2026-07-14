@@ -37,7 +37,7 @@ public class TestS001MultipleParameters {
         assertCodeContains(code, """
 i8size = 0;
 errors = 0;
-_caffc_temp_caffc_u32_1 = caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size);
+_caffc_temp_caffc_u32_1 = caffc_check((caffc_str*)&caffc_cstr_4c1dc1f491eb4e4e3e5e34a36df4fd84932bb09a01b248edbcb1581d16ce4dba, 1, i8size); if (_caffc_exception) { goto fnUncaughtException0; };
 errors = errors | _caffc_temp_caffc_u32_1;
 _caffc_stack_frame_unregister(&_caffc_locals);
 return 0;

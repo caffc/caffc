@@ -32,8 +32,8 @@ public class TestS012FunctionMultiReturn {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-            _caffc_temp_caffc_i32_1 = main_getPoint();
-            x = _caffc_temp_caffc_i32_1;
+_caffc_temp_caffc_i32_1 = main_getPoint(); if (_caffc_exception) { goto fnUncaughtException0; };
+x = _caffc_temp_caffc_i32_1;
             """,
             "the call for a single unnamed return should not be unpacked");
 
@@ -69,10 +69,10 @@ public class TestS012FunctionMultiReturn {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-                _caffc_temp_caffc_i32_1 = main_getPoint();
-                x = _caffc_temp_caffc_i32_1;
-                """,
-                "the call for a single named return should not be unpacked");
+_caffc_temp_caffc_i32_1 = main_getPoint(); if (_caffc_exception) { goto fnUncaughtException0; };
+x = _caffc_temp_caffc_i32_1;
+                 """,
+                 "the call for a single named return should not be unpacked");
     }
 
     @Test

@@ -1,0 +1,28 @@
+# Profile: gcc_docker
+#
+# CaffC compilation runs locally (x86_64). C compilation, linking, and
+# execution run inside a gcc Docker container.
+#
+# Uses the caffc-gcc-asan Docker image built from Dockerfile.gcc_asan
+# (ubuntu:22.04 + gcc).
+#
+# Usage:
+#   python3 run-tests.py -p gcc_docker
+#   python3 run-tests.py -p gcc_docker hello-world-caffc
+#
+# Prerequisites:
+#   - Docker installed
+#   - Built the caffc-gcc-asan image:
+#       docker build -f Dockerfile.gcc_asan -t caffc-gcc-asan:latest .
+
+config:
+  caffc_cmd: java -jar ../../target/caffc-*.jar
+
+  compile_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c 'gcc -Wall -g -ggdb -c {file} -o {output}'
+
+  link_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c 'gcc {objects} -o {output}'
+
+  execute_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c './target/main'

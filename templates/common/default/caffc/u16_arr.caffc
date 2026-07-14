@@ -1,0 +1,40 @@
+module caffc
+
+_caffc_u16_arr_size(i32 size) -> i32 {
+  i32 result
+
+  native {
+    result = (caffc_i32) (sizeof(caffc_u16) * size + sizeof(caffc_u16_arr));
+  }
+
+  return result
+}
+
+/**
+ * An array of unsigned short ints. This is the implementation
+ * behind the u16[].
+ */
+#caffc_array("caffc_u16")
+class u16_arr {
+  u32 size
+
+  constructor(i32 size) {
+    _this.size = size
+  }
+
+  set(i32 index, u16 value) {
+    native {
+      _this->_caffc_data[index] = value;
+    }
+  }
+
+  get(i32 index) -> u16 {
+    u16 result
+
+    native {
+      result = _this->_caffc_data[index];
+    }
+
+    return result
+  }
+}

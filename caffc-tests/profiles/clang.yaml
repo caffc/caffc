@@ -1,0 +1,28 @@
+# Profile: clang_docker
+#
+# CaffC compilation runs locally (x86_64). C compilation, linking, and
+# execution run inside a clang Docker container.
+#
+# Uses the caffc-clang Docker image built from Dockerfile.clang
+# (ubuntu:22.04 + clang-14).
+#
+# Usage:
+#   python3 run-tests.py -p clang_docker
+#   python3 run-tests.py -p clang_docker hello-world-caffc
+#
+# Prerequisites:
+#   - Docker installed
+#   - Built the caffc-clang image:
+#       docker build -f Dockerfile.clang -t caffc-clang:latest .
+
+config:
+  caffc_cmd: java -jar ../../target/caffc-*.jar
+
+  compile_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-clang bash -c 'clang -Wall -g -ggdb -c {file} -o {output}'
+
+  link_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-clang bash -c 'clang {objects} -o {output}'
+
+  execute_cmd_template: |
+    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-clang bash -c './target/main'

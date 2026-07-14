@@ -2,10 +2,21 @@ module main
 
 native {
   #include <stdio.h>
+  #include <stdlib.h>
 }
 
+/* this test intentionally writes out of bounds, and memory leaks to
+   validate that libasan actually works. :*/
 main() {
   native {
+    char arr1[24], arr2[24], arr3[24];
+
+    /* intentional out of bounds write */
+    arr2[24] = 13;
+
+    /* intentional memory leak */
+    int* x = malloc(24);
+
     printf("hello world from a native block\n");
   }
 }

@@ -15,13 +15,45 @@ extern caffc_gc_pointer_list caffc_roots;
 extern caffc_gc_pointer_list caffc_all_objects;
 extern caffc_call_stack* _caffc_call_stack;
 
-/* every few MBs of allocated objects we run the GC */
+/* every few MBs of allocated objects we run the full GC */
 caffc_u32 total_allocated = 0;
 #define GC_ALLOCATED_SIZE_AUTO_COLLECT_CALL (2 * 1024 * 1024)
 
 /* forward declarations */
 void caffc_gc_perform();
 
+/**
+ * Function to be called to manually bootstrap the GC structures.
+ * #public_api
+ */
+void caffc_init() {
+    caffc_u32 stack_size;
+
+    caffc_gc_pointer_list_constructor(&caffc_all_objects, 16);
+
+    stack_size = sizeof(caffc_call_stack) + sizeof(caffc_stack_frame) * 1000;
+    _caffc_call_stack = malloc(stack_size);
+    memset(_caffc_call_stack, 0, stack_size);
+}
+
+/**
+ * Destroy the GC structures. To be called atexit() to ensure no leaks
+ * remain.
+ * #public_api
+ */
+void caffc_done() {
+    caffc_gc_perform();
+
+    caffc_gc_pointer_list_destructor(&caffc_all_objects);
+    free(_caffc_call_stack);
+}
+
+/**
+ * Allocate a new CaffC object. The object_size allows allocating more
+ * memory than the actual object layout to accommodate for arrays, or
+ * strings.
+ * #public_api
+ */
 caffc_object_header* caffc_new(caffc_u32 object_type_id, caffc_u32 object_size) {
     caffc_object_header* result;
 
@@ -47,24 +79,7 @@ caffc_object_header* caffc_new(caffc_u32 object_type_id, caffc_u32 object_size) 
     return result;
 }
 
-void caffc_init() {
-    caffc_u32 stack_size;
-
-    caffc_gc_pointer_list_constructor(&caffc_all_objects, 16);
-
-    stack_size = sizeof(caffc_call_stack) + sizeof(caffc_stack_frame) * 1000;
-    _caffc_call_stack = malloc(stack_size);
-    memset(_caffc_call_stack, 0, stack_size);
-}
-
 void caffc_gc_perform() {
     caffc_gc_ms_mark();
     caffc_gc_ms_sweep();
-}
-
-void caffc_done() {
-    caffc_gc_perform();
-
-    caffc_gc_pointer_list_destructor(&caffc_all_objects);
-    free(_caffc_call_stack);
 }

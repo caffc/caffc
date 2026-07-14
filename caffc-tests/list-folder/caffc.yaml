@@ -1,0 +1,17 @@
+version: 1
+one_file: main.c
+
+debug:
+  c_line_macro: comment
+  trace_line_runtime: none
+
+gc:
+  impl: default  # this is default
+  memory_trigger: "1024 * 1024 * 2"  # 2MB
+
+string:
+  impl: utf-8 | ansi
+  locale: all | selection | none
+  locale_list:
+  - "UTF-8"
+  - "Latin 1"

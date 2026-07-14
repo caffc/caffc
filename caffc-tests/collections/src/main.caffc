@@ -1,0 +1,219 @@
+module main
+
+use main.asserts
+
+testArrayList() {
+  ArrayList<I32> myList = new ArrayList<I32>(10)
+  assertTrue(myList.isEmpty(), "new list should be empty")
+  assertTrue(myList.size() == 0, "new list size should be 0")
+
+  I32 a = new I32(10)
+  I32 b = new I32(20)
+  I32 c = new I32(30)
+
+  myList.add(a)
+  myList.add(b)
+  myList.add(c)
+
+  assertTrue(myList.isEmpty() == 0, "list should not be empty after add")
+  assertTrue(myList.size() == 3, "list size should be 3 after 3 adds")
+
+  I32 first = myList.get(0)
+  assertTrue(first != null, "first element should not be null")
+  assertTrue(first.value == 10, "first element should be 10")
+
+  I32 second = myList.get(1)
+  assertTrue(second.value == 20, "second element should be 20")
+
+  I32 third = myList.get(2)
+  assertTrue(third.value == 30, "third element should be 30")
+
+  I32 updated = new I32(25)
+  myList.set(1, updated)
+  I32 secondAfterSet = myList.get(1)
+  assertTrue(secondAfterSet.value == 25, "second element should be 25 after set")
+
+  I32 removed = myList.remove(1)
+  assertTrue(removed.value == 25, "removed element should be 25")
+  assertTrue(myList.size() == 2, "list size should be 2 after remove")
+  assertTrue(myList.get(0).value == 10, "first element should still be 10")
+  assertTrue(myList.get(1).value == 30, "second element should be 30 after middle remove")
+}
+
+testHashDictStringLiterals() {
+  HashDict<str, I32> myDict = new HashDict<str, I32>(10)
+  assertTrue(myDict.isEmpty(), "new dict should be empty")
+  assertTrue(myDict.size() == 0, "new dict size should be 0")
+
+  myDict.put("one", new I32(1))
+  myDict.put("two", new I32(2))
+  myDict.put("three", new I32(3))
+
+  assertTrue(myDict.size() == 3, "dict size should be 3")
+  assertTrue(myDict.containsKey("one") == 1, "dict should contain key one")
+  assertTrue(myDict.containsKey("three") == 1, "dict should contain key three")
+  assertTrue(myDict.containsKey("missing") == 0, "dict should not contain missing key")
+
+  I32 val = myDict.get("one")
+  assertTrue(val != null, "value should not be null")
+  assertTrue(val.value == 1, "dict[one] should be 1")
+
+  I32 two = myDict.get("two")
+  assertTrue(two.value == 2, "dict[two] should be 2")
+
+  I32 three = myDict.get("three")
+  assertTrue(three.value == 3, "dict[three] should be 3")
+
+  myDict.put("one", new I32(100))
+  I32 updated = myDict.get("one")
+  assertTrue(updated.value == 100, "dict[one] should be 100 after update")
+  assertTrue(myDict.size() == 3, "dict size should still be 3 after update")
+
+  myDict.remove("two")
+  assertTrue(myDict.size() == 2, "dict size should be 2 after remove")
+}
+
+testHashSetStringLiterals() {
+  HashSet<str> mySet = new HashSet<str>(10)
+  assertTrue(mySet.isEmpty(), "new set should be empty")
+  assertTrue(mySet.size() == 0, "new set size should be 0")
+
+  mySet.add("a")
+  mySet.add("b")
+  mySet.add("c")
+
+  assertTrue(mySet.size() == 3, "set size should be 3")
+  assertTrue(mySet.contains("a") == 1, "set should contain a")
+  assertTrue(mySet.contains("c") == 1, "set should contain c")
+  assertTrue(mySet.contains("d") == 0, "set should not contain d")
+
+  bool added = mySet.add("b")
+  assertTrue(added == 0, "adding duplicate should return false")
+  assertTrue(mySet.size() == 3, "set size should still be 3 after duplicate add")
+
+  bool removed = mySet.remove("b")
+  assertTrue(removed == 1, "removing existing should return true")
+  assertTrue(mySet.size() == 2, "set size should be 2 after remove")
+}
+
+testHashSetStrHeapObjects() {
+  // Tests that heap-allocated str objects with same content are found
+  // via hash+equals virtual dispatch, not just pointer equality
+  HashSet<str> mySet = new HashSet<str>(8)
+
+  str a = new str(5)
+  str b = new str(5)
+
+  // a and b are different heap allocations but same content "aaaaa"
+  mySet.add(a)
+  assertTrue(mySet.size() == 1, "set size should be 1 after adding a")
+  assertTrue(mySet.contains(a) == 1, "set should contain a")
+
+  // b has same content as a but is a different heap allocation
+  // equals() should return true, so contains() should find it
+  assertTrue(mySet.contains(b) == 1, "set should contain b (same content as a)")
+  assertTrue(mySet.size() == 1, "set size should still be 1 (duplicate content)")
+
+  bool added = mySet.add(b)
+  assertTrue(added == 0, "adding b should return false (same content)")
+
+  str c = new str(6)
+
+  // c has different length than a and b, so different content
+  assertTrue(mySet.contains(c) == 0, "set should not contain c (different content)")
+
+  bool removed = mySet.remove(a)
+  assertTrue(removed == 1, "removing a should return true")
+  assertTrue(mySet.size() == 0, "set size should be 0 after remove")
+}
+
+testHashDictStrHeapObjects() {
+  // Same test but for HashDict
+  HashDict<str, I32> myDict = new HashDict<str, I32>(8)
+
+  str key1 = new str(3)
+  str key2 = new str(3)
+
+  myDict.put(key1, new I32(42))
+  assertTrue(myDict.size() == 1, "dict size should be 1")
+  assertTrue(myDict.containsKey(key1) == 1, "dict should contain key1")
+
+  // key2 has same content as key1 but different allocation
+  // equals() should find it via virtual dispatch
+  assertTrue(myDict.containsKey(key2) == 1, "dict should contain key2 (same content)")
+  I32 val = myDict.get(key2)
+  assertTrue(val != null, "value should not be null")
+  assertTrue(val.value == 42, "dict.get(key2) should be 42")
+
+  // key3 has different content (different length)
+  str key3 = new str(4)
+  assertTrue(myDict.containsKey(key3) == 0, "dict should not contain key3")
+  assertTrue(myDict.size() == 1, "dict size should still be 1")
+}
+
+testHashSetI32Boxing() {
+  // Tests that boxing classes work with HashSet via hash/equals
+  HashSet<I32> mySet = new HashSet<I32>(8)
+
+  I32 a = new I32(42)
+  I32 b = new I32(99)
+  I32 c = new I32(7)
+
+  mySet.add(a)
+  mySet.add(b)
+  mySet.add(c)
+
+  assertTrue(mySet.size() == 3, "set size should be 3")
+  assertTrue(mySet.contains(a) == 1, "set should contain a")
+  assertTrue(mySet.contains(b) == 1, "set should contain b")
+  assertTrue(mySet.contains(c) == 1, "set should contain c")
+
+  // d is a different heap allocation with same value as a
+  I32 d = new I32(42)
+  assertTrue(mySet.contains(d) == 1, "set should contain d (same value via equals)")
+  assertTrue(mySet.size() == 3, "set size should still be 3 after duplicate add")
+
+  bool added = mySet.add(d)
+  assertTrue(added == 0, "adding duplicate should return false")
+
+  bool removed = mySet.remove(b)
+  assertTrue(removed == 1, "removing existing should return true")
+  assertTrue(mySet.size() == 2, "set size should be 2 after remove")
+}
+
+testHashDictI32Boxing() {
+  // Tests that boxing classes work with HashDict via hash/equals
+  HashDict<I32, str> myDict = new HashDict<I32, str>(8)
+
+  I32 key1 = new I32(100)
+  I32 key2 = new I32(100)
+
+  myDict.put(key1, new str(5))
+  assertTrue(myDict.size() == 1, "dict size should be 1")
+  assertTrue(myDict.containsKey(key1) == 1, "dict should contain key1")
+
+  // key2 has same value as key1 but different allocation
+  // equals() should find it via virtual dispatch
+  assertTrue(myDict.containsKey(key2) == 1, "dict should contain key2 (same value)")
+  assertTrue(myDict.get(key2) != null, "dict.get(key2) should not be null")
+
+  // key3 has different value
+  I32 key3 = new I32(200)
+  assertTrue(myDict.containsKey(key3) == 0, "dict should not contain key3")
+  assertTrue(myDict.size() == 1, "dict size should still be 1")
+
+  myDict.remove(key2)
+  assertTrue(myDict.size() == 0, "dict size should be 0 after remove")
+}
+
+main() {
+  testArrayList()
+  testHashDictStringLiterals()
+  testHashSetStringLiterals()
+  testHashSetStrHeapObjects()
+  testHashDictStrHeapObjects()
+  testHashSetI32Boxing()
+  testHashDictI32Boxing()
+  print("All collection tests passed!")
+  exit(0)
+}

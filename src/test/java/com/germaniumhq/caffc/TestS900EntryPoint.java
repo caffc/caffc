@@ -48,10 +48,21 @@ int main(int argc, char* argv[]) {
   }
 
   result = main_main(arr);
+   if (_caffc_exception) {
+     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+     if (_caffc_exception_msg) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
+
+     /* we want the GC to sweep it */
+     _caffc_exception = caffc_null;
+
+     exit(1);
+   }
 
   _caffc_stack_frame_unregister(&_caffc_locals);
 
-  return result;
+return result;
 }
         """);
     }
@@ -70,7 +81,7 @@ int main(int argc, char* argv[]) {
                     }
                     """)
                 }
-        );
+       );
 
         CodeAssertsStr.assertCodeContains(code, """
 int main(int argc, char* argv[]) {
@@ -97,10 +108,21 @@ int main(int argc, char* argv[]) {
   }
 
   main_main(arr);
+   if (_caffc_exception) {
+     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+     if (_caffc_exception_msg) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
 
-  _caffc_stack_frame_unregister(&_caffc_locals);
+     /* we want the GC to sweep it */
+     _caffc_exception = caffc_null;
 
-  return 0;
+     exit(1);
+   }
+
+   _caffc_stack_frame_unregister(&_caffc_locals);
+
+return 0;
 }
         """);
     }
@@ -133,10 +155,21 @@ int main(int argc, char* argv[]) {
   _caffc_stack_frame_register(caffc_null, caffc_null, 0);
 
   result = main_main();
+   if (_caffc_exception) {
+     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+     if (_caffc_exception_msg) {
+       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+     }
 
-  _caffc_stack_frame_unregister(caffc_null);
+     /* we want the GC to sweep it */
+     _caffc_exception = caffc_null;
 
-  return result;
+     exit(1);
+   }
+
+   _caffc_stack_frame_unregister(caffc_null);
+
+return result;
 }
         """);
     }

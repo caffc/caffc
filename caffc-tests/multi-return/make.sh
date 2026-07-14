@@ -3,7 +3,11 @@
 set -e
 
 cfc() {
-    java -jar ../../target/caffc-*.jar "$@"
+    if [[ "$CAFFC_JAVA_DEBUG" != "" ]]; then
+        JAVA_DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    fi # [[ "$CAFFC_JAVA_DEBUG" != "" ]]
+
+    java $JAVA_DEBUG_OPTIONS -jar ../../target/caffc-*.jar "$@"
 }
 
 echo "#############################################################################"

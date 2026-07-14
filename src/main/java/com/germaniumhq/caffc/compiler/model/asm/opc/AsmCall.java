@@ -10,16 +10,21 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
  */
 public final class AsmCall implements AsmInstruction {
     public final SourceLocation sourceLocation;
+    public final AsmLabel exceptionLabel;
     public AsmValue result;
     public final FunctionDefinition function;
     public final AsmValue[] parameters;
 
-    public AsmCall(SourceLocation sourceLocation, FunctionDefinition function, AsmValue ... parameters) {
+    public AsmCall(SourceLocation sourceLocation,
+                   AsmLabel exceptionLabel,
+                   FunctionDefinition function,
+                   AsmValue ... parameters) {
         if (function == null) {
             throw new IllegalArgumentException("Function cannot be null");
         }
 
         this.sourceLocation = sourceLocation;
+        this.exceptionLabel = exceptionLabel;
         this.function = function;
         this.parameters = parameters;
     }

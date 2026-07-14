@@ -1,19 +1,24 @@
 package com.germaniumhq.caffc.args;
 
-import com.germaniumhq.caffc.compiler.BuildConfig;
+import com.germaniumhq.caffc.compiler.settings.BuildSettings;
 
-import java.net.URL;
+import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 public class ArgumentsParser {
-    public static BuildConfig parse(String[] args) {
+    public static BuildSettings parse(String[] args) {
         List<String> arguments = new LinkedList<>(Arrays.asList(args));
-        BuildConfig buildConfig = new BuildConfig();
+        BuildSettings buildConfig = new BuildSettings();
 
         System.out.println("Running with arguments: " + arguments);
+
+        String projectConfigFile = getProjectConfigFile();
+        if (projectConfigFile != null) {
+            System.out.println("Project config file found: " + projectConfigFile);
+            BuildSettings.readFromFile(buildConfig, projectConfigFile);
+        }
 
         while (!arguments.isEmpty()) {
             String argument = arguments.remove(0);
@@ -46,6 +51,16 @@ public class ArgumentsParser {
         }
 
         return buildConfig;
+    }
+
+    private static String getProjectConfigFile() {
+        File file = new File("caffc.yaml");
+
+        if (file.exists()) {
+            return file.getAbsolutePath();
+        }
+
+        return null;
     }
 
     private static void printVersion() {

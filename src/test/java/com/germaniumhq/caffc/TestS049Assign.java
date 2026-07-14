@@ -43,9 +43,9 @@ public class TestS049Assign {
             "there should be a local variable declaration for the struct response");
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_multi_structreturn_1 = caffc_multi();
-                x = _caffc_temp_caffc_multi_structreturn_1.x;
-                caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
+_caffc_temp_caffc_multi_structreturn_1 = caffc_multi(); if (_caffc_exception) { goto fnUncaughtException0; };
+x = _caffc_temp_caffc_multi_structreturn_1.x;
+caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
                 """,
             "multi assign should be deconstructed from the struct response");
     }

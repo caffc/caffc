@@ -17,6 +17,8 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewArray;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionParens;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionTrue;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionFalse;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionChar;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNull;
@@ -54,6 +56,14 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExNullContext nullExpression) {
             return ExpressionNull.fromAntlr(unit, owner, nullExpression);
+        }
+
+        if (expression instanceof caffcParser.ExTrueContext trueExpression) {
+            return ExpressionTrue.fromAntlr(unit, owner, trueExpression);
+        }
+
+        if (expression instanceof caffcParser.ExFalseContext falseExpression) {
+            return ExpressionFalse.fromAntlr(unit, owner, falseExpression);
         }
 
         if (expression instanceof caffcParser.ExIdContext idExpression) {

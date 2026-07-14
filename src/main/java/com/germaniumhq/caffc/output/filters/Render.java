@@ -6,25 +6,16 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Render implements Filter {
-    private Map<Class, String> knownTemplates = new HashMap<>();
-    private Set<Class> ignoredClasses = new HashSet<>();
+    private final Map<Class, String> knownTemplates = new HashMap<>();
 
     @Override
     public Object apply(Object o, Map<String, Object> map, PebbleTemplate pebbleTemplate, EvaluationContext evaluationContext, int i) throws PebbleException {
         if (o == null) {
-            throw new IllegalArgumentException("Null object passed to render");
-        }
-
-        // ignored classes shouldn't be rendered
-        if (ignoredClasses.contains(o.getClass())) {
             return "";
         }
 
@@ -64,12 +55,6 @@ public class Render implements Filter {
 
     public Render withMapping(Class clazz, String templateName) {
         this.knownTemplates.put(clazz, templateName);
-        return this;
-    }
-
-    public Render withIgnored(Class ... clazzes) {
-        Collections.addAll(this.ignoredClasses, clazzes);
-
         return this;
     }
 }

@@ -11,6 +11,8 @@ public class SourceLocation {
     public int lineNumber;
     public int columnNumber;
 
+    public static SourceLocation UNKNOWN = new SourceLocation("?", 0, 0);
+
     public SourceLocation(
             String filePath,
             int lineNumber,

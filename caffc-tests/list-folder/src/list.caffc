@@ -3,6 +3,8 @@ module main
 native {
   #include <dirent.h>
   #include <stdio.h>
+  #include <errno.h>
+  #include <string.h>
 }
 
 class File {
@@ -17,12 +19,17 @@ class File {
   }
 }
 
-main() -> i32 {
-  ArrayList<File> files = list_files(".")
+main(str[] args) -> i32 {
+  str folderToList = "."
+
+  if args.size() > 1 {
+    folderToList = args[1]
+  }
+
+  ArrayList<File> files = list_files(folderToList)
   sort(files)
 
-  for u32 i = 0; i < files.length; i = i + 1 {
-    File f = files.get(i)
+  for File f in files {
     print(f.name)
   }
 
@@ -30,19 +37,31 @@ main() -> i32 {
 }
 
 list_files(str path) -> ArrayList<File> {
-  ArrayList<File> result = new ArrayList()
+  ArrayList<File> result = new ArrayList<File>(16)
 
   native {
-    DIR *dir = NULL;
-    struct dirent* ent = NULL;
+    DIR *dir = caffc_null;
+    struct dirent* ent = caffc_null;
 
     dir = opendir(path->_caffc_data);
 
-    while ((ent = readdir(dir)) != NULL) {
+    if (!dir) {
+      caffc_throw_exception(strerror(errno));
+      goto resource_cleanup;
+    }
+
+    while ((ent = readdir(dir)) != caffc_null) {
       main_add_item_to_list(result, ent->d_name);
     }
 
-    closedir(dir);
+    if (errno) {
+      caffc_throw_exception(strerror(errno));
+    }
+
+    resource_cleanup:
+    if (dir) {
+      closedir(dir);
+    }
   }
 
   return result
@@ -70,5 +89,3 @@ sort(ArrayList<File> file_list) -> void {
         }
     }
 }
-
-

@@ -169,6 +169,10 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
             implementedInterfaces.add(interfaceDefinition);
 
             interfaceDefinition.recurseResolveTypes();
+
+            // FIXME: these are internal deps of the module C implementation, probably they shouldn't
+            //        be kept together with regular used modules.
+            interfaceDefinition.module.usedModules.add(module);
         }
 
         for (FunctionDefinition f: this.functions) {

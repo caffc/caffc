@@ -1,7 +1,5 @@
 {%- if ctx.gcVariableCount() > 0 -%}
-#line {{ ctx.sourceLocationCurlyClose.lineNumber }} "{{ ctx.sourceLocationCurlyClose.filePath }}"
-_caffc_stack_frame_unregister(&_caffc_locals);
+{{ ctx.sourceLocationCurlyClose | render }}_caffc_stack_frame_unregister(&_caffc_locals);
 {%- else -%}
-#line {{ ctx.sourceLocationCurlyClose.lineNumber }} "{{ ctx.sourceLocationCurlyClose.filePath }}"
-_caffc_stack_frame_unregister(caffc_null);
+{{ ctx.sourceLocationCurlyClose | render }}_caffc_stack_frame_unregister(caffc_null);
 {%- endif -%}

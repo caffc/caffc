@@ -221,7 +221,13 @@ public class ClassDefinition implements
         }
 
         for (SymbolSearch symbolSearch : implementedInterfacesSearch) {
-            Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, symbolSearch);
+            // For interface implementations, resolve to the base interface without generics
+            // to ensure concreteImplementations tracking works correctly
+            SymbolSearch baseSearch = new SymbolSearch();
+            baseSearch.name = symbolSearch.name;
+            baseSearch.generics = null;
+
+            Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, baseSearch);
 
             if (!(implementedSymbol instanceof InterfaceDefinition)) {
                 CaffcCompiler.get().fatal(this.sourceLocation, String.format(
@@ -235,6 +241,10 @@ public class ClassDefinition implements
             implementedInterfaces.add(interfaceDefinition);
 
             interfaceDefinition.recurseResolveTypes();
+
+            // FIXME: these are internal deps of the module C implementation, probably they shouldn't
+            //        be kept together with regular used modules.
+            interfaceDefinition.module.usedModules.add(module);
         }
 
         ClassDefinition.registerConcreteImplementations(this, this.implementedInterfaces);

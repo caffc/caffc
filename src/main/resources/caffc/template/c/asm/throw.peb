@@ -1,0 +1,3 @@
+/* Throw instruction */
+_caffc_exception = {{ ctx.exceptionValue | render }};
+goto {{ ctx.exceptionLabel.name }};

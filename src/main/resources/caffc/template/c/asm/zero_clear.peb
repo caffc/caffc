@@ -1,6 +1,5 @@
-{# caffc_bzero(&{{ ctx.variable | render }}, sizeof({{ ctx.variable | render }})) -#}
-{%- if ctx.variable.typeSymbol.typeName.dataType == "PRIMITIVE" -%}
-{{ ctx.variable | render }} = 0
+{%- if ctx.variable.typeSymbol.typeName.dataType == "STRUCT" -%}
+caffc_bzero(&{{ ctx.variable | render }}, sizeof({{ ctx.variable | render }}))
 {%- else -%}
-{{ ctx.variable | render }} = caffc_null
+{{ ctx.variable | render }} = {{ ctx.variable | null_value }}
 {%- endif -%}

@@ -26,14 +26,17 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-            _caffc_temp_caffc_bool_1 = y > 0;
-            /* if0: */
-            if (! _caffc_temp_caffc_bool_1) { goto else0; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return y;
-            else0:
-            _caffc_stack_frame_unregister(caffc_null);
-            return 0;
+_caffc_temp_caffc_bool_1 = y > 0;
+/* if1: */
+if (! _caffc_temp_caffc_bool_1) { goto else1; }
+_caffc_stack_frame_unregister(caffc_null);
+return y;
+else1:
+_caffc_stack_frame_unregister(caffc_null);
+return 0;
+fnUncaughtException0:
+_caffc_stack_frame_unregister(caffc_null);
+return 0;
             """,
             "generating an if should work");
     }
@@ -65,13 +68,13 @@ public class TestS101InstructionIfElse {
                 """
                 x = 0;
                 _caffc_temp_caffc_bool_1 = x == 3;
-                /* if0: */
-                if (! _caffc_temp_caffc_bool_1) { goto else0; }
+                /* if1: */
+                if (! _caffc_temp_caffc_bool_1) { goto else1; }
                 x = 4;
-                goto endif0;
-                else0:
+                goto endif1;
+                else1:
                 x = 5;
-                endif0:
+                endif1:
                 """,
                 "generating an if/else should work");
     }
@@ -100,25 +103,25 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
                 """
-                /* forBegin0: */
+                /* forBegin1: */
                 i = 0;
-                forCheck0:
+                forCheck1:
                 _caffc_temp_caffc_bool_1 = i < 3;
-                if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-                /* forBlock0: */
+                if (! _caffc_temp_caffc_bool_1) { goto forEnd1; }
+                /* forBlock1: */
                 _caffc_temp_caffc_bool_2 = i == 1;
-                /* if1: */
-                if (! _caffc_temp_caffc_bool_2) { goto else1; }
-                goto forCheck0;
-                else1:
-                _caffc_temp_caffc_bool_2 = i == 2;
                 /* if2: */
                 if (! _caffc_temp_caffc_bool_2) { goto else2; }
-                goto forCheck0;
+                goto forCheck1;
                 else2:
+                _caffc_temp_caffc_bool_2 = i == 2;
+                /* if3: */
+                if (! _caffc_temp_caffc_bool_2) { goto else3; }
+                goto forCheck1;
+                else3:
                 i = i + 1;
-                goto forCheck0;
-                forEnd0:
+                goto forCheck1;
+                forEnd1:
                 """,
                 "generating an if that has a simple continue should work");
     }
@@ -147,25 +150,25 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
                 """
-                /* forBegin0: */
+                /* forBegin1: */
                 i = 0;
-                forCheck0:
+                forCheck1:
                 _caffc_temp_caffc_bool_1 = i < 3;
-                if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-                /* forBlock0: */
+                if (! _caffc_temp_caffc_bool_1) { goto forEnd1; }
+                /* forBlock1: */
                 _caffc_temp_caffc_bool_2 = i == 1;
-                /* if1: */
-                if (! _caffc_temp_caffc_bool_2) { goto else1; }
-                goto forEnd0;
-                else1:
-                _caffc_temp_caffc_bool_2 = i == 2;
                 /* if2: */
                 if (! _caffc_temp_caffc_bool_2) { goto else2; }
-                goto forEnd0;
+                goto forEnd1;
                 else2:
+                _caffc_temp_caffc_bool_2 = i == 2;
+                /* if3: */
+                if (! _caffc_temp_caffc_bool_2) { goto else3; }
+                goto forEnd1;
+                else3:
                 i = i + 1;
-                goto forCheck0;
-                forEnd0:
+                goto forCheck1;
+                forEnd1:
                 """,
                 "generating an if that has a simple break should work");
     }
@@ -194,27 +197,27 @@ public class TestS101InstructionIfElse {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-            /* forBegin0: */
-            i = 0;
-            forCheck0:
-            _caffc_temp_caffc_bool_1 = i < 3;
-            if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-            /* forBlock0: */
-            _caffc_temp_caffc_bool_2 = i == 1;
-            /* if1: */
-            if (! _caffc_temp_caffc_bool_2) { goto else1; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return;
-            else1:
-            _caffc_temp_caffc_bool_2 = i == 2;
-            /* if2: */
-            if (! _caffc_temp_caffc_bool_2) { goto else2; }
-            _caffc_stack_frame_unregister(caffc_null);
-            return;
-            else2:
-            i = i + 1;
-            goto forCheck0;
-            forEnd0:
+/* forBegin1: */
+i = 0;
+forCheck1:
+_caffc_temp_caffc_bool_1 = i < 3;
+if (! _caffc_temp_caffc_bool_1) { goto forEnd1; }
+/* forBlock1: */
+_caffc_temp_caffc_bool_2 = i == 1;
+/* if2: */
+if (! _caffc_temp_caffc_bool_2) { goto else2; }
+_caffc_stack_frame_unregister(caffc_null);
+return;
+else2:
+_caffc_temp_caffc_bool_2 = i == 2;
+/* if3: */
+if (! _caffc_temp_caffc_bool_2) { goto else3; }
+_caffc_stack_frame_unregister(caffc_null);
+return;
+else3:
+i = i + 1;
+goto forCheck1;
+forEnd1:
             """,
             "generating an if that has a simple return should work");
     }

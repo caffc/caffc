@@ -13,7 +13,7 @@ echo "##########################################################################
 rm -fr target
 mkdir -p target/caffc-c
 
-cfc -o target/caffc-c/ $(find src -name \*.caffc)
+cfc -onefile main.c -o target/caffc-c/ $(find src -name \*.caffc)
 
 echo "#############################################################################"
 echo "# c compile"
@@ -35,4 +35,3 @@ echo "##########################################################################
 
 echo ld: target/caffc-o/*.o "->" target/main
 gcc -g target/caffc-o/*.o -o target/main
-

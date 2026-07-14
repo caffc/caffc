@@ -1,0 +1,24 @@
+module caffc
+
+#public class I64 implements HasHash {
+    i64 value
+
+    #public constructor(i64 value) {
+        _this.value = value
+    }
+
+    #public toI64() -> i64 {
+        return _this.value
+    }
+
+    #public hash() -> i64 {
+        return _this.value
+    }
+
+    #public equals(HasEquals other) -> bool {
+        if other not instanceof I64 {
+            return 0
+        }
+        return _this.value == ((I64)other).value
+    }
+}

@@ -2,6 +2,8 @@
 
 CaffC is a Java-like transpiler written itself in Java. It transpiles from CaffC files to C.
 
+NOTE: Feel free to update this file with any gotchas you run into, or important implementation details, that will help you be faster in the future. Keep this file under 300 lines. If getting near this, try to restructure this file better.
+
 ## CaffC Rules
 
 - Unlike Java classes cannot be inherited in CaffC. This means that effectively every class is `final` by default.
@@ -28,11 +30,49 @@ This is a Maven project using Java 17.
 
 ### Tests
 
+NOTE: Always use `mvn` to run the unit tests.
+
 - **Run all tests**: `mvn test`
 - **Run single test class**: `mvn test -Dtest=TestS001Instructions`
 - **Run single test method**: `mvn test -Dtest=TestS001Instructions#basicSanityCheckForInstructionRendering`
 
 Tests use JUnit 5 (JUnit Jupiter). Use the `CodeAssertsStr` utility class to compile CaffC code and assert on the generated C output. Use `CodeAssertsAst` for AST-level testing.
+
+#### Main Test Checks
+
+Tests use the following functions:
+- `compileCaffcProgram`: compiles just the given compilation units, without any system library. Good for tests that only check AST parsing and minimal code generation. Interfaces such as `obj` must be defined in the test.
+- `compileFullCaffcProgram`: compiles the given compilation units, with all the system libraries. Good for testing actual language integrations (i.e. for `str`, or in the future collections)
+
+NOTE: Test output parsing strips out `#line` preprocessor macros.
+
+### Integration Tests (`caffc-tests/`)
+
+The `caffc-tests/` directory contains integration tests that compile and execute real CaffC programs through the full pipeline (caffc -> gcc -> run).
+
+**Test runner**: `caffc-tests/run-tests.py` (Python 3, no external dependencies)
+
+```bash
+# Run all integration tests (default profile: gcc)
+cd caffc-tests && python3 run-tests.py
+
+# Run with specific profile
+python3 run-tests.py --profile clang
+
+# Run specific tests
+python3 run-tests.py hello-world-caffc string-tests
+
+# Run with multiple profiles (matrix mode)
+python3 run-tests.py --profile gcc --profile clang
+
+# Override flags
+python3 run-tests.py --compile-flags "-O2" --extra-libs "-lm"
+
+# Dry-run / fail-fast / parallel
+python3 run-tests.py --dry-run --fail-fast -j 4
+```
+
+Profiles (built-in: gcc, clang, c89, gcc_release, gcc_valgrind, gcc_asan, gcc_tsan) are loaded from `caffc-tests/profiles/*.yaml`. Per-project overrides use `run-tests-config.yaml` in each test directory. See `caffc-tests/README.md` for details.
 
 ## Code Style Guidelines
 
@@ -112,7 +152,7 @@ The following filters are available in Pebble templates (mapped in `CaffcPebbles
 
 | Function | Description |
 |----------|-------------|
-| `isBlockStatement(obj)` | Returns true if obj is a block-level statement |
+| `isBlockStatement(obj)` | Returns true if obj is a block-level statement - doesn't need a semicolon at the end |
 | `isIndex(obj)` | Returns true if obj represents an array index |
 | `get(collection, key)` | Get item from list/map by key/index |
 
@@ -130,6 +170,118 @@ Common objects passed to templates:
 ### Debugging
 
 Set `CAFFC_DEBUG_TEMPLATES` environment variable to see template names in output.
+
+## xlC Profile (ppc64le Docker)
+
+The `xlC` profile uses the `ibmcom/xlc-ce` Docker image (ppc64le-only). On x86_64 hosts, `qemu-user-static` must be installed and up to date.
+
+## Collections
+
+Core collection interfaces and implementations live in `templates/common/default/caffc/collection.caffc`.
+
+- `List<T>` — indexed access via `get(i32)/set(i32,T)/add/remove`, also supports `[]` syntax
+- `Dict<K is HasHash, V>` — key-value store using `K.hash()` for bucket placement
+- `Set<T>` — unique items, implemented with linear search
+- All collections are `Iterable<T>`, enabling `for item in collection` syntax (generates iterator-based loop)
+
+Generic type restrictions (`K is HasHash`) resolve to the restriction type at compile time, enabling method calls like `key.hash()` on generic parameters without native code.
+
+## Arrays & Generics
+
+The array system (`Module.ensureArray()`) resolves arrays at compile time:
+- Primitives: `T_arr` (e.g., `u8_arr`, `i32_arr`) — use `#caffc_array("caffc_u8")` tag
+- Non-primitives: `obj_arr` — every non-primitive `T[]` maps to `obj_arr*` in C
+- `T[]` fields in generic classes generate `obj_arr* _items` in C; access via `T[]` CaffC syntax
+
+`#caffc_array` tag marks classes as actual native arrays with flexible-size `_caffc_data[]` fields. It's only used for primitive arrays (`u8_arr`, `i32_arr`, etc.) and `obj_arr` itself. Generic class fields should use `T[]` syntax, not the tag.
+
+## Index Access (`[]`)
+
+`ExpressionIndexAccess` and `ExpressionAssign` resolve `[]` via `HasMethods` interface — any type with a `get()` method supports `[]` read, any type with `set()` supports `[]` write. This covers both native arrays and collection interfaces.
+
+## For-In Loops
+
+`for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
+
+## Virtual Dispatch (Interfaces)
+
+CaffC supports virtual dispatch through interface types via `_caffc_type_id` switch statements. When you call an interface method (e.g., `key.hash()` where `key` is `HasHash`), the compiler generates a call to the interface function (e.g., `caffc_HasHash_hash(key)`) which dispatches based on the object's `type_id`:
+
+```c
+// Generated by interface.peb template
+caffc_i32 caffc_HasHash_hash(caffc_HasHash* _this) {
+  switch (_this->_caffc_type_id) {
+  case 15: return caffc_F64_hash(_this);
+  case 10: return caffc_I32_hash(_this);
+  case 39: return caffc_str_hash(_this);
+  // ... more cases
+  default: return 0;
+  }
+}
+```
+
+**Key rules:**
+- A class must explicitly `implements HasHash` to be included in the dispatch switch. Just having a `hash()` method is NOT sufficient.
+- `str` must declare `implements HasHash` to have its `hash()` and `equals()` methods reachable via virtual dispatch.
+- Boxing classes (`I32`, `U16`, etc.) should also `implements HasHash` with `hash()` and `equals()` methods.
+- The dispatch uses `switch (_this->_caffc_type_id)` — the concrete class type ID must match the registered type ID.
+
+## Collections
+
+Core collection interfaces and implementations live in `templates/common/default/caffc/collection.caffc`.
+
+- `List<T>` — indexed access via `get(i32)/set(i32,T)/add/remove`
+- `Dict<K is HasHash, V>` — key-value store using `K.hash()` and `K.equals()` virtual dispatch
+- `Set<T is HasHash>` — unique items using `T.hash()` and `T.equals()` virtual dispatch
+- All collections are `Iterable<T>`, enabling `for item in collection` syntax
+
+Generic type restrictions (`K is HasHash`) resolve to the restriction type at compile time. The concrete type's `hash()`/`equals()` methods are called via virtual dispatch (interface functions with type_id switch).
+
+**IMPORTANT:** Primitive types (`i32`, `u16`, etc.) CANNOT work as collection elements. In C, generic types are always pointers (`obj*` or whatever `is Something` resolves to). A raw `i32` value like `10` is NOT a pointer and will cause undefined behavior. Use boxing classes (`I32`, `U16`, etc.) for primitive values in collections.
+
+## Arrays & Generics
+
+The array system (`Module.ensureArray()`) resolves arrays at compile time:
+- Primitives: `T_arr` (e.g., `u8_arr`, `i32_arr`, `u16_arr`, etc.) — use `#caffc_array("caffc_u8")` tag
+- Non-primitives: `obj_arr` — every non-primitive `T[]` maps to `obj_arr*` in C
+- `T[]` fields in generic classes generate `obj_arr* _items` in C; access via `T[]` CaffC syntax
+
+`#caffc_array` tag marks classes as actual native arrays with flexible-size `_caffc_data[]` fields. It's only used for primitive arrays (`u8_arr`, `i32_arr`, `u16_arr`, `u32_arr`, `u64_arr`, `i8_arr`, `i16_arr`, `i64_arr`, `f32_arr`, `f64_arr`, `obj_arr`) and `obj_arr` itself. Generic class fields should use `T[]` syntax, not the tag.
+
+## Boxing Classes
+
+Primitive types need boxing classes to work with collections (which use object pointers). Boxing classes live in `templates/common/default/caffc/` as `{Type}_box.caffc`:
+
+- `U8`, `I8`, `U16`, `I16`, `U32`, `I32`, `U64`, `I64`, `F32`, `F64`
+- Each implements `HasHash` with `hash()` and `equals()` methods
+- Each has a `value` field and a `to{Type}()` method
+- Naming convention: capital letter for the boxing class (e.g., `U16` boxes `u16`)
+
+## Primitive Arrays
+
+All primitive array types are implemented in `templates/common/default/caffc/`:
+
+- `u8_arr.caffc`, `i8_arr.caffc`, `u16_arr.caffc`, `i16_arr.caffc`, `u32_arr.caffc`, `i32_arr.caffc`, `u64_arr.caffc`, `i64_arr.caffc`, `f32_arr.caffc`, `f64_arr.caffc`
+- Each follows the `u8_arr.caffc` template pattern with native blocks for `set`/`get`
+- Each has a `_caffc_{type}_arr_size()` size calculator and `#caffc_array("caffc_{type}")` tag
+
+## Index Access (`[]`)
+
+`ExpressionIndexAccess` and `ExpressionAssign` resolve `[]` via `HasMethods` interface — any type with a `get()` method supports `[]` read, any type with `set()` supports `[]` write. This covers both native arrays and collection interfaces.
+
+## For-In Loops
+
+`for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
+
+## Gotchas
+
+- **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
+- **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
+- **`instanceof` syntax** — use `x not instanceof Y` (not `not x instanceof Y`).
+- **Exception handler returns zero for primitives** — the `Function.java` exception handler returns `0` for primitive return types and `null` for object types.
+- **`str` must `implements HasHash`** — just having `hash()` and `equals()` methods is not enough; the class must explicitly declare `implements HasHash` to be included in the virtual dispatch switch.
+- **Boxing classes must `implements HasHash`** — same rule applies.
+- **`null` is not a valid return for primitive types** — the exception handler returns `caffc_null` (a pointer) which causes compile errors for `f32`, `f64` etc. Fixed by checking `dataType == DataType.PRIMITIVE` in `Function.java`.
 
 ## Cursor/Copilot Rules
 

@@ -9,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.Program;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
+import com.germaniumhq.caffc.compiler.settings.BuildSettings;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
 import com.germaniumhq.caffc.output.OutputFilePathCalculator;
@@ -46,7 +47,7 @@ public class MainApp {
     }
 
     public void mainRun(String[] args) throws IOException {
-        BuildConfig buildConfig = ArgumentsParser.parse(args);
+        BuildSettings buildConfig = ArgumentsParser.parse(args);
         String[] features = {"common", "exception", "gc", "string"};
 
         if (buildConfig.getInputSources().isEmpty()) {
@@ -98,8 +99,8 @@ public class MainApp {
         }
     }
 
-    public static Collection<CompilationUnit> parseCaffcSources(Program program, BuildConfig buildConfig, String feature) {
-        String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+    public static Collection<CompilationUnit> parseCaffcSources(Program program, BuildSettings buildConfig, String feature) {
+        String selectedOption = buildConfig.getFeatureSetting(feature);
 
         String caffcFilesFolderString = String.format("%s/%s/%s/caffc",
                 buildConfig.getTemplatesFolder(), feature, selectedOption);
@@ -139,8 +140,8 @@ public class MainApp {
         System.exit(1);
     }
 
-    private void copyCSources(BuildConfig buildConfig, String feature) {
-        String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+    private void copyCSources(BuildSettings buildConfig, String feature) {
+        String selectedOption = buildConfig.getFeatureSetting(feature);
 
         String cFilesFolderString = String.format("%s/%s/%s/c",
                 buildConfig.getTemplatesFolder(), feature, selectedOption);
@@ -177,21 +178,21 @@ public class MainApp {
      * @param buildConfig
      * @param module
      */
-    private void generateModuleHeader(BuildConfig buildConfig, Module module) {
+    private void generateModuleHeader(BuildSettings buildConfig, Module module) {
         String outputFileName = OutputFilePathCalculator.getModuleFileName(module, ".h");
         renderFile(buildConfig, module, "caffc/template/c/module_h.peb", outputFileName);
     }
 
-    private void generateModuleC(BuildConfig buildConfig, Module module) {
+    private void generateModuleC(BuildSettings buildConfig, Module module) {
         String outputFileName = OutputFilePathCalculator.getModuleFileName(module, ".c");
         renderFile(buildConfig, module, "caffc/template/c/module_c.peb", outputFileName);
     }
 
-    private void generateConstantsHeader(BuildConfig buildConfig, Program program) {
+    private void generateConstantsHeader(BuildSettings buildConfig, Program program) {
         renderFile(buildConfig, program, "caffc/template/c/constants_h.peb", "caffc_program_constants.h");
     }
 
-    private void generateConstantsC(BuildConfig buildConfig, Program program) {
+    private void generateConstantsC(BuildSettings buildConfig, Program program) {
         renderFile(buildConfig, program, "caffc/template/c/constants_c.peb", "caffc_program_constants.c");
     }
 
@@ -203,7 +204,7 @@ public class MainApp {
      * @param templatePath
      * @param fileExtension
      */
-    private void renderCompilationUnit(BuildConfig buildConfig, CompilationUnit compilationUnit, String templatePath, String fileExtension) {
+    private void renderCompilationUnit(BuildSettings buildConfig, CompilationUnit compilationUnit, String templatePath, String fileExtension) {
         String outputFileName = OutputFilePathCalculator.getOutputFileName(compilationUnit, fileExtension);
         String code = renderCode(buildConfig, compilationUnit, templatePath);
 
@@ -220,7 +221,7 @@ public class MainApp {
      * @param templatePath
      * @param outputFileName
      */
-    private void renderFile(BuildConfig buildConfig, Object context, String templatePath, String outputFileName) {
+    private void renderFile(BuildSettings buildConfig, Object context, String templatePath, String outputFileName) {
         String code = renderCode(buildConfig, context, templatePath);
         writeToFile(buildConfig, outputFileName, code);
     }
@@ -232,8 +233,8 @@ public class MainApp {
      * @param template
      * @return
      */
-    private String renderCode(BuildConfig buildConfig, Object context, String template) {
-        Map<String, Object> renderContext = PebbleTemplater.createRenderContext(context);
+    private String renderCode(BuildSettings buildConfig, Object context, String template) {
+        Map<String, Object> renderContext = PebbleTemplater.createRenderContext(context, buildConfig);
         String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
 
         return code;
@@ -245,7 +246,7 @@ public class MainApp {
      * @param filePath
      * @param fileContent
      */
-    private void writeToFile(BuildConfig buildConfig, String filePath, String fileContent) {
+    private void writeToFile(BuildSettings buildConfig, String filePath, String fileContent) {
         String name = new File(filePath).getName();
         String outputName = new File(buildConfig.getOutputFolder(), name).getAbsolutePath();
 
@@ -258,7 +259,7 @@ public class MainApp {
         }
     }
 
-    private void renderAllToOneFile(BuildConfig buildConfig, Set<CompilationUnit> compilationUnits, Program program) throws IOException {
+    private void renderAllToOneFile(BuildSettings buildConfig, Set<CompilationUnit> compilationUnits, Program program) throws IOException {
         StringBuilder headers = new StringBuilder();
         StringBuilder implementations = new StringBuilder();
         
@@ -269,7 +270,7 @@ public class MainApp {
         List<String> coreImpls = new ArrayList<>();
         
         for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String selectedOption = buildConfig.getFeatureSetting(feature);
             String cFilesFolderString = String.format("%s/%s/%s/c",
                     buildConfig.getTemplatesFolder(), feature, selectedOption);
             File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
@@ -302,7 +303,7 @@ public class MainApp {
         
         // Process core headers
         for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String selectedOption = buildConfig.getFeatureSetting(feature);
             String cFilesFolderString = String.format("%s/%s/%s/c",
                     buildConfig.getTemplatesFolder(), feature, selectedOption);
             File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
@@ -346,7 +347,7 @@ public class MainApp {
         
         // Process core impls
         for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature, "default");
+            String selectedOption = buildConfig.getFeatureSetting(feature);
             String cFilesFolderString = String.format("%s/%s/%s/c",
                     buildConfig.getTemplatesFolder(), feature, selectedOption);
             File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();

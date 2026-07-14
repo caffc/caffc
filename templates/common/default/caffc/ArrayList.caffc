@@ -1,0 +1,114 @@
+module caffc
+
+use caffc.collection
+
+#public class ArrayList<T> implements List<T> {
+    T[] _items
+    i32 _size
+    i32 _capacity
+
+    #public constructor(i32 capacity) {
+        _this._capacity = capacity
+        _this._items = new T[capacity]
+        _this._size = 0
+    }
+
+    #public get(i32 index) -> T {
+        if (u32) index >= (u32) _this._size {
+            throw new Exception("index out of bounds", null)
+        }
+        return _this._items[index]
+    }
+
+    #public set(i32 index, T value) {
+        if (u32) index >= (u32) _this._size {
+            throw new Exception("index out of bounds", null)
+        }
+        _this._items[index] = value
+    }
+
+    #public add(T value) {
+        if (u32) _this._size >= (u32) _this._capacity {
+            _this._grow()
+        }
+        _this._items[_this._size] = value
+        _this._size = _this._size + 1
+    }
+
+    #public remove(i32 index) -> T {
+        if (u32) index >= (u32) _this._size {
+            throw new Exception("index out of bounds", null)
+        }
+
+        T result = _this._items[index]
+        i32 i = index + 1
+
+        while i < _this._size {
+            _this._items[i - 1] = _this._items[i]
+            i = i + 1
+        }
+
+        _this._items[_this._size - 1] = null
+        _this._size = _this._size - 1
+
+        return result
+    }
+
+    #public indexOf(T value) -> i32 {
+        i32 i = 0
+        while i < _this._size {
+            if _this._items[i] == value {
+                return i
+            }
+            i = i + 1
+        }
+        return -1
+    }
+
+    #public isEmpty() -> bool {
+        return _this._size == 0
+    }
+
+    #public size() -> i32 {
+        return _this._size
+    }
+
+    #public newIterator() -> Iterator<T> {
+        return new ArrayListIterator<T>(_this)
+    }
+
+    _grow() {
+        i32 newCapacity = _this._capacity * 2
+        T[] newArray = new T[newCapacity]
+        i32 i = 0
+        while i < _this._size {
+            newArray[i] = _this._items[i]
+            i = i + 1
+        }
+        _this._items = newArray
+        _this._capacity = newCapacity
+    }
+}
+
+class ArrayListIterator<T> implements Iterator<T> {
+    ArrayList<T> _collection
+    i32 _index
+
+    #public constructor(ArrayList<T> coll) {
+        _this._collection = coll
+        _this._index = 0
+    }
+
+    #public hasNext() -> bool {
+        return _this._index < _this._collection._size
+    }
+
+    #public next() -> T {
+        if not _this.hasNext() {
+            throw new Exception("iterator out of bounds", null)
+        }
+        T result = _this._collection._items[_this._index]
+        _this._index = _this._index + 1
+        return result
+    }
+}

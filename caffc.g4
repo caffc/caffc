@@ -91,20 +91,32 @@ statement:
   whileBlock |
   forBlock |
   ifBlock |
-  // tryCatchBlock |
+  tryCatchBlock |
+  throwStatement |
   expression |
   assignExpression;
+
+throwStatement: THROW expression;
 
 block: CURLY_OPEN statement* CURLY_CLOSE;
 
 whileBlock: WHILE expression block;
 forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
-              conditionExpression=expression ';'
-              (incrementExpression=expression|incrementAssignExpression=assignExpression)
-              block;
+               conditionExpression=expression ';'
+               (incrementExpression=expression|incrementAssignExpression=assignExpression)
+               block
+           | FOR typeName variableName=ID 'in' expression block;
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
-// tryCatchBlock: TRY block (CATCH '(' classType ID ')')? (FINALLY block)?;
+
+tryCatchBlock: TRY block (catchBlock)* finallyBlock? |
+  TRY block FINALLY block;
+
+catchBlock:
+  CATCH '(' classType ID ')' block;
+
+finallyBlock:
+  FINALLY block;
 
 return:
   RETURN expression (',' expression)* |
@@ -148,9 +160,11 @@ fqdn:
 expression
   : NUMBER                                                                                         # ExNumber
   | STRING                                                                                         # ExString
-  | CHAR   	                                                                                       # ExChar
+  | CHAR                                                                                           # ExChar
   | ID                                                                                             # ExId
   | NULL                                                                                           # ExNull
+  | TRUE                                                                                           # ExTrue
+  | FALSE                                                                                          # ExFalse
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
   | NEW newType '(' expressionTuple? ')'                                                           # ExNewObject
@@ -306,8 +320,10 @@ IS: 'is';
 MODULE: 'module';
 NEW: 'new';
 NOT: 'not';
+FALSE: 'false';
 NULL: 'null';
 OR: 'or';
+TRUE: 'true';
 RETURN: 'return';
 STATIC: 'static';
 TAG: 'tag';

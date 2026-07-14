@@ -75,7 +75,7 @@ _caffc_str_size(i32 size) -> i32 {
  * A basic string. This implementation only holds ASCII strings.
  */
 #public #caffc_array("caffc_u8")
-class str {
+class str implements HasHash {
   i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
 
   constructor(i32 size) {
@@ -212,6 +212,26 @@ class str {
         result = 0;
       } else {
         result = caffc_strcmp(_this->_caffc_data, other->_caffc_data) == 0 ? 1 : 0;
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Returns a hash code for this string using FNV-1a algorithm.
+   */
+  #public
+  hash() -> i32 {
+    i32 result
+
+    native {
+      result = 2166136261;
+      caffc_u8* data = _this->_caffc_data;
+      while (*data) {
+        result ^= (caffc_i32) *data;
+        result = result * 16777619;
+        data++;
       }
     }
 

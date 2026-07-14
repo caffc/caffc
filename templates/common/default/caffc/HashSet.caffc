@@ -1,0 +1,143 @@
+module caffc
+
+use caffc.collection
+
+#public class HashSet<T is HasHash> implements Set<T> {
+    T[] _items
+    i32 _size
+    i32 _capacity
+
+    #public constructor(i32 capacity) {
+        _this._size = 0
+        _this._capacity = capacity
+        _this._items = new T[capacity]
+    }
+
+    #public _findIndex(T value, i32 valueHash) -> i32 {
+        i32 i = 0
+        while i < _this._capacity {
+            if _this._items[i] != null {
+                i32 existingHash = _this._items[i].hash()
+                if existingHash == valueHash and _this._items[i].equals(value) == 1 {
+                    return i
+                }
+            }
+            i = i + 1
+        }
+        return -1
+    }
+
+    #public _tryAddAt(T value, i32 index) {
+        _this._items[index] = value
+        _this._size = _this._size + 1
+    }
+
+    #public add(T value) -> bool {
+        i32 valueHash = value.hash()
+        if _this._findIndex(value, valueHash) != -1 {
+            return 0
+        }
+        if (u32) _this._size >= (u32) _this._capacity {
+            _this._grow()
+        }
+        _this._items[_this._size] = value
+        _this._size = _this._size + 1
+        return 1
+    }
+
+    #public remove(T value) -> bool {
+        i32 valueHash = value.hash()
+        i32 index = _this._findIndex(value, valueHash)
+        if index == -1 {
+            return 0
+        }
+        i32 i = index + 1
+        while i < _this._capacity and _this._items[i] != null {
+            _this._items[index] = _this._items[i]
+            index = i
+            i = i + 1
+        }
+        _this._items[index] = null
+        _this._size = _this._size - 1
+        return 1
+    }
+
+    #public contains(T value) -> bool {
+        i32 valueHash = value.hash()
+        return _this._findIndex(value, valueHash) != -1
+    }
+
+    #public isEmpty() -> bool {
+        return _this._size == 0
+    }
+
+    #public size() -> i32 {
+        return _this._size
+    }
+
+    #public newIterator() -> Iterator<T> {
+        return new HashSetIterator<T>(_this)
+    }
+
+    _grow() {
+        i32 oldCapacity = _this._capacity
+        i32 oldSize = _this._size
+        _this._capacity = oldCapacity * 2
+        T[] newArray = new T[_this._capacity]
+        _this._items = newArray
+        _this._size = 0
+        i32 i = 0
+        while i < oldSize {
+            T item = _this._tryAt(oldCapacity, i)
+            _this._tryAddAt(item, i)
+            i = i + 1
+        }
+    }
+
+    _tryAt(i32 oldCapacity, i32 index) -> T {
+        i32 j = 0
+        while j < oldCapacity {
+            if _this._items[j] != null {
+                if index == 0 {
+                    return _this._items[j]
+                }
+                index = index - 1
+            }
+            j = j + 1
+        }
+        return null
+    }
+}
+
+class HashSetIterator<T> implements Iterator<T> {
+    HashSet<T> _collection
+    i32 _index
+    i32 _yielded
+
+    #public constructor(HashSet<T> coll) {
+        _this._collection = coll
+        _this._index = 0
+        _this._yielded = 0
+    }
+
+    #public hasNext() -> bool {
+        return _this._yielded < _this._collection._size
+    }
+
+    #public next() -> T {
+        if not _this.hasNext() {
+            raise("iterator out of bounds")
+        }
+        T result = null
+        while _this._index < _this._collection._capacity {
+            if _this._collection._items[_this._index] != null {
+                result = _this._collection._items[_this._index]
+                _this._index = _this._index + 1
+                _this._yielded = _this._yielded + 1
+                return result
+            }
+            _this._index = _this._index + 1
+        }
+        raise("iterator out of bounds")
+    }
+}

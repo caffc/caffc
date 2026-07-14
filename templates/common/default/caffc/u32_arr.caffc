@@ -1,0 +1,40 @@
+module caffc
+
+_caffc_u32_arr_size(i32 size) -> i32 {
+  i32 result
+
+  native {
+    result = (caffc_i32) (sizeof(caffc_u32) * size + sizeof(caffc_u32_arr));
+  }
+
+  return result
+}
+
+/**
+ * An array of unsigned 32-bit ints. This is the implementation
+ * behind the u32[].
+ */
+#caffc_array("caffc_u32")
+class u32_arr {
+  u32 size
+
+  constructor(i32 size) {
+    _this.size = size
+  }
+
+  set(i32 index, u32 value) {
+    native {
+      _this->_caffc_data[index] = value;
+    }
+  }
+
+  get(i32 index) -> u32 {
+    u32 result
+
+    native {
+      result = _this->_caffc_data[index];
+    }
+
+    return result
+  }
+}

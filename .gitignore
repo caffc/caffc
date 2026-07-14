@@ -1,6 +1,8 @@
 .idea
 target
 dependency-reduced-pom.xml
+__pycache__
+*.jar
 
 # Entries below this point are managed by Please (DO NOT EDIT)
 plz-out

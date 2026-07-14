@@ -1,0 +1,40 @@
+module caffc
+
+_caffc_u64_arr_size(i32 size) -> i32 {
+  i32 result
+
+  native {
+    result = (caffc_i32) (sizeof(caffc_u64) * size + sizeof(caffc_u64_arr));
+  }
+
+  return result
+}
+
+/**
+ * An array of unsigned 64-bit ints. This is the implementation
+ * behind the u64[].
+ */
+#caffc_array("caffc_u64")
+class u64_arr {
+  u32 size
+
+  constructor(i32 size) {
+    _this.size = size
+  }
+
+  set(i32 index, u64 value) {
+    native {
+      _this->_caffc_data[index] = value;
+    }
+  }
+
+  get(i32 index) -> u64 {
+    u64 result
+
+    native {
+      result = _this->_caffc_data[index];
+    }
+
+    return result
+  }
+}

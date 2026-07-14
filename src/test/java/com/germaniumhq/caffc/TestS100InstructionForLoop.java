@@ -22,16 +22,16 @@ public class TestS100InstructionForLoop {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                    /* forBegin0: */
+                    /* forBegin1: */
                     i = 0;
-                    forCheck0:
+                    forCheck1:
                     _caffc_temp_caffc_bool_1 = i < 10;
-                    if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-                    /* forBlock0: */
+                    if (! _caffc_temp_caffc_bool_1) { goto forEnd1; }
+                    /* forBlock1: */
                     _caffc_temp_caffc_i32_1 = i + 1;
                     i = _caffc_temp_caffc_i32_1;
-                    goto forCheck0;
-                    forEnd0:
+                    goto forCheck1;
+                    forEnd1:
                     """,
                 "generating a for loop should work");
     }
@@ -56,16 +56,16 @@ public class TestS100InstructionForLoop {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                        /* forBegin0: */
+                        /* forBegin1: */
                         i = 0;
-                        forCheck0:
+                        forCheck1:
                         _caffc_temp_caffc_bool_1 = i < 10;
-                        if (! _caffc_temp_caffc_bool_1) { goto forEnd0; }
-                        /* forBlock0: */
+                        if (! _caffc_temp_caffc_bool_1) { goto forEnd1; }
+                        /* forBlock1: */
                         _caffc_temp_caffc_i32_1 = i + 1;
                         i = _caffc_temp_caffc_i32_1;
-                        goto forCheck0;
-                        forEnd0:
+                        goto forCheck1;
+                        forEnd1:
                         """,
                 "generating a for loop and reusing variables should work");
 

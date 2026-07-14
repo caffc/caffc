@@ -1,0 +1,36 @@
+module caffc
+
+interface Iterator<T> {
+  hasNext() -> bool
+  next() -> T
+}
+
+interface Iterable<T> {
+  newIterator() -> Iterator<T>
+}
+
+interface Collection<T> extends Iterable<T> {
+  isEmpty() -> bool
+  size() -> i32
+}
+
+interface List<T> extends Collection<T> {
+  get(i32 index) -> T
+  set(i32 index, T value)
+  add(T value)
+  remove(i32 index) -> T
+  indexOf(T value) -> i32
+}
+
+interface Dict<K is HasHash, V> extends Collection<i32> {
+  get(K key) -> V
+  put(K key, V value)
+  remove(K key) -> V
+  containsKey(K key) -> bool
+}
+
+interface Set<T is HasHash> extends Collection<T> {
+  add(T value) -> bool
+  remove(T value) -> bool
+  contains(T value) -> bool
+}

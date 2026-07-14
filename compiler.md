@@ -235,7 +235,7 @@ SymbolSearch ..> TypeName: <<same tree\nstructure>>
 
 ```java
 class A<U is Item> {
-  add<T is list<U>>(T t, U u) -> T {
+  add<T is List<U>>(T t, U u) -> T {
     T x = t
     x.add(u)
     return x
@@ -245,12 +245,12 @@ class A<U is Item> {
 When we have the following call:
 ```java
 A<CustomItem> a = new A<CustomItem>()  // here T, is still generic for add<T>()
-list items = new list()                // default generics, T is obj
+List items = new List()                // default generics, T is obj
 
-var x = a.add<CustomItem>(items, new CustomItem()) // x is list<CustomItem> here
-var y = a.add<CustomItem>(items, new OtherItem())  // y is list<CustomItem> here
-var z = a.add<OtherItem>(items, new OtherItem())   // z is list<OtherItem> here
-var t = a.add(items, new CustomItem())             // t is list<Item> here
+var x = a.add<CustomItem>(items, new CustomItem()) // x is List<CustomItem> here
+var y = a.add<CustomItem>(items, new OtherItem())  // y is List<CustomItem> here
+var z = a.add<OtherItem>(items, new OtherItem())   // z is List<OtherItem> here
+var t = a.add(items, new CustomItem())             // t is List<Item> here
 ```
 When copying the function definitions, only the generics defined in the parent class are changed with their more restrictive types.
 ### AstItem.recurseResolveTypes()

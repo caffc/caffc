@@ -11,9 +11,11 @@ import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -164,8 +166,10 @@ public final class ExpressionAssign implements Expression {
         // array call
         FunctionDefinition setterFunction = leftTypeSymbol.getFunction("set");
 
+        AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
         result.instructions.add(new AsmCall(
             this.sourceLocation,
+            exceptionLabel,
             setterFunction,
             leftExpression.value, // _this
             leftIndex.value,      // index
@@ -216,9 +220,12 @@ public final class ExpressionAssign implements Expression {
                 result.instructions.addAll(leftIndex.instructions);
                 result.instructions.addAll(leftExpression.instructions);
 
+                AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+
                 // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
                 result.instructions.add(new AsmCall(
                     this.sourceLocation,
+                    exceptionLabel,
                     setFunction,
                     leftExpression.value, // _this
                     leftIndex.value,      // index

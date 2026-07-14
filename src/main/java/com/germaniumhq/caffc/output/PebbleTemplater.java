@@ -5,6 +5,7 @@ import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.Program;
 import com.germaniumhq.caffc.compiler.model.source.HasSourceLocation;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
+import com.germaniumhq.caffc.compiler.settings.BuildSettings;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
@@ -105,6 +106,11 @@ public class PebbleTemplater {
         }
 
         SourceLocation sourceLocation = ((HasSourceLocation) ctx).getSourceLocation();
+
+        if (sourceLocation == null) {
+            return "<unknown>:?:?";
+        }
+
         return String.format("%s:%d:%d", sourceLocation.getFilePath(), sourceLocation.getLineNumber(), sourceLocation.getColumnNumber());
     }
 
@@ -122,13 +128,14 @@ public class PebbleTemplater {
      * Creates a render context map from a root context object.
      * The root context can be an instance of Program, Module, or CompilationUnit.
      *
-     * @param rootContext The root context object.
+     * @param rootContext The root context object - aka class we want to render.
      * @return A map containing the render context data.
      */
-    public static Map<String, Object> createRenderContext(Object rootContext) {
+    public static Map<String, Object> createRenderContext(Object rootContext, BuildSettings buildSettings) {
         Map<String, Object> result = new HashMap<>();
 
         result.put("ctx", rootContext);
+        result.put("settings", buildSettings);
 
         if (rootContext instanceof Program program) {
             result.put("program", program);
@@ -167,6 +174,9 @@ public class PebbleTemplater {
 
         Object program = ((EvaluationContextImpl) parentRenderContext).getScopeChain().get("program");
         result.put("program", program);
+
+        Object settings = ((EvaluationContextImpl) parentRenderContext).getScopeChain().get("settings");
+        result.put("settings", settings);
 
         return result;
     }

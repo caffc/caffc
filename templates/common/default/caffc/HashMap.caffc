@@ -1,0 +1,125 @@
+module caffc
+
+use caffc.collection
+
+#public class HashDict<K is HasHash, V> implements Dict<K, V> {
+    K[] _keys
+    V[] _values
+    i32 _size
+    i32 _capacity
+
+    #public constructor(i32 capacity) {
+        _this._size = 0
+        _this._capacity = capacity
+        _this._keys = new K[capacity]
+        _this._values = new V[capacity]
+    }
+
+    #public _findIndex(K key, i32 keyHash) -> i32 {
+        i32 i = 0
+        while i < _this._capacity {
+            if _this._keys[i] != null {
+                i32 existingHash = _this._keys[i].hash()
+                if existingHash == keyHash and _this._keys[i].equals(key) == 1 {
+                    return i
+                }
+            }
+            i = i + 1
+        }
+        return -1
+    }
+
+    #public _tryPutAt(K key, V value, i32 index) {
+        _this._keys[index] = key
+        _this._values[index] = value
+        _this._size = _this._size + 1
+    }
+
+    #public get(K key) -> V {
+        i32 keyHash = key.hash()
+        i32 index = _this._findIndex(key, keyHash)
+        if index == -1 {
+            return null
+        }
+        return _this._values[index]
+    }
+
+    #public put(K key, V value) {
+        i32 keyHash = key.hash()
+        i32 existing = _this._findIndex(key, keyHash)
+        if existing != -1 {
+            _this._values[existing] = value
+            return
+        }
+        if (u32) _this._size >= (u32) _this._capacity {
+            _this._grow()
+        }
+        i32 free = _this._findFirstFreeSlot()
+        _this._keys[free] = key
+        _this._values[free] = value
+        _this._size = _this._size + 1
+    }
+
+    #public remove(K key) -> V {
+        i32 keyHash = key.hash()
+        i32 index = _this._findIndex(key, keyHash)
+        if index == -1 {
+            return null
+        }
+        V result = _this._values[index]
+        _this._keys[index] = null
+        _this._values[index] = null
+        _this._size = _this._size - 1
+        return result
+    }
+
+    #public containsKey(K key) -> bool {
+        i32 keyHash = key.hash()
+        return _this._findIndex(key, keyHash) != -1
+    }
+
+    #public isEmpty() -> bool {
+        return _this._size == 0
+    }
+
+    #public size() -> i32 {
+        return _this._size
+    }
+
+    #public _findFirstFreeSlot() -> i32 {
+        i32 i = 0
+        while i < _this._capacity {
+            if _this._keys[i] == null {
+                return i
+            }
+            i = i + 1
+        }
+        return -1
+    }
+
+    _grow() {
+        i32 oldCapacity = _this._capacity
+        K[] oldKeys = _this._keys
+        V[] oldValues = _this._values
+        _this._capacity = oldCapacity * 2
+        _this._keys = new K[_this._capacity]
+        _this._values = new V[_this._capacity]
+        _this._size = 0
+        i32 i = 0
+        while i < oldCapacity {
+            if oldKeys[i] != null {
+                K key = oldKeys[i]
+                V value = oldValues[i]
+                i32 keyHash = key.hash()
+                i32 found = _this._findIndex(key, keyHash)
+                if found != -1 {
+                    _this._tryPutAt(key, value, found)
+                } else {
+                    i32 free = _this._findFirstFreeSlot()
+                    _this._tryPutAt(key, value, free)
+                }
+            }
+            i = i + 1
+        }
+    }
+}
