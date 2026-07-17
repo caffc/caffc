@@ -84,6 +84,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.output.filters.FilterNullValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.output.filters.FilterSemicolon",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -127,6 +133,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.output.functions.FunctionGet",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExNullContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -217,6 +229,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.generated.caffcParser$ModuleContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExTrueContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -318,6 +336,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ThrowStatementContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$NewTypePrimitiveContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -354,6 +378,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$CatchBlockContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$InterfaceImplementationContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -385,6 +415,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.generated.caffcParser$ExLtLteGtGteContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExInstanceOfContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -463,6 +499,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.generated.caffcParser$ReturnTypeContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$TryCatchBlockContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -672,6 +714,18 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$ExFalseContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.generated.caffcParser$FinallyBlockContext",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.generated.caffcParser$BlockContext",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -714,12 +768,6 @@
     "allDeclaredFields": true
   },
   {
-    "name": "com.germaniumhq.caffc.compiler.BuildConfig",
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true,
-    "allDeclaredFields": true
-  },
-  {
     "name": "com.germaniumhq.caffc.compiler.MainApp",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -727,6 +775,66 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.gc.GcSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.gc.GcSettingsDefault",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.BuildSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.string.StringSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.exception.ExceptionSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.common.CommonSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.CaffcFeature",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.debug.CLineMacro",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.debug.DebugSettings",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.settings.debug.TraceLineRuntime",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -769,6 +877,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.type.Symbol",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -834,6 +948,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -894,6 +1014,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmThrow",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmBitOperation",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -948,6 +1074,12 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -972,6 +1104,18 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionFalse",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionTrue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
@@ -985,6 +1129,12 @@
   },
   {
     "name": "com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionInstanceOf",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -1098,13 +1248,37 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionNull",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.expression.ExpressionMath",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.ForInInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.ThrowInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -1122,13 +1296,31 @@
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.WhileInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.instruction.IfInstruction",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.CatchBlock",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
     "name": "com.germaniumhq.caffc.compiler.model.instruction.ForInstruction",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
@@ -4771,6 +4963,1398 @@
   },
   {
     "name": "org.antlr.v4.runtime.tree.xpath.XPathWildcardElement",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "META-INF.versions.9.module-info",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "META-INF.versions.9.org.yaml.snakeyaml.internal.Logger$Level",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "META-INF.versions.9.org.yaml.snakeyaml.internal.Logger",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions$FlowStyle",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions$LineBreak",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions$NonPrintableStyle",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions$ScalarStyle",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions$Version",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.DumperOptions",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.LoaderOptions",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.TypeDescription",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$2",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$3",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$EventIterable",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$NodeIterable",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$SilentEmitter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml$YamlIterable",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.Yaml",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.comments.CommentEventsCollector$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.comments.CommentEventsCollector",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.comments.CommentLine",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.comments.CommentType",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.composer.Composer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.composer.ComposerException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.AbstractConstruct",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.BaseConstructor$RecursiveTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.BaseConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Construct",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Constructor$ConstructMapping",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Constructor$ConstructScalar",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Constructor$ConstructSequence",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Constructor$ConstructYamlObject",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.Constructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.ConstructorException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.DuplicateKeyException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructUndefined",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlBinary",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlBool",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlFloat",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlInt",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlMap",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlNull",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlOmap",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlPairs",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlSeq",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlSet",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlStr",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor$ConstructYamlTimestamp",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.constructor.SafeConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitable",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectBlockMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectBlockMappingSimpleValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectBlockMappingValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectBlockSequenceItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectDocumentEnd",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectDocumentRoot",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectDocumentStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFirstBlockMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFirstBlockSequenceItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFirstDocumentStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFirstFlowMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFirstFlowSequenceItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFlowMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFlowMappingSimpleValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFlowMappingValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectFlowSequenceItem",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectNothing",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter$ExpectStreamStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.Emitter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.EmitterException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.EmitterState",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.emitter.ScalarAnalysis",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.env.EnvScalarConstructor$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.env.EnvScalarConstructor$ConstructEnv",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.env.EnvScalarConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.error.Mark",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.error.MarkedYAMLException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.error.MissingEnvironmentVariableException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.error.YAMLException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.AliasEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.CollectionEndEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.CollectionStartEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.CommentEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.DocumentEndEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.DocumentStartEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.Event$ID",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.Event",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.ImplicitTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.MappingEndEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.MappingStartEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.NodeEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.ScalarEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.SequenceEndEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.SequenceStartEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.StreamEndEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.events.StreamStartEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor$ConstructCompactObject",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.extensions.compactnotation.CompactData",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.extensions.compactnotation.PackageCompactConstructor",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.com.google.gdata.util.common.base.Escaper",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.com.google.gdata.util.common.base.PercentEscaper",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.com.google.gdata.util.common.base.UnicodeEscaper$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.com.google.gdata.util.common.base.UnicodeEscaper$2",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.external.com.google.gdata.util.common.base.UnicodeEscaper",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.inspector.TagInspector",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.inspector.UnTrustedTagInspector",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.internal.Logger$Level",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.internal.Logger",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.BeanAccess",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.FieldProperty",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.GenericProperty",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.MethodProperty",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.MissingProperty",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.Property",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.PropertySubstitute",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.introspector.PropertyUtils",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.AnchorNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.CollectionNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.MappingNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.Node",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.NodeId",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.NodeTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.ScalarNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.SequenceNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.nodes.Tag",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.Parser",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingFirstKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingValueComment",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockMappingValueCommentList",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockSequenceEntryKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockSequenceEntryValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseBlockSequenceFirstEntry",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseDocumentContent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseDocumentEnd",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseDocumentStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowEndComment",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowMappingEmptyValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowMappingFirstKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowMappingValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowSequenceEntry",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowSequenceEntryMappingEnd",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowSequenceEntryMappingKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowSequenceEntryMappingValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseFlowSequenceFirstEntry",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseImplicitDocumentStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseIndentlessSequenceEntryKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseIndentlessSequenceEntryValue",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl$ParseStreamStart",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.ParserImpl",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.Production",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.parser.VersionTagsTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.reader.ReaderException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.reader.StreamReader",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.reader.UnicodeReader",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.BaseRepresenter$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.BaseRepresenter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.Represent",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.Representer$RepresentJavaBean",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.Representer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$IteratorWrapper",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentArray",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentBoolean",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentByteArray",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentDate",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentEnum",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentIterator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentList",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentMap",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentNull",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentNumber",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentPrimitiveArray",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentSet",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentString",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter$RepresentUuid",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.representer.SafeRepresenter",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.resolver.Resolver$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.resolver.Resolver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.resolver.ResolverTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.Constant",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.Scanner",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.ScannerException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.ScannerImpl$Chomping",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.ScannerImpl",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.scanner.SimpleKey",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.serializer.AnchorGenerator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.serializer.NumberAnchorGenerator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.serializer.Serializer$1",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.serializer.Serializer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.serializer.SerializerException",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.AliasToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.AnchorToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.BlockEndToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.BlockEntryToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.BlockMappingStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.BlockSequenceStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.CommentToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.DirectiveToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.DocumentEndToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.DocumentStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.FlowEntryToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.FlowMappingEndToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.FlowMappingStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.FlowSequenceEndToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.FlowSequenceStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.KeyToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.ScalarToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.StreamEndToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.StreamStartToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.TagToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.TagTuple",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.Token$ID",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.Token",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.tokens.ValueToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.ArrayStack",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.ArrayUtils$CompositeUnmodifiableArrayList",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.ArrayUtils$UnmodifiableArrayList",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.ArrayUtils",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.EnumUtils",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.PlatformFeatureDetector",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.yaml.snakeyaml.util.UriEncoder",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
