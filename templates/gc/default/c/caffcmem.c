@@ -27,11 +27,12 @@ void caffc_gc_perform();
  * #public_api
  */
 void caffc_init() {
-    caffc_u32 stack_size;
+    caffc_u32 stack_size = 0;
 
     caffc_gc_pointer_list_constructor(&caffc_all_objects, 16);
 
-    stack_size = sizeof(caffc_call_stack) + sizeof(caffc_stack_frame) * 1000;
+    stack_size = sizeof(caffc_call_stack) +
+                 sizeof(caffc_stack_frame) * 1000;
     _caffc_call_stack = malloc(stack_size);
     memset(_caffc_call_stack, 0, stack_size);
 }
@@ -54,12 +55,19 @@ void caffc_done() {
  * strings.
  * #public_api
  */
-caffc_object_header* caffc_new(caffc_u32 object_type_id, caffc_u32 object_size) {
+caffc_object_header* caffc_new(
+        caffc_u32 object_type_id,
+        caffc_u32 object_size
+    ) {
+
     caffc_object_header* result;
 
     if (object_size < sizeof(caffc_object_header)) {
-        printf("invalid malloc, prepare to die. requested object size: %ud, "
-               "however object header size alone is: %ld\n", object_size, sizeof(caffc_object_header));
+        printf("invalid malloc, prepare to die. requested object "
+               "size: %ud, however object header size alone is: %ld\n",
+             object_size,
+             sizeof(caffc_object_header)
+        );
     }
 
     total_allocated += object_size;

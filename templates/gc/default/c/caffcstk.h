@@ -4,8 +4,7 @@
 /* include the primitive types */
 #include "caffcpt.h"
 
-/**
- * Forward declaration for the `caffc.str` since that one will come
+/** Forward declaration for the `caffc.str` since that one will come
  * from the `module_caffc.h` later, that depends on this file.
  */
 struct caffc_str_struct;
@@ -23,14 +22,14 @@ typedef struct caffc_call_stack_struct {
 } caffc_call_stack;
 
 /**
- * Register a stack frame call. The data_frame is a pointer to a contiguous
- * pointer array to caffc objects/arrays. The actual count of variables is
- * being passed in the var_count. The data_frame can be null if there's no
- * variables that are handled by the gc.
+ * Register a stack frame call. The data_frame is a pointer to a
+ * contiguous pointer array to caffc objects/arrays. The actual count of
+ * variables is being passed in the var_count. The data_frame can be
+ * null if there's no variables that are handled by the gc.
  *
- * data_frame is a pointer to a C array of pointers, each pointer pointing
- * to the variable location that is tracking. The variable in turn is also
- * a pointer that may be null.
+ * data_frame is a pointer to a C array of pointers, each pointer
+ * pointing to the variable location that is tracking. The variable in
+ * turn is also a pointer that may be null.
  *
  * i.e.:
  *
@@ -49,9 +48,9 @@ void _caffc_stack_frame_register(
   caffc_u32 var_count);
 
 /**
- * Unregister a stack frame call. The data_frame is the same pointer that was
- * used in the register method. It can be null if there's no variables that
- * are handled by the gc.
+ * Unregister a stack frame call. The data_frame is the same pointer
+ * that was used in the register method. It can be null if there's no
+ * variables that are handled by the gc.
  */
 void _caffc_stack_frame_unregister(
   caffc_ptr data_frame);
