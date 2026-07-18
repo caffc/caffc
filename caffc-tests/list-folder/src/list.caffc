@@ -20,17 +20,23 @@ class File {
 }
 
 main(str[] args) -> i32 {
-  str folderToList = "."
+  try {
+    str folderToList = "."
 
-  if args.size() > 1 {
-    folderToList = args[1]
-  }
+    if args.size() > 1 {
+      folderToList = args[1]
+    }
 
-  ArrayList<File> files = list_files(folderToList)
-  sort(files)
+    ArrayList<File> files = list_files(folderToList)
+    sort(files)
 
-  for File f in files {
-    print(f.name)
+    for File f in files {
+      print(f.name)
+    }
+
+  } catch (Exception e) {
+    print(e.message())
+    return -1
   }
 
   return 0

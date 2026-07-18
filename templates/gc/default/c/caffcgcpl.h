@@ -18,18 +18,23 @@ typedef struct {
 /**
  * Create a pointer list.
  */
-void caffc_gc_pointer_list_constructor(caffc_gc_pointer_list* _this, caffc_i32 default_capacity);
+void caffc_gc_pointer_list_constructor(
+    caffc_gc_pointer_list* _this,
+    caffc_i32 default_capacity);
 
 /**
  * Destroy the pointer list.
  */
-void caffc_gc_pointer_list_destructor(caffc_gc_pointer_list* _this);
+void caffc_gc_pointer_list_destructor(
+    caffc_gc_pointer_list* _this);
 
 /**
  * Add an item into the list. If the capacity is not enough, the
  * list will be expanded dynamically.
  */
-void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, caffc_ptr value);
+void caffc_gc_pointer_list_add(
+    caffc_gc_pointer_list* _this,
+    caffc_ptr value);
 
 /**
  * Removes an item from the list. The last pointer from the list
@@ -37,11 +42,15 @@ void caffc_gc_pointer_list_add(caffc_gc_pointer_list* _this, caffc_ptr value);
  *
  * _always remove right to left_, to minimize moves.
  */
-caffc_ptr caffc_gc_pointer_list_remove(caffc_gc_pointer_list* _this, caffc_i32 index);
+caffc_ptr caffc_gc_pointer_list_remove(
+    caffc_gc_pointer_list* _this,
+    caffc_i32 index);
 
 /**
  * Gets an item from the list.
  */
-caffc_ptr caffc_gc_pointer_list_get(caffc_gc_pointer_list* _this, caffc_i32 index);
+caffc_ptr caffc_gc_pointer_list_get(
+    caffc_gc_pointer_list* _this,
+    caffc_i32 index);
 
 #endif  /* ifndef __caffcgcpl_h */

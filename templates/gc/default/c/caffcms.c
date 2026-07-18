@@ -9,9 +9,15 @@
 
 #include "caffc_program_constants.h"
 
-#define caffc_gc_ms_is_marked(o) (((caffc_object_header*)o)->_caffc_flags & CAFFC_OBJECT_FLAGS_GC_MARKED)
-#define caffc_gc_ms_set_marked(o) ((caffc_object_header*)o)->_caffc_flags |= CAFFC_OBJECT_FLAGS_GC_MARKED
-#define caffc_gc_ms_clear_marked(o) ((caffc_object_header*)o)->_caffc_flags &= ~CAFFC_OBJECT_FLAGS_GC_MARKED
+#define caffc_gc_ms_is_marked(o) (\
+  ((caffc_object_header*)o)->_caffc_flags \
+    & CAFFC_OBJECT_FLAGS_GC_MARKED)
+#define caffc_gc_ms_set_marked(o) (\
+  (caffc_object_header*)o)->_caffc_flags \
+    |= CAFFC_OBJECT_FLAGS_GC_MARKED
+#define caffc_gc_ms_clear_marked(o) (\
+  (caffc_object_header*)o)->_caffc_flags \
+    &= ~CAFFC_OBJECT_FLAGS_GC_MARKED
 
 caffc_gc_pointer_list caffc_all_objects;
 
@@ -20,91 +26,97 @@ caffc_gc_pointer_list caffc_all_objects;
  * nodes.
  */
 void caffc_gc_ms_mark() {
-    caffc_gc_pointer_list work_list;
-    caffc_object_header* object_header = caffc_null;
-    caffc_u32 i = 0, j = 0;
-    caffc_ptr field_ptr = caffc_null;
-    caffc_u32 field_count = 0;
+  caffc_gc_pointer_list work_list;
+  caffc_object_header* obj_header = caffc_null;
+  caffc_u32 i = 0, j = 0;
+  caffc_ptr field_ptr = caffc_null;
+  caffc_u32 field_count = 0;
 
-    caffc_gc_pointer_list_constructor(&work_list, 16);
+  caffc_gc_pointer_list_constructor(&work_list, 16);
 
-    /*
-       We do two passes. In the first one we add in the `work_list` all the unique
-       roots. In the second pass we do the actual graph traversal.
+  /*
+  We do two passes. In the first one we add in the `work_list` all the
+  unique roots. In the second pass we do the actual graph traversal.
 
-       i.e. imagine an object that calls `_this.xxxx` methods. We'd have the `_this`
-       pointer multiple times in the work list. We want it only once in the work_list.
-    */
+  i.e. imagine an object that calls `_this.xxxx` methods. We'd have
+  the `_this` pointer multiple times in the work list. We want it only
+  once in the work_list.
+  */
 
-    /* 1. add the global exception pointer as a root */
-    if (_caffc_exception) {
-        caffc_gc_ms_set_marked(_caffc_exception);
-        caffc_gc_pointer_list_add(&work_list, _caffc_exception);
+  /* 1. add the global exception pointer as a root */
+  if (_caffc_exception) {
+      caffc_gc_ms_set_marked(_caffc_exception);
+      caffc_gc_pointer_list_add(&work_list, _caffc_exception);
+  }
+
+  /* 2. add all the pointers by traversing all the stack frames */
+  for (i = 0; i < _caffc_call_stack->call_count; i++) {
+    for (j = 0; j < _caffc_call_stack->frames[i].var_count; j++) {
+      /*
+      main_A* a = caffc_null;                                         v-- _caffc_locals / data_frame
+      caffc_ptr _caffc_locals[1];  // void** _caffc_locals            [ptr, ptr, ..] -> ptr -> var ptr -> actual object data
+      _caffc_locals[0] = &_caffc_temp_main_A_1;                                                ^-- we check this to be != null
+      _caffc_stack_frame_register("createA", _caffc_locals, 1);
+
+      `_caffc_call_stack->frames[i].data_frame` is the function's
+      `_caffc_locals`.
+      */
+      void*** data_frame_ptr = _caffc_call_stack->frames[i].data_frame;
+      caffc_ptr p = **(data_frame_ptr + j);
+
+      if (p && !caffc_gc_ms_is_marked((caffc_object_header*) p)) {
+        caffc_gc_ms_set_marked((caffc_object_header*) p);
+        caffc_gc_pointer_list_add(&work_list, p);
+      }
+    }
+  }
+
+  /* We have the roots, clear the flag, and do the graph traversal */
+  for (i = 0; i < work_list.len; i++) {
+    caffc_ptr object = caffc_gc_pointer_list_get(&work_list, i);
+    obj_header = (caffc_object_header*) object;
+    caffc_gc_ms_clear_marked(object);
+  }
+
+  /* Do the graph traversal */
+  while (work_list.len) {
+    caffc_ptr object = caffc_gc_pointer_list_remove(
+        &work_list,
+        work_list.len - 1);
+    obj_header = (caffc_object_header*) object;
+
+    /* duplicate pointer, we already processed it */
+    if (caffc_gc_ms_is_marked(object)) {
+      continue;
     }
 
-    /* 2. add all the pointers by traversing all the stack frames */
-    for (i = 0; i < _caffc_call_stack->call_count; i++) {
-        for (j = 0; j < _caffc_call_stack->frames[i].var_count; j++) {
-            /*
-            main_A* a = caffc_null;                                         v-- _caffc_locals / data_frame
-            caffc_ptr _caffc_locals[1];  // void** _caffc_locals            [ptr, ptr, ..] -> ptr -> var ptr -> actual object data
-            _caffc_locals[0] = &_caffc_temp_main_A_1;                                                ^-- we check this to be != null
-            _caffc_stack_frame_register("createA", _caffc_locals, 1);
+    caffc_gc_ms_set_marked(object);
 
-            `_caffc_call_stack->frames[i].data_frame` is the function's `_caffc_locals`.
-            */
-            void*** data_frame_ptr = _caffc_call_stack->frames[i].data_frame;
-            caffc_ptr p = **(data_frame_ptr + j);
-
-            if (p && !caffc_gc_ms_is_marked((caffc_object_header*) p)) {
-                caffc_gc_ms_set_marked((caffc_object_header*) p);
-                caffc_gc_pointer_list_add(&work_list, p);
-            }
-        }
+    /* arrays have dynamic references */
+    if (caffc_is_array(object)) {
+      caffc_array_header* array_header =
+          (caffc_array_header*)obj_header;
+      field_ptr = array_header->_caffc_data;
+      field_count = array_header->_caffc_field_count;
+    } else { /* regular object */
+      field_ptr = obj_header->_caffc_data;
+      field_count = caffc_type_id_gc_count[obj_header->_caffc_type_id];
     }
 
-    /* We have now the roots, clear the flag, and do the graph traversal */
-    for (i = 0; i < work_list.len; i++) {
-        caffc_ptr object = caffc_gc_pointer_list_get(&work_list, i);
-        object_header = (caffc_object_header*) object;
-        caffc_gc_ms_clear_marked(object);
+    for (i = 0; i < field_count; i++) {
+      caffc_ptr actual_field_ptr = *((void**) field_ptr);
+      if (!actual_field_ptr
+          || caffc_gc_ms_is_marked(actual_field_ptr)) {
+        continue;
+      }
+
+      caffc_gc_pointer_list_add(&work_list, actual_field_ptr);
+
+      field_ptr = (caffc_ptr) ((void**)field_ptr + 1);
     }
+  }
 
-    /* Do the graph traversal */
-    while (work_list.len) {
-        caffc_ptr object = caffc_gc_pointer_list_remove(&work_list, work_list.len - 1);
-        object_header = (caffc_object_header*) object;
-
-        /* duplicate pointer, we already processed it */
-        if (caffc_gc_ms_is_marked(object)) {
-            continue;
-        }
-
-        caffc_gc_ms_set_marked(object);
-
-        /* arrays have dynamic references */
-        if (caffc_is_array(object)) {
-            caffc_array_header* array_header = (caffc_array_header*)object_header;
-            field_ptr = array_header->_caffc_data;
-            field_count = array_header->_caffc_field_count;
-        } else { /* regular object */
-            field_ptr = object_header->_caffc_data;
-            field_count = caffc_type_id_gc_count[object_header->_caffc_type_id];
-        }
-
-        for (i = 0; i < field_count; i++) {
-            caffc_ptr actual_field_ptr = *((void**) field_ptr);
-            if (!actual_field_ptr || caffc_gc_ms_is_marked(actual_field_ptr)) {
-                continue;
-            }
-
-            caffc_gc_pointer_list_add(&work_list, actual_field_ptr);
-
-            field_ptr = (caffc_ptr) ((void**)field_ptr + 1);
-        }
-    }
-
-    caffc_gc_pointer_list_destructor(&work_list);
+  caffc_gc_pointer_list_destructor(&work_list);
 }
 
 /**
@@ -112,17 +124,17 @@ void caffc_gc_ms_mark() {
  * not marked.
  */
 void caffc_gc_ms_sweep() {
-    caffc_i32 i;
-    caffc_ptr object;
+  caffc_i32 i;
+  caffc_ptr object;
 
-    for (i = caffc_all_objects.len - 1; i >= 0; i--) {
-        object = caffc_gc_pointer_list_get(&caffc_all_objects, i);
+  for (i = caffc_all_objects.len - 1; i >= 0; i--) {
+    object = caffc_gc_pointer_list_get(&caffc_all_objects, i);
 
-        if (caffc_gc_ms_is_marked(object)) {
-            caffc_gc_ms_clear_marked(object);
-        } else {
-            free(object);
-            caffc_gc_pointer_list_remove(&caffc_all_objects, i);
-        }
+    if (caffc_gc_ms_is_marked(object)) {
+      caffc_gc_ms_clear_marked(object);
+    } else {
+      free(object);
+      caffc_gc_pointer_list_remove(&caffc_all_objects, i);
     }
+  }
 }
