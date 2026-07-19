@@ -6,6 +6,7 @@ import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * All the things that exist in a module are defined here. Like
- * this we can create the forward definitions when generating
+ * All the things that exist in a module are defined here.
+ * This way we can create the forward definitions when generating
  * header C files for the modules.
  */
 public class Module implements AstItem, Scope, Symbol {
@@ -28,6 +29,7 @@ public class Module implements AstItem, Scope, Symbol {
     public Map<String, ClassDefinition> clazzes = new LinkedHashMap<>();
     public Map<String, InterfaceDefinition> interfaces = new LinkedHashMap<>();
     public Map<String, Struct> structures = new LinkedHashMap<>();
+    public Map<String, GlobalVariable> globalVariables = new LinkedHashMap<>();
     public Set<Module> usedModules = new LinkedHashSet<>();
     public Set<StringConstant> stringConstants = new LinkedHashSet<>();
 
@@ -39,12 +41,122 @@ public class Module implements AstItem, Scope, Symbol {
         this.name = moduleName;
     }
 
+    /**
+     * Ensures the `module_init` function exists, and initializes all
+     * the global variables. If a function already exists for this module,
+     * this function will be reused.
+     *
+     * The GlobalVariables must be moved _after_ the `recurseResolveTypes`.
+     * The rationale is the following, if we have a compilation unit such as:
+     *
+     * module main
+     * use my_users as user
+     * user.User x = user.defaultUser("root") // this is global
+     *
+     * Resolving `user` is actually bound to the compilation unit.
+     *
+     * The synthetic compilation unit that we create, must have all the
+     * `usedModules`
+     *
+     * If there's already a `module_init` function in the current module,
+     * the GlobalVariable statements will be prepended. If not, a custom
+     * fake compilation unit will be created.
+     */
+    public static void createModuleInit(Module module, Set<CompilationUnit> compilationUnits) {
+        List<GlobalVariable> globalVariables = new ArrayList<>();
+
+        // we find all the variables to see if there's anything to be done
+        for (CompilationUnit compilationUnit: compilationUnits) {
+            // FIXME: Create a map? String -> List<CompilationUnit>
+            if (compilationUnit.module != module) {
+                continue;
+            }
+
+            // we don't care about the `use` statements anymore of the module, since
+            // the compilation units are already resolved, and each compilation unit
+            // when generated #includes the module header, that in turn has all deps
+            // correctly included
+            for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
+                if (compileBlock instanceof GlobalVariableDeclarations globalVariable) {
+                    globalVariables.add(globalVariable.variable);
+                }
+            }
+        }
+
+        if (globalVariables.isEmpty()) {
+            // we don't need to augment/create the `module_init()` since we have no globals
+            return;
+        }
+
+        Function moduleInitFunction = getOrCreateModuleInitFunction(module, compilationUnits);
+
+        // we need to reparent the global variables to the `module_init` function.
+        // the reason is for try/catch blocks, so exceptions hook in the module_init's
+        // unhandled exception label
+        for (GlobalVariable globalVariable: globalVariables) {
+            globalVariable.owner = moduleInitFunction;
+        }
+
+        // prepend the global variables
+        List<Statement> statements = new ArrayList<>(globalVariables);
+        statements.addAll(moduleInitFunction.statements);
+        moduleInitFunction.statements = statements;
+    }
+
+    private static Function getOrCreateModuleInitFunction(
+            Module module, Set<CompilationUnit> compilationUnits) {
+        // search for an existing `module_init` function
+        for (CompilationUnit compilationUnit: compilationUnits) {
+            if (compilationUnit.module != module) {
+                continue;
+            }
+
+            for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
+                if (compileBlock instanceof Function function) {
+                    if ("module_init".equals(function.name())) {
+                        return function;
+                    }
+                }
+            }
+        }
+
+        // we don't have an existing `module_init`, we need to create a
+        // synthetic one
+        CompilationUnit compilationUnit = new CompilationUnit();
+        compilationUnit.module = module;
+        compilationUnit.isResolved = true;
+        compilationUnit.sourceLocation = SourceLocation.fromFilePath(
+            FilterCTypeName.getCType(module.typeName()) +
+            "module_init.caffc");
+        compilationUnits.add(compilationUnit);
+
+        Function moduleInitFunction = new Function();
+        moduleInitFunction.owner = compilationUnit;
+        moduleInitFunction.definition.name = "module_init";
+        moduleInitFunction.definition.module = module.name;
+
+        compilationUnit.compileBlocks.add(moduleInitFunction);
+        module.functions.put(
+            moduleInitFunction.definition.name,
+            moduleInitFunction.definition);
+
+        moduleInitFunction.stringConstantName = StringConstant.newStringConstant(
+            moduleInitFunction.getSourceLocation(), moduleInitFunction.definition.name);
+        module.registerConstant(moduleInitFunction.stringConstantName);
+
+        return moduleInitFunction;
+    }
+
     public Collection<FunctionDefinition> functionDefinitions() {
         return functions.values();
     }
 
     public Object getByName(String name) {
         return functions.get(name);
+    }
+
+    public boolean hasFunction(String name) {
+        return functions.containsKey(name);
     }
 
     public Collection<ClassDefinition> classDefinitions() {
@@ -78,6 +190,10 @@ public class Module implements AstItem, Scope, Symbol {
 
         if (interfaces.containsKey(name)) {
             return interfaces.get(name);
+        }
+
+        if (globalVariables.containsKey(name)) {
+            return globalVariables.get(name);
         }
 
         return null;
@@ -159,6 +275,9 @@ public class Module implements AstItem, Scope, Symbol {
         }
         if (functions.containsKey(name)) {
             return functions.get(name);
+        }
+        if (globalVariables.containsKey(name)) {
+            return globalVariables.get(name);
         }
         return null;
     }
@@ -255,6 +374,18 @@ public class Module implements AstItem, Scope, Symbol {
             }
 
             return struct;
+        });
+    }
+
+    public void registerGlobalVariable(GlobalVariable globalVariable) {
+        this.globalVariables.compute(globalVariable.name, (key, oldValue) -> {
+            if (oldValue != null) {
+                CaffcCompiler.get().fatal(globalVariable,
+                    "global variable " + globalVariable.name + " is already declared");
+                return oldValue;
+            }
+
+            return globalVariable;
         });
     }
 }

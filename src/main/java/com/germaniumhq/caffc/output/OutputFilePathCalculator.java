@@ -9,11 +9,11 @@ import com.germaniumhq.caffc.compiler.model.Module;
 public class OutputFilePathCalculator {
     public static String getOutputFileName(CompilationUnit compilationUnit, String fileExtension) {
         String baseName = extractBaseName(compilationUnit);
-        return compilationUnit.module.name + "_" + baseName + "." + fileExtension;
+        return compilationUnit.module.name.replace(".", "_") + "_" + baseName + "." + fileExtension;
     }
 
     public static String getHeaderGuard(Module module) {
-        return "CAFFCM_" + module.name ;
+        return "CAFFCM_" + module.name.replace(".", "_") ;
     }
 
     private static String extractBaseName(CompilationUnit compilationUnit) {
@@ -23,6 +23,6 @@ public class OutputFilePathCalculator {
     }
 
     public static String getModuleFileName(Module module, String fileExtension) {
-        return "module_" + module.name + fileExtension;
+        return "module_" + module.name.replace(".", "_") + fileExtension;
     }
 }

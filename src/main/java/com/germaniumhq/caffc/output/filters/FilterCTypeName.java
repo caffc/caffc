@@ -5,8 +5,7 @@ import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
-import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -52,8 +51,8 @@ public class FilterCTypeName implements Filter {
             return getCType(s.typeName());
         }
 
-        if (o instanceof VariableDeclaration) {
-            return getCType(((VariableDeclaration) o).typeName());
+        if (o instanceof LocalVariable) {
+            return getCType(((LocalVariable) o).typeName());
         }
 
         throw new IllegalArgumentException("Unable to find the C name for " + o);

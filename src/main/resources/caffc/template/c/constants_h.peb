@@ -1,8 +1,27 @@
 #ifndef caffc_program_constants
 #define caffc_program_constants
 
+#include "caffcpt.h"
+
 #define CAFFC_OBJ_TYPE_ID {{ program.objTypeId }}
 #define CAFFC_STR_TYPE_ID {{ program.strTypeId }}
+
+/* ******************************************************************
+ * CaffC Main Initialization
+ * ******************************************************************/
+
+/* Initializes the CaffC memory allocator, and calls for each module
+ * its `module_init()` function. */
+void caffc_init();
+
+/* Winds down the CaffC memory allocator. */
+void caffc_done();
+
+/* ******************************************************************
+ * Global Variables
+ * ******************************************************************/
+#define GLOBAL_VARIABLES_COUNT {{ program.globalVariables.size() }}
+extern caffc_ptr* _caffc_global_variables[];
 
 /* ******************************************************************
  * CLASS types+inheritance

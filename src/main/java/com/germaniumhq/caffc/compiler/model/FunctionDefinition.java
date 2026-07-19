@@ -1,7 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
@@ -46,14 +46,14 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
 
     private boolean isResolved;
 
-    public Symbol returnType;
+    public Symbol returnType = TypeSymbol.VOID;
 
-    public List<VariableDeclaration> antlrFillReturnType(
+    public List<LocalVariable> antlrFillReturnType(
         CompilationUnit unit,
         AstItem owner,
         caffcParser.ReturnTypeContext returnTypeContext) {
 
-        List<VariableDeclaration> result = new ArrayList<>();
+        List<LocalVariable> result = new ArrayList<>();
 
         if (returnTypeContext == null || returnTypeContext.VOID() != null) {
             // NOTHING on purpose, function is void
@@ -71,7 +71,7 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
                     symbolSearch
                 );
 
-                result.add(VariableDeclaration.fromTypeSearch(owner, symbolSearch, variableName));
+                result.add(LocalVariable.fromTypeSearch(owner, symbolSearch, variableName));
             }
         } else {
             CaffcCompiler.get().fatal(owner, "unsupported function return type");

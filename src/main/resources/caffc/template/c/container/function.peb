@@ -23,6 +23,10 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
+  if (_caffc_exception) {
+    goto mainUnhandledException;
+  }
+
   {%- if not ctx.definition.parameters.isEmpty() %}
 
   /* FIXME: add <entrypoint> as a caffc.str */
@@ -44,25 +48,26 @@ int main(int argc, char* argv[]) {
   {%- endif %}
 
   {% if ctx.definition.returnType.typeSymbol.name != "void" %}result = {% endif %}{{ ctx.definition.module }}_{{ ctx.definition.name }}({% if not ctx.definition.parameters.isEmpty() %}arr{% endif %});
-   if (_caffc_exception) {
-     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
-     if (_caffc_exception_msg) {
-       printf("Uncaught exception: %s\n", _caffc_exception_msg->_caffc_data);
-     }
+  if (_caffc_exception) {
+    mainUnhandledException:
+    caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+    if (_caffc_exception_msg) {
+      printf("Uncaught exception: %s\n", _caffc_exception_msg->_caffc_data);
+    }
 
-     /* we want the GC to sweep it */
-     _caffc_exception = caffc_null;
+    /* we want the GC to sweep it */
+    _caffc_exception = caffc_null;
 
-     exit(1);
-   }
+    exit(1);
+  }
 
-   {%- if not ctx.definition.parameters.isEmpty() %}
+  {%- if not ctx.definition.parameters.isEmpty() %}
 
-   _caffc_stack_frame_unregister(&_caffc_locals);
-   {%- else %}
+  _caffc_stack_frame_unregister(&_caffc_locals);
+  {%- else %}
 
-   _caffc_stack_frame_unregister(caffc_null);
-   {%- endif %}
+  _caffc_stack_frame_unregister(caffc_null);
+  {%- endif %}
 
 {%- if ctx.definition.returnType.typeSymbol.name != "void" %}
 

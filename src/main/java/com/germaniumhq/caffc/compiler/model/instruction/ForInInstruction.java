@@ -16,8 +16,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
-import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -40,8 +39,8 @@ public final class ForInInstruction implements Statement, Scope {
     public Symbol iterableTypeSymbol;
     public Symbol iteratorTypeSymbol;
     public Symbol itemTypeSymbol;
-    public VariableDeclaration iteratorVariableDecl;
-    public VariableDeclaration itemVariableDecl;
+    public LocalVariable iteratorVariableDecl;
+    public LocalVariable itemVariableDecl;
 
     public AsmLabel forCheckLabel;
     public AsmLabel forEndLabel;

@@ -43,7 +43,8 @@ A symbol represents a resolved name in the context of a Scope. A Symbol has a `n
 * Variable Symbols
 	* `Parameter`
 	* `Field`
-	* `VariableDeclaration`
+	* `LocalVariable`
+	* `GlobalVariable`
 All the "container" symbols have the `typeSymbol` pointing to themselves, since the name of `i32` is actually the `i32` primitive itself. Variable Symbols will have the name as the name of the variable, and the `typeSymbol` pointing to the resolved type of the variable. `i32 x` would have the name as `x` and the `typeSymbol` as a reference to a `PrimitiveSymbol`.
 
 
@@ -156,7 +157,7 @@ class Clazz <<CompileBlock, AstItem, Scope>> implements CompileBlock {
 class Function <<CompileBlock, Scope>> implements CompileBlock {
   + definition: FunctionDefinition
   + statements: List<Statement>
-  + variables: List<VariableDeclaration>
+  + variables: List<LocalVariable>
 }
 
 class NativeBlock implements CompileBlock, Statement {
@@ -311,7 +312,7 @@ class Function <<CompileBlock, Scope>> implements CompileBlock {
   + definition: FunctionDefinition
   + statements: List<Statement>
   + instructions: List<AsmInstruction>
-  + variables: List<VariableDeclaration>
+  + variables: List<LocalVariable>
 }
 
 interface Expression extends Statement {

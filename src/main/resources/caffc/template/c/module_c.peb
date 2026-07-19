@@ -5,6 +5,13 @@ extern "C" {
 
 #include "{{ ctx | c_global_header }}"
 
+/* **************************************************************
+global variables
+************************************************************** */
+{%- for globalVar in ctx.globalVariables.values() %}
+{{ globalVar.typeSymbol | c_type }} {{ globalVar.name }};
+{%- endfor %}
+
 {# we create a generic ccaf array, and we patch its header for NEW constructs #}
 /* **************************************************************
 array constructors

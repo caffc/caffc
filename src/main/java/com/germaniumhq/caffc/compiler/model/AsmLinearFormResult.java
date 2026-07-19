@@ -15,6 +15,8 @@ public class AsmLinearFormResult {
     public AsmValue value;
     public List<AsmInstruction> instructions;
 
+    public static final AsmLinearFormResult EMPTY = new AsmLinearFormResult();
+
     public AsmLinearFormResult() {
         this.instructions = new ArrayList<>();
     }

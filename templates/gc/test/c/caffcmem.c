@@ -7,11 +7,11 @@
 /* FIXME: remove and replace with exceptions */
 #include <stdio.h>
 
-void caffc_init() {
+void caffc_memory_init() {
   /* NOOP */
 }
 
-void caffc_done() {
+void caffc_memory_done() {
   /* NOOP */
 }
 

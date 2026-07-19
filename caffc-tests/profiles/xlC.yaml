@@ -1,10 +1,10 @@
 # Profile: xlc_docker
 #
 # CaffC compilation runs locally (x86_64). C compilation, linking, and
-# execution run inside the ibmcom/xlc-ce Docker container on ppc64le.
+# execution run inside a shared ibmcom/xlc-ce Docker container on ppc64le.
 #
-# The container starts as root to accept the IBM license, then switches
-# to the current user via `su -c "xlC ..." $(whoami)`.
+# Container is started once as root (to accept license), then each exec
+# uses su to run as the current user.
 #
 # Usage:
 #   python3 run-tests.py -p xlc_docker
@@ -14,24 +14,17 @@
 #   - Docker installed
 #   - QEMU emulation for ppc64le (if host is not ppc64le):
 #       docker run --rm --privileged tonistiigi/binfmt --install all
-#
-# Volume mapping:
-#   Host <test_dir>  ->  /test (inside container)
 
 config:
   # CaffC compiles locally (x86_64 Java), produces .c files
   caffc_cmd: java -jar ../../target/caffc-*.jar
 
-  # Compile each .c file inside the ppc64le container.
-  # Container starts as root for license, then su to current user.
-  # Path mapping: host $(pwd) -> container $(pwd) so compiler paths work.
-  compile_cmd_template: |
-    docker run --rm -e LICENSE=accept -u root -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $(pwd):$(pwd) -w $(pwd) --platform ppc64le ibmcom/xlc-ce su -c 'xlC -q64 -c {file} -o {output}' $(whoami)
+  docker_container_name: caffc-xlc-docker
+  docker_mount_source: ../..
+  docker_run_command: docker run -d --name {container_name} -e LICENSE=accept -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v {mount_source}:{mount_source} --platform ppc64le ibmcom/xlc-ce tail -f /dev/null
+  docker_exec_prefix: docker exec -w {cwd} {container_name} bash -c
+  docker_ready_command: which xlC
 
-  # Link inside the ppc64le container
-  link_cmd_template: |
-    docker run --rm -e LICENSE=accept -u root -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $(pwd):$(pwd) -w $(pwd) --platform ppc64le ibmcom/xlc-ce su -c 'xlC -q64 {objects} -o {output}' $(whoami)
-
-  # Execute inside the ppc64le container
-  execute_cmd_template: |
-    docker run --rm -e LICENSE=accept -u root -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v $(pwd):$(pwd) -w $(pwd) --platform ppc64le ibmcom/xlc-ce su -c './target/main' $(whoami)
+  compile_cmd_template: xlC -q64 -c {file} -o {output}
+  link_cmd_template: xlC -q64 {objects} -o {output}
+  execute_cmd_template: ./target/main

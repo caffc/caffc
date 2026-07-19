@@ -6,7 +6,7 @@ import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
@@ -51,8 +51,8 @@ public class FilterCResolveId implements Filter {
             return parameter.name;
         }
 
-        if (symbol instanceof VariableDeclaration variableDeclaration) {
-            return variableDeclaration.name;
+        if (symbol instanceof LocalVariable localVariable) {
+            return localVariable.name;
         }
 
         if (symbol instanceof StructReturnVariableDefinition structVariableDefinition) {

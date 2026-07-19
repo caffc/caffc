@@ -12,7 +12,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmComment;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmIfZJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -24,7 +24,7 @@ import java.util.List;
 public final class ForInstruction implements Statement, Scope {
     public AstItem owner;
 
-    public List<VariableDeclaration> variableDeclarations;
+    public List<LocalVariable> localVariables;
     public Expression variableInitializationExpression;
     public Expression checkExpression;
     public Expression incrementExpression;
@@ -42,7 +42,7 @@ public final class ForInstruction implements Statement, Scope {
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, forAntlr);
 
         if (forAntlr.variableDeclarations() != null) {
-            result.variableDeclarations =
+            result.localVariables =
                 VariableDeclarations.fromAntlr(unit, result, forAntlr.variableDeclarations());
         } else {
             result.variableInitializationExpression = AssignExpression.fromAntlr(unit, result, forAntlr.initExpression);
@@ -75,9 +75,9 @@ public final class ForInstruction implements Statement, Scope {
 
     @Override
     public void recurseResolveTypes() {
-        if (this.variableDeclarations != null) {
-            for (VariableDeclaration variableDeclaration: this.variableDeclarations) {
-                variableDeclaration.recurseResolveTypes();
+        if (this.localVariables != null) {
+            for (LocalVariable localVariable : this.localVariables) {
+                localVariable.recurseResolveTypes();
             }
         }
 
@@ -112,8 +112,8 @@ public final class ForInstruction implements Statement, Scope {
         forBlock.instructions.add(new AsmComment(null, "forBegin", labelIndex));
 
         // variable declarations
-        if (this.variableDeclarations != null) {
-            for (var variableDeclaration: this.variableDeclarations) {
+        if (this.localVariables != null) {
+            for (var variableDeclaration: this.localVariables) {
                 AsmLinearFormResult variableDeclarationLinear = variableDeclaration.asLinearForm(forBlock);
                 forBlock.instructions.addAll(variableDeclarationLinear.instructions);
             }

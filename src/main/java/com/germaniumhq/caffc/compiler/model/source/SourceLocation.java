@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.Token;
 /**
  * A source location. This is used to keep track of debug information.
  */
-public class SourceLocation {
+public final class SourceLocation {
     public String filePath;
     public int lineNumber;
     public int columnNumber;

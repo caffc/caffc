@@ -1,15 +1,9 @@
-package com.germaniumhq.caffc.compiler.model.expression;
+package com.germaniumhq.caffc.compiler.model;
 
-import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
-import com.germaniumhq.caffc.compiler.model.AstItem;
-import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
-import com.germaniumhq.caffc.compiler.model.CompilationUnit;
-import com.germaniumhq.caffc.compiler.model.Expression;
-import com.germaniumhq.caffc.compiler.model.Statement;
-import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
-import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
@@ -17,29 +11,34 @@ import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import com.germaniumhq.caffc.generated.caffcParser;
 
-public final class VariableDeclaration implements AstItem, Symbol, AsmVar, Statement {
+/**
+ * GlobalVariable for a module are - similar to the LocalVariable statements. However, they
+ * won't get added into a compilation unit directly, instead they'll be added to the
+ * module init function. The module init function is a synthetic function created by
+ * CaffC that holds the initialization of all these variables.
+ */
+public class GlobalVariable implements CompileBlock, Statement, Symbol, AsmVar, AstItem {
     public String name;
     public ExpressionAssign assignExpression;
 
     public AstItem owner;
+    public SourceLocation sourceLocation;
 
     public SymbolSearch typeSymbolSearch;
     public Symbol typeSymbol;
 
-    public SourceLocation sourceLocation;
+    private boolean isResolved;
 
-    public boolean isResolved;
-
-    public static VariableDeclaration fromAntlr(
+    public static GlobalVariable fromAntlr(
         CompilationUnit unit,
-        AstItem owner,
+        Module module,
         SymbolSearch symbolSearch,
         caffcParser.VariableDeclarationContext variableDeclarationContext) {
-        VariableDeclaration result = new VariableDeclaration();
 
-        result.owner = owner;
+        GlobalVariable result = new GlobalVariable();
+
+        result.owner = module;
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, variableDeclarationContext);
-
         result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();
 
@@ -49,7 +48,6 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
             result.assignExpression = new ExpressionAssign();
 
             result.assignExpression.sourceLocation = result.getSourceLocation();
-
             result.assignExpression.owner = result;
             result.assignExpression.leftExpressions.add(
                 ExpressionId.fromName(unit, result.assignExpression, result.name)
@@ -57,29 +55,6 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
 
             result.assignExpression.right = Expression.fromAntlr(unit, result.assignExpression, expressionContext);
         }
-
-        return result;
-    }
-
-    public static VariableDeclaration fromEnsure(AstItem owner, Symbol typeSymbol, String name) {
-        VariableDeclaration result = new VariableDeclaration();
-
-        result.name = name;
-        result.typeSymbol = typeSymbol;
-        result.owner = owner;
-        result.sourceLocation = owner.getSourceLocation();
-        result.isResolved = true;
-
-        return result;
-    }
-
-    public static VariableDeclaration fromTypeSearch(AstItem owner, SymbolSearch symbolSearch, String variableName) {
-        VariableDeclaration result = new VariableDeclaration();
-
-        result.name = variableName;
-        result.typeSymbolSearch = symbolSearch;
-        result.owner = owner;
-        result.sourceLocation = owner.getSourceLocation();
 
         return result;
     }
@@ -109,6 +84,16 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     }
 
     @Override
+    public AsmLinearFormResult asLinearForm(AsmBlock block) {
+        if (this.assignExpression == null) {
+            return AsmLinearFormResult.EMPTY;
+        }
+
+        AsmLinearFormResult result = this.assignExpression.asLinearForm(block);
+        return result;
+    }
+
+    @Override
     public String name() {
         return this.name;
     }
@@ -133,32 +118,8 @@ public final class VariableDeclaration implements AstItem, Symbol, AsmVar, State
     }
 
     @Override
-    public AsmLinearFormResult asLinearForm(AsmBlock block) {
-        AsmLinearFormResult result = new AsmLinearFormResult();
-
-        if (this.assignExpression != null) {
-            AsmLinearFormResult right = this.assignExpression.right.asLinearForm(block);
-            result.instructions.addAll(right.instructions);
-
-            result.instructions.add(new AsmAssign(this.sourceLocation, this, right.value));
-        } else {
-            AsmConstant nullValue;
-
-            if (this.typeSymbol.typeName().isPrimitive()) {
-                nullValue = new AsmConstant(this.typeSymbol, "0");
-            } else {
-                nullValue = new AsmConstant(this.typeSymbol, null);
-            }
-
-            result.instructions.add(new AsmAssign(this.sourceLocation, this, nullValue));
-        }
-
-        return result;
-    }
-
-    @Override
     public String toString() {
-        return "VariableDeclaration{" +
+        return "GlobalVariable{" +
             "typeSymbol=" + typeSymbol +
             ", name='" + name + '\'' +
             '}';

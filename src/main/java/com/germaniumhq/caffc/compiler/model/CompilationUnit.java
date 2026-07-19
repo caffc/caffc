@@ -16,11 +16,15 @@ import java.util.Map;
 public class CompilationUnit implements AstItem, Scope {
     public Module module;
     public List<CompileBlock> compileBlocks = new ArrayList<>();
+
+    /**
+     * A map of all the used modules, keyed as `alias` -> `actual module`.
+     */
     public Map<String, String> usedModules = new LinkedHashMap<>();
 
     public SourceLocation sourceLocation;
 
-    private boolean isResolved;
+    public boolean isResolved;
 
     public static CompilationUnit fromAntlr(ModuleProvider moduleProvider, caffcParser.CompilationUnitContext antlrCompilationUnit, String filePath) {
         CompilationUnit compilationUnit = new CompilationUnit();

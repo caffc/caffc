@@ -43,10 +43,16 @@ void caffc_gc_ms_mark() {
   once in the work_list.
   */
 
-  /* 1. add the global exception pointer as a root */
-  if (_caffc_exception) {
-      caffc_gc_ms_set_marked(_caffc_exception);
-      caffc_gc_pointer_list_add(&work_list, _caffc_exception);
+  /* 1. add all the global variables as roots */
+  for (i = 0; i < GLOBAL_VARIABLES_COUNT; i++) {
+    caffc_ptr p = _caffc_global_variables[i];
+
+    if (! *(caffc_ptr*) p) { /* is the variable set? */
+      continue;
+    }
+
+    caffc_gc_ms_set_marked(*(caffc_ptr*) p); /* variable is set, mark as root */
+    caffc_gc_pointer_list_add(&work_list, *(caffc_ptr*) p);
   }
 
   /* 2. add all the pointers by traversing all the stack frames */

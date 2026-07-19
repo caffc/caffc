@@ -13,7 +13,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmInstanceOf;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
@@ -24,13 +24,13 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatchBlock implements Statement, ExceptionHandler, Scope {
+public final class CatchBlock implements Statement, ExceptionHandler, Scope {
     public TryCatchInstruction owner;
     public SourceLocation sourceLocation;
 
     private SymbolSearch exceptionTypeSearch;
 
-    private VariableDeclaration exceptionVariable;
+    private LocalVariable exceptionVariable;
     private List<Statement> statements = new ArrayList<>();
 
     public static CatchBlock fromAntlr(CompilationUnit unit, TryCatchInstruction owner, caffcParser.CatchBlockContext ctx) {
@@ -46,7 +46,7 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
             result.statements.addAll(Statement.fromAntlr(unit, result, statementCtx));
         }
 
-        result.exceptionVariable = VariableDeclaration.fromTypeSearch(result, result.exceptionTypeSearch, variableName);
+        result.exceptionVariable = LocalVariable.fromTypeSearch(result, result.exceptionTypeSearch, variableName);
         result.findAstParent(Function.class).registerVariable(result.exceptionVariable);
 
         return result;
@@ -98,7 +98,7 @@ public class CatchBlock implements Statement, ExceptionHandler, Scope {
         int labelIndex = AsmLabel.allocateNumber(this);
         AsmLabel catchEnd = new AsmLabel(null, "catchEnd", labelIndex);
 
-        VariableDeclaration isExceptionInstanceOf = catchBlock.addTempVar(this, TypeSymbol.BOOL);
+        LocalVariable isExceptionInstanceOf = catchBlock.addTempVar(this, TypeSymbol.BOOL);
         catchBlock.instructions.add(new AsmInstanceOf(null, isExceptionInstanceOf,
             AsmGlobalExceptionVar.INSTANCE, (TypeDefinitionSymbol) this.exceptionVariable.typeSymbol()));
 

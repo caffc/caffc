@@ -4,6 +4,7 @@ import com.germaniumhq.caffc.compiler.model.BlockVariable;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Clazz;
 import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.GlobalVariable;
 import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
@@ -34,7 +35,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmFieldVar;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.expression.VariableDeclarations;
 import com.germaniumhq.caffc.compiler.model.instruction.ControlFlowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInInstruction;
@@ -58,6 +59,7 @@ import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 import com.germaniumhq.caffc.output.filters.FilterNullValue;
 import com.germaniumhq.caffc.output.filters.FilterSemicolon;
 import com.germaniumhq.caffc.output.filters.Render;
+import com.germaniumhq.caffc.output.functions.FunctionClassName;
 import com.germaniumhq.caffc.output.functions.FunctionGet;
 import com.germaniumhq.caffc.output.functions.FunctionIsBlockStatement;
 import com.germaniumhq.caffc.output.functions.FunctionIsIndex;
@@ -98,6 +100,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(Function.class, "c/container/function.peb")
                 .withMapping(Clazz.class, "c/container/class.peb")
                 .withMapping(ClassDefinition.class, "c/container/class_definition.peb")
+                .withMapping(GlobalVariable.class, "c/asm/global_variable.peb")
                 .withMapping(Interface.class, "c/container/interface.peb")
                 .withMapping(InterfaceDefinition.class, "c/container/interface_definition.peb")
                 .withMapping(Struct.class, "c/container/struct_definition.peb")
@@ -126,7 +129,7 @@ public class CaffcPebblesExtension implements Extension {
                 .withMapping(AsmReturn.class, "c/asm/return.peb")
                 .withMapping(AsmThrow.class, "c/asm/throw.peb")
                 .withMapping(StringConstant.class, "c/asm/string_constant.peb")
-                .withMapping(VariableDeclaration.class, "c/asm/variable_declaration.peb")
+                .withMapping(LocalVariable.class, "c/asm/variable_declaration.peb")
                 .withMapping(BlockVariable.class, "c/asm/block_variable.peb")
                 .withMapping(Parameter.class, "c/asm/parameter.peb")
                 .withMapping(StructReturnVariableDefinition.class, "c/asm/struct_return_variable.peb")
@@ -165,6 +168,7 @@ public class CaffcPebblesExtension implements Extension {
         functions.put("isBlockStatement", new FunctionIsBlockStatement());
         functions.put("isIndex", new FunctionIsIndex());
         functions.put("get", new FunctionGet());
+        functions.put("className", new FunctionClassName());
 
         return functions;
     }

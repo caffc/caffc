@@ -14,7 +14,7 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -166,7 +166,7 @@ public final class TryCatchInstruction implements Statement, ExceptionHandler {
         AsmLinearFormResult result = new AsmLinearFormResult();
         AsmBlock finallyBlock = new AsmBlock(block);
 
-        VariableDeclaration exceptionCopy = finallyBlock.addTempVar(this, TypeSymbol.OBJ);
+        LocalVariable exceptionCopy = finallyBlock.addTempVar(this, TypeSymbol.OBJ);
         finallyBlock.instructions.add(new AsmAssign(null, exceptionCopy, AsmGlobalExceptionVar.INSTANCE));
         finallyBlock.instructions.add(new AsmAssign(null, AsmGlobalExceptionVar.INSTANCE, AsmConstant.NULL));
 

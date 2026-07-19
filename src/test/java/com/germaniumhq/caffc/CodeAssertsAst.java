@@ -3,7 +3,9 @@ package com.germaniumhq.caffc;
 import com.germaniumhq.caffc.compiler.error.CaffcAntlrErrorListener;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
+import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.Program;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
@@ -11,7 +13,9 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility functions to test AST parsing. AST parsing may have also optimizations enabled,
@@ -40,7 +44,7 @@ public class CodeAssertsAst {
         Program program = Program.reset();
         CaffcCompiler.reset();
 
-        Map<String, CompilationUnit> compilationUnits = new HashMap<>();
+        Set<CompilationUnit> compilationUnits = new LinkedHashSet<>();
 
         for (int i = 0; i < testUnits.length; i++) {
             String compilationUnitPath = testUnits[i].unitPath;
@@ -58,23 +62,35 @@ public class CodeAssertsAst {
             caffcParser.CompilationUnitContext antlrCompilationUnit = parser.compilationUnit();
             CompilationUnit compilationUnit = CompilationUnit.fromAntlr(program, antlrCompilationUnit, compilationUnitPath);
 
-            compilationUnits.put(compilationUnitPath, compilationUnit);
+            compilationUnits.add(compilationUnit);
         }
 
-        for (CompilationUnit compilationUnit: compilationUnits.values()) {
+        for (CompilationUnit compilationUnit: compilationUnits) {
             compilationUnit.recurseResolveTypes();
+        }
+
+        for (com.germaniumhq.caffc.compiler.model.Module module: program.modules.values()) {
+            Module.createModuleInit(module, compilationUnits);
         }
 
         program.recreateConstants();
 
-        for (CompilationUnit compilationUnit: compilationUnits.values()) {
+        for (CompilationUnit compilationUnit: compilationUnits) {
             LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
 
-        CompilationUnit compilationUnit = compilationUnits.get(unit);
+        CompilationUnit compilationUnit = null;
+
+        for (CompilationUnit unit1: compilationUnits) {
+            if (unit1.sourceLocation.filePath.equals(unit)) {
+                compilationUnit = unit1;
+                break;
+            }
+        }
 
         if (compilationUnit == null) {
-            CaffcCompiler.get().fatal(compilationUnit, "unit not found: " + unit + " known units: " + compilationUnits.keySet());
+            CaffcCompiler.get().fatal(SourceLocation.UNKNOWN,
+                "unit not found: " + unit + " known units: " + compilationUnits);
         }
 
         return compilationUnit;

@@ -22,11 +22,11 @@ caffc [-onefile main.c] -o out_folder/ *.caffc
 * _no threads_
 * garbage collected
 * trivial C integration via `native` blocks
-* exceptions (TBD)
+* exceptions
 * generics
-* native UTF-8 string support (TBD)
+* native UTF-8 string support (WIP)
 * fast compilation times
-* tags (annotations) (WIP)
+* tags (annotations) (TBD)
 * decorators (TBD)
 * multi-returns
 
@@ -61,7 +61,7 @@ computeArea(u32 width, u32 height) -> u32 {
 
 If the function is void, the return can be omitted:
 
-```cafc
+```caffc
 log(str what) {
   // ...
 }
@@ -74,7 +74,7 @@ variables with the same name available for the fields of the struct.
 ```caffc
 class Point {
   compute() -> f32 tx, f32 ty {
-    tx = self._x
+    tx = _this._x
     ty = tx
 
     native {
@@ -239,6 +239,23 @@ main() {
   print_value(arr[0][1].data) // expect 2
 }
 ```
+
+## Global Variables
+
+CaffC supports global variables at the module level. Their initialization is moved
+to a synthetic `module_init()` function by the compiler.
+
+```caffc
+str globalStr = "hello"
+
+main() {
+  print_string(globalStr)
+}
+```
+
+The compiler generates a `{module}_module_init()` C function that initializes
+the global variables. If you define your own `module_init()` function, the
+compiler prepends the global variable initializations to it.
 
 ## Garbage Collection
 
