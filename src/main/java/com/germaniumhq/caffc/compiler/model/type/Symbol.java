@@ -5,6 +5,7 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.GlobalVariable;
 import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.Struct;
@@ -74,6 +75,8 @@ public interface Symbol extends AstItem {
             return "field";
         } else if (item instanceof Parameter) {
             return "parameter";
+        } else if (item instanceof GlobalVariable) {
+            return "global variable";
         }
 
         return "symbol";

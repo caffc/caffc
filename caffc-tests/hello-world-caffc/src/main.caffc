@@ -1,6 +1,5 @@
 module main
 
-#entrypoint
 main(str[] args) -> i32 {
   print("hello world")
 

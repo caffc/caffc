@@ -4,7 +4,7 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.Function;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.output.filters.FilterCName;
@@ -26,7 +26,7 @@ import java.util.TreeMap;
  */
 public final class AsmBlock implements Scope, AsmInstruction {
     public SourceLocation sourceLocation;
-    public Map<String, VariableDeclaration> blockVariables = new HashMap<>();
+    public Map<String, LocalVariable> blockVariables = new HashMap<>();
     public List<AsmInstruction> instructions = new ArrayList<>();
 
     private Map<String, Integer> typeIndexes = new TreeMap<>();
@@ -65,7 +65,7 @@ public final class AsmBlock implements Scope, AsmInstruction {
         });
     }
 
-    public VariableDeclaration addTempVar(AstItem owner, Symbol typeSymbol) {
+    public LocalVariable addTempVar(AstItem owner, Symbol typeSymbol) {
         if (typeSymbol == null) {
             throw new IllegalStateException("null type defined for the temp variable");
         }
@@ -79,7 +79,7 @@ public final class AsmBlock implements Scope, AsmInstruction {
 
         String variableName = "_caffc_temp_" + cTypeName + "_" + index;
 
-        VariableDeclaration variable = this.findAstParent(Function.class)
+        LocalVariable variable = this.findAstParent(Function.class)
             .ensureVariableExists(owner, variableName, typeSymbol);
 
         this.blockVariables.put(variableName, variable);

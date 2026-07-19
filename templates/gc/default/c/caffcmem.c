@@ -26,7 +26,7 @@ void caffc_gc_perform();
  * Function to be called to manually bootstrap the GC structures.
  * #public_api
  */
-void caffc_init() {
+void caffc_memory_init() {
     caffc_u32 stack_size = 0;
 
     caffc_gc_pointer_list_constructor(&caffc_all_objects, 16);
@@ -42,7 +42,7 @@ void caffc_init() {
  * remain.
  * #public_api
  */
-void caffc_done() {
+void caffc_memory_done() {
     caffc_gc_perform();
 
     caffc_gc_pointer_list_destructor(&caffc_all_objects);

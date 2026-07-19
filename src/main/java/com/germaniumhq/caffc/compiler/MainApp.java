@@ -72,8 +72,14 @@ public class MainApp {
             }
         }
 
+        // The GlobalVariables must be moved _after_ the `recurseResolveTypes`.
+        // The rationale is explained in Module.createModuleInit().
         for (CompilationUnit compilationUnit: compilationUnits) {
             compilationUnit.recurseResolveTypes();
+        }
+
+        for (Module module: program.modules.values()) {
+            Module.createModuleInit(module, compilationUnits);
         }
 
         program.recreateConstants();

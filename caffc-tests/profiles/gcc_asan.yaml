@@ -1,10 +1,12 @@
 # Profile: gcc_asan_docker
 #
 # CaffC compilation runs locally (x86_64). C compilation, linking, and
-# execution run inside a gcc ASAN Docker container.
+# execution run inside a shared gcc ASAN Docker container.
 #
 # Uses the caffc-gcc-asan Docker image built from Dockerfile.gcc_asan
 # (ubuntu:22.04 + gcc).
+#
+# Container is started once, all tests run via docker exec, then stopped.
 #
 # Usage:
 #   python3 run-tests.py -p gcc_asan_docker
@@ -18,11 +20,11 @@
 config:
   caffc_cmd: java -jar ../../target/caffc-*.jar
 
-  compile_cmd_template: |
-    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c 'gcc -Wall -g -ggdb -fsanitize=address -fsanitize=undefined -c {file} -o {output}'
+  docker_container_name: caffc-gcc-asan-docker
+  docker_mount_source: ../..
+  docker_run_command: docker run -d --name {container_name} -u $(id -u):$(id -g) -v {mount_source}:{mount_source} caffc-gcc-asan tail -f /dev/null
+  docker_exec_prefix: docker exec -w {cwd} {container_name} bash -c
 
-  link_cmd_template: |
-    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c 'gcc {objects} -o {output} -fsanitize=address -fsanitize=undefined'
-
-  execute_cmd_template: |
-    docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) caffc-gcc-asan bash -c './target/main'
+  compile_cmd_template: gcc -Wall -g -ggdb -fsanitize=address -fsanitize=undefined -c {file} -o {output}
+  link_cmd_template: gcc {objects} -o {output} -fsanitize=address -fsanitize=undefined
+  execute_cmd_template: ./target/main

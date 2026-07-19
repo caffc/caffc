@@ -34,6 +34,10 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
+  if (_caffc_exception) {
+    goto mainUnhandledException;
+  }
+
   /* FIXME: add <entrypoint> as a caffc.str */
   _caffc_stack_frame_register(caffc_null, _caffc_locals, 1);
 
@@ -48,23 +52,24 @@ int main(int argc, char* argv[]) {
   }
 
   result = main_main(arr);
-   if (_caffc_exception) {
-     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
-     if (_caffc_exception_msg) {
-       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
-     }
+  if (_caffc_exception) {
+    mainUnhandledException:
+    caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+    if (_caffc_exception_msg) {
+      printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+    }
 
-     /* we want the GC to sweep it */
-     _caffc_exception = caffc_null;
+    /* we want the GC to sweep it */
+    _caffc_exception = caffc_null;
 
-     exit(1);
-   }
+    exit(1);
+  }
 
   _caffc_stack_frame_unregister(&_caffc_locals);
 
 return result;
 }
-        """);
+            """);
     }
 
     @Test
@@ -94,6 +99,10 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
+  if (_caffc_exception) {
+    goto mainUnhandledException;
+  }
+
   /* FIXME: add <entrypoint> as a caffc.str */
   _caffc_stack_frame_register(caffc_null, _caffc_locals, 1);
 
@@ -108,23 +117,24 @@ int main(int argc, char* argv[]) {
   }
 
   main_main(arr);
-   if (_caffc_exception) {
-     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
-     if (_caffc_exception_msg) {
-       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
-     }
+  if (_caffc_exception) {
+    mainUnhandledException:
+    caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+    if (_caffc_exception_msg) {
+      printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+    }
 
-     /* we want the GC to sweep it */
-     _caffc_exception = caffc_null;
+    /* we want the GC to sweep it */
+    _caffc_exception = caffc_null;
 
-     exit(1);
-   }
+    exit(1);
+  }
 
-   _caffc_stack_frame_unregister(&_caffc_locals);
+  _caffc_stack_frame_unregister(&_caffc_locals);
 
 return 0;
 }
-        """);
+            """);
     }
 
     @Test
@@ -151,26 +161,31 @@ int main(int argc, char* argv[]) {
   atexit(caffc_done);
   caffc_init();
 
+  if (_caffc_exception) {
+    goto mainUnhandledException;
+  }
+
   /* FIXME: add <entrypoint> as a caffc.str */
   _caffc_stack_frame_register(caffc_null, caffc_null, 0);
 
   result = main_main();
-   if (_caffc_exception) {
-     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
-     if (_caffc_exception_msg) {
-       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
-     }
+  if (_caffc_exception) {
+    mainUnhandledException:
+    caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
+    if (_caffc_exception_msg) {
+      printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
+    }
 
-     /* we want the GC to sweep it */
-     _caffc_exception = caffc_null;
+    /* we want the GC to sweep it */
+    _caffc_exception = caffc_null;
 
-     exit(1);
-   }
+    exit(1);
+  }
 
-   _caffc_stack_frame_unregister(caffc_null);
+  _caffc_stack_frame_unregister(caffc_null);
 
 return result;
 }
-        """);
+            """);
     }
 }

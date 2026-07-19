@@ -10,7 +10,7 @@ import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Interface;
 import com.germaniumhq.caffc.compiler.model.Parameter;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 
 import java.util.Arrays;
@@ -49,8 +49,8 @@ public class AstUtil {
                 result = findClazzField(c, token);
             } else if (result instanceof Function f) {
                 result = findFunctionField(f, token);
-            } else if (result instanceof VariableDeclaration vd) {
-                result = findVariableDeclarationField(vd, token);
+            } else if (result instanceof LocalVariable localVariable) {
+                result = findLocalVariable(localVariable, token);
             } else {
                 throw new IllegalArgumentException("unsupported AstItem in chain for " + token + ": " + result);
             }
@@ -120,9 +120,9 @@ public class AstUtil {
             }
         }
 
-        VariableDeclaration variableDeclaration = f._variables.get(token);
-        if (variableDeclaration != null) {
-            return variableDeclaration;
+        LocalVariable localVariable = f._variables.get(token);
+        if (localVariable != null) {
+            return localVariable;
         }
 
         if (f.definition.generics != null) {
@@ -132,7 +132,7 @@ public class AstUtil {
         return null;
     }
 
-    private static AstItem findVariableDeclarationField(VariableDeclaration c, String token) {
+    private static AstItem findLocalVariable(LocalVariable c, String token) {
         Symbol typeSymbol = c.typeSymbol();
 
         if (typeSymbol instanceof ClassDefinition classDefinition) {

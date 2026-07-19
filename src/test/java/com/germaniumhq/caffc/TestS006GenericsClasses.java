@@ -4,7 +4,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Parameter;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -185,7 +185,7 @@ public class TestS006GenericsClasses {
                 }
         );
 
-        VariableDeclaration parameter = AstUtil.findAstItem(ast, "A.classFunction.v");
+        LocalVariable parameter = AstUtil.findAstItem(ast, "A.classFunction.v");
         Assertions.assertNotNull(parameter);
         Assertions.assertEquals(TypeName.OBJ, parameter.typeName());
     }
@@ -212,7 +212,7 @@ public class TestS006GenericsClasses {
                 }
         );
 
-        VariableDeclaration parameter = AstUtil.findAstItem(ast, "A.classFunction.v");
+        LocalVariable parameter = AstUtil.findAstItem(ast, "A.classFunction.v");
         Assertions.assertNotNull(parameter);
         Assertions.assertEquals(TypeName.STR, parameter.typeName());
     }

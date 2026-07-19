@@ -175,6 +175,10 @@ Set `CAFFC_DEBUG_TEMPLATES` environment variable to see template names in output
 
 The `xlC` profile uses the `ibmcom/xlc-ce` Docker image (ppc64le-only). On x86_64 hosts, `qemu-user-static` must be installed and up to date.
 
+Docker profiles (`gcc_docker`, `xlC`, `clang_docker`, `gcc_asan_docker`) use a shared container per profile — container is started once, all tests run via `docker exec`, then container is stopped. The `docker_ready_command` config field can override the default `true` readiness probe (used by xlC which needs `which xlC` to wait for the compiler to initialize under QEMU emulation).
+
+`gcc_docker` runs with libasan; `hello-world-native` is expected to fail there (asan detects an issue in the native block).
+
 ## Collections
 
 Core collection interfaces and implementations live in `templates/common/default/caffc/collection.caffc`.
@@ -272,6 +276,17 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 ## For-In Loops
 
 `for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
+
+## Global Variables
+
+Global variable initializers are moved to a `module_init()` function after type resolution:
+
+- **`module_init` is auto-generated** when global vars exist — creates synthetic compilation unit at `{module}_module_init.caffc`
+- **`module_init` is NOT generated** when there are no global vars
+- **Augmented if exists** — if user defines `module_init`, global var init is prepended to it
+- **C function signature**: `{module}_module_init()` (e.g., `yolo_module_init`)
+- **Original compilation unit** contains only variable references, not init code
+- **For header tests**: use original unit path (header template renders module, not synthetic unit)
 
 ## Gotchas
 

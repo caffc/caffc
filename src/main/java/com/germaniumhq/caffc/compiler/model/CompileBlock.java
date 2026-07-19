@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public interface CompileBlock extends AstItem {
@@ -20,6 +21,10 @@ public interface CompileBlock extends AstItem {
 
         if (antlrCompileBlock.interfaceDefinition() != null) {
             return Interface.fromAntlr(unit, owner, antlrCompileBlock.interfaceDefinition());
+        }
+
+        if (antlrCompileBlock.variableDeclarations() != null) {
+            return GlobalVariableDeclarations.fromAntlr(unit, unit.module, antlrCompileBlock.variableDeclarations());
         }
 
         CaffcCompiler.get().fatal(SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrCompileBlock),

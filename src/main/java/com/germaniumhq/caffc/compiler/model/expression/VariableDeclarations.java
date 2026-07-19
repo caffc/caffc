@@ -16,19 +16,19 @@ public final class VariableDeclarations {
             AstItem owner,
             caffcParser.VariableDeclarationsContext variableDeclarationsContext) {
 
-        List<VariableDeclaration> result = new ArrayList<>();
+        List<LocalVariable> result = new ArrayList<>();
 
         SymbolSearch symbolSearch = SymbolSearch.fromAntlr(unit, variableDeclarationsContext.varType());
 
         for (caffcParser.VariableDeclarationContext variableDeclarationContext: variableDeclarationsContext.variableDeclaration()) {
             result.add(
-                VariableDeclaration.fromAntlr(unit, owner, symbolSearch, variableDeclarationContext));
+                LocalVariable.fromAntlr(unit, owner, symbolSearch, variableDeclarationContext));
         }
 
         Function function = AstItem.findParentOrSelf(owner, Function.class);
 
-        for (VariableDeclaration variableDeclaration: result) {
-            function.registerVariable(variableDeclaration);
+        for (LocalVariable localVariable : result) {
+            function.registerVariable(localVariable);
         }
 
         return (List<T>) result;

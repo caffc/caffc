@@ -1,0 +1,25 @@
+module main
+
+str x = "hello world"
+ArrayList<str> items = new ArrayList<str>(4)
+ArrayList<str> nullArray
+
+module_init() {
+  print("module initialized")
+
+  items.add("this")
+  items.add("is")
+  items.add("a")
+  items.add("test")
+}
+
+main(str[] args) -> i32 {
+  print(x)
+
+  for str item in items {
+    print(item)
+  }
+
+  return 0
+}
+

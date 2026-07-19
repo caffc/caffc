@@ -3,6 +3,10 @@ target
 dependency-reduced-pom.xml
 __pycache__
 *.jar
+.obsidian
+.settings
+.classpath
+.project
 
 # Entries below this point are managed by Please (DO NOT EDIT)
 plz-out

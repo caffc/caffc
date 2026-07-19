@@ -7,14 +7,14 @@
  * Function to be called to manually bootstrap the GC structures.
  * #public_api
  */
-void caffc_init();
+void caffc_memory_init();
 
 /**
  * Destroy the GC structures. To be called atexit() to ensure no leaks
  * remain.
  * #public_api
  */
-void caffc_done();
+void caffc_memory_done();
 
 /**
  * Allocate a new object.

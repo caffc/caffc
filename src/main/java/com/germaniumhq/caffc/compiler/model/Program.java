@@ -1,7 +1,9 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.asm.vars.AsmGlobalExceptionVar;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
+import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
@@ -230,5 +232,48 @@ public class Program implements ModuleProvider, AstItem, Scope {
         }
 
         return strSymbol.typeId();
+    }
+
+    @UsedInTemplate("constants_c.peb")
+    public List<Module> getModuleInitsSorted() {
+        List<Module> result = new ArrayList<>();
+        for (Module module: modules.values()) {
+            if (module.hasFunction("module_init")) {
+                result.add(module);
+            }
+        }
+
+        // Simple dependency sort: if A uses B, B should come first.
+        // Two nested for loops, ignoring circular dependencies.
+        for (int i = 0; i < result.size(); i++) {
+            for (int j = i + 1; j < result.size(); j++) {
+                Module a = result.get(i);
+                Module b = result.get(j);
+                if (a.usedModules.contains(b)) {
+                    result.set(i, b);
+                    result.set(j, a);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @UsedInTemplate("constants_c.peb") // also constants_h.peb for count
+    public List<Object> getGlobalVariables() {
+        List<Object> result = new ArrayList<>();
+
+        result.add(AsmGlobalExceptionVar.INSTANCE);
+
+        for (Module module: modules.values()) {
+            for (GlobalVariable globalVariable: module.globalVariables.values()) {
+                if (globalVariable.typeName().dataType == DataType.OBJECT ||
+                    globalVariable.typeName().dataType == DataType.ARRAY) {
+                    result.add(globalVariable);
+                }
+            }
+        }
+
+        return result;
     }
 }

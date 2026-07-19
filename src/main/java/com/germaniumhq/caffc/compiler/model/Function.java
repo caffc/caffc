@@ -9,14 +9,13 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmZeroClear;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmConstant;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
-import com.germaniumhq.caffc.compiler.model.expression.VariableDeclaration;
+import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
 import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
-import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -48,11 +47,11 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
     /**
      * These are normal variables the user has declared.
      */
-    public Map<String, VariableDeclaration> _variables = new LinkedHashMap<>();
+    public Map<String, LocalVariable> _variables = new LinkedHashMap<>();
 
     private boolean isResolved;
 
-    private ArrayList<VariableDeclaration> objVariablesCache;
+    private ArrayList<LocalVariable> objVariablesCache;
     private ArrayList<Parameter> objParametersCache;
     private ArrayList<StructReturnVariableDefinition> objStructVariables;
 
@@ -111,9 +110,9 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
         }
 
         // read the return values and add them as parameters if needed
-        List<VariableDeclaration> variableDefinitions =
+        List<LocalVariable> variableDefinitions =
             function.definition.antlrFillReturnType(unit, function, ctx.returnType());
-        for (VariableDeclaration variableDefinition: variableDefinitions) {
+        for (LocalVariable variableDefinition: variableDefinitions) {
             function._variables.put(variableDefinition.name, variableDefinition);
         }
 
@@ -192,24 +191,24 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
             }
         }
 
-        VariableDeclaration variableDeclaration = this._variables.get(name);
-        if (variableDeclaration != null) {
-            return variableDeclaration;
+        LocalVariable localVariable = this._variables.get(name);
+        if (localVariable != null) {
+            return localVariable;
         }
 
         return null;
     }
 
-public void registerVariable(VariableDeclaration variableDeclaration) {
-        Symbol existing = this.resolve(variableDeclaration.name);
+public void registerVariable(LocalVariable localVariable) {
+        Symbol existing = this.resolve(localVariable.name);
 
         if (existing != null) {
-            CaffcCompiler.get().error(variableDeclaration,
-                    "variable " + variableDeclaration.name + " shadows " +
+            CaffcCompiler.get().error(localVariable,
+                    "variable " + localVariable.name + " shadows " +
                         Symbol.debugInfo(existing));
         }
 
-        this._variables.put(variableDeclaration.name, variableDeclaration);
+        this._variables.put(localVariable.name, localVariable);
     }
 
     /**
@@ -217,22 +216,22 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
      * might be reused in a different context. For example `i32 i` in multiple `for` iterations.
      * Or a multi-return struct that will get reused for multiple invocations.
      * <p>
-     * This will create a VariableDeclaration with the given name and type. If the type is
+     * This will create a LocalVariable with the given name and type. If the type is
      * conflicting, an error will be raised.
      *
      * @return
      */
-    public VariableDeclaration ensureVariableExists(AstItem owner, String name, Symbol resolvedType) {
+    public LocalVariable ensureVariableExists(AstItem owner, String name, Symbol resolvedType) {
         Symbol existing = this.resolve(name);
 
-        if (existing != null && !(existing instanceof VariableDeclaration)) {
+        if (existing != null && !(existing instanceof LocalVariable)) {
             CaffcCompiler.get().error(owner,
                 String.format("conflicting types: %s with type %s attempts to shadow %s %s " +
                         "that's not a variable declaration",
                     name, resolvedType, Symbol.typeOfSymbol(existing), name));
         }
 
-        VariableDeclaration existingVariable = (VariableDeclaration) existing;
+        LocalVariable existingVariable = (LocalVariable) existing;
 
         if (existingVariable != null &&
             !existingVariable.typeSymbol().equals(resolvedType.typeSymbol())) {
@@ -245,7 +244,7 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
             return existingVariable;
         }
 
-        existingVariable = VariableDeclaration.fromEnsure(owner, resolvedType, name);
+        existingVariable = LocalVariable.fromEnsure(owner, resolvedType, name);
         this._variables.put(name, existingVariable);
 
         // this is a synthetic variable created after the resolving is already done
@@ -272,8 +271,8 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
         // because resolving may fail if a variable shadows its type name
         checkVariableNameCollisions();
 
-        for (VariableDeclaration variableDeclaration: this._variables.values()) {
-            variableDeclaration.recurseResolveTypes();
+        for (LocalVariable localVariable : this._variables.values()) {
+            localVariable.recurseResolveTypes();
         }
 
         for (Statement statement: this.statements) {
@@ -298,11 +297,11 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
         }
 
         // Check local variables for name collisions within the same module
-        for (VariableDeclaration variableDeclaration : this._variables.values()) {
-            Symbol collision = ownModule.resolveWithAnyName(variableDeclaration.name);
+        for (LocalVariable localVariable : this._variables.values()) {
+            Symbol collision = ownModule.resolveWithAnyName(localVariable.name);
             if (collision != null) {
-                CaffcCompiler.get().fatal(variableDeclaration,
-                        "variable " + variableDeclaration.name + " shadows " +
+                CaffcCompiler.get().fatal(localVariable,
+                        "variable " + localVariable.name + " shadows " +
                             Symbol.typeOfSymbol(collision) + " " + collision.name() +
                             " defined at " + CaffcCompiler.fileLocation(collision));
             }
@@ -333,17 +332,17 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
     }
 
     // used for templating, returns only the variables that are objects or arrays
-    public Collection<VariableDeclaration> objVariables() {
+    public Collection<LocalVariable> objVariables() {
         if (objVariablesCache != null) {
             return objVariablesCache;
         }
 
         objVariablesCache = new ArrayList<>();
 
-        for (VariableDeclaration variableDeclaration: this._variables.values()) {
-            if (variableDeclaration.typeName().dataType == DataType.OBJECT ||
-                    variableDeclaration.typeName().dataType == DataType.ARRAY) {
-                objVariablesCache.add(variableDeclaration);
+        for (LocalVariable localVariable : this._variables.values()) {
+            if (localVariable.typeName().dataType == DataType.OBJECT ||
+                    localVariable.typeName().dataType == DataType.ARRAY) {
+                objVariablesCache.add(localVariable);
             }
         }
 
@@ -374,12 +373,12 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
 
         objStructVariables = new ArrayList<>();
 
-        for (VariableDeclaration variableDeclaration: this._variables.values()) {
-            if (variableDeclaration.typeName().dataType == DataType.STRUCT) {
-                Struct struct = (Struct) variableDeclaration.typeSymbol;
+        for (LocalVariable localVariable : this._variables.values()) {
+            if (localVariable.typeName().dataType == DataType.STRUCT) {
+                Struct struct = (Struct) localVariable.typeSymbol;
                 for (Field field: struct.getGcManagedFields()) {
                     objStructVariables.add(new StructReturnVariableDefinition(
-                        variableDeclaration,
+                        localVariable,
                         field.name,
                         field.typeSymbol
                     ));
@@ -403,7 +402,7 @@ public void registerVariable(VariableDeclaration variableDeclaration) {
     }
 
     @UsedInTemplate("ge_stack_frame_register.peb")
-    public Collection<VariableDeclaration> variables() {
+    public Collection<LocalVariable> variables() {
         return this._variables.values();
     }
 

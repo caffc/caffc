@@ -16,7 +16,7 @@ compileBlock
     | function
     | classDefinition
     | interfaceDefinition
-    // | variableDeclaration
+    | variableDeclarations
     // | block
     ;
 
