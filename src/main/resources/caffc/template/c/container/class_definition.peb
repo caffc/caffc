@@ -15,7 +15,11 @@ typedef struct {{ ctx.typeName | c_name }}_struct {
     /* primitive types */
 {%- for field in ctx.fields %}
     {%- if field.typeName.isPrimitive %}
+    {%- if field.name == "_caffc_data" and field.typeName.name == 'ptr' and ctx.tags.has("caffc_array") %}
+    /* _caffc_data[] is declared later */
+    {%- else %}
     {{ field.typeName | c_name }} {{ field.name }};
+    {%- endif %}
     {%- endif %}
 {%- endfor %}
 

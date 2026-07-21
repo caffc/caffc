@@ -5,7 +5,17 @@ native {
 }
 
 print(str what) {
+  if what == null {
+    str n = "null"
+    _print(n._caffc_data)
+    return
+  }
+
+  _print(what._caffc_data)
+}
+
+_print(ptr data) {
   native {
-    printf("%s\n", what->_caffc_data);
+    printf("%s\n", (char*) data);
   }
 }
