@@ -77,6 +77,7 @@ _caffc_str_size(i32 size) -> i32 {
 #public #caffc_array("caffc_u8")
 class str implements HasHash {
   i32 _byte_length   // size in bytes, including nul byte. this only holds ASCII strings
+  ptr _caffc_data    // really declared as an caffc_u8[] in the C code
 
   constructor(i32 size) {
     if size <= 0 {
