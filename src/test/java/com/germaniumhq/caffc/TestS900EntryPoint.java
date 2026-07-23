@@ -52,8 +52,8 @@ int main(int argc, char* argv[]) {
   }
 
   result = main_main(arr);
+  mainUnhandledException:
   if (_caffc_exception) {
-    mainUnhandledException:
     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
     if (_caffc_exception_msg) {
       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
@@ -117,8 +117,8 @@ int main(int argc, char* argv[]) {
   }
 
   main_main(arr);
+  mainUnhandledException:
   if (_caffc_exception) {
-    mainUnhandledException:
     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
     if (_caffc_exception_msg) {
       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
@@ -169,8 +169,8 @@ int main(int argc, char* argv[]) {
   _caffc_stack_frame_register(caffc_null, caffc_null, 0);
 
   result = main_main();
+  mainUnhandledException:
   if (_caffc_exception) {
-    mainUnhandledException:
     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
     if (_caffc_exception_msg) {
       printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);

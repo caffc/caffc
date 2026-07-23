@@ -123,8 +123,8 @@ public class TestS102Exceptions {
         CodeAssertsStr.assertCodeContains(code,
             """
             main_main();
+            mainUnhandledException:
             if (_caffc_exception) {
-              mainUnhandledException:
               caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
               if (_caffc_exception_msg) {
                 printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
