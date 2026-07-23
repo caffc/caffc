@@ -428,9 +428,9 @@ BUILTIN_PROFILES = {
 }
 
 
-def load_profiles_from_dir(profiles_dir: str) -> Dict[str, Profile]:
+def load_profiles_from_dir(profiles_dir: str, include_builtins: bool = True) -> Dict[str, Profile]:
     """Load profile YAML files from the profiles/ directory."""
-    profiles = dict(BUILTIN_PROFILES)
+    profiles = dict(BUILTIN_PROFILES) if include_builtins else {}
     profile_path = Path(profiles_dir)
     if not profile_path.exists():
         return profiles
@@ -1080,6 +1080,8 @@ Command overrides (useful for Docker/EMulation):
     parser.add_argument("tests", nargs="*", help="Test names to run (default: all)")
     parser.add_argument("-p", "--profile", action="append", default=[],
                         help="Profile name or path to profile YAML file (repeatable, comma-separated, default: gcc)")
+    parser.add_argument("--all", action="store_true",
+                        help="Run tests against all profiles in the profiles/ directory")
     parser.add_argument("--profiles-dir", default="profiles",
                         help="Directory to load custom profiles from (default: profiles/)")
     parser.add_argument("-C", "--caffc-cmd", default="",
@@ -1128,6 +1130,11 @@ Command overrides (useful for Docker/EMulation):
 
     # Load all available profiles from profiles/ directory
     profiles = load_profiles_from_dir(os.path.join(base_dir, args.profiles_dir))
+
+    # If --all is set, expand to all available profiles (disk-only, no builtins)
+    if args.all:
+        profiles = load_profiles_from_dir(os.path.join(base_dir, args.profiles_dir), include_builtins=False)
+        profile_specs = list(profiles.keys())
 
     # Resolve each profile spec to a Profile object with display name
     resolved_profiles: List[Tuple[str, Profile]] = []  # (display_name, Profile)
