@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
   {%- endif %}
 
   {% if ctx.definition.returnType.typeSymbol.name != "void" %}result = {% endif %}{{ ctx.definition.module }}_{{ ctx.definition.name }}({% if not ctx.definition.parameters.isEmpty() %}arr{% endif %});
+  mainUnhandledException:
   if (_caffc_exception) {
-    mainUnhandledException:
     caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
     if (_caffc_exception_msg) {
       printf("Uncaught exception: %s\n", _caffc_exception_msg->_caffc_data);
