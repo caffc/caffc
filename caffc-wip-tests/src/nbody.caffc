@@ -107,16 +107,14 @@ class NBodySystem {
 }
 
 
-final class Body {
-   static final f64 PI = 3.141592653589793;
-   static final f64 SOLAR_MASS = 4 * PI * PI;
-   static final f64 DAYS_PER_YEAR = 365.24;
+class Body {
+   static f64 PI = 3.141592653589793;
+   static f64 SOLAR_MASS = 4 * PI * PI;
+   static f64 DAYS_PER_YEAR = 365.24;
 
-   public f64 x, y, z, vx, vy, vz, mass;
+   f64 x, y, z, vx, vy, vz, mass;
 
-   public Body(){}
-
-   static Body jupiter(){
+   static jupiter() -> Body {
       Body p = new Body();
       p.x = 4.84143144246472090e+00;
       p.y = -1.16032004402742839e+00;
@@ -128,7 +126,7 @@ final class Body {
       return p;
    }
 
-   static Body saturn(){
+   static saturn() -> Body {
       Body p = new Body();
       p.x = 8.34336671824457987e+00;
       p.y = 4.12479856412430479e+00;
@@ -152,7 +150,7 @@ final class Body {
       return p;
    }
 
-   static Body neptune(){
+   static neptune() -> Body {
       Body p = new Body();
       p.x = 1.53796971148509165e+01;
       p.y = -2.59193146099879641e+01;
@@ -164,16 +162,18 @@ final class Body {
       return p;
    }
 
-   static Body sun(){
+   static sun() -> Body {
       Body p = new Body();
       p.mass = SOLAR_MASS;
+
       return p;
    }
 
-   Body offsetMomentum(f64 px, f64 py, f64 pz){
+   offsetMomentum(f64 px, f64 py, f64 pz) -> Body {
       vx = -px / SOLAR_MASS;
       vy = -py / SOLAR_MASS;
       vz = -pz / SOLAR_MASS;
+
       return this;
    }
 }
