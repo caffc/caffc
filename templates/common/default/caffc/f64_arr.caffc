@@ -10,25 +10,43 @@ _caffc_f64_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * An array of 64-bit doubles. This is the implementation
  * behind the f64[].
  */
-#caffc_array("caffc_f64")
+#public #caffc_array("caffc_f64")
 class f64_arr {
   u32 size
+  ptr _caffc_data    // really declared as an caffc_f64[] in the C code
 
+  #public
   constructor(i32 size) {
     _this.size = size
   }
 
+  /*
+   * Sets the value at the given index.
+   */
+  #public
   set(i32 index, f64 value) {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in set operation", null)
+    }
+
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
+  /*
+   * Gets the value at the given index.
+   */
+  #public
   get(i32 index) -> f64 {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in get operation", null)
+    }
+
     f64 result
 
     native {

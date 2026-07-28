@@ -10,25 +10,43 @@ _caffc_f32_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * An array of 32-bit floats. This is the implementation
  * behind the f32[].
  */
-#caffc_array("caffc_f32")
+#public #caffc_array("caffc_f32")
 class f32_arr {
   u32 size
+  ptr _caffc_data    // really declared as an caffc_f32[] in the C code
 
+  #public
   constructor(i32 size) {
     _this.size = size
   }
 
+  /*
+   * Sets the value at the given index.
+   */
+  #public
   set(i32 index, f32 value) {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in set operation", null)
+    }
+
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
+  /*
+   * Gets the value at the given index.
+   */
+  #public
   get(i32 index) -> f32 {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in get operation", null)
+    }
+
     f32 result
 
     native {
