@@ -1,0 +1,317 @@
+module main
+
+use main.asserts
+
+class Item {
+  i32 value
+
+  constructor(i32 value) {
+    _this.value = value
+  }
+}
+
+expectGetBounds(str message) {
+  print(message)
+  exit(1)
+}
+
+testU8Bounds() {
+  u8[] arr = new u8[2]
+  arr[0] = 10
+  arr[1] = 20
+  assertTrue(arr[0] == 10, "u8 valid get 0")
+  assertTrue(arr[1] == 20, "u8 valid get 1")
+
+  i32 threw = 0
+  try {
+    u8 x = arr[2]
+    expectGetBounds("u8 get OOB should throw")
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "u8 get OOB message")
+  }
+  assertTrue(threw == 1, "u8 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[2] = 30
+    expectGetBounds("u8 set OOB should throw")
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "u8 set OOB message")
+  }
+  assertTrue(threw == 1, "u8 set OOB should throw")
+
+  threw = 0
+  try {
+    u8 x = arr[-1]
+    expectGetBounds("u8 negative get should throw")
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "u8 negative get message")
+  }
+  assertTrue(threw == 1, "u8 negative get should throw")
+}
+
+testI8Bounds() {
+  i8[] arr = new i8[1]
+  arr[0] = -5
+  assertTrue(arr[0] == -5, "i8 valid get")
+
+  i32 threw = 0
+  try {
+    i8 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "i8 get OOB message")
+  }
+  assertTrue(threw == 1, "i8 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 1
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "i8 set OOB message")
+  }
+  assertTrue(threw == 1, "i8 set OOB should throw")
+}
+
+testU16Bounds() {
+  u16[] arr = new u16[1]
+  arr[0] = 1000
+  assertTrue(arr[0] == 1000, "u16 valid get")
+
+  i32 threw = 0
+  try {
+    u16 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "u16 get OOB message")
+  }
+  assertTrue(threw == 1, "u16 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "u16 set OOB message")
+  }
+  assertTrue(threw == 1, "u16 set OOB should throw")
+}
+
+testI16Bounds() {
+  i16[] arr = new i16[1]
+  arr[0] = -1000
+  assertTrue(arr[0] == -1000, "i16 valid get")
+
+  i32 threw = 0
+  try {
+    i16 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "i16 get OOB message")
+  }
+  assertTrue(threw == 1, "i16 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "i16 set OOB message")
+  }
+  assertTrue(threw == 1, "i16 set OOB should throw")
+}
+
+testU32Bounds() {
+  u32[] arr = new u32[1]
+  arr[0] = 4000000000
+  assertTrue(arr[0] == 4000000000, "u32 valid get")
+
+  i32 threw = 0
+  try {
+    u32 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "u32 get OOB message")
+  }
+  assertTrue(threw == 1, "u32 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "u32 set OOB message")
+  }
+  assertTrue(threw == 1, "u32 set OOB should throw")
+}
+
+testI32Bounds() {
+  i32[] arr = new i32[1]
+  arr[0] = -12345
+  assertTrue(arr[0] == -12345, "i32 valid get")
+
+  i32 threw = 0
+  try {
+    i32 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "i32 get OOB message")
+  }
+  assertTrue(threw == 1, "i32 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "i32 set OOB message")
+  }
+  assertTrue(threw == 1, "i32 set OOB should throw")
+}
+
+testU64Bounds() {
+  u64[] arr = new u64[1]
+  arr[0] = 42
+  assertTrue(arr[0] == 42, "u64 valid get")
+
+  i32 threw = 0
+  try {
+    u64 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "u64 get OOB message")
+  }
+  assertTrue(threw == 1, "u64 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "u64 set OOB message")
+  }
+  assertTrue(threw == 1, "u64 set OOB should throw")
+}
+
+testI64Bounds() {
+  i64[] arr = new i64[1]
+  arr[0] = -42
+  assertTrue(arr[0] == -42, "i64 valid get")
+
+  i32 threw = 0
+  try {
+    i64 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "i64 get OOB message")
+  }
+  assertTrue(threw == 1, "i64 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "i64 set OOB message")
+  }
+  assertTrue(threw == 1, "i64 set OOB should throw")
+}
+
+testF32Bounds() {
+  f32[] arr = new f32[1]
+  arr[0] = 1.5
+
+  i32 threw = 0
+  try {
+    f32 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "f32 get OOB message")
+  }
+  assertTrue(threw == 1, "f32 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2.5
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "f32 set OOB message")
+  }
+  assertTrue(threw == 1, "f32 set OOB should throw")
+}
+
+testF64Bounds() {
+  f64[] arr = new f64[1]
+  arr[0] = 1.5
+
+  i32 threw = 0
+  try {
+    f64 x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "f64 get OOB message")
+  }
+  assertTrue(threw == 1, "f64 get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = 2.5
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "f64 set OOB message")
+  }
+  assertTrue(threw == 1, "f64 set OOB should throw")
+}
+
+testObjBounds() {
+  Item[] arr = new Item[1]
+  arr[0] = new Item(7)
+  assertTrue(arr[0].value == 7, "obj valid get")
+
+  i32 threw = 0
+  try {
+    Item x = arr[1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "obj get OOB message")
+  }
+  assertTrue(threw == 1, "obj get OOB should throw")
+
+  threw = 0
+  try {
+    arr[1] = new Item(8)
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in set operation", e.message(), "obj set OOB message")
+  }
+  assertTrue(threw == 1, "obj set OOB should throw")
+
+  threw = 0
+  try {
+    Item x = arr[-1]
+  } catch (Exception e) {
+    threw = 1
+    assertEqual("invalid index in get operation", e.message(), "obj negative get message")
+  }
+  assertTrue(threw == 1, "obj negative get should throw")
+}
+
+main() {
+  testU8Bounds()
+  testI8Bounds()
+  testU16Bounds()
+  testI16Bounds()
+  testU32Bounds()
+  testI32Bounds()
+  testU64Bounds()
+  testI64Bounds()
+  testF32Bounds()
+  testF64Bounds()
+  testObjBounds()
+  print("All array bounds tests passed!")
+  exit(0)
+}

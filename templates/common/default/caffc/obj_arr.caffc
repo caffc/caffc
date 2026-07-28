@@ -11,7 +11,7 @@ _caffc_obj_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * Class that contains a bunch of objects. This is managed by the
  * garbage collector, including the references it contains.
  *
@@ -30,13 +30,27 @@ _caffc_obj_arr_size(i32 size) -> i32 {
         }
     }
 
+    /*
+     * Sets the value at the given index.
+     */
     #public set(i32 index, T value) {
+        if (u32) index >= (u32) _this._caffc_array_size {
+            throw new Exception("invalid index in set operation", null)
+        }
+
         native {
             _this->_caffc_data[index] = (caffc_obj*) value;
         }
     }
 
+    /*
+     * Gets the value at the given index.
+     */
     #public get(i32 index) -> T {
+        if (u32) index >= (u32) _this._caffc_array_size {
+            throw new Exception("invalid index in get operation", null)
+        }
+
         T result
 
         native {

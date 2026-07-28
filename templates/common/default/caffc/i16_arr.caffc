@@ -10,25 +10,43 @@ _caffc_i16_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * An array of signed short ints. This is the implementation
  * behind the i16[].
  */
-#caffc_array("caffc_i16")
+#public #caffc_array("caffc_i16")
 class i16_arr {
   u32 size
+  ptr _caffc_data    // really declared as an caffc_i16[] in the C code
 
+  #public
   constructor(i32 size) {
     _this.size = size
   }
 
+  /*
+   * Sets the value at the given index.
+   */
+  #public
   set(i32 index, i16 value) {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in set operation", null)
+    }
+
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
+  /*
+   * Gets the value at the given index.
+   */
+  #public
   get(i32 index) -> i16 {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in get operation", null)
+    }
+
     i16 result
 
     native {

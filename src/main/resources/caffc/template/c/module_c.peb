@@ -12,16 +12,15 @@ global variables
 {{ globalVar.typeSymbol | c_type }} {{ globalVar.name }};
 {%- endfor %}
 
-{# we create a generic ccaf array, and we patch its header for NEW constructs #}
+{# we create a generic caffc array, and we patch its header for NEW constructs #}
 /* **************************************************************
 array constructors
 ************************************************************** */
 {%- for array in ctx.registeredArrays %}
 {%- if array.arrayDimensions == 1 %}
 
-{%- if array.childType.dataType == "PRIMITIVE" -%}
-#define {{ array | c_name }}_newa(size) {{ array | c_name }}_new(size)
-{%- else %}
+{# primitives arrays are actually just a `#define` on the actual array type constructor #}
+{%- if array.childType.dataType != "PRIMITIVE" -%}
 {{ array | c_name }}* {{ array | c_name }}_newa(caffc_i32 size) {
     caffc_obj_arr* _this = caffc_obj_arr_new(size);
     /* _this->_caffc_contained_type_id = {{ array.childType }}; {{ array.childType }} */

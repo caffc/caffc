@@ -10,25 +10,43 @@ _caffc_u32_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * An array of unsigned 32-bit ints. This is the implementation
  * behind the u32[].
  */
-#caffc_array("caffc_u32")
+#public #caffc_array("caffc_u32")
 class u32_arr {
   u32 size
+  ptr _caffc_data    // really declared as an caffc_u32[] in the C code
 
+  #public
   constructor(i32 size) {
     _this.size = size
   }
 
+  /*
+   * Sets the value at the given index.
+   */
+  #public
   set(i32 index, u32 value) {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in set operation", null)
+    }
+
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
+  /*
+   * Gets the value at the given index.
+   */
+  #public
   get(i32 index) -> u32 {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in get operation", null)
+    }
+
     u32 result
 
     native {
