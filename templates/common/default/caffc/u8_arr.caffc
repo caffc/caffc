@@ -10,25 +10,43 @@ _caffc_u8_arr_size(i32 size) -> i32 {
   return result
 }
 
-/**
+/*
  * An array of unsigned chars. This is the implementation
  * behind the u8[].
  */
-#caffc_array("caffc_u8")
+#public #caffc_array("caffc_u8")
 class u8_arr {
   u32 size
+  ptr _caffc_data    // really declared as an caffc_u8[] in the C code
 
+  #public
   constructor(i32 size) {
     _this.size = size
   }
 
+  /*
+   * Sets the value at the given index.
+   */
+  #public
   set(i32 index, u8 value) {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in set operation", null)
+    }
+
     native {
       _this->_caffc_data[index] = value;
     }
   }
 
+  /*
+   * Gets the value at the given index.
+   */
+  #public
   get(i32 index) -> u8 {
+    if (u32) index >= _this.size {
+      throw new Exception("invalid index in get operation", null)
+    }
+
     u8 result
 
     native {
@@ -38,3 +56,4 @@ class u8_arr {
     return result
   }
 }
+
