@@ -20,6 +20,9 @@
   default: /* should not be reached */
   {%- if f.returnType.name == "void" %}
     return; /* FIXME: throw an error, _this isn't a valid pointer */
+  {%- elseif f.returnType.typeName.dataType == "STRUCT" %}
+    {{ f.returnType | c_name }} _caffc_iface_default = {0};
+    return _caffc_iface_default; /* FIXME: throw an error, _this isn't a valid pointer */
   {%- else %}
     return 0; /* FIXME: throw an error, _this isn't a valid pointer */
   {%- endif %}

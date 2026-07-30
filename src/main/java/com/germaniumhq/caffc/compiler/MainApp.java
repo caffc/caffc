@@ -118,20 +118,28 @@ public class MainApp {
 
         List<CompilationUnit> compilationUnits = new ArrayList<>();
 
-        for (String file: caffcFolder.list()) {
-            try {
-                String stringPath = Paths.get(caffcFilesFolderString, file).toAbsolutePath().toString();
-                CompilationUnit unit = parseCaffcFile(program, stringPath);
+        try {
+            Files.walk(caffcFolder.toPath())
+                    .filter(path -> path.toString().endsWith(".caffc"))
+                    .filter(path -> Files.isRegularFile(path))
+                    .sorted()
+                    .forEach(path -> {
+                        try {
+                            CompilationUnit unit = parseCaffcFile(program, path.toAbsolutePath().toString());
 
-                if (CaffcCompiler.get().hasErrors) {
-                    throw new CancelCompilationException("compilation failed");
-                }
+                            if (CaffcCompiler.get().hasErrors) {
+                                throw new CancelCompilationException("compilation failed");
+                            }
 
-                compilationUnits.add(unit);
-            } catch (IOException e) {
-                CaffcCompiler.get().fatal(SourceLocation.fromFilePath(file),
-                        "I/O exception: " + e.getMessage());
-            }
+                            compilationUnits.add(unit);
+                        } catch (IOException e) {
+                            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(path.toString()),
+                                    "I/O exception: " + e.getMessage());
+                        }
+                    });
+        } catch (IOException e) {
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(caffcFilesFolderString),
+                    "I/O exception: " + e.getMessage());
         }
 
         return compilationUnits;

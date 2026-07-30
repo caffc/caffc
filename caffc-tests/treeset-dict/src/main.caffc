@@ -1,0 +1,95 @@
+module main
+
+use main.asserts
+
+testTreeSetDictU8ToU32() {
+  TreeSetDictU8ToU32 dict = new TreeSetDictU8ToU32(4)
+  assertTrue(dict.isEmpty(), "new U8ToU32 dict should be empty")
+  assertTrue(dict.size() == 0, "new U8ToU32 dict size should be 0")
+
+  u32 value
+  bool error
+
+  value, error = dict.get(10)
+  assertTrue(error == 1, "missing key should set error")
+  assertTrue(dict.containsKey(10) == 0, "missing key should not be contained")
+
+  dict.put(30, 300)
+  dict.put(10, 100)
+  dict.put(20, 200)
+
+  assertTrue(dict.isEmpty() == 0, "dict should not be empty after put")
+  assertTrue(dict.size() == 3, "dict size should be 3")
+
+  value, error = dict.get(10)
+  assertTrue(error == 0, "get(10) should succeed")
+  assertTrue(value == 100, "get(10) should return 100")
+
+  value, error = dict.get(20)
+  assertTrue(error == 0, "get(20) should succeed")
+  assertTrue(value == 200, "get(20) should return 200")
+
+  value, error = dict.get(30)
+  assertTrue(error == 0, "get(30) should succeed")
+  assertTrue(value == 300, "get(30) should return 300")
+
+  value, error = dict.get(15)
+  assertTrue(error == 1, "get(15) should miss")
+
+  dict.put(20, 250)
+  value, error = dict.get(20)
+  assertTrue(error == 0, "updated get(20) should succeed")
+  assertTrue(value == 250, "get(20) should return 250 after update")
+  assertTrue(dict.size() == 3, "size should stay 3 after update")
+
+  // Force grow past initial capacity 4
+  dict.put(40, 400)
+  dict.put(50, 500)
+  assertTrue(dict.size() == 5, "dict size should be 5 after grow")
+  value, error = dict.get(50)
+  assertTrue(error == 0, "get(50) after grow should succeed")
+  assertTrue(value == 500, "get(50) should return 500")
+  value, error = dict.get(10)
+  assertTrue(value == 100, "get(10) should still be 100 after grow")
+}
+
+testTreeSetDictU32ToU8() {
+  TreeSetDictU32ToU8 dict = new TreeSetDictU32ToU8(4)
+  assertTrue(dict.isEmpty(), "new U32ToU8 dict should be empty")
+
+  u8 value
+  bool error
+
+  value, error = dict.get(0x0104)
+  assertTrue(error == 1, "missing unicode key should set error")
+
+  dict.put(0x0104, 0xA1)
+  dict.put(0x20, 0x20)
+  dict.put(0x02D9, 0xFF)
+
+  assertTrue(dict.size() == 3, "U32ToU8 dict size should be 3")
+  assertTrue(dict.containsKey(0x0104) == 1, "should contain 0x0104")
+  assertTrue(dict.containsKey(0x9999) == 0, "should not contain 0x9999")
+
+  value, error = dict.get(0x0104)
+  assertTrue(error == 0, "get(0x0104) should succeed")
+  assertTrue(value == 0xA1, "get(0x0104) should return 0xA1")
+
+  value, error = dict.get(0x20)
+  assertTrue(error == 0, "get(0x20) should succeed")
+  assertTrue(value == 0x20, "get(0x20) should return 0x20")
+
+  value, error = dict.get(0x02D9)
+  assertTrue(error == 0, "get(0x02D9) should succeed")
+  assertTrue(value == 0xFF, "get(0x02D9) should return 0xFF")
+
+  dict.put(0x0104, 0xB1)
+  value, error = dict.get(0x0104)
+  assertTrue(value == 0xB1, "get(0x0104) should return updated 0xB1")
+}
+
+main() {
+  testTreeSetDictU8ToU32()
+  testTreeSetDictU32ToU8()
+  print("✅ \033[2mall good\033[0m")
+}

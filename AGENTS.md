@@ -289,15 +289,12 @@ Global variable initializers are moved to a `module_init()` function after type 
 - **For header tests**: use original unit path (header template renders module, not synthetic unit)
 
 ## Gotchas
-
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
 - **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
+- **Bitwise vs boolean** — bitwise ops use C syntax (`&`, `|`, `^`, `~`, `<<`, `>>`); boolean ops use words (`and`, `or`, `not`).
+- **No local shadowing** — locals cannot be redeclared in nested blocks; declare once at function scope and assign.
+- **Array `.size` is a field** — use `arr.size` (or `(i32) arr.size`), not `arr.size()`. `str.size()` is a method.
 - **`instanceof` syntax** — use `x not instanceof Y` (not `not x instanceof Y`).
-- **Exception handler returns zero for primitives** — the `Function.java` exception handler returns `0` for primitive return types and `null` for object types.
-- **`str` must `implements HasHash`** — just having `hash()` and `equals()` methods is not enough; the class must explicitly declare `implements HasHash` to be included in the virtual dispatch switch.
-- **Boxing classes must `implements HasHash`** — same rule applies.
-- **`null` is not a valid return for primitive types** — the exception handler returns `caffc_null` (a pointer) which causes compile errors for `f32`, `f64` etc. Fixed by checking `dataType == DataType.PRIMITIVE` in `Function.java`.
-
-## Cursor/Copilot Rules
-
-No Cursor or Copilot rules defined. Follow Java OpenJDK style and the project-specific conventions above.
+- **Exception / null returns** — handlers return `0` for primitives and `null` for objects; never return `null` for primitives (`f32`/`f64` etc.).
+- **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough.
+- **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.

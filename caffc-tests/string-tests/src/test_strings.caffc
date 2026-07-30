@@ -1,5 +1,7 @@
 module main
 
+use caffc.i18n as i18n
+
 test_add() {
   str a = "hello "
   str b = "world!"
@@ -36,9 +38,141 @@ test_compareTo() {
   assertTrue(a.compareTo(a) == 0, "compareTo error 3")
 }
 
+test_getCodePoint_ascii() {
+  str s = "abc"
+  u32 cp
+  i32 next
+
+  cp, next = s.getCodePoint(0)
+  assertTrue(cp == 97, "getCodePoint(0) should be 'a'")
+  assertTrue(next == 1, "next byte after 'a' should be 1")
+
+  cp, next = s.getCodePoint(1)
+  assertTrue(cp == 98, "getCodePoint(1) should be 'b'")
+  assertTrue(next == 2, "next byte after 'b' should be 2")
+
+  assertTrue(s.codePointsSize() == 3, "ASCII codePointsSize should equal byte size")
+  assertTrue(s.graphemeSize() == 3, "ASCII graphemeSize should equal codePointsSize")
+  assertTrue(s.size() == 3, "ASCII byte size should be 3")
+}
+
+test_getCodePoint_multibyte() {
+  // U+0104 LATIN CAPITAL LETTER A WITH OGONEK — UTF-8 C4 84
+  str s = "Ą"
+  u32 cp
+  i32 next
+
+  assertTrue(s.size() == 2, "Ą should be 2 UTF-8 bytes")
+  cp, next = s.getCodePoint(0)
+  assertTrue(cp == 0x0104, "getCodePoint should return U+0104")
+  assertTrue(next == 2, "next byte after Ą should be 2")
+  assertTrue(s.codePointsSize() == 1, "Ą should be one code point")
+  assertTrue(s.graphemeSize() == 1, "Ą should be one grapheme")
+}
+
+test_getCodePoint_mixed() {
+  // "aĄb" = 61 C4 84 62
+  str s = "aĄb"
+  u32 cp
+  i32 next
+
+  assertTrue(s.size() == 4, "aĄb should be 4 bytes")
+  assertTrue(s.codePointsSize() == 3, "aĄb should be 3 code points")
+
+  cp, next = s.getCodePoint(0)
+  assertTrue(cp == 97, "first code point should be 'a'")
+  assertTrue(next == 1, "after 'a' next is 1")
+
+  cp, next = s.getCodePoint(next)
+  assertTrue(cp == 0x0104, "second code point should be U+0104")
+  assertTrue(next == 3, "after Ą next is 3")
+
+  cp, next = s.getCodePoint(next)
+  assertTrue(cp == 98, "third code point should be 'b'")
+  assertTrue(next == 4, "after 'b' next is 4")
+}
+
+test_codepage_8859_2_registry() {
+  i18n.CodePageEncoding cp = i18n.getCodePage("8859-2")
+  assertTrue(cp != null, "getCodePage(8859-2) should return encoding")
+  assertEqual("8859-2", cp.name(), "code page name")
+  assertEqual("unicode.org", cp.vendor(), "code page vendor")
+}
+
+test_codepage_8859_2_ascii_roundtrip() {
+  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  u8[] bytes
+  bool error
+  i32 errorIndex
+  str decoded
+
+  bytes, error, errorIndex = cp.fromUtf8("Hello")
+  assertTrue(error == 0, "ASCII fromUtf8 should not error")
+  assertTrue((i32) bytes.size == 5, "ASCII fromUtf8 length")
+  assertTrue(bytes[0] == 'H', "byte 0 should be H")
+  assertTrue(bytes[4] == 'o', "byte 4 should be o")
+
+  decoded, error, errorIndex = cp.toUtf8(bytes)
+  assertTrue(error == 0, "ASCII toUtf8 should not error")
+  assertEqual("Hello", decoded, "ASCII roundtrip")
+}
+
+test_codepage_8859_2_latin2() {
+  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  u8[] bytes
+  bool error
+  i32 errorIndex
+  str decoded
+
+  // U+0104 LATIN CAPITAL LETTER A WITH OGONEK is 0xA1 in 8859-2
+  bytes, error, errorIndex = cp.fromUtf8("Ą")
+  assertTrue(error == 0, "Ą fromUtf8 should not error")
+  assertTrue((i32) bytes.size == 1, "Ą should encode to one byte")
+  assertTrue(bytes[0] == 0xA1, "Ą should encode to 0xA1")
+
+  decoded, error, errorIndex = cp.toUtf8(bytes)
+  assertTrue(error == 0, "0xA1 toUtf8 should not error")
+  assertEqual("Ą", decoded, "Ą roundtrip via 8859-2")
+
+  // mixed: aĄb
+  bytes, error, errorIndex = cp.fromUtf8("aĄb")
+  assertTrue(error == 0, "aĄb fromUtf8 should not error")
+  assertTrue((i32) bytes.size == 3, "aĄb should be 3 code-page bytes")
+  assertTrue(bytes[0] == 'a', "aĄb[0] should be a")
+  assertTrue(bytes[1] == 0xA1, "aĄb[1] should be 0xA1")
+  assertTrue(bytes[2] == 'b', "aĄb[2] should be b")
+
+  decoded, error, errorIndex = cp.toUtf8(bytes)
+  assertEqual("aĄb", decoded, "aĄb roundtrip")
+}
+
+test_codepage_8859_2_unmappable() {
+  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  u8[] bytes
+  bool error
+  i32 errorIndex
+
+  // ✅ is not in 8859-2
+  bytes, error, errorIndex = cp.fromUtf8("x✅y")
+  assertTrue(error == 1, "unmappable fromUtf8 should set error")
+  assertTrue(errorIndex == 1, "error should point at start of ✅")
+  assertTrue((i32) bytes.size == 3, "substitution keeps three output bytes")
+  assertTrue(bytes[0] == 'x', "first byte remains x")
+  assertTrue(bytes[1] == '?', "unmappable becomes ?")
+  assertTrue(bytes[2] == 'y', "last byte remains y")
+}
+
 main() {
   test_add()
   test_slice()
   test_indexOf()
+  test_compareTo()
+  test_getCodePoint_ascii()
+  test_getCodePoint_multibyte()
+  test_getCodePoint_mixed()
+  test_codepage_8859_2_registry()
+  test_codepage_8859_2_ascii_roundtrip()
+  test_codepage_8859_2_latin2()
+  test_codepage_8859_2_unmappable()
   print("✅ \033[2mall good\033[0m")
 }

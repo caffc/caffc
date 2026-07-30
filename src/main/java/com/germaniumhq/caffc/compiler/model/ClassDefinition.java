@@ -253,6 +253,20 @@ public class ClassDefinition implements
             f.recurseResolveTypes();
         }
 
+        // Multi-return methods that implement an interface must share the interface's
+        // return struct type so virtual dispatch C signatures match.
+        for (InterfaceDefinition interfaceDefinition : this.implementedInterfaces) {
+            for (FunctionDefinition interfaceFn : interfaceDefinition.functions) {
+                if (!(interfaceFn.returnType instanceof Struct)) {
+                    continue;
+                }
+                FunctionDefinition classFn = this.getFunction(interfaceFn.name);
+                if (classFn != null && classFn.returnType instanceof Struct) {
+                    classFn.returnType = interfaceFn.returnType;
+                }
+            }
+        }
+
         for (Field field: this.fields) {
             field.recurseResolveTypes();
         }

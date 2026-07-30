@@ -152,9 +152,14 @@ public class CodeAssertsStr {
 
         List<String> files = new ArrayList<>();
 
-        File[] items = new File(fullPath).listFiles((File dir, String it) -> it.endsWith(".caffc"));
-        for (File file : items) {
-            files.add(file.getAbsolutePath());
+        try {
+            Files.walk(Path.of(fullPath))
+                    .filter(path -> path.toString().endsWith(".caffc"))
+                    .filter(Files::isRegularFile)
+                    .sorted()
+                    .forEach(path -> files.add(path.toAbsolutePath().toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return files;

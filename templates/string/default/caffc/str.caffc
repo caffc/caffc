@@ -204,12 +204,81 @@ class str implements HasHash {
   }
 
   /*
-   * Returns the code point at the given byte index
+   * Returns the code point at the given byte index.
+   * On invalid / truncated UTF-8, returns U+FFFD and advances one byte.
    */
   #public
   getCodePoint(i32 index) -> u32 value, i32 nextByteIndex {
-    // FIXME: actually implement
-    return 1, 0
+    i32 len = _this.size()
+    u8 b0
+    u8 b1
+    u8 b2
+    u8 b3
+    u32 cp
+
+    if index < 0 or index >= len {
+      raise("index out of bounds")
+    }
+
+    b0 = _this.get(index)
+
+    // ASCII
+    if (b0 & 0x80) == 0 {
+      return (u32) b0, index + 1
+    }
+
+    // 2-byte sequence: 110xxxxx 10xxxxxx
+    if (b0 & 0xE0) == 0xC0 {
+      if index + 1 >= len {
+        return 0xFFFD, index + 1
+      }
+      b1 = _this.get(index + 1)
+      if (b1 & 0xC0) != 0x80 {
+        return 0xFFFD, index + 1
+      }
+      cp = ((u32) (b0 & 0x1F) << 6) | (u32) (b1 & 0x3F)
+      if cp < 0x80 {
+        return 0xFFFD, index + 1
+      }
+      return cp, index + 2
+    }
+
+    // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
+    if (b0 & 0xF0) == 0xE0 {
+      if index + 2 >= len {
+        return 0xFFFD, index + 1
+      }
+      b1 = _this.get(index + 1)
+      b2 = _this.get(index + 2)
+      if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 {
+        return 0xFFFD, index + 1
+      }
+      cp = ((u32) (b0 & 0x0F) << 12) | ((u32) (b1 & 0x3F) << 6) | (u32) (b2 & 0x3F)
+      if cp < 0x800 {
+        return 0xFFFD, index + 1
+      }
+      return cp, index + 3
+    }
+
+    // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    if (b0 & 0xF8) == 0xF0 {
+      if index + 3 >= len {
+        return 0xFFFD, index + 1
+      }
+      b1 = _this.get(index + 1)
+      b2 = _this.get(index + 2)
+      b3 = _this.get(index + 3)
+      if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 or (b3 & 0xC0) != 0x80 {
+        return 0xFFFD, index + 1
+      }
+      cp = ((u32) (b0 & 0x07) << 18) | ((u32) (b1 & 0x3F) << 12) | ((u32) (b2 & 0x3F) << 6) | (u32) (b3 & 0x3F)
+      if cp < 0x10000 or cp > 0x10FFFF {
+        return 0xFFFD, index + 1
+      }
+      return cp, index + 4
+    }
+
+    return 0xFFFD, index + 1
   }
 
   /*
@@ -226,8 +295,19 @@ class str implements HasHash {
    */
   #public
   codePointsSize() -> i32 {
-    // FIXME: implement correctly by iterating over the code points
-    return _this._byte_length - 1
+    i32 count = 0
+    i32 index = 0
+    i32 len = _this.size()
+    u32 codePoint
+    i32 next
+
+    while index < len {
+      codePoint, next = _this.getCodePoint(index)
+      count = count + 1
+      index = next
+    }
+
+    return count
   }
 
   /*
@@ -235,11 +315,12 @@ class str implements HasHash {
    * on the screen). Multiple code points can be used for a single
    * grapheme (i.e. a character such as `e` and an accent code point,
    * that will be rendered in the same grapheme)
+   *
+   * MVP: each code point is treated as one grapheme.
    */
   #public
   graphemeSize() -> i32 {
-    // FIXME: implement correctly
-    return _this._byte_length - 1
+    return _this.codePointsSize()
   }
 
   /**
@@ -322,7 +403,8 @@ class str implements HasHash {
 }
 
 isGrapheme(u32 code) -> bool {
-  // FIXME: implement
+  // MVP: every code point starts a grapheme cluster.
+  return true
 }
 
 
