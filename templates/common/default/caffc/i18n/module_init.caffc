@@ -1,0 +1,14 @@
+module caffc.i18n
+
+HashDict<str, CodePageEncoding> codePages
+
+module_init() {
+  codePages = new HashDict<str, CodePageEncoding>()
+
+  CodePageEncoding codePage = new XyzEncoding()
+  codePages.put(codePage.name(), codePage)
+}
+
+getCodePage(str codePageName) -> CodePageEncoding {
+  return codePage.get(codePageName)
+}

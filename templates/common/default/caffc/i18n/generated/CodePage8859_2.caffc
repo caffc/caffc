@@ -1,0 +1,59 @@
+module caffc.i18n
+
+u8 EMPTY_U8_ARRAY = new u8[0]
+
+#public
+class CodePage8859_2 implements CodePageEncoding {
+  TreeSetDictU8ToU32 codePageToUtf8
+  TreeSetDictU32ToU8 utf8ToCodePage
+
+  name() {
+    return "8859-2"
+  }
+
+  vendor() {
+    return "unicode.org"
+  }
+
+  // It makes sense to move this outside and pass the CodePageEncoding
+  // as an argument. At the end of the day the only needed thing really
+  // are the translation dictionaries. The algorithm itself is the same.
+  fromUtf8(str value) -> u8[] data, bool error, i32 errorByteIndex {
+    i32 currentByteIndex
+    i32 nextByteIndex
+    i32 outByteIndex
+    u8 byteValue
+    bool codePageError
+
+    data = new u8[value.graphemeSize()]
+
+    if not value or value.size() == 0 {
+      return EMPTY_U8_ARRAY
+    }
+
+    errorByteIndex = -1
+    while nextByteIndex < value.size() and outByteIndex < data.size() {
+      currentByteIndex = nextByteIndex
+      codePoint, nextByteIndex = value.getCodePoint(currentByteIndex)
+      byteValue, codePageError = utf8ToCodePage.get(codePoint)
+
+      if codePageError {
+        byteValue = '?' // FIXME: code page dependent
+
+        if errorByteIndex < 0 {
+          errorByteIndex = currentByteIndex
+        }
+      }
+
+      data[outByteIndex] = byteValue
+      outByteIndex += 1
+    }
+
+    return data, errorByteIndex >= 0, errorByteIndex
+  }
+
+  toUtf8(u8[] data) -> str value, bool error, i32 errorByteIndex {
+    u8..,.
+  }
+}
+

@@ -93,20 +93,31 @@ class str implements HasHash {
    */
   #public
   static fromPtr(ptr data) -> str {
-     u32 byte_length
-     str result
+    u32 byte_length
+    str result
 
-     native {
-       byte_length = caffc_strlen(data) + 1;
-     }
+    native {
+      byte_length = caffc_strlen(data) + 1;
+    }
 
-     result = new str(byte_length)
+    result = new str(byte_length)
 
-     native {
-       caffc_memcpy(result->_caffc_data, data, byte_length);
-     }
+    native {
+      caffc_memcpy(result->_caffc_data, data, byte_length);
+    }
 
-     return result
+    return result
+  }
+
+  #public
+  static fromPtrBuffer(ptr data, i32 byte_length) -> str {
+    str result = new str(byte_length + 1)
+
+    native {
+      caffc_memcpy(result->_caffc_data, data, byte_length);
+    }
+
+    return result
   }
 
   /**
@@ -190,12 +201,31 @@ class str implements HasHash {
     return result
   }
 
-  /**
-   * Returns the size of this string in _characters_. It excludes the nul byte,
+  /*
+   * Returns the size of this string in _bytes_. It excludes the nul byte,
    * since it's not relevant.
    */
   #public
   size() -> i32 {
+    return _this._byte_length - 1
+  }
+
+  /*
+   * Returns the size of this string in code points.
+   */
+  #public
+  codePointsSize() -> i32 {
+    return _this._byte_length - 1
+  }
+
+  /*
+   * Returns the size of this string in graphemes (actual characters
+   * on the screen). Multiple code points can be used for a single
+   * grapheme (i.e. a character such as `e` and an accent code point,
+   * that will be rendered in the same grapheme)
+   */
+  #public
+  graphemeSize() -> i32 {
     return _this._byte_length - 1
   }
 
