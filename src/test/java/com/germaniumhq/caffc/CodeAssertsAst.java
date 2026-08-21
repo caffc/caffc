@@ -70,7 +70,7 @@ public class CodeAssertsAst {
         }
 
         for (com.germaniumhq.caffc.compiler.model.Module module: program.modules.values()) {
-            Module.createModuleInit(module, compilationUnits);
+            Module.createInitModule(module, compilationUnits);
         }
 
         program.recreateConstants();

@@ -243,7 +243,7 @@ main() {
 ## Global Variables
 
 CaffC supports global variables at the module level. Their initialization is moved
-to a synthetic `module_init()` function by the compiler.
+to a synthetic `init_module()` function by the compiler.
 
 ```caffc
 str globalStr = "hello"
@@ -253,8 +253,8 @@ main() {
 }
 ```
 
-The compiler generates a `{module}_module_init()` C function that initializes
-the global variables. If you define your own `module_init()` function, the
+The compiler generates a `{module}_init_module()` C function that initializes
+the global variables. If you define your own `init_module()` function, the
 compiler prepends the global variable initializations to it.
 
 ## Garbage Collection

@@ -1,6 +1,6 @@
 #include "module_caffc.h"
 
-{# we need to include all the modules to have the `module_init` and global
+{# we need to include all the modules to have the `init_module` and global
    vars definitions avalable -#}
 {%- for module in program.modules.values() %}
 #include "{{ module | c_global_header }}"
@@ -11,12 +11,12 @@
  * ******************************************************************/
 
 /* Initializes the CaffC memory allocator, and calls for each module
- * its `module_init()` function. */
+ * its `init_module()` function. */
 void caffc_init() {
   caffc_memory_init();
   if (_caffc_exception) return;
-  {%- for module in program.moduleInitsSorted %}
-  {{ module | c_name }}module_init();
+  {%- for module in program.initModulesSorted %}
+  {{ module | c_name }}init_module();
   if (_caffc_exception) return;
   {%- endfor %}
 }

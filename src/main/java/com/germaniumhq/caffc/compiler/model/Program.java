@@ -235,10 +235,10 @@ public class Program implements ModuleProvider, AstItem, Scope {
     }
 
     @UsedInTemplate("constants_c.peb")
-    public List<Module> getModuleInitsSorted() {
+    public List<Module> getInitModulesSorted() {
         List<Module> result = new ArrayList<>();
         for (Module module: modules.values()) {
-            if (module.hasFunction("module_init")) {
+            if (module.hasFunction("init_module")) {
                 result.add(module);
             }
         }

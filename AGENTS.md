@@ -279,12 +279,12 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 
 ## Global Variables
 
-Global variable initializers are moved to a `module_init()` function after type resolution:
+Global variable initializers are moved to an `init_module()` function after type resolution:
 
-- **`module_init` is auto-generated** when global vars exist — creates synthetic compilation unit at `{module}_module_init.caffc`
-- **`module_init` is NOT generated** when there are no global vars
-- **Augmented if exists** — if user defines `module_init`, global var init is prepended to it
-- **C function signature**: `{module}_module_init()` (e.g., `yolo_module_init`)
+- **`init_module` is auto-generated** when global vars exist — creates synthetic compilation unit at `{module}_init_module.caffc`
+- **`init_module` is NOT generated** when there are no global vars
+- **Augmented if exists** — if user defines `init_module`, global var init is prepended to it
+- **C function signature**: `{module}_init_module()` (e.g., `yolo_init_module`)
 - **Original compilation unit** contains only variable references, not init code
 - **For header tests**: use original unit path (header template renders module, not synthetic unit)
 

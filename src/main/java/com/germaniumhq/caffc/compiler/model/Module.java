@@ -42,7 +42,7 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     /**
-     * Ensures the `module_init` function exists, and initializes all
+     * Ensures the `init_module` function exists, and initializes all
      * the global variables. If a function already exists for this module,
      * this function will be reused.
      *
@@ -58,11 +58,11 @@ public class Module implements AstItem, Scope, Symbol {
      * The synthetic compilation unit that we create, must have all the
      * `usedModules`
      *
-     * If there's already a `module_init` function in the current module,
+     * If there's already an `init_module` function in the current module,
      * the GlobalVariable statements will be prepended. If not, a custom
      * fake compilation unit will be created.
      */
-    public static void createModuleInit(Module module, Set<CompilationUnit> compilationUnits) {
+    public static void createInitModule(Module module, Set<CompilationUnit> compilationUnits) {
         List<GlobalVariable> globalVariables = new ArrayList<>();
 
         // we find all the variables to see if there's anything to be done
@@ -84,28 +84,28 @@ public class Module implements AstItem, Scope, Symbol {
         }
 
         if (globalVariables.isEmpty()) {
-            // we don't need to augment/create the `module_init()` since we have no globals
+            // we don't need to augment/create the `init_module()` since we have no globals
             return;
         }
 
-        Function moduleInitFunction = getOrCreateModuleInitFunction(module, compilationUnits);
+        Function initModuleFunction = getOrCreateInitModuleFunction(module, compilationUnits);
 
-        // we need to reparent the global variables to the `module_init` function.
-        // the reason is for try/catch blocks, so exceptions hook in the module_init's
+        // we need to reparent the global variables to the `init_module` function.
+        // the reason is for try/catch blocks, so exceptions hook in the init_module's
         // unhandled exception label
         for (GlobalVariable globalVariable: globalVariables) {
-            globalVariable.owner = moduleInitFunction;
+            globalVariable.owner = initModuleFunction;
         }
 
         // prepend the global variables
         List<Statement> statements = new ArrayList<>(globalVariables);
-        statements.addAll(moduleInitFunction.statements);
-        moduleInitFunction.statements = statements;
+        statements.addAll(initModuleFunction.statements);
+        initModuleFunction.statements = statements;
     }
 
-    private static Function getOrCreateModuleInitFunction(
+    private static Function getOrCreateInitModuleFunction(
             Module module, Set<CompilationUnit> compilationUnits) {
-        // search for an existing `module_init` function
+        // search for an existing `init_module` function
         for (CompilationUnit compilationUnit: compilationUnits) {
             if (compilationUnit.module != module) {
                 continue;
@@ -113,38 +113,38 @@ public class Module implements AstItem, Scope, Symbol {
 
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
                 if (compileBlock instanceof Function function) {
-                    if ("module_init".equals(function.name())) {
+                    if ("init_module".equals(function.name())) {
                         return function;
                     }
                 }
             }
         }
 
-        // we don't have an existing `module_init`, we need to create a
+        // we don't have an existing `init_module`, we need to create a
         // synthetic one
         CompilationUnit compilationUnit = new CompilationUnit();
         compilationUnit.module = module;
         compilationUnit.isResolved = true;
         compilationUnit.sourceLocation = SourceLocation.fromFilePath(
             FilterCTypeName.getCType(module.typeName()) +
-            "module_init.caffc");
+            "init_module.caffc");
         compilationUnits.add(compilationUnit);
 
-        Function moduleInitFunction = new Function();
-        moduleInitFunction.owner = compilationUnit;
-        moduleInitFunction.definition.name = "module_init";
-        moduleInitFunction.definition.module = module.name;
+        Function initModuleFunction = new Function();
+        initModuleFunction.owner = compilationUnit;
+        initModuleFunction.definition.name = "init_module";
+        initModuleFunction.definition.module = module.name;
 
-        compilationUnit.compileBlocks.add(moduleInitFunction);
+        compilationUnit.compileBlocks.add(initModuleFunction);
         module.functions.put(
-            moduleInitFunction.definition.name,
-            moduleInitFunction.definition);
+            initModuleFunction.definition.name,
+            initModuleFunction.definition);
 
-        moduleInitFunction.stringConstantName = StringConstant.newStringConstant(
-            moduleInitFunction.getSourceLocation(), moduleInitFunction.definition.name);
-        module.registerConstant(moduleInitFunction.stringConstantName);
+        initModuleFunction.stringConstantName = StringConstant.newStringConstant(
+            initModuleFunction.getSourceLocation(), initModuleFunction.definition.name);
+        module.registerConstant(initModuleFunction.stringConstantName);
 
-        return moduleInitFunction;
+        return initModuleFunction;
     }
 
     public Collection<FunctionDefinition> functionDefinitions() {
