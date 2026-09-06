@@ -58,7 +58,7 @@ public class TestS011GlobalVariables {
     public void globalVariableInitFunction() {
         String moduleC = compileCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",
-            "yolo_init_module.caffc",
+            "test.caffc",
             new TestUnit[] {
                 new TestUnit("test.caffc",
                     """
@@ -70,6 +70,9 @@ public class TestS011GlobalVariables {
                     
                     class obj {}
                     
+                    init_module() {
+                    }
+
                     get_data() -> obj {
                       return null
                     }

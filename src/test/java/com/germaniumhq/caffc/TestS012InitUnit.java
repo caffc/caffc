@@ -74,14 +74,17 @@ main() -> i32 {
     }
 
     @Test
-    public void initUnitBodyMovedToSyntheticInitModule() {
+    public void initUnitBodyMovedToInitModule() {
         String moduleC = compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
-                "yolo_init_module.caffc",
+                "test.caffc",
                 new TestUnit[] {
                         new TestUnit("test.caffc",
 """
 module yolo
+
+init_module() {
+}
 
 init_unit() {
   yolo_unit()
@@ -131,7 +134,7 @@ main() -> i32 {
     public void initUnitFromMultipleCompilationUnits() {
         String moduleC = compileCaffcProgram(
                 "caffc/template/c/compilation_unit_c.peb",
-                "yolo_init_module.caffc",
+                "a.caffc",
                 new TestUnit[] {
                         new TestUnit("b.caffc",
 """
@@ -147,6 +150,9 @@ second() {
                         new TestUnit("a.caffc",
 """
 module yolo
+
+init_module() {
+}
 
 init_unit() {
   first()
@@ -219,8 +225,10 @@ main() -> i32 {
             );
             throw new AssertionError("Expected fatal error for calling init_unit()");
         } catch (CancelCompilationException e) {
-            if (!e.getMessage().contains("cannot call init_unit")) {
-                throw new AssertionError("Expected cannot call init_unit error but got: " + e.getMessage(), e);
+            // init_unit is never registered as a callable module function, so
+            // a call fails at symbol resolution rather than a dedicated check.
+            if (!e.getMessage().contains("cannot resolve init_unit")) {
+                throw new AssertionError("Expected cannot resolve init_unit error but got: " + e.getMessage(), e);
             }
         }
     }

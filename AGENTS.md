@@ -253,11 +253,11 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 
 Global initializers and optional per-file `init_unit()` bodies are moved into `init_module()` after type resolution:
 
-- **Auto-generated** when global vars or any `init_unit` exist — synthetic CU `{module}_init_module.caffc`
-- **Not generated** when there are neither globals nor `init_unit`
-- **Order in generated C**: 1) global inits 2) original `init_module` code 3) each `init_unit` body (file-path order)
+- **Created/augmented** when global vars or any `init_unit` exist; skipped when neither is present
+- Prefer an explicit `init_module()` in the module (unit tests should too — assert against that CU)
+- **Order in generated C**: 1) global inits 2) original `init_module` code 3) each `init_unit` body (compilation-unit order)
 - Each `init_unit` is transplanted into an `AsmBlock` then **deleted**; locals move onto `init_module`
-- **Calling `init_unit()` is a compiler error** (names would collide; it is not a real function)
+- **`init_unit` is not registered** as a module function — calling it fails with `cannot resolve init_unit`
 - **C signature**: `{module}_init_module()` (e.g. `yolo_init_module`)
 - Header tests use the original unit path (header template renders the module)
 
@@ -271,4 +271,4 @@ Global initializers and optional per-file `init_unit()` bodies are moved into `i
 - **Exception / null returns** — handlers return `0` for primitives and `null` for objects; never return `null` for primitives (`f32`/`f64` etc.).
 - **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough.
 - **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.
-- **`init_unit()` is not callable** — inlined into `init_module` then deleted; no parameters or return type.
+- **`init_unit()` is not callable** — never registered as a module function (`cannot resolve`); inlined into `init_module` then deleted; no parameters or return type.
