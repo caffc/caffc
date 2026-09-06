@@ -69,9 +69,14 @@ public class Module implements AstItem, Scope, Symbol {
      * code (globals, then user {@code init_module}, then each {@code init_unit}),
      * and the {@code init_unit} functions themselves are deleted.
      */
-    public static void createInitModule(Module module, Set<CompilationUnit> compilationUnits) {
+    public static void createInitModule(Module module, Set<CompilationUnit> allCompilationUnits) {
         List<GlobalVariable> globalVariables = new ArrayList<>();
         List<Function> initUnits = new ArrayList<>();
+
+        // fetch only the compilation units relevant for the module (mutable collection)
+        List<CompilationUnit> compilationUnits = new ArrayList<>(allCompilationUnits
+            .stream().filter(compilationUnit -> compilationUnit.module.equals(module))
+            .toList());
 
         // we don't care about the `use` statements anymore of the module, since
         // the compilation units are already resolved, and each compilation unit
@@ -113,13 +118,15 @@ public class Module implements AstItem, Scope, Symbol {
 
         // we need to reparent the global variables to the `init_module` function.
         // the reason is for try/catch blocks, so exceptions hook in the init_module's
-        // unhandled exception label
+        // unhandled exception label, not inside the compile block.
         for (GlobalVariable globalVariable: globalVariables) {
             globalVariable.owner = initModuleFunction;
         }
 
-        // prepend the global variables, keep existing init_module body, then
-        // append each init_unit body
+        // the init_module is in order:
+        // 1. global variables initialization
+        // 2. existing init_module() code - i.e. creating a map to register listeners
+        // 3. running each init_unit() code - i.e. registering individual listeners
         List<Statement> statements = new ArrayList<>(globalVariables);
         statements.addAll(initModuleFunction.statements);
 
@@ -131,7 +138,6 @@ public class Module implements AstItem, Scope, Symbol {
             unit.compileBlocks.remove(initUnit);
         }
 
-        module.functions.remove("init_unit");
         initModuleFunction.statements = statements;
     }
 
@@ -148,13 +154,9 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     private static Function getOrCreateInitModuleFunction(
-            Module module, Set<CompilationUnit> compilationUnits) {
+            Module module, List<CompilationUnit> compilationUnits) {
         // search for an existing `init_module` function
         for (CompilationUnit compilationUnit: compilationUnits) {
-            if (compilationUnit.module != module) {
-                continue;
-            }
-
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
                 if (compileBlock instanceof Function function) {
                     if ("init_module".equals(function.name())) {

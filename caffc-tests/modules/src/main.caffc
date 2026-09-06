@@ -1,0 +1,21 @@
+module main
+
+native {
+  #include <stdio.h>
+}
+
+i32 x = 0
+
+init_module() {
+  print("yay")
+}
+
+printf(i32 n) {
+  native {
+    printf("%d\n", n);
+  }
+}
+
+main() {
+  printf(x)
+}

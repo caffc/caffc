@@ -156,9 +156,9 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
             function.statements.addAll(Statement.fromAntlr(unit, function, antlrStatement));
         }
 
-        // we register the function in the module only if it's a global function, otherwise they
+        // we register the function in the module only if it's a true global function, otherwise they
         // will get loaded from the class.
-        if (function.definition.clazz == null) {
+        if (function.definition.clazz == null && !"init_unit".equals(function.definition.name)) {
             unit.module.functions.put(function.definition.name, function.definition);
         }
 
