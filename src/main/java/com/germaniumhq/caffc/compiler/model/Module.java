@@ -73,25 +73,22 @@ public class Module implements AstItem, Scope, Symbol {
         List<GlobalVariable> globalVariables = new ArrayList<>();
         List<Function> initUnits = new ArrayList<>();
 
-        List<CompilationUnit> moduleUnits = new ArrayList<>();
-        for (CompilationUnit compilationUnit: compilationUnits) {
-            if (compilationUnit.module == module) {
-                moduleUnits.add(compilationUnit);
-            }
-        }
-        moduleUnits.sort(Comparator.comparing(cu -> cu.sourceLocation.filePath));
-
         // we don't care about the `use` statements anymore of the module, since
         // the compilation units are already resolved, and each compilation unit
         // when generated #includes the module header, that in turn has all deps
         // correctly included
-        for (CompilationUnit compilationUnit: moduleUnits) {
+        // we need to find:
+        // 1. the global vars we have to init in the init_module()
+        // 2. the init_unit() functions we need to inline in the init_module()
+        for (CompilationUnit compilationUnit: compilationUnits) {
             Function initUnit = null;
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
+                // 1. global vars
                 if (compileBlock instanceof GlobalVariableDeclarations globalVariable) {
                     globalVariables.add(globalVariable.variable);
                 }
 
+                // 2. init_unit() calls
                 if (compileBlock instanceof Function function &&
                         "init_unit".equals(function.name()) &&
                         function.definition.clazz == null) {
@@ -99,12 +96,10 @@ public class Module implements AstItem, Scope, Symbol {
                         CaffcCompiler.get().fatal(function,
                                 "compilation unit already has an init_unit() function");
                     }
-                    initUnit = function;
-                }
-            }
 
-            if (initUnit != null) {
-                initUnits.add(initUnit);
+                    initUnit = function;
+                    initUnits.add(initUnit);
+                }
             }
         }
 

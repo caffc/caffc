@@ -163,6 +163,8 @@ main() -> i32 {
 
         assertCodeContains(moduleC, """
         yolo_first(); if (_caffc_exception) { goto fnUncaughtException0; };
+        """);
+        assertCodeContains(moduleC, """
         yolo_second(); if (_caffc_exception) { goto fnUncaughtException0; };
         """);
         assertCodeNotContains(moduleC, "init_unit", "init_unit itself must not be generated");
