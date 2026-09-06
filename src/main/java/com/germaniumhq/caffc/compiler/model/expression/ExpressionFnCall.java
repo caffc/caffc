@@ -101,6 +101,11 @@ public final class ExpressionFnCall implements Expression {
 
         FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
 
+        if (functionDefinition.clazz == null && "init_unit".equals(functionDefinition.name)) {
+            CaffcCompiler.get().fatal(this,
+                    "cannot call init_unit(); it is inlined into init_module and cannot be invoked");
+        }
+
         // if we have a dot access function, it means the function is a field of something
         // else, so we need to get the first part as its first parameter, and call the function.
         if (this.functionExpression instanceof ExpressionDotAccess dotAccess && !functionDefinition.isStatic) {

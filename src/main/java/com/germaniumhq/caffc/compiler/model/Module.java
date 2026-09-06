@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.instruction.InitUnitBlock;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -10,6 +11,7 @@ import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -61,30 +63,54 @@ public class Module implements AstItem, Scope, Symbol {
      * If there's already an `init_module` function in the current module,
      * the GlobalVariable statements will be prepended. If not, a custom
      * fake compilation unit will be created.
+     *
+     * Each compilation unit may also define an optional {@code init_unit()}
+     * function. Those bodies are appended after the original {@code init_module}
+     * code (globals, then user {@code init_module}, then each {@code init_unit}),
+     * and the {@code init_unit} functions themselves are deleted.
      */
     public static void createInitModule(Module module, Set<CompilationUnit> compilationUnits) {
         List<GlobalVariable> globalVariables = new ArrayList<>();
+        List<Function> initUnits = new ArrayList<>();
 
-        // we find all the variables to see if there's anything to be done
+        List<CompilationUnit> moduleUnits = new ArrayList<>();
         for (CompilationUnit compilationUnit: compilationUnits) {
-            // FIXME: Create a map? String -> List<CompilationUnit>
-            if (compilationUnit.module != module) {
-                continue;
+            if (compilationUnit.module == module) {
+                moduleUnits.add(compilationUnit);
             }
+        }
+        moduleUnits.sort(Comparator.comparing(cu -> cu.sourceLocation.filePath));
 
-            // we don't care about the `use` statements anymore of the module, since
-            // the compilation units are already resolved, and each compilation unit
-            // when generated #includes the module header, that in turn has all deps
-            // correctly included
+        // we don't care about the `use` statements anymore of the module, since
+        // the compilation units are already resolved, and each compilation unit
+        // when generated #includes the module header, that in turn has all deps
+        // correctly included
+        for (CompilationUnit compilationUnit: moduleUnits) {
+            Function initUnit = null;
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
                 if (compileBlock instanceof GlobalVariableDeclarations globalVariable) {
                     globalVariables.add(globalVariable.variable);
                 }
+
+                if (compileBlock instanceof Function function &&
+                        "init_unit".equals(function.name()) &&
+                        function.definition.clazz == null) {
+                    if (initUnit != null) {
+                        CaffcCompiler.get().fatal(function,
+                                "compilation unit already has an init_unit() function");
+                    }
+                    initUnit = function;
+                }
+            }
+
+            if (initUnit != null) {
+                initUnits.add(initUnit);
             }
         }
 
-        if (globalVariables.isEmpty()) {
-            // we don't need to augment/create the `init_module()` since we have no globals
+        if (globalVariables.isEmpty() && initUnits.isEmpty()) {
+            // we don't need to augment/create the `init_module()` since we have
+            // no globals and no init_unit functions
             return;
         }
 
@@ -97,10 +123,33 @@ public class Module implements AstItem, Scope, Symbol {
             globalVariable.owner = initModuleFunction;
         }
 
-        // prepend the global variables
+        // prepend the global variables, keep existing init_module body, then
+        // append each init_unit body
         List<Statement> statements = new ArrayList<>(globalVariables);
         statements.addAll(initModuleFunction.statements);
+
+        for (Function initUnit: initUnits) {
+            validateInitUnitSignature(initUnit);
+            statements.add(InitUnitBlock.fromInitUnit(initModuleFunction, initUnit));
+
+            CompilationUnit unit = (CompilationUnit) initUnit.owner;
+            unit.compileBlocks.remove(initUnit);
+        }
+
+        module.functions.remove("init_unit");
         initModuleFunction.statements = statements;
+    }
+
+    private static void validateInitUnitSignature(Function initUnit) {
+        if (!initUnit.definition.parameters.isEmpty()) {
+            CaffcCompiler.get().fatal(initUnit,
+                    "init_unit() cannot have parameters; it is inlined into init_module");
+        }
+
+        if (!initUnit.definition.isVoid()) {
+            CaffcCompiler.get().fatal(initUnit,
+                    "init_unit() cannot return a value; it is inlined into init_module");
+        }
     }
 
     private static Function getOrCreateInitModuleFunction(

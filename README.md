@@ -257,6 +257,11 @@ The compiler generates a `{module}_init_module()` C function that initializes
 the global variables. If you define your own `init_module()` function, the
 compiler prepends the global variable initializations to it.
 
+Each `.caffc` file may also define an optional `init_unit()` function. Its body
+is copied into `init_module()` after the original `init_module` code, then the
+`init_unit` function is deleted. Calling `init_unit()` is a compiler error,
+because the functions are never generated (the C names would collide).
+
 ## Garbage Collection
 
 Even if this transpiles to C, the memory allocated is managed. All objects, and

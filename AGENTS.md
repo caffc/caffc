@@ -179,34 +179,6 @@ Docker profiles (`gcc_docker`, `xlC`, `clang_docker`, `gcc_asan_docker`) use a s
 
 `gcc_docker` runs with libasan; `hello-world-native` is expected to fail there (asan detects an issue in the native block).
 
-## Collections
-
-Core collection interfaces and implementations live in `templates/common/default/caffc/collection.caffc`.
-
-- `List<T>` — indexed access via `get(i32)/set(i32,T)/add/remove`, also supports `[]` syntax
-- `Dict<K is HasHash, V>` — key-value store using `K.hash()` for bucket placement
-- `Set<T>` — unique items, implemented with linear search
-- All collections are `Iterable<T>`, enabling `for item in collection` syntax (generates iterator-based loop)
-
-Generic type restrictions (`K is HasHash`) resolve to the restriction type at compile time, enabling method calls like `key.hash()` on generic parameters without native code.
-
-## Arrays & Generics
-
-The array system (`Module.ensureArray()`) resolves arrays at compile time:
-- Primitives: `T_arr` (e.g., `u8_arr`, `i32_arr`) — use `#caffc_array("caffc_u8")` tag
-- Non-primitives: `obj_arr` — every non-primitive `T[]` maps to `obj_arr*` in C
-- `T[]` fields in generic classes generate `obj_arr* _items` in C; access via `T[]` CaffC syntax
-
-`#caffc_array` tag marks classes as actual native arrays with flexible-size `_caffc_data[]` fields. It's only used for primitive arrays (`u8_arr`, `i32_arr`, etc.) and `obj_arr` itself. Generic class fields should use `T[]` syntax, not the tag.
-
-## Index Access (`[]`)
-
-`ExpressionIndexAccess` and `ExpressionAssign` resolve `[]` via `HasMethods` interface — any type with a `get()` method supports `[]` read, any type with `set()` supports `[]` write. This covers both native arrays and collection interfaces.
-
-## For-In Loops
-
-`for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
-
 ## Virtual Dispatch (Interfaces)
 
 CaffC supports virtual dispatch through interface types via `_caffc_type_id` switch statements. When you call an interface method (e.g., `key.hash()` where `key` is `HasHash`), the compiler generates a call to the interface function (e.g., `caffc_HasHash_hash(key)`) which dispatches based on the object's `type_id`:
@@ -277,16 +249,17 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 
 `for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
 
-## Global Variables
+## Global Variables and `init_unit`
 
-Global variable initializers are moved to an `init_module()` function after type resolution:
+Global initializers and optional per-file `init_unit()` bodies are moved into `init_module()` after type resolution:
 
-- **`init_module` is auto-generated** when global vars exist — creates synthetic compilation unit at `{module}_init_module.caffc`
-- **`init_module` is NOT generated** when there are no global vars
-- **Augmented if exists** — if user defines `init_module`, global var init is prepended to it
-- **C function signature**: `{module}_init_module()` (e.g., `yolo_init_module`)
-- **Original compilation unit** contains only variable references, not init code
-- **For header tests**: use original unit path (header template renders module, not synthetic unit)
+- **Auto-generated** when global vars or any `init_unit` exist — synthetic CU `{module}_init_module.caffc`
+- **Not generated** when there are neither globals nor `init_unit`
+- **Order in generated C**: 1) global inits 2) original `init_module` code 3) each `init_unit` body (file-path order)
+- Each `init_unit` is transplanted into an `AsmBlock` then **deleted**; locals move onto `init_module`
+- **Calling `init_unit()` is a compiler error** (names would collide; it is not a real function)
+- **C signature**: `{module}_init_module()` (e.g. `yolo_init_module`)
+- Header tests use the original unit path (header template renders the module)
 
 ## Gotchas
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
@@ -298,3 +271,4 @@ Global variable initializers are moved to an `init_module()` function after type
 - **Exception / null returns** — handlers return `0` for primitives and `null` for objects; never return `null` for primitives (`f32`/`f64` etc.).
 - **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough.
 - **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.
+- **`init_unit()` is not callable** — inlined into `init_module` then deleted; no parameters or return type.

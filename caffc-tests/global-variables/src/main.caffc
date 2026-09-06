@@ -13,6 +13,10 @@ init_module() {
   items.add("test")
 }
 
+init_unit() {
+  print("unit initialized")
+}
+
 main(str[] args) -> i32 {
   print(x)
 
