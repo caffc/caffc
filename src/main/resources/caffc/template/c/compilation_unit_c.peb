@@ -6,7 +6,7 @@ extern "C" {
 #include "{{ ctx | c_global_header }}"
 
 {%- for block in ctx.compileBlocks %}
-{#- GlobalVariable and init_unit() are moved into the `init_module()` function.
+{#- GlobalVariable and unit_init() are moved into the `module_init()` function.
   Definitions are in the module.c/h #}
 {%- if className(block) != "GlobalVariableDeclarations" %}
 {{ block | render }}

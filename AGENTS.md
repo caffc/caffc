@@ -249,16 +249,16 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 
 `for item in collection` syntax generates iterator-based while loops. The `ForInInstruction` AST node creates a synthetic iterator variable and emits calls to `newIterator()`, `hasNext()`, and `next()`. See `ForInInstruction.java` and `for_in.peb`.
 
-## Global Variables and `init_unit`
+## Global Variables and `unit_init`
 
-Global initializers and optional per-file `init_unit()` bodies are moved into `init_module()` after type resolution:
+Global initializers and optional per-file `unit_init()` bodies are moved into `module_init()` after type resolution:
 
-- **Created/augmented** when global vars or any `init_unit` exist; skipped when neither is present
-- Prefer an explicit `init_module()` in the module (unit tests should too — assert against that CU)
-- **Order in generated C**: 1) global inits 2) original `init_module` code 3) each `init_unit` body (compilation-unit order)
-- Each `init_unit` is transplanted into an `AsmBlock` then **deleted**; locals move onto `init_module`
-- **`init_unit` is not registered** as a module function — calling it fails with `cannot resolve init_unit`
-- **C signature**: `{module}_init_module()` (e.g. `yolo_init_module`)
+- **Created/augmented** when global vars or any `unit_init` exist; skipped when neither is present
+- Prefer an explicit `module_init()` in the module (unit tests should too — assert against that CU)
+- **Order in generated C**: 1) global inits 2) original `module_init` code 3) each `unit_init` body (compilation-unit order)
+- Each `unit_init` is transplanted into an `AsmBlock` then **deleted**; locals move onto `module_init`
+- **`unit_init` is not registered** as a module function — calling it fails with `cannot resolve unit_init`
+- **C signature**: `{module}_module_init()` (e.g. `yolo_module_init`)
 - Header tests use the original unit path (header template renders the module)
 
 ## Gotchas
@@ -271,4 +271,4 @@ Global initializers and optional per-file `init_unit()` bodies are moved into `i
 - **Exception / null returns** — handlers return `0` for primitives and `null` for objects; never return `null` for primitives (`f32`/`f64` etc.).
 - **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough.
 - **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.
-- **`init_unit()` is not callable** — never registered as a module function (`cannot resolve`); inlined into `init_module` then deleted; no parameters or return type.
+- **`unit_init()` is not callable** — never registered as a module function (`cannot resolve`); inlined into `module_init` then deleted; no parameters or return type.

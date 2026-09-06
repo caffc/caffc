@@ -10,6 +10,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
+import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
@@ -101,9 +102,10 @@ public final class ExpressionFnCall implements Expression {
 
         FunctionDefinition functionDefinition = (FunctionDefinition) this.symbol;
 
-        if (functionDefinition.clazz == null && "init_unit".equals(functionDefinition.name)) {
+        if (functionDefinition.clazz == null && Module.UNIT_INIT.equals(functionDefinition.name)) {
             CaffcCompiler.get().fatal(this,
-                    "cannot call init_unit(); it is inlined into init_module and cannot be invoked");
+                    "cannot call " + Module.UNIT_INIT + "(); it is inlined into " +
+                            Module.MODULE_INIT + " and cannot be invoked");
         }
 
         // if we have a dot access function, it means the function is a field of something

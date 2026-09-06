@@ -4,7 +4,7 @@ str x = "hello world"
 ArrayList<str> items = new ArrayList<str>(4)
 ArrayList<str> nullArray
 
-init_module() {
+module_init() {
   print("module initialized")
 
   items.add("this")
@@ -13,7 +13,7 @@ init_module() {
   items.add("test")
 }
 
-init_unit() {
+unit_init() {
   print("unit initialized")
 }
 

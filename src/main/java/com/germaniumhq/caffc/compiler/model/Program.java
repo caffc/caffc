@@ -238,7 +238,7 @@ public class Program implements ModuleProvider, AstItem, Scope {
     public List<Module> getInitModulesSorted() {
         List<Module> result = new ArrayList<>();
         for (Module module: modules.values()) {
-            if (module.hasFunction("init_module")) {
+            if (module.hasFunction(Module.MODULE_INIT)) {
                 result.add(module);
             }
         }

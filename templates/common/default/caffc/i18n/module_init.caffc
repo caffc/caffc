@@ -2,7 +2,7 @@ module caffc.i18n
 
 HashDict<str, CodePageEncoding> codePages
 
-init_module() {
+module_init() {
   codePages = new HashDict<str, CodePageEncoding>(8)
 
   CodePageEncoding codePage = new CodePage8859_2()

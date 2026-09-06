@@ -26,7 +26,7 @@ public class TestS011GlobalVariables {
             }
         );
 
-        // Global variable init is moved to init_module(), main just references it
+        // Global variable init is moved to module_init(), main just references it
         assertCodeContains(code, "return x;");
     }
 
@@ -51,7 +51,7 @@ public class TestS011GlobalVariables {
         );
 
         assertCodeContains(header, "extern caffc_i32 x;");
-        assertCodeContains(header, "void yolo_init_module();");
+        assertCodeContains(header, "void yolo_module_init();");
     }
 
     @Test
@@ -70,7 +70,7 @@ public class TestS011GlobalVariables {
                     
                     class obj {}
                     
-                    init_module() {
+                    module_init() {
                     }
 
                     get_data() -> obj {
@@ -169,7 +169,7 @@ main() -> i32 {
 """)}
         );
 
-        assertCodeNotContains(header, "yolo_init_module", "init_module should not be generated without global variables");
+        assertCodeNotContains(header, "yolo_module_init", "module_init should not be generated without global variables");
     }
 
     @Test
@@ -190,12 +190,12 @@ main() -> i32 {
 """)}
         );
 
-        assertCodeContains(header, "void yolo_init_module();");
+        assertCodeContains(header, "void yolo_module_init();");
     }
 
     /**
      * This tests if the global variables get augmented at the beginning of the
-     * existing `init_module()`.
+     * existing `module_init()`.
      */
     @Test
     public void initModuleAugmentedWithGlobals() {
@@ -209,7 +209,7 @@ module yolo
 
 i32 x = 42
 
-init_module() {
+module_init() {
   yolo_setup()
 }
 

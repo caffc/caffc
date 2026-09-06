@@ -24,6 +24,12 @@ import java.util.Set;
  * header C files for the modules.
  */
 public class Module implements AstItem, Scope, Symbol {
+    /** Special function that initializes a module (globals + unit inits). */
+    public static final String MODULE_INIT = "module_init";
+
+    /** Special per-compilation-unit function inlined into {@link #MODULE_INIT}. */
+    public static final String UNIT_INIT = "unit_init";
+
     public Program program;
     public String name;
 
@@ -44,7 +50,7 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     /**
-     * Ensures the `init_module` function exists, and initializes all
+     * Ensures the {@link #MODULE_INIT} function exists, and initializes all
      * the global variables. If a function already exists for this module,
      * this function will be reused.
      *
@@ -60,14 +66,14 @@ public class Module implements AstItem, Scope, Symbol {
      * The synthetic compilation unit that we create, must have all the
      * `usedModules`
      *
-     * If there's already an `init_module` function in the current module,
+     * If there's already a {@link #MODULE_INIT} function in the current module,
      * the GlobalVariable statements will be prepended. If not, a custom
      * fake compilation unit will be created.
      *
-     * Each compilation unit may also define an optional {@code init_unit()}
-     * function. Those bodies are appended after the original {@code init_module}
-     * code (globals, then user {@code init_module}, then each {@code init_unit}),
-     * and the {@code init_unit} functions themselves are deleted.
+     * Each compilation unit may also define an optional {@link #UNIT_INIT}
+     * function. Those bodies are appended after the original {@link #MODULE_INIT}
+     * code (globals, then user {@link #MODULE_INIT}, then each {@link #UNIT_INIT}),
+     * and the {@link #UNIT_INIT} functions themselves are deleted.
      */
     public static void createInitModule(Module module, Set<CompilationUnit> allCompilationUnits) {
         List<GlobalVariable> globalVariables = new ArrayList<>();
@@ -83,8 +89,8 @@ public class Module implements AstItem, Scope, Symbol {
         // when generated #includes the module header, that in turn has all deps
         // correctly included
         // we need to find:
-        // 1. the global vars we have to init in the init_module()
-        // 2. the init_unit() functions we need to inline in the init_module()
+        // 1. the global vars we have to init in module_init()
+        // 2. the unit_init() functions we need to inline in module_init()
         for (CompilationUnit compilationUnit: compilationUnits) {
             Function initUnit = null;
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
@@ -93,13 +99,13 @@ public class Module implements AstItem, Scope, Symbol {
                     globalVariables.add(globalVariable.variable);
                 }
 
-                // 2. init_unit() calls
+                // 2. unit_init() calls
                 if (compileBlock instanceof Function function &&
-                        "init_unit".equals(function.name()) &&
+                        UNIT_INIT.equals(function.name()) &&
                         function.definition.clazz == null) {
                     if (initUnit != null) {
                         CaffcCompiler.get().fatal(function,
-                                "compilation unit already has an init_unit() function");
+                                "compilation unit already has a " + UNIT_INIT + "() function");
                     }
 
                     initUnit = function;
@@ -109,24 +115,24 @@ public class Module implements AstItem, Scope, Symbol {
         }
 
         if (globalVariables.isEmpty() && initUnits.isEmpty()) {
-            // we don't need to augment/create the `init_module()` since we have
-            // no globals and no init_unit functions
+            // we don't need to augment/create module_init() since we have
+            // no globals and no unit_init functions
             return;
         }
 
         Function initModuleFunction = getOrCreateInitModuleFunction(module, compilationUnits);
 
-        // we need to reparent the global variables to the `init_module` function.
-        // the reason is for try/catch blocks, so exceptions hook in the init_module's
+        // we need to reparent the global variables to the module_init function.
+        // the reason is for try/catch blocks, so exceptions hook in module_init's
         // unhandled exception label, not inside the compile block.
         for (GlobalVariable globalVariable: globalVariables) {
             globalVariable.owner = initModuleFunction;
         }
 
-        // the init_module is in order:
+        // module_init is in order:
         // 1. global variables initialization
-        // 2. existing init_module() code - i.e. creating a map to register listeners
-        // 3. running each init_unit() code - i.e. registering individual listeners
+        // 2. existing module_init() code - i.e. creating a map to register listeners
+        // 3. running each unit_init() code - i.e. registering individual listeners
         List<Statement> statements = new ArrayList<>(globalVariables);
         statements.addAll(initModuleFunction.statements);
 
@@ -144,41 +150,41 @@ public class Module implements AstItem, Scope, Symbol {
     private static void validateInitUnitSignature(Function initUnit) {
         if (!initUnit.definition.parameters.isEmpty()) {
             CaffcCompiler.get().fatal(initUnit,
-                    "init_unit() cannot have parameters; it is inlined into init_module");
+                    UNIT_INIT + "() cannot have parameters; it is inlined into " + MODULE_INIT);
         }
 
         if (!initUnit.definition.isVoid()) {
             CaffcCompiler.get().fatal(initUnit,
-                    "init_unit() cannot return a value; it is inlined into init_module");
+                    UNIT_INIT + "() cannot return a value; it is inlined into " + MODULE_INIT);
         }
     }
 
     private static Function getOrCreateInitModuleFunction(
             Module module, List<CompilationUnit> compilationUnits) {
-        // search for an existing `init_module` function
+        // search for an existing module_init function
         for (CompilationUnit compilationUnit: compilationUnits) {
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
                 if (compileBlock instanceof Function function) {
-                    if ("init_module".equals(function.name())) {
+                    if (MODULE_INIT.equals(function.name())) {
                         return function;
                     }
                 }
             }
         }
 
-        // we don't have an existing `init_module`, we need to create a
+        // we don't have an existing module_init, we need to create a
         // synthetic one
         CompilationUnit compilationUnit = new CompilationUnit();
         compilationUnit.module = module;
         compilationUnit.isResolved = true;
         compilationUnit.sourceLocation = SourceLocation.fromFilePath(
             FilterCTypeName.getCType(module.typeName()) +
-            "init_module.caffc");
+            MODULE_INIT + ".caffc");
         compilationUnits.add(compilationUnit);
 
         Function initModuleFunction = new Function();
         initModuleFunction.owner = compilationUnit;
-        initModuleFunction.definition.name = "init_module";
+        initModuleFunction.definition.name = MODULE_INIT;
         initModuleFunction.definition.module = module.name;
 
         compilationUnit.compileBlocks.add(initModuleFunction);

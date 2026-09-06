@@ -6,7 +6,7 @@ native {
 
 i32 x = 0
 
-init_module() {
+module_init() {
   print("yay")
 }
 

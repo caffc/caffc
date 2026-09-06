@@ -18,11 +18,11 @@ module yolo
 
 i32 x = 42
 
-init_module() {
+module_init() {
   yolo_setup()
 }
 
-init_unit() {
+unit_init() {
   yolo_unit()
 }
 
@@ -43,7 +43,7 @@ main() -> i32 {
         yolo_yolo_setup(); if (_caffc_exception) { goto fnUncaughtException0; };
         yolo_yolo_unit(); if (_caffc_exception) { goto fnUncaughtException0; };
         """);
-        assertCodeNotContains(moduleC, "yolo_init_unit", "init_unit itself must not be generated");
+        assertCodeNotContains(moduleC, "yolo_unit_init", "unit_init itself must not be generated");
     }
 
     @Test
@@ -56,7 +56,7 @@ main() -> i32 {
 """
 module yolo
 
-init_unit() {
+unit_init() {
   yolo_unit()
 }
 
@@ -69,8 +69,8 @@ main() -> i32 {
 """)}
         );
 
-        assertCodeContains(header, "void yolo_init_module();");
-        assertCodeNotContains(header, "init_unit", "init_unit must not appear in the module header");
+        assertCodeContains(header, "void yolo_module_init();");
+        assertCodeNotContains(header, "unit_init", "unit_init must not appear in the module header");
     }
 
     @Test
@@ -83,10 +83,10 @@ main() -> i32 {
 """
 module yolo
 
-init_module() {
+module_init() {
 }
 
-init_unit() {
+unit_init() {
   yolo_unit()
 }
 
@@ -112,10 +112,10 @@ main() -> i32 {
 """
 module yolo
 
-init_module() {
+module_init() {
 }
 
-init_unit() {
+unit_init() {
   i32 localX = 7
 }
 
@@ -127,7 +127,7 @@ main() -> i32 {
 
         assertCodeContains(moduleC, "caffc_i32 localX = 0;");
         assertCodeContains(moduleC, "localX = 7;");
-        assertCodeNotContains(moduleC, "yolo_init_unit", "init_unit itself must not be generated");
+        assertCodeNotContains(moduleC, "yolo_unit_init", "unit_init itself must not be generated");
     }
 
     @Test
@@ -140,7 +140,7 @@ main() -> i32 {
 """
 module yolo
 
-init_unit() {
+unit_init() {
   second()
 }
 
@@ -151,10 +151,10 @@ second() {
 """
 module yolo
 
-init_module() {
+module_init() {
 }
 
-init_unit() {
+unit_init() {
   first()
 }
 
@@ -173,7 +173,7 @@ main() -> i32 {
         assertCodeContains(moduleC, """
         yolo_second(); if (_caffc_exception) { goto fnUncaughtException0; };
         """);
-        assertCodeNotContains(moduleC, "init_unit", "init_unit itself must not be generated");
+        assertCodeNotContains(moduleC, "unit_init", "unit_init itself must not be generated");
     }
 
     @Test
@@ -186,7 +186,7 @@ main() -> i32 {
 """
 module yolo
 
-init_unit() {
+unit_init() {
   yolo_unit()
 }
 
@@ -199,7 +199,7 @@ main() -> i32 {
 """)}
         );
 
-        assertCodeNotContains(unitC, "init_unit", "init_unit must be deleted from the original unit");
+        assertCodeNotContains(unitC, "unit_init", "unit_init must be deleted from the original unit");
         assertCodeContains(unitC, "void yolo_yolo_unit()");
     }
 
@@ -214,21 +214,21 @@ main() -> i32 {
 """
 module yolo
 
-init_unit() {
+unit_init() {
 }
 
 main() -> i32 {
-  init_unit()
+  unit_init()
   return 0
 }
 """)}
             );
-            throw new AssertionError("Expected fatal error for calling init_unit()");
+            throw new AssertionError("Expected fatal error for calling unit_init()");
         } catch (CancelCompilationException e) {
-            // init_unit is never registered as a callable module function, so
+            // unit_init is never registered as a callable module function, so
             // a call fails at symbol resolution rather than a dedicated check.
-            if (!e.getMessage().contains("cannot resolve init_unit")) {
-                throw new AssertionError("Expected cannot resolve init_unit error but got: " + e.getMessage(), e);
+            if (!e.getMessage().contains("cannot resolve unit_init")) {
+                throw new AssertionError("Expected cannot resolve unit_init error but got: " + e.getMessage(), e);
             }
         }
     }
@@ -244,7 +244,7 @@ main() -> i32 {
 """
 module yolo
 
-init_unit(i32 x) {
+unit_init(i32 x) {
 }
 
 main() -> i32 {
@@ -252,7 +252,7 @@ main() -> i32 {
 }
 """)}
             );
-            throw new AssertionError("Expected fatal error for parameterized init_unit()");
+            throw new AssertionError("Expected fatal error for parameterized unit_init()");
         } catch (CancelCompilationException e) {
             if (!e.getMessage().contains("cannot have parameters")) {
                 throw new AssertionError("Expected parameters error but got: " + e.getMessage(), e);
@@ -271,7 +271,7 @@ main() -> i32 {
 """
 module yolo
 
-init_unit() -> i32 {
+unit_init() -> i32 {
   return 0
 }
 
@@ -280,7 +280,7 @@ main() -> i32 {
 }
 """)}
             );
-            throw new AssertionError("Expected fatal error for non-void init_unit()");
+            throw new AssertionError("Expected fatal error for non-void unit_init()");
         } catch (CancelCompilationException e) {
             if (!e.getMessage().contains("cannot return a value")) {
                 throw new AssertionError("Expected return type error but got: " + e.getMessage(), e);

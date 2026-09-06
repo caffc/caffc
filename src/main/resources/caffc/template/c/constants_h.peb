@@ -11,7 +11,7 @@
  * ******************************************************************/
 
 /* Initializes the CaffC memory allocator, and calls for each module
- * its `init_module()` function. */
+ * its `module_init()` function. */
 void caffc_init();
 
 /* Winds down the CaffC memory allocator. */

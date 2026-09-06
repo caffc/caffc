@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Wrapper for an {@code init_unit()} body that was transplanted into
- * {@code init_module()}. Linear form conversion emits a dedicated
- * {@link AsmBlock} so the unit's locals live on that block.
+ * Wrapper for a {@link com.germaniumhq.caffc.compiler.model.Module#UNIT_INIT}
+ * body that was transplanted into
+ * {@link com.germaniumhq.caffc.compiler.model.Module#MODULE_INIT}. Linear form
+ * conversion emits a dedicated {@link AsmBlock} so the unit's locals live on
+ * that block.
  */
 public final class InitUnitBlock implements Statement {
     public AstItem owner;
@@ -58,7 +60,7 @@ public final class InitUnitBlock implements Statement {
 
     @Override
     public void recurseResolveTypes() {
-        // Statements and variables were already resolved in the original init_unit.
+        // Statements and variables were already resolved in the original unit_init.
     }
 
     @Override
@@ -85,9 +87,9 @@ public final class InitUnitBlock implements Statement {
     }
 
     /**
-     * Top-level statements still point at the original {@code init_unit}
+     * Top-level statements still point at the original {@code unit_init}
      * function. Reparent them so {@code findAstParent(Function.class)} and
-     * {@link ExceptionHandler} resolve to {@code init_module}.
+     * {@link ExceptionHandler} resolve to {@code module_init}.
      */
     private static void reparentStatement(Statement statement, AstItem newOwner) {
         Class<?> type = statement.getClass();
