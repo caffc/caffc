@@ -253,6 +253,7 @@ All primitive array types are implemented in `templates/common/default/caffc/`:
 
 Global initializers and optional per-file `unit_init()` bodies are moved into `module_init()` after type resolution:
 
+- **C name**: globals are module-prefixed like functions (`i32 x` in module `main` → `main_x`)
 - **Created/augmented** when global vars or any `unit_init` exist; skipped when neither is present
 - Prefer an explicit `module_init()` in the module (unit tests should too — assert against that CU)
 - **Order in generated C**: 1) global inits 2) original `module_init` code 3) each `unit_init` body (compilation-unit order)
@@ -271,6 +272,7 @@ Two forms (see `SwitchInstruction`):
 Bodies are block, `return`, or `break`/`continue` only (like `if`). No fall-through; `break` exits the switch. At least one `case`/`default`.
 
 ## Gotchas
+- **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x` (same as functions); native blocks must use the C name if they touch globals.
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
 - **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
 - **Bitwise vs boolean** — bitwise ops use C syntax (`&`, `|`, `^`, `~`, `<<`, `>>`); boolean ops use words (`and`, `or`, `not`).

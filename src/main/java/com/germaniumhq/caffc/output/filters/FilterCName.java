@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.output.filters;
 
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
+import com.germaniumhq.caffc.compiler.model.GlobalVariable;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
@@ -15,6 +16,10 @@ import java.util.Map;
 public class FilterCName implements Filter {
     @Override
     public Object apply(Object o, Map<String, Object> map, PebbleTemplate pebbleTemplate, EvaluationContext evaluationContext, int i) throws PebbleException {
+        if (o instanceof GlobalVariable globalVariable) {
+            return globalVariable.getCName();
+        }
+
         if (o instanceof ClassDefinition classDefinition) {
             return getCType(classDefinition.typeName);
         }

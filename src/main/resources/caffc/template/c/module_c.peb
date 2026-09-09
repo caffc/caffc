@@ -9,7 +9,7 @@ extern "C" {
 global variables
 ************************************************************** */
 {%- for globalVar in ctx.globalVariables.values() %}
-{{ globalVar.typeSymbol | c_type }} {{ globalVar.name }};
+{{ globalVar.typeSymbol | c_type }} {{ globalVar.cName }};
 {%- endfor %}
 
 {# we create a generic caffc array, and we patch its header for NEW constructs #}

@@ -3,6 +3,7 @@ package com.germaniumhq.caffc.output.filters;
 import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Field;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.GlobalVariable;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.StructReturnVariableDefinition;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
@@ -45,6 +46,10 @@ public class FilterCResolveId implements Filter {
         if (symbol instanceof ClassDefinition classDefinition) {
             return classDefinition.module.name + "_"
                     + classDefinition.name;
+        }
+
+        if (symbol instanceof GlobalVariable globalVariable) {
+            return globalVariable.getCName();
         }
 
         if (symbol instanceof Parameter parameter) {

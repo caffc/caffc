@@ -27,7 +27,7 @@ public class TestS011GlobalVariables {
         );
 
         // Global variable init is moved to module_init(), main just references it
-        assertCodeContains(code, "return x;");
+        assertCodeContains(code, "return yolo_x;");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestS011GlobalVariables {
             }
         );
 
-        assertCodeContains(header, "extern caffc_i32 x;");
+        assertCodeContains(header, "extern caffc_i32 yolo_x;");
         assertCodeContains(header, "void yolo_module_init();");
     }
 
@@ -88,10 +88,10 @@ public class TestS011GlobalVariables {
         assertCodeContains(
             moduleC,
             """
-            x = 42;
-            y = 100;
+            yolo_x = 42;
+            yolo_y = 100;
             _caffc_temp_yolo_obj_1 = yolo_get_data(); if (_caffc_exception) { goto fnUncaughtException0; };
-            a = _caffc_temp_yolo_obj_1;
+            yolo_a = _caffc_temp_yolo_obj_1;
             """
         );
     }
@@ -223,7 +223,7 @@ main() -> i32 {
         );
 
         assertCodeContains(moduleC, """
-        x = 42;
+        yolo_x = 42;
         yolo_yolo_setup(); if (_caffc_exception) { goto fnUncaughtException0; };
         fnUncaughtException0:
         _caffc_stack_frame_unregister(caffc_null);

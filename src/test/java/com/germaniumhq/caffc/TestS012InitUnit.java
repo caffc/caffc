@@ -39,7 +39,7 @@ main() -> i32 {
         );
 
         assertCodeContains(moduleC, """
-        x = 42;
+        yolo_x = 42;
         yolo_yolo_setup(); if (_caffc_exception) { goto fnUncaughtException0; };
         yolo_yolo_unit(); if (_caffc_exception) { goto fnUncaughtException0; };
         """);
