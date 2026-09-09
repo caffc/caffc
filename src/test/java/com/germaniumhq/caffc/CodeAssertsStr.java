@@ -114,6 +114,7 @@ public class CodeAssertsStr {
         allUnits.addAll(caffcFeature("gc", "test"));
         allUnits.addAll(caffcFeature("string", "default"));
         allUnits.addAll(caffcFeature("exception", "default"));
+        allUnits.addAll(caffcFeature("i18n", "default"));
 
         return compileCaffcProgram(template, unit, allUnits.toArray(new TestUnit[0]));
     }

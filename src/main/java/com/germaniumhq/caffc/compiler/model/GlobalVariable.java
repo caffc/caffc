@@ -37,10 +37,11 @@ public class GlobalVariable implements CompileBlock, Statement, Symbol, AsmVar, 
     private boolean isResolved;
 
     /**
-     * C identifier for this global: {@code {module}_{name}}.
+     * C identifier for this global: {@code {module}_{name}} with dots in the
+     * module name replaced by underscores (e.g. {@code caffc.i18n} → {@code caffc_i18n_codePages}).
      */
     public String getCName() {
-        return module + "_" + name;
+        return module.replace(".", "_") + "_" + name;
     }
 
     public static GlobalVariable fromAntlr(

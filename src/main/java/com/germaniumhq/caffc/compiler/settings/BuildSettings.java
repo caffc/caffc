@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.settings.debug.DebugSettings;
 import com.germaniumhq.caffc.compiler.settings.exception.ExceptionSettings;
 import com.germaniumhq.caffc.compiler.settings.gc.GcSettings;
 import com.germaniumhq.caffc.compiler.settings.gc.GcSettingsDefault;
+import com.germaniumhq.caffc.compiler.settings.i18n.I18nSettings;
 import com.germaniumhq.caffc.compiler.settings.string.StringSettings;
 
 import org.yaml.snakeyaml.Yaml;
@@ -33,6 +34,7 @@ public final class BuildSettings {
     public DebugSettings debug = new DebugSettings();
     public StringSettings string = new StringSettings();
     public ExceptionSettings exception = new ExceptionSettings();
+    public I18nSettings i18n = new I18nSettings();
 
     public BuildSettings() {
         readBuildSettingsFromEnvironment();
@@ -98,6 +100,11 @@ public final class BuildSettings {
             if (exceptionConfig != null) {
                 settings.exception.readFrom(exceptionConfig);
             }
+
+            Map<String, Object> i18nConfig = (Map<String, Object>) config.get("i18n");
+            if (i18nConfig != null) {
+                settings.i18n.readFrom(i18nConfig);
+            }
         } catch (Exception e) {
             CaffcCompiler.get().fatal(SourceLocation.fromFilePath("caffc.yaml"),
                 "Failed to read config file: " + projectConfigFile + ": " + e.getMessage());
@@ -156,6 +163,7 @@ public final class BuildSettings {
             case "gc": return gc.implName();
             case "string": return string.implName();
             case "exception": return exception.implName();
+            case "i18n": return i18n.implName();
             default:
                 CaffcCompiler.get().fatal(SourceLocation.UNKNOWN, "Invalid feature: " + featureName);
         }
@@ -176,9 +184,9 @@ public final class BuildSettings {
     }
 
     /**
-     * Resolve a dotted caffc.yaml-style path to a scalar for compile-time {@code #switch}.
-     * Returns {@link Number}, {@link String}, or {@link Boolean}. May return {@code null}
-     * when the setting exists but is unset (e.g. {@code one_file}, {@code string.locale}).
+     * Resolve a dotted caffc.yaml-style path for compile-time {@code #switch}/{@code #ifdef}.
+     * Returns {@link Number}, {@link String}, {@link Boolean}, or a {@link FilesSetting}.
+     * May return {@code null} when the setting exists but is unset (e.g. {@code one_file}).
      */
     public Object getCompileTimeValue(String dottedPath, SourceLocation sourceLocation) {
         switch (dottedPath) {
@@ -209,6 +217,10 @@ public final class BuildSettings {
                 return common.implName();
             case "exception.impl":
                 return exception.implName();
+            case "i18n.impl":
+                return i18n.implName();
+            case "i18n.files":
+                return i18n.files;
             default:
                 CaffcCompiler.get().fatal(sourceLocation,
                         "unknown compile-time setting `" + dottedPath + "`");

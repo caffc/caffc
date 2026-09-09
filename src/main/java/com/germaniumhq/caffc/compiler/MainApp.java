@@ -49,7 +49,7 @@ public class MainApp {
     public void mainRun(String[] args) throws IOException {
         BuildSettings buildConfig = ArgumentsParser.parse(args);
         program.buildSettings = buildConfig;
-        String[] features = {"common", "exception", "gc", "string"};
+        String[] features = {"common", "exception", "gc", "string", "i18n"};
 
         if (buildConfig.getInputSources().isEmpty()) {
             reportError("no sources passed for the build");
@@ -278,7 +278,7 @@ public class MainApp {
         StringBuilder headers = new StringBuilder();
         StringBuilder implementations = new StringBuilder();
         
-        String[] features = {"common", "exception", "gc", "string"};
+        String[] features = {"common", "exception", "gc", "string", "i18n"};
 
         // Collect all core files and sort by dependency order
         List<String> coreHeaders = new ArrayList<>();

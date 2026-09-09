@@ -12,6 +12,12 @@ public interface CompileBlock extends AstItem {
             return null;
         }
 
+        if (antlrCompileBlock.sharpIfdefUnit() != null) {
+            CaffcCompiler.get().fatal(SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, antlrCompileBlock),
+                    "BUG: #ifdef must be expanded via SharpIfdef.expandUnit");
+            return null;
+        }
+
         if (antlrCompileBlock.nativeBlock() != null) {
             return NativeBlock.fromAntlr(unit, antlrCompileBlock.nativeBlock(), owner);
         }

@@ -100,7 +100,7 @@ test_codepage_8859_2_registry() {
 }
 
 test_codepage_8859_2_ascii_roundtrip() {
-  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  i18n.CodePageEncoding cp = i18n.getCodePage("8859-2")
   u8[] bytes
   bool error
   i32 errorIndex
@@ -118,7 +118,7 @@ test_codepage_8859_2_ascii_roundtrip() {
 }
 
 test_codepage_8859_2_latin2() {
-  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  i18n.CodePageEncoding cp = i18n.getCodePage("8859-2")
   u8[] bytes
   bool error
   i32 errorIndex
@@ -147,7 +147,7 @@ test_codepage_8859_2_latin2() {
 }
 
 test_codepage_8859_2_unmappable() {
-  i18n.CodePage8859_2 cp = new i18n.CodePage8859_2()
+  i18n.CodePageEncoding cp = i18n.getCodePage("8859-2")
   u8[] bytes
   bool error
   i32 errorIndex

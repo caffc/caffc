@@ -6,6 +6,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFalse;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionMath;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNumber;
@@ -15,6 +16,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionTrue;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionUnaryMinus;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.settings.BuildSettings;
+import com.germaniumhq.caffc.compiler.settings.FilesSetting;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -32,7 +34,7 @@ public final class CompileTimeExpressionEval {
         Object value = eval(expression, settings);
         if (!(value instanceof Boolean bool)) {
             CaffcCompiler.get().fatal(expression,
-                    "#case expression must evaluate to bool, got: " + describe(value));
+                    "compile-time condition must evaluate to bool, got: " + describe(value));
             return false;
         }
         return bool;
@@ -58,11 +60,14 @@ public final class CompileTimeExpressionEval {
             String path = settingsPath(expression);
             return settings.getCompileTimeValue(path, expression.getSourceLocation());
         }
+        if (expression instanceof ExpressionFnCall fnCall) {
+            return evalFnCall(fnCall, settings);
+        }
         if (expression instanceof ExpressionUnaryMinus unaryMinus) {
             Object inner = eval(unaryMinus.expression, settings);
             if (!(inner instanceof Number n)) {
                 CaffcCompiler.get().fatal(expression,
-                        "unary `-` requires a number in #case, got: " + describe(inner));
+                        "unary `-` requires a number in compile-time expression, got: " + describe(inner));
                 return null;
             }
             return negate(n);
@@ -71,7 +76,7 @@ public final class CompileTimeExpressionEval {
             Object inner = eval(boolNot.expression, settings);
             if (!(inner instanceof Boolean b)) {
                 CaffcCompiler.get().fatal(expression,
-                        "`not` / `!` requires a bool in #case, got: " + describe(inner));
+                        "`not` / `!` requires a bool in compile-time expression, got: " + describe(inner));
                 return null;
             }
             return !b;
@@ -80,7 +85,7 @@ public final class CompileTimeExpressionEval {
             Object left = eval(boolOp.left, settings);
             if (!(left instanceof Boolean leftBool)) {
                 CaffcCompiler.get().fatal(expression,
-                        "boolean `" + boolOp.operator + "` requires bool operands in #case");
+                        "boolean `" + boolOp.operator + "` requires bool operands in compile-time expression");
                 return null;
             }
             if ("&&".equals(boolOp.operator) && !leftBool) {
@@ -92,7 +97,7 @@ public final class CompileTimeExpressionEval {
             Object right = eval(boolOp.right, settings);
             if (!(right instanceof Boolean rightBool)) {
                 CaffcCompiler.get().fatal(expression,
-                        "boolean `" + boolOp.operator + "` requires bool operands in #case");
+                        "boolean `" + boolOp.operator + "` requires bool operands in compile-time expression");
                 return null;
             }
             return "&&".equals(boolOp.operator) ? (leftBool && rightBool) : (leftBool || rightBool);
@@ -105,7 +110,42 @@ public final class CompileTimeExpressionEval {
         }
 
         CaffcCompiler.get().fatal(expression,
-                "unsupported expression in #case: " + expression.getClass().getSimpleName());
+                "unsupported expression in compile-time condition: " + expression.getClass().getSimpleName());
+        return null;
+    }
+
+    private static Object evalFnCall(ExpressionFnCall fnCall, BuildSettings settings) {
+        if (!(fnCall.functionExpression instanceof ExpressionDotAccess dot)) {
+            CaffcCompiler.get().fatal(fnCall,
+                    "unsupported function call in compile-time condition");
+            return null;
+        }
+
+        Object receiver = eval(dot.leftOfDot, settings);
+        String method = dot.rightOfDot;
+
+        if (receiver instanceof FilesSetting files) {
+            if (!"contains".equals(method)) {
+                CaffcCompiler.get().fatal(fnCall,
+                        "unknown method `" + method + "` on files setting (expected contains)");
+                return null;
+            }
+            if (fnCall.parameters.size() != 1) {
+                CaffcCompiler.get().fatal(fnCall,
+                        "`files.contains` expects exactly one string argument");
+                return null;
+            }
+            Object arg = eval(fnCall.parameters.get(0), settings);
+            if (!(arg instanceof String path)) {
+                CaffcCompiler.get().fatal(fnCall,
+                        "`files.contains` argument must be a string, got: " + describe(arg));
+                return null;
+            }
+            return files.contains(path);
+        }
+
+        CaffcCompiler.get().fatal(fnCall,
+                "unsupported receiver for compile-time method call: " + describe(receiver));
         return null;
     }
 

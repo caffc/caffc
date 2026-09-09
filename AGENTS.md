@@ -271,20 +271,55 @@ Two forms (see `SwitchInstruction`):
 
 Bodies are block, `return`, or `break`/`continue` only (like `if`). No fall-through; `break` exits the switch. At least one `case`/`default`.
 
-## Compile-time `#switch`
+## Compile-time `#switch` / `#ifdef`
 
-Evaluates against `caffc.yaml` / `BuildSettings` (not runtime). Braced; first matching `#case` wins; no match + no `#default` → empty. Unit-level or method top-level only (not nested, not inside `if`/`while`/`for`). Settings: `gc.impl`, `gc.memory_trigger`, `debug.c_line_macro`, `debug.trace_line_runtime`, `string.locale`/`impl`, `one_file`, `common.impl`, `exception.impl`. Expressions: literals, dotted settings, numeric `+ - * /`/comparisons, string `==`/`!=`, `and`/`or`/`not`.
+Evaluates against `caffc.yaml` / `BuildSettings` (not runtime). Unit-level or method
+top-level only (not nested, not inside `if`/`while`/`for`). Inactive branches are never
+type-resolved or codegen'd.
+
+**`#switch`**: braced; first matching `#case` wins; no match + no `#default` → empty.
+
+**`#ifdef`**: `#ifdef expr { … }` with optional `#else { … }`.
+
+Settings: `gc.impl`, `gc.memory_trigger`, `debug.c_line_macro`, `debug.trace_line_runtime`,
+`string.locale`/`impl`, `one_file`, `common.impl`, `exception.impl`, `i18n.impl`,
+`i18n.files` (a fileset with `.contains("path")`). Expressions: literals, dotted settings,
+numeric `+ - * /`/comparisons, string `==`/`!=`, `and`/`or`/`not`, and
+`i18n.files.contains("…")`.
 
 ```caffc
 #switch {
 #case gc.impl == "default" and 1 + 2 > 2: { /* kept */ }
 #default: { /* fallback */ }
 }
+
+#ifdef i18n.files.contains("generated/CodePage8859_2.caffc") {
+  unit_init() { /* register code page */ }
+}
 ```
 
+### `i18n` feature + `files` globs
+
+Template package: `templates/i18n/{impl}/caffc/` (same layout as exception/gc/string).
+`caffc.yaml`:
+
+```yaml
+i18n:
+  files:
+    includes:
+      - glob("generated/*.caffc")
+    excludes:
+      - glob("generated/*WIP*")
+```
+
+`glob("pattern")` entries (or plain patterns) use Java/bazel-style globs. Defaults include
+`generated/*.caffc` and `generated/**/*.caffc`. Code pages register themselves via
+`unit_init()` guarded by `#ifdef i18n.files.contains("…")`; look them up with
+`caffc.i18n.getCodePage`.
+
 ## Gotchas
-- **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x` (same as functions); native blocks must use the C name if they touch globals.
-- **`#switch` is compile-time** — `BuildSettings` only; braced (`#case …: { }` / `#default: { }`); no nesting / mid-control-flow.
+- **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x`; dots in module names become underscores (`caffc.i18n` → `caffc_i18n_x`). Native blocks must use the C name if they touch globals.
+- **`#switch` / `#ifdef` are compile-time** — `BuildSettings` only; no nesting / mid-control-flow.
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
 - **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
 - **Bitwise vs boolean** — bitwise ops use C syntax (`&`, `|`, `^`, `~`, `<<`, `>>`); boolean ops use words (`and`, `or`, `not`).
@@ -296,3 +331,4 @@ Evaluates against `caffc.yaml` / `BuildSettings` (not runtime). Braced; first ma
 - **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.
 - **`unit_init()` is not callable** — never registered as a module function (`cannot resolve`); inlined into `module_init` then deleted; no parameters or return type.
 - **Switch case syntax** — both forms require a colon after the case expression / `default` (`case cond: {`, `case 3: {`, `default: {`).
+- **Java `**` globs** — `generated/**/*.caffc` does not match files directly under `generated/`; also list `generated/*.caffc` when needed.

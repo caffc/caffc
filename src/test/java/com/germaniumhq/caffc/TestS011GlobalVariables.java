@@ -229,4 +229,30 @@ main() -> i32 {
         _caffc_stack_frame_unregister(caffc_null);
         """);
     }
+
+    @Test
+    public void dottedModuleGlobalUsesUnderscoresInCName() {
+        String header = compileCaffcProgram(
+            "caffc/template/c/module_h.peb",
+            "test.caffc",
+            new TestUnit[] {
+                new TestUnit("test.caffc",
+                    """
+                    module caffc.i18n
+
+                    interface obj {}
+
+                    i32 codePages = 0
+
+                    main() -> i32 {
+                      return codePages
+                    }
+                    """)
+            }
+        );
+
+        assertCodeContains(header, "extern caffc_i32 caffc_i18n_codePages;");
+        assertCodeContains(header, "void caffc_i18n_module_init();");
+        assertCodeNotContains(header, "caffc.i18n_codePages", "dots must not appear in C global names");
+    }
 }

@@ -156,6 +156,9 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
             if (bodyItem.sharpSwitchMethod() != null) {
                 function.statements.addAll(
                         SharpSwitch.expandMethod(unit, function, bodyItem.sharpSwitchMethod()));
+            } else if (bodyItem.sharpIfdefMethod() != null) {
+                function.statements.addAll(
+                        SharpIfdef.expandMethod(unit, function, bodyItem.sharpIfdefMethod()));
             } else {
                 function.statements.addAll(Statement.fromAntlr(unit, function, bodyItem.statement()));
             }

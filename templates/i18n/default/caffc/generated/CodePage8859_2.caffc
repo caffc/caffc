@@ -1,5 +1,6 @@
 module caffc.i18n
 
+#ifdef i18n.files.contains("generated/CodePage8859_2.caffc") {
 u8[] EMPTY_U8_ARRAY = new u8[0]
 
 #public
@@ -632,4 +633,10 @@ class CodePage8859_2 implements CodePageEncoding {
     value = str.fromPtrBuffer(buf._caffc_data, out)
     return value, errorIndex >= 0, errorIndex
   }
+}
+
+unit_init() {
+  CodePageEncoding codePage = new CodePage8859_2()
+  codePages.put(codePage.name(), codePage)
+}
 }

@@ -4,9 +4,6 @@ HashDict<str, CodePageEncoding> codePages
 
 module_init() {
   codePages = new HashDict<str, CodePageEncoding>(8)
-
-  CodePageEncoding codePage = new CodePage8859_2()
-  codePages.put(codePage.name(), codePage)
 }
 
 getCodePage(str codePageName) -> CodePageEncoding {

@@ -1,0 +1,5 @@
+i18n:
+  files:
+    includes:
+      - glob("generated/CodePage8859_2.caffc")
+    excludes: []

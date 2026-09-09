@@ -18,10 +18,11 @@ compileBlock
     | interfaceDefinition
     | variableDeclarations
     | sharpSwitchUnit
+    | sharpIfdefUnit
     // | block
     ;
 
-// Unit-level #switch case bodies: same as compileBlock but no nested #switch.
+// Unit-level #switch/#ifdef bodies: same as compileBlock but no nested #switch/#ifdef.
 compileBlockPlain
     : nativeBlock
     | tagDefinition
@@ -40,9 +41,9 @@ function:
     tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? functionBlock |
     tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? functionBlock;
 
-// Method body may contain top-level #switch; if/while/for keep `block` (statements only).
+// Method body may contain top-level #switch/#ifdef; if/while/for keep `block` (statements only).
 functionBlock: CURLY_OPEN functionBodyItem* CURLY_CLOSE;
-functionBodyItem: statement | sharpSwitchMethod;
+functionBodyItem: statement | sharpSwitchMethod | sharpIfdefMethod;
 
 // Compile-time conditional (caffc.yaml settings). Braced; first matching #case wins.
 sharpSwitchUnit:
@@ -58,6 +59,15 @@ sharpSwitchMethod:
 sharpCaseMethod:
   SHARP CASE expression ':' CURLY_OPEN statement* CURLY_CLOSE |
   SHARP DEFAULT ':' CURLY_OPEN statement* CURLY_CLOSE;
+
+// Compile-time #ifdef / optional #else (same expression rules as #case).
+sharpIfdefUnit:
+  SHARP IFDEF expression CURLY_OPEN thenBlocks+=compileBlockPlain* CURLY_CLOSE
+  (SHARP ELSE CURLY_OPEN elseBlocks+=compileBlockPlain* CURLY_CLOSE)?;
+
+sharpIfdefMethod:
+  SHARP IFDEF expression CURLY_OPEN thenStatements+=statement* CURLY_CLOSE
+  (SHARP ELSE CURLY_OPEN elseStatements+=statement* CURLY_CLOSE)?;
 
 returnType
   : namedTypeTuple // multi-return into a struct if multiple names defined, otherwise single-value named return
@@ -357,6 +367,7 @@ EXTENDS: 'extends';
 FINALLY: 'finally';
 FOR: 'for';
 IF: 'if';
+IFDEF: 'ifdef';
 IMPLEMENTS: 'implements';
 IN: 'in';
 INSTANCEOF: 'instanceof';
