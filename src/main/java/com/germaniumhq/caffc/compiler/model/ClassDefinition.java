@@ -388,8 +388,9 @@ public class ClassDefinition implements
     }
 
     public boolean isImplementing(InterfaceDefinition definition) {
-        for (InterfaceDefinition interfaceDefinition : implementedInterfaces) {
-            if (definition.isAssignableFrom(interfaceDefinition)) {
+        for (TypeDefinitionSymbol implementedType : getImplementedTypes()) {
+            if (implementedType instanceof InterfaceDefinition interfaceDefinition &&
+                    definition.isAssignableFrom(interfaceDefinition)) {
                 return true;
             }
         }

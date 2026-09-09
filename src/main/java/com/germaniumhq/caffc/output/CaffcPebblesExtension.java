@@ -42,6 +42,7 @@ import com.germaniumhq.caffc.compiler.model.instruction.ForInInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ReturnInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.SwitchInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.ThrowInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.TryCatchInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.WhileInstruction;
@@ -136,6 +137,7 @@ public class CaffcPebblesExtension implements Extension {
 
                 // statements: FIXME: remove all of them, everything now is made only via asm instructions
                 .withMapping(IfInstruction.class, "c/instruction/if.peb")
+                .withMapping(SwitchInstruction.class, "c/instruction/switch.peb")
                 .withMapping(ForInstruction.class, "c/instruction/for.peb")
                 .withMapping(ForInInstruction.class, "c/instruction/for_in.peb")
                 .withMapping(WhileInstruction.class, "c/instruction/while.peb")

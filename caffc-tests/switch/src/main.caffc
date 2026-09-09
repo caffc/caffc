@@ -1,0 +1,129 @@
+module main
+
+assertTrue(bool what, str message) {
+  if not what {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}
+
+testBooleanSwitch() {
+  i32 x = 2
+  i32 result = 0
+
+  switch {
+    case x == 1: {
+      result = 10
+    }
+    case x == 2 and x != 0: {
+      result = 20
+    }
+    default: {
+      result = 30
+    }
+  }
+
+  assertTrue(result == 20, "boolean switch should pick matching case")
+}
+
+testValueSwitchPrimitive() {
+  i32 x = 4
+  i32 result = 0
+
+  switch x {
+    case 3: {
+      result = 3
+    }
+    case 4: {
+      result = 4
+    }
+    default: {
+      result = 0
+    }
+  }
+
+  assertTrue(result == 4, "value switch should match primitive case")
+}
+
+testValueSwitchNull() {
+  str s = null
+  i32 result = 0
+
+  switch s {
+    case null: {
+      result = 1
+    }
+    case "hello": {
+      result = 2
+    }
+    default: {
+      result = 3
+    }
+  }
+
+  assertTrue(result == 1, "case null should match null switch value")
+}
+
+testValueSwitchString() {
+  str s = "hello"
+  i32 result = 0
+
+  switch s {
+    case null: {
+      result = 1
+    }
+    case "hello": {
+      result = 2
+    }
+    default: {
+      result = 3
+    }
+  }
+
+  assertTrue(result == 2, "string switch should use equals")
+}
+
+testValueSwitchNullDoesNotDie() {
+  str s = null
+  i32 result = 0
+
+  switch s {
+    case "hello": {
+      result = 2
+    }
+    default: {
+      result = 3
+    }
+  }
+
+  assertTrue(result == 3, "null switch value must not die on non-null cases")
+}
+
+testSwitchBreak() {
+  i32 x = 1
+  i32 result = 0
+
+  switch x {
+    case 1: {
+      result = 10
+      break
+    }
+    default: {
+      result = 20
+    }
+  }
+
+  assertTrue(result == 10, "break should leave the switch after matching case")
+}
+
+main() -> i32 {
+  testBooleanSwitch()
+  testValueSwitchPrimitive()
+  testValueSwitchNull()
+  testValueSwitchString()
+  testValueSwitchNullDoesNotDie()
+  testSwitchBreak()
+  print("switch tests ok")
+  return 0
+}

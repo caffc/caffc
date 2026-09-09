@@ -114,6 +114,13 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
             }
         }
 
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            Symbol parentSymbol = parent.resolve(name);
+            if (parentSymbol != null) {
+                return parentSymbol;
+            }
+        }
+
         if (this.generics != null) {
             return this.generics.getByName(name);
         }
@@ -136,6 +143,13 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         for (FunctionDefinition f : functions) {
             if (f.name.equals(name)) {
                 return f;
+            }
+        }
+
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            FunctionDefinition parentFunction = parent.getFunction(name);
+            if (parentFunction != null) {
+                return parentFunction;
             }
         }
 

@@ -91,6 +91,7 @@ statement:
   whileBlock |
   forBlock |
   ifBlock |
+  switchBlock |
   tryCatchBlock |
   throwStatement |
   expression |
@@ -108,6 +109,18 @@ forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
            | FOR typeName variableName=ID 'in' expression block;
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
+
+// Boolean switch: `switch { case cond: { ... } default: { ... } }`
+// Value switch:   `switch x { case 3: { ... } default: { ... } }`
+switchBlock:
+  SWITCH CURLY_OPEN switchBranch+ CURLY_CLOSE |
+  SWITCH expression CURLY_OPEN switchBranch+ CURLY_CLOSE;
+
+switchCaseBody: block | return | controlFlow;
+
+switchBranch:
+  CASE expression ':' switchCaseBody |
+  DEFAULT ':' switchCaseBody;
 
 tryCatchBlock: TRY block (catchBlock)* finallyBlock? |
   TRY block FINALLY block;
@@ -304,9 +317,11 @@ WS: [ \n\t\r] -> skip;
 AS: 'as';
 AND: 'and';
 BREAK: 'break';
+CASE: 'case';
 CATCH: 'catch';
 CLASS: 'class';
 CONTINUE: 'continue';
+DEFAULT: 'default';
 ELSE: 'else';
 EXTENDS: 'extends';
 FINALLY: 'finally';
@@ -326,6 +341,7 @@ OR: 'or';
 TRUE: 'true';
 RETURN: 'return';
 STATIC: 'static';
+SWITCH: 'switch';
 TAG: 'tag';
 THROW: 'throw';
 TRY: 'try';

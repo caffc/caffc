@@ -261,6 +261,15 @@ Global initializers and optional per-file `unit_init()` bodies are moved into `m
 - **C signature**: `{module}_module_init()` (e.g. `yolo_module_init`)
 - Header tests use the original unit path (header template renders the module)
 
+## Switch Statements
+
+Two forms (see `SwitchInstruction`):
+
+1. **Boolean** — `switch { case cond: { ... } default: { ... } }` (no subject). Desugars to if/else-if/else. Cases must be `bool`.
+2. **Value** — `switch x { case 3: { ... } default: { ... } }`. Primitives/arrays use `==`. Objects require `HasEquals` (`HasHash` extends it). `case null:` is allowed; a null subject does not call `equals` (no crash).
+
+Bodies are block, `return`, or `break`/`continue` only (like `if`). No fall-through; `break` exits the switch. At least one `case`/`default`.
+
 ## Gotchas
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
 - **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
@@ -269,6 +278,7 @@ Global initializers and optional per-file `unit_init()` bodies are moved into `m
 - **Array `.size` is a field** — use `arr.size` (or `(i32) arr.size`), not `arr.size()`. `str.size()` is a method.
 - **`instanceof` syntax** — use `x not instanceof Y` (not `not x instanceof Y`).
 - **Exception / null returns** — handlers return `0` for primitives and `null` for objects; never return `null` for primitives (`f32`/`f64` etc.).
-- **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough.
+- **`implements HasHash` required for virtual dispatch** — `str` and boxing classes must declare it; a matching `hash()`/`equals()` alone is not enough. `HasHash extends HasEquals`.
 - **Nested feature templates + multi-return** — template `.caffc` files are discovered recursively; multi-return structs are `{Owner}_{fn}_structreturn`, and interface implementors reuse the interface return struct for C type matching.
 - **`unit_init()` is not callable** — never registered as a module function (`cannot resolve`); inlined into `module_init` then deleted; no parameters or return type.
+- **Switch case syntax** — both forms require a colon after the case expression / `default` (`case cond: {`, `case 3: {`, `default: {`).
