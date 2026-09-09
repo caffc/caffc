@@ -109,7 +109,7 @@ public class TestS105SharpIfdef {
         settings.i18n.files = new FilesSetting();
         settings.i18n.files.readFrom(
             java.util.Map.of(
-                "includes", java.util.List.of("glob(\"generated/CodePage8859_2.caffc\")"),
+                "includes", java.util.List.of("glob(\"generated/iso/CodePage8859_2.caffc\")"),
                 "excludes", java.util.List.of()
             ),
             com.germaniumhq.caffc.compiler.model.source.SourceLocation.UNKNOWN
@@ -124,13 +124,13 @@ public class TestS105SharpIfdef {
 
                     interface obj {}
 
-                    #ifdef i18n.files.contains("generated/CodePage8859_2.caffc") {
+                    #ifdef i18n.files.contains("generated/iso/CodePage8859_2.caffc") {
                       registered() -> i32 {
                         return 1
                       }
                     }
 
-                    #ifdef i18n.files.contains("generated/CodePageMissing.caffc") {
+                    #ifdef i18n.files.contains("generated/iso/CodePageMissing.caffc") {
                       missing() -> i32 {
                         return 2
                       }

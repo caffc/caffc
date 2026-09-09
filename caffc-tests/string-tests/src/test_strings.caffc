@@ -96,7 +96,7 @@ test_codepage_8859_2_registry() {
   i18n.CodePageEncoding cp = i18n.getCodePage("8859-2")
   assertTrue(cp != null, "getCodePage(8859-2) should return encoding")
   assertEqual("8859-2", cp.name(), "code page name")
-  assertEqual("unicode.org", cp.vendor(), "code page vendor")
+  assertEqual("ISO", cp.vendor(), "code page vendor")
 }
 
 test_codepage_8859_2_ascii_roundtrip() {

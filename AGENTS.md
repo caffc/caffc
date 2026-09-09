@@ -293,7 +293,7 @@ numeric `+ - * /`/comparisons, string `==`/`!=`, `and`/`or`/`not`, and
 #default: { /* fallback */ }
 }
 
-#ifdef i18n.files.contains("generated/CodePage8859_2.caffc") {
+#ifdef i18n.files.contains("generated/iso/CodePage8859_2.caffc") {
   unit_init() { /* register code page */ }
 }
 ```
@@ -301,21 +301,30 @@ numeric `+ - * /`/comparisons, string `==`/`!=`, `and`/`or`/`not`, and
 ### `i18n` feature + `files` globs
 
 Template package: `templates/i18n/{impl}/caffc/` (same layout as exception/gc/string).
+Single-byte code pages live under `caffc/generated/<vendor>/` (`iso`, `microsoft`,
+`apple`, `misc`, `next`, `iana`). Data comes from the local mirror
+`/home/raptor/learn/projects/caffc/unicode` (unicode.org MAPPINGS + IANA
+`charset-reg`). Regenerate with `python3 util/generate-codepages.py`
+(multi-byte encodings are skipped).
 `caffc.yaml`:
 
 ```yaml
 i18n:
   files:
     includes:
-      - glob("generated/*.caffc")
+      - glob("generated/iso/CodePage8859_2.caffc")
+      - glob("generated/microsoft/CodePage1252.caffc")
     excludes:
-      - glob("generated/*WIP*")
+      - glob("generated/**/*WIP*")
 ```
 
-`glob("pattern")` entries (or plain patterns) use Java/bazel-style globs. Defaults include
-`generated/*.caffc` and `generated/**/*.caffc`. Code pages register themselves via
+`glob("pattern")` entries (or plain patterns) use Java/bazel-style globs. Defaults to
+**no** generated code pages — opt in via `includes`. Code pages register themselves via
 `unit_init()` guarded by `#ifdef i18n.files.contains("…")`; look them up with
-`caffc.i18n.getCodePage`.
+`caffc.i18n.getCodePage`. Registry `name()` values are short ids for unicode.org
+vendors (`8859-2`, `1252`, `mac-roman`) and IANA charset names for `iana/`
+(`windows-1252`, `Amiga-1251`, …); `vendor()` is `ISO` / `Microsoft` / `Apple` /
+`IANA` / …
 
 ## Gotchas
 - **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x`; dots in module names become underscores (`caffc.i18n` → `caffc_i18n_x`). Native blocks must use the C name if they touch globals.

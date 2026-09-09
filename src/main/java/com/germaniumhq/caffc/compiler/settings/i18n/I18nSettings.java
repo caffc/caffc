@@ -13,20 +13,16 @@ import java.util.Map;
  * i18n:
  *   files:
  *     includes:
- *       - glob("generated/CodePage8859_2.caffc")
+ *       - glob("generated/iso/CodePage8859_2.caffc")
  *     excludes: []
  * </pre>
  */
 public class I18nSettings implements CaffcFeature {
     /**
-     * Default: ship all pre-packaged generated code pages.
-     * Note: Java globs treat double-star as directories, so both
-     * {@code generated/*.caffc} and nested {@code generated/.../*.caffc} patterns
-     * are included.
+     * Selected generated code-page files. Empty by default — projects opt in via
+     * {@code caffc.yaml} {@code i18n.files.includes} globs.
      */
-    public FilesSetting files = FilesSetting.withDefaultIncludes(
-            "generated/*.caffc",
-            "generated/**/*.caffc");
+    public FilesSetting files = new FilesSetting();
 
     @Override
     public String implName() {
