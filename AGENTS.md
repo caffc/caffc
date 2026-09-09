@@ -327,6 +327,7 @@ vendors (`8859-2`, `1252`, `mac-roman`) and IANA charset names for `iana/`
 `IANA` / …
 
 ## Gotchas
+- **Blank identifier `_`** — Go-style discard on assign LHS only (`x, _, _ = cp.fromUtf8(...)`, or `_ = expr`). Not a real variable; do not declare or read `_`. Discarded object/array multi-return slots are still zero-cleared for GC.
 - **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x`; dots in module names become underscores (`caffc.i18n` → `caffc_i18n_x`). Native blocks must use the C name if they touch globals.
 - **`#switch` / `#ifdef` are compile-time** — `BuildSettings` only; no nesting / mid-control-flow.
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.

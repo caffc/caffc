@@ -51,6 +51,88 @@ caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
     }
 
     /**
+     * Blank identifier {@code _} discards multi-return slots (Go-style).
+     */
+    @Test
+    public void testAssignMultiIgnoredVariables() {
+        String code = CodeAssertsStr.compileCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                            module caffc
+                            
+                            class u8_arr {
+                              set(i32 index, u8 value) {}
+                            }
+                            
+                            multi() -> i32 x, u8 y, i32 z {
+                              return 0, 0, 0
+                            }
+
+                            main() -> i32 {
+                              i32 x
+
+                              x, _, _ = multi()
+
+                              return 0
+                            }
+                            """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+_caffc_temp_caffc_multi_structreturn_1 = caffc_multi(); if (_caffc_exception) { goto fnUncaughtException0; };
+x = _caffc_temp_caffc_multi_structreturn_1.x;
+                """,
+            "kept unpack targets should still be assigned from the struct");
+
+        CodeAssertsStr.assertCodeNotContains(code,
+            "= _caffc_temp_caffc_multi_structreturn_1.y",
+            "discarded primitive unpack slots must not be read into a local");
+
+        CodeAssertsStr.assertCodeNotContains(code,
+            "= _caffc_temp_caffc_multi_structreturn_1.z",
+            "discarded primitive unpack slots must not be read into a local");
+    }
+
+    /**
+     * Discarded object/array multi-return slots must still be zero-cleared for GC.
+     */
+    @Test
+    public void testAssignMultiIgnoredObjectStillGcCleared() {
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                            module main
+                            
+                            getFile() -> u8 size, str name {
+                              return 3, "a.txt"
+                            }
+
+                            main() -> i32 {
+                              u8 size
+
+                              size, _ = getFile()
+
+                              return 0
+                            }
+                            """)
+            }
+        );
+
+        CodeAssertsStr.assertCodeContains(code, """
+size = _caffc_temp_caffc_getFile_structreturn_1.size;
+_caffc_temp_caffc_getFile_structreturn_1.name = caffc_null;
+                """,
+            "discarded object unpack slots must be zero-cleared without assigning to a local");
+    }
+
+    /**
      * Tests regular assignment of a single variable.
      */
     @Test
