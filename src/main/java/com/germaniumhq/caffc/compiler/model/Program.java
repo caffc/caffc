@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.compiler.settings.BuildSettings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +28,11 @@ import java.util.TreeSet;
  */
 public class Program implements ModuleProvider, AstItem, Scope {
     public static Program INSTANCE = new Program();
+
+    /**
+     * Build settings from caffc.yaml / CLI. Used by compile-time {@code #switch}.
+     */
+    public BuildSettings buildSettings = new BuildSettings();
 
     public Map<String, Module> modules = new HashMap<>();
 

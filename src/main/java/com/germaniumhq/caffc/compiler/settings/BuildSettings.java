@@ -174,4 +174,45 @@ public final class BuildSettings {
     public List<String> getInputSources() {
         return inputSources;
     }
+
+    /**
+     * Resolve a dotted caffc.yaml-style path to a scalar for compile-time {@code #switch}.
+     * Returns {@link Number}, {@link String}, or {@link Boolean}. May return {@code null}
+     * when the setting exists but is unset (e.g. {@code one_file}, {@code string.locale}).
+     */
+    public Object getCompileTimeValue(String dottedPath, SourceLocation sourceLocation) {
+        switch (dottedPath) {
+            case "one_file":
+                return oneFile;
+            case "gc.impl":
+                return gc.implName();
+            case "gc.memory_trigger":
+                if (gc instanceof GcSettingsDefault gcDefault) {
+                    return gcDefault.getMemoryTrigger();
+                }
+                CaffcCompiler.get().fatal(sourceLocation,
+                        "compile-time setting `gc.memory_trigger` is only available for gc.impl=default");
+                return null;
+            case "debug.c_line_macro":
+                return debug.cLineMacro.name();
+            case "debug.trace_line_runtime":
+                return debug.traceLineRuntime.name();
+            case "string.locale":
+                return string.getLocale();
+            case "string.impl":
+                return string.implName();
+            case "string.locale_list":
+                CaffcCompiler.get().fatal(sourceLocation,
+                        "compile-time setting `string.locale_list` is not a scalar");
+                return null;
+            case "common.impl":
+                return common.implName();
+            case "exception.impl":
+                return exception.implName();
+            default:
+                CaffcCompiler.get().fatal(sourceLocation,
+                        "unknown compile-time setting `" + dottedPath + "`");
+                return null;
+        }
+    }
 }

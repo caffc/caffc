@@ -17,7 +17,18 @@ compileBlock
     | classDefinition
     | interfaceDefinition
     | variableDeclarations
+    | sharpSwitchUnit
     // | block
+    ;
+
+// Unit-level #switch case bodies: same as compileBlock but no nested #switch.
+compileBlockPlain
+    : nativeBlock
+    | tagDefinition
+    | function
+    | classDefinition
+    | interfaceDefinition
+    | variableDeclarations
     ;
 
 use: USE fqdn;
@@ -26,8 +37,27 @@ use_alias: AS ID;
 nativeBlock: NATIVE;
 
 function:
-    tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
-    tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
+    tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? functionBlock |
+    tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? functionBlock;
+
+// Method body may contain top-level #switch; if/while/for keep `block` (statements only).
+functionBlock: CURLY_OPEN functionBodyItem* CURLY_CLOSE;
+functionBodyItem: statement | sharpSwitchMethod;
+
+// Compile-time conditional (caffc.yaml settings). Braced; first matching #case wins.
+sharpSwitchUnit:
+  SHARP SWITCH CURLY_OPEN sharpCaseUnit+ CURLY_CLOSE;
+
+sharpCaseUnit:
+  SHARP CASE expression ':' CURLY_OPEN compileBlockPlain* CURLY_CLOSE |
+  SHARP DEFAULT ':' CURLY_OPEN compileBlockPlain* CURLY_CLOSE;
+
+sharpSwitchMethod:
+  SHARP SWITCH CURLY_OPEN sharpCaseMethod+ CURLY_CLOSE;
+
+sharpCaseMethod:
+  SHARP CASE expression ':' CURLY_OPEN statement* CURLY_CLOSE |
+  SHARP DEFAULT ':' CURLY_OPEN statement* CURLY_CLOSE;
 
 returnType
   : namedTypeTuple // multi-return into a struct if multiple names defined, otherwise single-value named return

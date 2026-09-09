@@ -48,6 +48,7 @@ public class MainApp {
 
     public void mainRun(String[] args) throws IOException {
         BuildSettings buildConfig = ArgumentsParser.parse(args);
+        program.buildSettings = buildConfig;
         String[] features = {"common", "exception", "gc", "string"};
 
         if (buildConfig.getInputSources().isEmpty()) {

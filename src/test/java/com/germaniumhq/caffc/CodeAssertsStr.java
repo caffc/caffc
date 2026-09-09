@@ -172,8 +172,16 @@ public class CodeAssertsStr {
             String template,
             String unit,
             TestUnit[] testUnits) {
+        return compileCaffcProgram(template, unit, testUnits, null);
+    }
+
+    public static String compileCaffcProgram(
+            String template,
+            String unit,
+            TestUnit[] testUnits,
+            BuildSettings buildSettings) {
         try {
-            return compileCaffcUnits(template, unit, testUnits);
+            return compileCaffcUnits(template, unit, testUnits, buildSettings);
         } catch (CancelCompilationException e) {
             CodeAssertsStr.printUnitWithLineNumbers(unit, testUnits);
             throw e;
@@ -205,8 +213,9 @@ public class CodeAssertsStr {
     private static String compileCaffcUnits(
             String template,
             String unit,
-            TestUnit[] testUnits) {
-        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(unit, testUnits);
+            TestUnit[] testUnits,
+            BuildSettings buildSettings) {
+        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(unit, testUnits, buildSettings);
 
         if (CaffcCompiler.get().hasErrors) {
             CaffcCompiler.get().fatal(compilationUnit, "Errors found in parsing");
@@ -214,7 +223,7 @@ public class CodeAssertsStr {
 
         try {
             Scope objectToRender = template.contains("module") ? compilationUnit.module : compilationUnit;
-            BuildSettings testBuildSettings = new BuildSettings();
+            BuildSettings testBuildSettings = buildSettings != null ? buildSettings : new BuildSettings();
             Map<String, Object> renderContext = PebbleTemplater.createRenderContext(
                 objectToRender, testBuildSettings);
 

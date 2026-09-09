@@ -90,11 +90,11 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
 
         function.sourceLocationCurlyOpen = SourceLocation.fromAntlrToken(
             unit.sourceLocation.filePath,
-            ctx.block().CURLY_OPEN().getSymbol()
+            ctx.functionBlock().CURLY_OPEN().getSymbol()
         );
         function.sourceLocationCurlyClose = SourceLocation.fromAntlrToken(
             unit.sourceLocation.filePath,
-            ctx.block().CURLY_CLOSE().getSymbol()
+            ctx.functionBlock().CURLY_CLOSE().getSymbol()
         );
 
         function.owner = owner;
@@ -152,8 +152,13 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
             function.definition.generics = GenericDefinitions.fromAntlr(unit, function, antlrGenerics);
         }
 
-        for (caffcParser.StatementContext antlrStatement: ctx.block().statement()) {
-            function.statements.addAll(Statement.fromAntlr(unit, function, antlrStatement));
+        for (caffcParser.FunctionBodyItemContext bodyItem : ctx.functionBlock().functionBodyItem()) {
+            if (bodyItem.sharpSwitchMethod() != null) {
+                function.statements.addAll(
+                        SharpSwitch.expandMethod(unit, function, bodyItem.sharpSwitchMethod()));
+            } else {
+                function.statements.addAll(Statement.fromAntlr(unit, function, bodyItem.statement()));
+            }
         }
 
         // we register the function in the module only if it's a true global function, otherwise they

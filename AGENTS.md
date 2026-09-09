@@ -271,8 +271,20 @@ Two forms (see `SwitchInstruction`):
 
 Bodies are block, `return`, or `break`/`continue` only (like `if`). No fall-through; `break` exits the switch. At least one `case`/`default`.
 
+## Compile-time `#switch`
+
+Evaluates against `caffc.yaml` / `BuildSettings` (not runtime). Braced; first matching `#case` wins; no match + no `#default` → empty. Unit-level or method top-level only (not nested, not inside `if`/`while`/`for`). Settings: `gc.impl`, `gc.memory_trigger`, `debug.c_line_macro`, `debug.trace_line_runtime`, `string.locale`/`impl`, `one_file`, `common.impl`, `exception.impl`. Expressions: literals, dotted settings, numeric `+ - * /`/comparisons, string `==`/`!=`, `and`/`or`/`not`.
+
+```caffc
+#switch {
+#case gc.impl == "default" and 1 + 2 > 2: { /* kept */ }
+#default: { /* fallback */ }
+}
+```
+
 ## Gotchas
 - **Globals are module-prefixed in C** — `i32 x` in module `main` becomes `main_x` (same as functions); native blocks must use the C name if they touch globals.
+- **`#switch` is compile-time** — `BuildSettings` only; braced (`#case …: { }` / `#default: { }`); no nesting / mid-control-flow.
 - **`continue` not supported** — avoid `continue` in while loops. Use nested if/return instead.
 - **No modulo (`%`)** — only `+`, `-`, `*`, `/` are supported for math. Use bitwise AND (`&`) for modular arithmetic with power-of-2 values.
 - **Bitwise vs boolean** — bitwise ops use C syntax (`&`, `|`, `^`, `~`, `<<`, `>>`); boolean ops use words (`and`, `or`, `not`).
