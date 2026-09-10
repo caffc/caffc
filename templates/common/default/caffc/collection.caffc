@@ -17,9 +17,15 @@ interface Collection<T> extends Iterable<T> {
 interface List<T> extends Collection<T> {
   get(i32 index) -> T
   set(i32 index, T value)
-  add(T value)
   remove(i32 index) -> T
   indexOf(T value) -> i32
+
+  // `+` / `-`: non-mutating copies
+  add(T value) -> List<T>
+  substract(T value) -> List<T>
+  // `+=` / `-=`: mutate and return _this
+  addAll(T value) -> List<T>
+  substractAll(T value) -> List<T>
 }
 
 interface Dict<K is HasHash, V> extends Collection<i32> {
@@ -27,10 +33,23 @@ interface Dict<K is HasHash, V> extends Collection<i32> {
   put(K key, V value)
   remove(K key) -> V
   containsKey(K key) -> bool
+
+  // `+` / `-`: non-mutating copies (merge / remove keys present in other)
+  add(Dict<K, V> other) -> Dict<K, V>
+  substract(Dict<K, V> other) -> Dict<K, V>
+  // `+=` / `-=`: mutate and return _this
+  addAll(Dict<K, V> other) -> Dict<K, V>
+  substractAll(Dict<K, V> other) -> Dict<K, V>
 }
 
 interface Set<T is HasHash> extends Collection<T> {
-  add(T value) -> bool
   remove(T value) -> bool
   contains(T value) -> bool
+
+  // `+` / `-`: non-mutating copies
+  add(T value) -> Set<T>
+  substract(T value) -> Set<T>
+  // `+=` / `-=`: mutate and return _this
+  addAll(T value) -> Set<T>
+  substractAll(T value) -> Set<T>
 }

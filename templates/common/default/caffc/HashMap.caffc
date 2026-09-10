@@ -78,6 +78,44 @@ use caffc.collection
         return _this._findIndex(key, keyHash) != -1
     }
 
+    #public add(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> result = new HashDict<K, V>(_this._size + other.size() + 1)
+        result.addAll(_this)
+        result.addAll(other)
+        return result
+    }
+
+    #public addAll(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> o = (HashDict<K, V>) other
+        i32 i = 0
+        while i < o._capacity {
+            if o._keys[i] != null {
+                _this.put(o._keys[i], o._values[i])
+            }
+            i = i + 1
+        }
+        return _this
+    }
+
+    #public substract(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> result = new HashDict<K, V>(_this._size + 1)
+        result.addAll(_this)
+        result.substractAll(other)
+        return result
+    }
+
+    #public substractAll(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> o = (HashDict<K, V>) other
+        i32 i = 0
+        while i < o._capacity {
+            if o._keys[i] != null {
+                _this.remove(o._keys[i])
+            }
+            i = i + 1
+        }
+        return _this
+    }
+
     #public isEmpty() -> bool {
         return _this._size == 0
     }

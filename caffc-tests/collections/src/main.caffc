@@ -11,9 +11,9 @@ testArrayList() {
   I32 b = new I32(20)
   I32 c = new I32(30)
 
-  myList.add(a)
-  myList.add(b)
-  myList.add(c)
+  myList.addAll(a)
+  myList.addAll(b)
+  myList.addAll(c)
 
   assertTrue(myList.isEmpty() == 0, "list should not be empty after add")
   assertTrue(myList.size() == 3, "list size should be 3 after 3 adds")
@@ -78,17 +78,16 @@ testHashSetStringLiterals() {
   assertTrue(mySet.isEmpty(), "new set should be empty")
   assertTrue(mySet.size() == 0, "new set size should be 0")
 
-  mySet.add("a")
-  mySet.add("b")
-  mySet.add("c")
+  mySet.addAll("a")
+  mySet.addAll("b")
+  mySet.addAll("c")
 
   assertTrue(mySet.size() == 3, "set size should be 3")
   assertTrue(mySet.contains("a") == 1, "set should contain a")
   assertTrue(mySet.contains("c") == 1, "set should contain c")
   assertTrue(mySet.contains("d") == 0, "set should not contain d")
 
-  bool added = mySet.add("b")
-  assertTrue(added == 0, "adding duplicate should return false")
+  mySet.addAll("b")
   assertTrue(mySet.size() == 3, "set size should still be 3 after duplicate add")
 
   bool removed = mySet.remove("b")
@@ -105,7 +104,7 @@ testHashSetStrHeapObjects() {
   str b = new str(5)
 
   // a and b are different heap allocations but same content "aaaaa"
-  mySet.add(a)
+  mySet.addAll(a)
   assertTrue(mySet.size() == 1, "set size should be 1 after adding a")
   assertTrue(mySet.contains(a) == 1, "set should contain a")
 
@@ -114,8 +113,8 @@ testHashSetStrHeapObjects() {
   assertTrue(mySet.contains(b) == 1, "set should contain b (same content as a)")
   assertTrue(mySet.size() == 1, "set size should still be 1 (duplicate content)")
 
-  bool added = mySet.add(b)
-  assertTrue(added == 0, "adding b should return false (same content)")
+  mySet.addAll(b)
+  assertTrue(mySet.size() == 1, "adding b should leave size 1 (same content)")
 
   str c = new str(6)
 
@@ -159,9 +158,9 @@ testHashSetI32Boxing() {
   I32 b = new I32(99)
   I32 c = new I32(7)
 
-  mySet.add(a)
-  mySet.add(b)
-  mySet.add(c)
+  mySet.addAll(a)
+  mySet.addAll(b)
+  mySet.addAll(c)
 
   assertTrue(mySet.size() == 3, "set size should be 3")
   assertTrue(mySet.contains(a) == 1, "set should contain a")
@@ -173,8 +172,8 @@ testHashSetI32Boxing() {
   assertTrue(mySet.contains(d) == 1, "set should contain d (same value via equals)")
   assertTrue(mySet.size() == 3, "set size should still be 3 after duplicate add")
 
-  bool added = mySet.add(d)
-  assertTrue(added == 0, "adding duplicate should return false")
+  mySet.addAll(d)
+  assertTrue(mySet.size() == 3, "adding duplicate should leave size 3")
 
   bool removed = mySet.remove(b)
   assertTrue(removed == 1, "removing existing should return true")
@@ -206,10 +205,90 @@ testHashDictI32Boxing() {
   assertTrue(myDict.size() == 0, "dict size should be 0 after remove")
 }
 
+
+testArrayListOperators() {
+  ArrayList<I32> myList = new ArrayList<I32>(4)
+  I32 a = new I32(1)
+  I32 b = new I32(2)
+  I32 c = new I32(3)
+
+  myList += a
+  myList += b
+  assertTrue(myList.size() == 2, "list += should append")
+
+  List<I32> copied = myList + c
+  assertTrue(copied.size() == 3, "list + should append into a new list")
+  assertTrue(myList.size() == 2, "list + must not mutate the original")
+  assertTrue(copied.get(2).value == 3, "new list should contain appended element")
+
+  List<I32> withoutB = myList - b
+  assertTrue(withoutB.size() == 1, "list - should remove into a new list")
+  assertTrue(myList.size() == 2, "list - must not mutate the original")
+  assertTrue(withoutB.get(0).value == 1, "remaining element should be 1")
+
+  myList -= b
+  assertTrue(myList.size() == 1, "list -= should remove from self")
+  assertTrue(myList.get(0).value == 1, "remaining element after -= should be 1")
+}
+
+testHashDictOperators() {
+  HashDict<str, I32> left = new HashDict<str, I32>(4)
+  HashDict<str, I32> right = new HashDict<str, I32>(4)
+  left.put("a", new I32(1))
+  left.put("b", new I32(2))
+  right.put("b", new I32(20))
+  right.put("c", new I32(3))
+
+  Dict<str, I32> merged = left + right
+  assertTrue(merged.size() == 3, "dict + should merge into a new dict")
+  assertTrue(left.size() == 2, "dict + must not mutate the left dict")
+  assertTrue(merged.get("b").value == 20, "dict + should overwrite with right values")
+  assertTrue(merged.get("c").value == 3, "dict + should include right-only keys")
+
+  left += right
+  assertTrue(left.size() == 3, "dict += should merge into self")
+  assertTrue(left.get("c").value == 3, "dict += should include right-only keys")
+
+  HashDict<str, I32> removeKeys = new HashDict<str, I32>(2)
+  removeKeys.put("b", new I32(0))
+  Dict<str, I32> withoutB = left - removeKeys
+  assertTrue(withoutB.size() == 2, "dict - should remove keys into a new dict")
+  assertTrue(left.size() == 3, "dict - must not mutate the left dict")
+  assertTrue(withoutB.containsKey("b") == 0, "dict - should drop matching keys")
+
+  left -= removeKeys
+  assertTrue(left.size() == 2, "dict -= should remove keys from self")
+  assertTrue(left.containsKey("b") == 0, "dict -= should drop matching keys")
+}
+
+testHashSetOperators() {
+  HashSet<str> mySet = new HashSet<str>(4)
+  mySet += "a"
+  mySet += "b"
+  assertTrue(mySet.size() == 2, "set += should insert")
+
+  Set<str> withC = mySet + "c"
+  assertTrue(withC.size() == 3, "set + should insert into a new set")
+  assertTrue(mySet.size() == 2, "set + must not mutate the original")
+  assertTrue(withC.contains("c") == 1, "new set should contain c")
+
+  Set<str> withoutB = mySet - "b"
+  assertTrue(withoutB.size() == 1, "set - should remove into a new set")
+  assertTrue(mySet.size() == 2, "set - must not mutate the original")
+  assertTrue(withoutB.contains("b") == 0, "new set should not contain b")
+
+  mySet -= "b"
+  assertTrue(mySet.size() == 1, "set -= should remove from self")
+  assertTrue(mySet.contains("b") == 0, "set should not contain b after -=")
+}
+
 main() {
   testArrayList()
+  testArrayListOperators()
   testHashDictStringLiterals()
+  testHashDictOperators()
   testHashSetStringLiterals()
+  testHashSetOperators()
   testHashSetStrHeapObjects()
   testHashDictStrHeapObjects()
   testHashSetI32Boxing()

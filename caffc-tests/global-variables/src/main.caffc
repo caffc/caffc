@@ -7,10 +7,10 @@ ArrayList<str> nullArray
 module_init() {
   print("module initialized")
 
-  items.add("this")
-  items.add("is")
-  items.add("a")
-  items.add("test")
+  items.addAll("this")
+  items.addAll("is")
+  items.addAll("a")
+  items.addAll("test")
 }
 
 unit_init() {

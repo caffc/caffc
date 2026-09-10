@@ -186,7 +186,7 @@ Interface calls become `switch (_this->_caffc_type_id)` in the interface functio
 
 Arrays (`Module.ensureArray()`): primitives → `T_arr` + `#caffc_array("caffc_T")`; non-primitives → `obj_arr`. Generic fields use `T[]`, not the tag. `[]` lowers via `get`/`set` (`HasMethods`). `x[a:b]` lowers via `range(fromInclusive, toExclusive)` (`HasMethods`); omitted `a`→`0`, omitted `b`→`.size()`. `for item in collection` → iterator while (`ForInInstruction`).
 
-Custom operators (if left type defines the method): `+`/`-`/`|`/`/`/`*` → `add`/`substract`/`pipe`/`divide`/`multiply`; `+=`/`-=`/`|=`/`/=`/`*=` → `*All` (must return `_this`). Else primitives keep C ops. Spelling is `substract`.
+Custom operators (if left type defines the method): `+`/`-`/`|`/`/`/`*` → `add`/`substract`/`pipe`/`divide`/`multiply`; `+=`/`-=`/`|=`/`/=`/`*=` → `*All` (must return `_this`). Else primitives keep C ops. Spelling is `substract`. `List`/`Set`: element RHS; `Dict`: other `Dict` (merge / remove keys). Mutating insert is `addAll` (`list += x`); `add` returns a new collection.
 
 ## Global Variables and `unit_init`
 
@@ -253,3 +253,4 @@ flex(1, extra=null)
 - **Generic interface copies keep parents** — `Dict<K,V>` / `List<T>` instantiate via `InterfaceDefinition.newGenericsCopy`, which must retain `extends` parents so inherited methods (`size()`, etc.) resolve. Prefer `Dict<str, obj>` for kwargs params; packing still builds a concrete `HashDict`.
 - **Interface dispatch uses canonical definitions** — `implements` registration walks parent interfaces but must register on the module's base `InterfaceDefinition` (not generics copies), or parent dispatchers like `Collection_size` stay empty.
 - **Type assignability** — `TypeAssignability` checks assignments, call args, and that classes implement claimed interface methods (exact param/return names). `obj` is the top object type; integer widths and bool↔int convert; use `null` for object nulls (not `0`).
+- **Generics copies must mark functions resolved** — `FunctionDefinition.newGenericsCopy` sets `isResolved=true` after substituting return types. Otherwise `ExpressionFnCall` re-runs `recurseResolveTypes` from unresolved `returnTypeSearches` and wipes `ArrayList.get` (etc.) back to `void`.
