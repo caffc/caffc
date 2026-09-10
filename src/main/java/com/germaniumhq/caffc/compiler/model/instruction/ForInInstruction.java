@@ -30,7 +30,7 @@ import java.util.List;
 public final class ForInInstruction implements Statement, Scope {
     public AstItem owner;
 
-    public String typeName;
+    public SymbolSearch itemTypeSearch;
     public String variableName;
     public Expression iterableExpression;
     public List<Statement> statements = new ArrayList<>();
@@ -52,7 +52,7 @@ public final class ForInInstruction implements Statement, Scope {
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, forAntlr);
 
         if (forAntlr.typeName() != null) {
-            result.typeName = forAntlr.typeName().getText();
+            result.itemTypeSearch = SymbolSearch.fromAntlr(unit, forAntlr.typeName());
         }
         result.variableName = forAntlr.variableName.getText();
 
@@ -82,7 +82,8 @@ public final class ForInInstruction implements Statement, Scope {
         iterableTypeSymbol = this.iterableExpression.typeSymbol();
 
         if (!(iterableTypeSymbol instanceof HasMethods)) {
-            CaffcCompiler.get().fatal(this, "for-in requires an iterable type (type with newIterator() method), got: " + typeName);
+            CaffcCompiler.get().fatal(this, "for-in requires an iterable type (type with newIterator() method), got: " +
+                    (itemTypeSearch != null ? itemTypeSearch : iterableTypeSymbol));
         }
 
         HasMethods iterableClass = (HasMethods) iterableTypeSymbol;
@@ -107,8 +108,8 @@ public final class ForInInstruction implements Statement, Scope {
 
         itemTypeSymbol = next.returnType;
 
-        if (typeName != null && !typeName.isEmpty()) {
-            Symbol resolvedType = SymbolResolver.resolveInstantiatedSymbol(this, SymbolSearch.ofName(typeName));
+        if (itemTypeSearch != null) {
+            Symbol resolvedType = SymbolResolver.resolveInstantiatedSymbol(this, itemTypeSearch);
             if (resolvedType != null) {
                 itemTypeSymbol = resolvedType;
             }

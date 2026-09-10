@@ -236,7 +236,9 @@ expression
   | leftExpression=expression ('*'|'%') rightExpression=expression                                 # ExMulMod
   | leftExpression=expression '/' rightExpression=expression                                       # ExDiv
   | leftExpression=expression ('+'|'-') rightExpression=expression                                 # ExAddSub
-  | leftExpression=expression ('<<'|'>>') rightExpression=expression                               # ExShift
+  // `>>` is two `>` tokens so nested generics like `DictEntry<K, V>>` parse;
+  // `'>>'` as a single lexer token would steal the closing brackets.
+  | leftExpression=expression shiftOp rightExpression=expression                                   # ExShift
   | leftExpression=expression ('<'|'<='|'>='|'>') rightExpression=expression                       # ExLtLteGtGte
   | leftExpression=expression ('=='|'!=') rightExpression=expression                               # ExEqNeq
   | leftExpression=expression '&' rightExpression=expression                                       # ExBitAnd
@@ -263,6 +265,12 @@ fStringPrimary
 fStringIndexExpr
   : NUMBER                                                                                         # FStrIndexNumber
   | fStringPrimary                                                                                 # FStrIndexPrimary
+  ;
+
+// Right-shift is `>` `>` (not a single `>>` token) so type args can nest.
+shiftOp
+  : '<<'
+  | '>' '>'
   ;
 
 assignExpression

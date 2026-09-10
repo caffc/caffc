@@ -223,13 +223,9 @@ public class ClassDefinition implements
         }
 
         for (SymbolSearch symbolSearch : implementedInterfacesSearch) {
-            // For interface implementations, resolve to the base interface without generics
-            // to ensure concreteImplementations tracking works correctly
-            SymbolSearch baseSearch = new SymbolSearch();
-            baseSearch.name = symbolSearch.name;
-            baseSearch.generics = null;
-
-            Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, baseSearch);
+            // Keep generics so signature checks see Iterator<DictEntry<K,V>>, not raw Iterator.
+            // concreteImplementations registration still walks to the canonical interface.
+            Symbol implementedSymbol = SymbolResolver.mustResolveSymbol(this, symbolSearch);
 
             if (!(implementedSymbol instanceof InterfaceDefinition)) {
                 CaffcCompiler.get().fatal(this.sourceLocation, String.format(
@@ -242,11 +238,14 @@ public class ClassDefinition implements
             InterfaceDefinition interfaceDefinition = (InterfaceDefinition) implementedSymbol;
             implementedInterfaces.add(interfaceDefinition);
 
-            interfaceDefinition.recurseResolveTypes();
+            // Resolve the module's canonical interface so its methods/fields exist; the
+            // generics copy above may be a shallow instantiation that still shares them.
+            InterfaceDefinition canonical = canonicalInterfaceDefinition(interfaceDefinition);
+            canonical.recurseResolveTypes();
 
             // FIXME: these are internal deps of the module C implementation, probably they shouldn't
             //        be kept together with regular used modules.
-            interfaceDefinition.module.usedModules.add(module);
+            canonical.module.usedModules.add(module);
         }
 
         ClassDefinition.registerConcreteImplementations(this, this.implementedInterfaces);
@@ -290,12 +289,14 @@ public class ClassDefinition implements
             InterfaceDefinition current = toProcess.iterator().next();
             toProcess.remove(current);
 
-            InterfaceDefinition canonical = canonicalInterfaceDefinition(current);
-            if (!interfaces.add(canonical)) {
+            // Use the generics instantiation from `implements` (and parent copies), not the
+            // canonical raw interface — otherwise Iterator<DictEntry<…>> is checked as Iterator
+            // with T erased to obj.
+            if (!interfaces.add(current)) {
                 continue;
             }
 
-            toProcess.addAll(canonical.implementedInterfaces);
+            toProcess.addAll(current.implementedInterfaces);
         }
 
         Set<String> checkedMethods = new HashSet<>();
@@ -402,7 +403,7 @@ public class ClassDefinition implements
      * parents ({@code Dict} → {@code Collection} → {@code Iterable}).
      *
      * <p>Parent entries on an interface are often generics instantiations
-     * ({@code Collection<i32>}, {@code Collection<T>}). Codegen emits dispatchers from
+     * ({@code Collection<DictEntry<K,V>>}, {@code Collection<T>}). Codegen emits dispatchers from
      * the module's canonical interface definitions, so registration must use those —
      * otherwise {@code Collection_size} stays empty while {@code Dict_get} works.
      */

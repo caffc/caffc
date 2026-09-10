@@ -28,7 +28,17 @@ interface List<T> extends Collection<T> {
   substractAll(T value) -> List<T>
 }
 
-interface Dict<K is HasHash, V> extends Collection<i32> {
+#public class DictEntry<K, V> {
+  K key
+  V value
+
+  #public constructor(K key, V value) {
+    _this.key = key
+    _this.value = value
+  }
+}
+
+interface Dict<K is HasHash, V> extends Collection<DictEntry<K, V>> {
   get(K key) -> V
   put(K key, V value)
   remove(K key) -> V

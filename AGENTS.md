@@ -120,6 +120,8 @@ curl -o antlr4.jar https://www.antlr.org/download/antlr-4.13.1-complete.jar
 java -jar antlr4.jar -o src/main/java/com/germaniumhq/caffc/generated -package com.germaniumhq.caffc.generated -no-listener -no-visitor caffc.g4
 ```
 
+Right-shift is parsed as two `>` tokens (not a single `>>`) so nested generics like `Collection<DictEntry<K, V>>` work.
+
 ## Template Engine
 
 Uses Pebble templates (`*.peb` files) for code generation. Templates are in:
@@ -182,7 +184,7 @@ Interface calls become `switch (_this->_caffc_type_id)` in the interface functio
 
 ## Collections / arrays / boxing
 
-`templates/common/default/caffc/collection.caffc`: `List<T>`, `Dict<K is HasHash, V>`, `Set<T is HasHash>` (all `Iterable<T>`). Primitives cannot be collection elements — use boxing (`I32`, `U16`, … in `*_box.caffc`).
+`templates/common/default/caffc/collection.caffc`: `List<T>`, `Dict<K is HasHash, V>` (`Collection<DictEntry<K,V>>`), `Set<T is HasHash>` (all `Iterable`). `DictEntry` has `key`/`value`. Primitives cannot be collection elements — use boxing (`I32`, `U16`, … in `*_box.caffc`).
 
 Arrays (`Module.ensureArray()`): primitives → `T_arr` + `#caffc_array("caffc_T")`; non-primitives → `obj_arr`. Generic fields use `T[]`, not the tag. `[]` lowers via `get`/`set` (`HasMethods`). `x[a:b]` lowers via `range(fromInclusive, toExclusive)` (`HasMethods`); omitted `a`→`0`, omitted `b`→`.size()`. `for item in collection` → iterator while (`ForInInstruction`).
 
@@ -234,7 +236,7 @@ flex(1, extra=null)
 **i18n files:** `templates/i18n/{impl}/caffc/`; `caffc.yaml` `i18n.files` globs (default none); regenerate via `python3 util/generate-codepages.py`.
 
 ## Gotchas
-- **Blank identifier `_`** — Go-style discard on assign LHS only. Not a real variable; discarded object/array multi-return slots are still GC zero-cleared.
+- **Nested generics need adjacent `>`** — right-shift is two `>` tokens (not one `>>`), so `Collection<DictEntry<K, V>>` parses; `x >> 1` still works.
 - **Globals are module-prefixed in C** — `main_x`; dots → underscores. Native blocks must use the C name.
 - **`#switch` / `#ifdef` are compile-time** — `BuildSettings` only; no nesting / mid-control-flow.
 - **`continue` not supported** — use nested if/return instead.

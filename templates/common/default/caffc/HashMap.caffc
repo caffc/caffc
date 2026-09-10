@@ -124,8 +124,8 @@ use caffc.collection
         return _this._size
     }
 
-    #public newIterator() -> Iterator<i32> {
-        return null
+    #public newIterator() -> Iterator<DictEntry<K, V>> {
+        return new HashDictIterator<K, V>(_this)
     }
 
     #public _findFirstFreeSlot() -> i32 {
@@ -163,5 +163,40 @@ use caffc.collection
             }
             i = i + 1
         }
+    }
+}
+
+class HashDictIterator<K is HasHash, V> implements Iterator<DictEntry<K, V>> {
+    HashDict<K, V> _collection
+    i32 _index
+    i32 _yielded
+
+    #public constructor(HashDict<K, V> coll) {
+        _this._collection = coll
+        _this._index = 0
+        _this._yielded = 0
+    }
+
+    #public hasNext() -> bool {
+        return _this._yielded < _this._collection._size
+    }
+
+    #public next() -> DictEntry<K, V> {
+        if not _this.hasNext() {
+            raise("iterator out of bounds")
+        }
+        while _this._index < _this._collection._capacity {
+            if _this._collection._keys[_this._index] != null {
+                DictEntry<K, V> result = new DictEntry<K, V>(
+                    _this._collection._keys[_this._index],
+                    _this._collection._values[_this._index]
+                )
+                _this._index = _this._index + 1
+                _this._yielded = _this._yielded + 1
+                return result
+            }
+            _this._index = _this._index + 1
+        }
+        raise("iterator out of bounds")
     }
 }

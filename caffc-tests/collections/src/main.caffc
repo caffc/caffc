@@ -261,6 +261,29 @@ testHashDictOperators() {
   assertTrue(left.containsKey("b") == 0, "dict -= should drop matching keys")
 }
 
+testHashDictIteration() {
+  HashDict<str, I32> myDict = new HashDict<str, I32>(8)
+  myDict.put("a", new I32(1))
+  myDict.put("b", new I32(2))
+  myDict.put("c", new I32(3))
+
+  i32 count = 0
+  i32 sum = 0
+  str key = null
+  I32 val = null
+  for DictEntry<str, I32> entry in myDict {
+    count = count + 1
+    key = entry.key
+    val = entry.value
+    sum = sum + val.value
+    assertTrue(key != null, "dict entry key should not be null")
+    assertTrue(val != null, "dict entry value should not be null")
+    assertTrue(myDict.get(key).value == val.value, "entry should match dict get")
+  }
+  assertTrue(count == 3, "dict for-in should yield one entry per key")
+  assertTrue(sum == 6, "dict for-in values should sum to 6")
+}
+
 testHashSetOperators() {
   HashSet<str> mySet = new HashSet<str>(4)
   mySet += "a"
@@ -287,6 +310,7 @@ main() {
   testArrayListOperators()
   testHashDictStringLiterals()
   testHashDictOperators()
+  testHashDictIteration()
   testHashSetStringLiterals()
   testHashSetOperators()
   testHashSetStrHeapObjects()
