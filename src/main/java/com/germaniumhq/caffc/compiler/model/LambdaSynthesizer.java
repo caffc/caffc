@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionAssign;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNull;
 import com.germaniumhq.caffc.compiler.model.expression.LocalVariable;
@@ -20,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Builds a synthetic class that implements {@code fn<R>} for lambdas and decorated functions.
  *
  * <p>User parameters are unpacked at the start of {@code call(... obj[] args, Dict kw)} into
- * locals with the original names. Free-variable capture is not supported in v1.
+ * locals with the original names. Free variables from enclosing functions are captured as
+ * readonly fields, initialized by a synthetic constructor.
  */
 public final class LambdaSynthesizer {
     private static final AtomicInteger NEXT_ID = new AtomicInteger();
@@ -33,12 +35,19 @@ public final class LambdaSynthesizer {
         public final Function callFunction;
         public final SymbolSearch returnTypeSearch;
         public final boolean wasVoid;
+        public final List<LambdaCapture> captures;
 
-        Result(Clazz clazz, Function callFunction, SymbolSearch returnTypeSearch, boolean wasVoid) {
+        Result(
+                Clazz clazz,
+                Function callFunction,
+                SymbolSearch returnTypeSearch,
+                boolean wasVoid,
+                List<LambdaCapture> captures) {
             this.clazz = clazz;
             this.callFunction = callFunction;
             this.returnTypeSearch = returnTypeSearch;
             this.wasVoid = wasVoid;
+            this.captures = captures;
         }
     }
 
@@ -46,6 +55,7 @@ public final class LambdaSynthesizer {
             CompilationUnit unit,
             SourceLocation location,
             String nameHint,
+            Function bindingFunction,
             List<Parameter> userParameters,
             SymbolSearch returnTypeSearch,
             List<Statement> bodyStatements) {
@@ -65,6 +75,8 @@ public final class LambdaSynthesizer {
         SymbolSearch fnSearch = SymbolSearch.ofName("fn");
         fnSearch.generics = new SymbolSearch[]{effectiveReturn};
         clazz.definition.implementedInterfacesSearch.add(fnSearch);
+
+        List<LambdaCapture> captures = new ArrayList<>();
 
         Function call = new Function();
         call.owner = clazz;
@@ -94,6 +106,18 @@ public final class LambdaSynthesizer {
 
         call.definition.returnTypeSearches.put("", effectiveReturn);
 
+        // Capture rewrite needs `call` so `_this` resolves on the synthetic method.
+        captures.addAll(LambdaCapture.collectAndRewrite(bindingFunction, call, bodyStatements));
+        addCaptureFields(clazz, location, captures);
+
+        if (!captures.isEmpty()) {
+            Function constructor = buildConstructor(clazz, location, captures);
+            clazz.functions.add(constructor);
+            clazz.definition.functions.add(constructor.definition);
+            constructor.stringConstantName = StringConstant.newStringConstant(location, constructor.definition.name);
+            unit.module.registerConstant(constructor.stringConstantName);
+        }
+
         List<Statement> statements = new ArrayList<>();
         statements.addAll(buildUnpackLocals(call, location, userParameters));
 
@@ -121,7 +145,7 @@ public final class LambdaSynthesizer {
         call.stringConstantName = StringConstant.newStringConstant(location, call.definition.name);
         unit.module.registerConstant(call.stringConstantName);
 
-        return new Result(clazz, call, effectiveReturn, wasVoid);
+        return new Result(clazz, call, effectiveReturn, wasVoid, captures);
     }
 
     /**
@@ -146,21 +170,13 @@ public final class LambdaSynthesizer {
             throw new IllegalStateException("multi-return decorated functions are not supported");
         }
 
-        // Move locals registered on the original function onto the synthetic call later
-        // via reparent + registerVariable in buildUnpack / body handling.
         List<Statement> body = new ArrayList<>(function.statements);
-        for (LocalVariable localVariable : function._variables.values()) {
-            // Multi-return named returns live in _variables; skip empty-name struct slots.
-            if (localVariable.name != null && !localVariable.name.isEmpty()
-                    && !(body.contains(localVariable))) {
-                // Locals from variable declarations are already in body as statements.
-            }
-        }
 
         Result result = synthesize(
                 unit,
                 function.getSourceLocation(),
                 function.definition.name,
+                function,
                 userParams,
                 returnSearch,
                 body);
@@ -175,6 +191,62 @@ public final class LambdaSynthesizer {
         }
 
         return result;
+    }
+
+    private static void addCaptureFields(Clazz clazz, SourceLocation location, List<LambdaCapture> captures) {
+        for (LambdaCapture capture : captures) {
+            Field field = new Field(clazz, capture.name);
+            field.sourceLocation = capture.location.sourceLocation() != null
+                    ? capture.location.sourceLocation()
+                    : location;
+            field.setTypeSearch(capture.typeSearch);
+            field.isReadonly = true;
+            clazz.definition.fields.add(field);
+        }
+    }
+
+    private static Function buildConstructor(Clazz clazz, SourceLocation location, List<LambdaCapture> captures) {
+        Function constructor = new Function();
+        constructor.owner = clazz;
+        constructor.definition.owner = clazz.definition;
+        constructor.definition.clazz = clazz.definition;
+        constructor.definition.module = clazz.definition.module.name;
+        constructor.definition.name = "constructor";
+        constructor.definition.sourceLocation = location;
+        constructor.sourceLocationCurlyOpen = location;
+        constructor.sourceLocationCurlyClose = location;
+        constructor.definition.returnTypeSearches.put("", SymbolSearch.ofName("void"));
+
+        Parameter thisParam = new Parameter(constructor.definition, "_this");
+        thisParam.sourceLocation = location;
+        thisParam.setSymbolSearch(SymbolSearch.ofName(clazz.definition.name));
+        constructor.definition.parameters.add(thisParam);
+
+        List<Statement> statements = new ArrayList<>();
+        for (LambdaCapture capture : captures) {
+            Parameter param = new Parameter(constructor.definition, capture.name);
+            param.sourceLocation = capture.location.sourceLocation() != null
+                    ? capture.location.sourceLocation()
+                    : location;
+            param.setSymbolSearch(capture.typeSearch);
+            constructor.definition.parameters.add(param);
+
+            ExpressionDotAccess fieldAccess = ExpressionDotAccess.fromParts(
+                    constructor,
+                    ExpressionId.fromName(null, constructor, "_this"),
+                    capture.name);
+            fieldAccess.sourceLocation = param.sourceLocation;
+
+            ExpressionAssign assign = ExpressionAssign.fromCode(
+                    constructor,
+                    fieldAccess,
+                    ExpressionId.fromName(null, constructor, capture.name));
+            assign.sourceLocation = param.sourceLocation;
+            statements.add(assign);
+        }
+
+        constructor.statements = statements;
+        return constructor;
     }
 
     private static Parameter copyParameter(Parameter original) {

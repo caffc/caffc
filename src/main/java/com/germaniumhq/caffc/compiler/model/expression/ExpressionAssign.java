@@ -140,6 +140,7 @@ public final class ExpressionAssign implements Expression {
                         TypeAssignability.describe(this.right.typeSymbol()),
                         TypeAssignability.describe(left.typeSymbol())));
             }
+            ReadonlyAssignCheck.check(this, left);
             return;
         }
 
@@ -172,6 +173,7 @@ public final class ExpressionAssign implements Expression {
                         TypeAssignability.describe(fieldType),
                         TypeAssignability.describe(left.typeSymbol())));
             }
+            ReadonlyAssignCheck.check(this, left);
         }
     }
 

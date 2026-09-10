@@ -64,6 +64,8 @@ public final class ExpressionOpAssign implements Expression {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
 
+        ReadonlyAssignCheck.check(this, this.left);
+
         this.overloadFunction = CustomOperators.findMethod(
                 this.left.typeSymbol(),
                 CustomOperators.assignMethodName(this.operator));

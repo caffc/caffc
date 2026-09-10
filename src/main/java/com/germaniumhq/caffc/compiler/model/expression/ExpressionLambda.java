@@ -5,6 +5,7 @@ import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.Function;
+import com.germaniumhq.caffc.compiler.model.LambdaCapture;
 import com.germaniumhq.caffc.compiler.model.LambdaSynthesizer;
 import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.ParameterListParser;
@@ -23,7 +24,7 @@ import java.util.List;
 
 /**
  * Lambda expression: {@code fn(params) -> R { ... }}.
- * Lowers to {@code new _Lambda_...()} implementing {@code fn<R>}.
+ * Lowers to {@code new _Lambda_...(captures...)} implementing {@code fn<R>}.
  */
 public final class ExpressionLambda implements Expression {
     public AstItem owner;
@@ -34,6 +35,7 @@ public final class ExpressionLambda implements Expression {
     public List<Statement> bodyStatements = new ArrayList<>();
 
     private LambdaSynthesizer.Result synthesized;
+    private final List<Expression> captureArguments = new ArrayList<>();
     private boolean isResolved;
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExLambdaContext ctx) {
@@ -77,9 +79,15 @@ public final class ExpressionLambda implements Expression {
                 unit,
                 result.sourceLocation,
                 "expr",
+                parseOwner,
                 result.userParameters,
                 result.returnTypeSearch,
                 result.bodyStatements);
+
+        // Capture args are read at the lambda expression site (enclosing scope).
+        for (LambdaCapture capture : result.synthesized.captures) {
+            result.captureArguments.add(ExpressionId.fromName(unit, result, capture.name));
+        }
 
         // Move parse-time locals onto the synthetic call function
         for (LocalVariable localVariable : parseOwner._variables.values()) {
@@ -115,6 +123,10 @@ public final class ExpressionLambda implements Expression {
         }
         isResolved = true;
 
+        for (Expression captureArgument : captureArguments) {
+            captureArgument.recurseResolveTypes();
+        }
+
         // Ensure the synthetic class (and its call method) are fully resolved.
         synthesized.clazz.recurseResolveTypes();
     }
@@ -123,8 +135,18 @@ public final class ExpressionLambda implements Expression {
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
+        List<AsmValue> parameterValues = new ArrayList<>();
+        for (Expression captureArgument : captureArguments) {
+            AsmLinearFormResult captureLinear = captureArgument.asLinearForm(block);
+            result.instructions.addAll(captureLinear.instructions);
+            parameterValues.add(captureLinear.value);
+        }
+
         TypeDefinitionSymbol type = synthesized.clazz.definition;
-        AsmNew asmNew = new AsmNew(sourceLocation, type, new AsmValue[0]);
+        AsmNew asmNew = new AsmNew(
+                sourceLocation,
+                type,
+                parameterValues.toArray(new AsmValue[0]));
         asmNew.result = block.addTempVar(this, type);
         result.value = asmNew.result;
         result.instructions.add(asmNew);

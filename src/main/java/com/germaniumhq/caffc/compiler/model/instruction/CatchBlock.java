@@ -33,6 +33,10 @@ public final class CatchBlock implements Statement, ExceptionHandler, Scope {
     private LocalVariable exceptionVariable;
     private List<Statement> statements = new ArrayList<>();
 
+    public List<Statement> getStatements() {
+        return statements;
+    }
+
     public static CatchBlock fromAntlr(CompilationUnit unit, TryCatchInstruction owner, caffcParser.CatchBlockContext ctx) {
         CatchBlock result = new CatchBlock();
 

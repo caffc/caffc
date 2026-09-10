@@ -125,7 +125,7 @@ public class Module implements AstItem, Scope, Symbol {
             return;
         }
 
-        Function initModuleFunction = getOrCreateInitModuleFunction(module, compilationUnits);
+        Function initModuleFunction = getOrCreateInitModuleFunction(module, compilationUnits, allCompilationUnits);
 
         // we need to reparent the global variables to the module_init function.
         // the reason is for try/catch blocks, so exceptions hook in module_init's
@@ -165,7 +165,9 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     private static Function getOrCreateInitModuleFunction(
-            Module module, List<CompilationUnit> compilationUnits) {
+            Module module,
+            List<CompilationUnit> compilationUnits,
+            Set<CompilationUnit> allCompilationUnits) {
         // search for an existing module_init function
         for (CompilationUnit compilationUnit: compilationUnits) {
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
@@ -186,6 +188,8 @@ public class Module implements AstItem, Scope, Symbol {
             FilterCTypeName.getCType(module.typeName()) +
             MODULE_INIT + ".caffc");
         compilationUnits.add(compilationUnit);
+        // Must also register on the program-wide set so the CU is rendered to C.
+        allCompilationUnits.add(compilationUnit);
 
         Function initModuleFunction = new Function();
         initModuleFunction.owner = compilationUnit;

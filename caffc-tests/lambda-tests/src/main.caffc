@@ -1,0 +1,66 @@
+module main
+
+assertTrue(bool what, str message) {
+  if not what {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}
+
+testBasicLambda() {
+  fn<i32> f = fn() -> i32 {
+    return 7
+  }
+  assertTrue(f() == 7, "basic lambda should return 7")
+}
+
+testLambdaWithParam() {
+  fn<i32> add1 = fn(i32 x) -> i32 {
+    return x + 1
+  }
+  assertTrue(add1(41) == 42, "typed lambda param should unpack")
+}
+
+testCaptureLocal() {
+  i32 n = 40
+  fn<i32> f = fn() -> i32 {
+    return n + 2
+  }
+  assertTrue(f() == 42, "lambda should capture enclosing local")
+}
+
+testCaptureParam(i32 base) {
+  fn<i32> f = fn(i32 x) -> i32 {
+    return base + x
+  }
+  assertTrue(f(2) == 42, "lambda should capture enclosing parameter")
+}
+
+testCaptureIsCopy() {
+  i32 n = 10
+  fn<i32> f = fn() -> i32 {
+    return n
+  }
+  n = 99
+  assertTrue(f() == 10, "capture should keep the value from creation time")
+}
+
+testMultipleCaptures() {
+  i32 a = 20
+  i32 b = 22
+  fn<i32> f = fn() -> i32 {
+    return a + b
+  }
+  assertTrue(f() == 42, "lambda should capture multiple locals")
+}
+
+main() -> i32 {
+  testBasicLambda()
+  testLambdaWithParam()
+  testCaptureLocal()
+  testCaptureParam(40)
+  testCaptureIsCopy()
+  testMultipleCaptures()
+  return 0
+}

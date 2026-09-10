@@ -20,11 +20,21 @@ public class Field implements GenericsSymbol, Symbol, AstItem {
 
     public SourceLocation sourceLocation;
 
+    /**
+     * When true, assignments to this field are compile errors (used for lambda captures).
+     * Constructors may still initialize readonly fields.
+     */
+    public boolean isReadonly;
+
     private SymbolSearch typeSearch;
 
     public Field(AstItem owner, String name) {
         this.owner = owner;
         this.name = name;
+    }
+
+    public void setTypeSearch(SymbolSearch typeSearch) {
+        this.typeSearch = typeSearch;
     }
 
     public static List<Field> fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.FieldDeclarationContext fieldDeclarationContext) {
