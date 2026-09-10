@@ -224,6 +224,7 @@ expression
   | NEW newType ('[' expression ']')+                                                              # ExNewArray
   | expression genericsInstantiations? '(' callArgumentList? ')'                                   # ExFnCall
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
+  | arrayExpression=expression '[' startExpression=expression? ':' endExpression=expression? ']'   # ExRangeAccess
   | '(' typeName ')' expression                                                                    # ExCast
   | '(' expression ')'                                                                             # ExParens
   | leftExpression=expression (NOT)? INSTANCEOF newType                                            # ExInstanceOf

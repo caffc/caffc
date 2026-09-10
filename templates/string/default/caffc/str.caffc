@@ -182,6 +182,55 @@ class str implements HasHash {
   }
 
   /**
+   * Half-open byte range `[fromInclusive, toExclusive)`, Python-style.
+   * Negative indexes count from the end (`-1` is the last byte). Out-of-range
+   * bounds are clamped. Prefer the sugar {@code s[from:to]} which calls this.
+   */
+  #public
+  range(i32 fromInclusive, i32 toExclusive) -> str {
+    i32 len = _this.size()
+
+    if fromInclusive < 0 {
+      fromInclusive = len + fromInclusive
+    }
+
+    if toExclusive < 0 {
+      toExclusive = len + toExclusive
+    }
+
+    if fromInclusive < 0 {
+      fromInclusive = 0
+    }
+
+    if toExclusive < 0 {
+      toExclusive = 0
+    }
+
+    if fromInclusive > len {
+      fromInclusive = len
+    }
+
+    if toExclusive > len {
+      toExclusive = len
+    }
+
+    if fromInclusive >= toExclusive {
+      return ""
+    }
+
+    i32 copyLen = toExclusive - fromInclusive
+    str result = new str(copyLen + 1)
+
+    native {
+      caffc_memcpy(result->_caffc_data,
+                   _this->_caffc_data + fromInclusive, copyLen);
+      result->_caffc_data[copyLen] = 0;
+    }
+
+    return result
+  }
+
+  /**
    * Returns the byte at the given index.
    */
   #public

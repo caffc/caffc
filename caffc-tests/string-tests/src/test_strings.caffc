@@ -20,6 +20,26 @@ test_slice() {
   assertEqual("ello", h.slice(1, 5), "a slice can be a regular index slice")
 }
 
+test_range() {
+  //       012345678
+  str h = "hello.exe"
+  //      -987654321
+
+  assertEqual("hello.exe", h.range(0, 9), "range of full string")
+  assertEqual("hello.exe", h[:], "empty range bounds copy the whole string")
+  assertEqual("ello", h.range(1, 5), "range is half-open [from, to)")
+  assertEqual("ello", h[1:5], "index range sugar calls range()")
+  assertEqual("ello", h[1:-4], "negative exclusive end counts from size()")
+  assertEqual("exe", h[-3:], "omitted end is size(); negative start from end")
+  assertEqual("hello.ex", h[:-1], "omitted start is 0; negative end excludes last byte")
+  assertEqual("hello", h[:5], "prefix via omitted start")
+  assertEqual("exe", h[6:], "suffix via omitted end")
+  assertEqual("", h[3:3], "empty range when from == to")
+  assertEqual("", h[5:3], "empty range when from > to after clamp")
+  assertEqual("hel", h[-100:3], "start clamped below zero like Python")
+  assertEqual("", h[100:], "start past end yields empty string")
+}
+
 test_indexOf() {
   str h = "hello world"
 
@@ -165,6 +185,7 @@ test_codepage_8859_2_unmappable() {
 main() {
   test_add()
   test_slice()
+  test_range()
   test_indexOf()
   test_compareTo()
   test_getCodePoint_ascii()

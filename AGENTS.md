@@ -183,7 +183,7 @@ Interface calls become `switch (_this->_caffc_type_id)` in the interface functio
 
 `templates/common/default/caffc/collection.caffc`: `List<T>`, `Dict<K is HasHash, V>`, `Set<T is HasHash>` (all `Iterable<T>`). Primitives cannot be collection elements — use boxing (`I32`, `U16`, … in `*_box.caffc`).
 
-Arrays (`Module.ensureArray()`): primitives → `T_arr` + `#caffc_array("caffc_T")`; non-primitives → `obj_arr`. Generic fields use `T[]`, not the tag. `[]` lowers via `get`/`set` (`HasMethods`). `for item in collection` → iterator while (`ForInInstruction`).
+Arrays (`Module.ensureArray()`): primitives → `T_arr` + `#caffc_array("caffc_T")`; non-primitives → `obj_arr`. Generic fields use `T[]`, not the tag. `[]` lowers via `get`/`set` (`HasMethods`). `x[a:b]` lowers via `range(fromInclusive, toExclusive)` (`HasMethods`); omitted `a`→`0`, omitted `b`→`.size()`. `for item in collection` → iterator while (`ForInInstruction`).
 
 ## Global Variables and `unit_init`
 
