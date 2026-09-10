@@ -186,6 +186,8 @@ Interface calls become `switch (_this->_caffc_type_id)` in the interface functio
 
 Arrays (`Module.ensureArray()`): primitives → `T_arr` + `#caffc_array("caffc_T")`; non-primitives → `obj_arr`. Generic fields use `T[]`, not the tag. `[]` lowers via `get`/`set` (`HasMethods`). `x[a:b]` lowers via `range(fromInclusive, toExclusive)` (`HasMethods`); omitted `a`→`0`, omitted `b`→`.size()`. `for item in collection` → iterator while (`ForInInstruction`).
 
+Custom operators (if left type defines the method): `+`/`-`/`|`/`/`/`*` → `add`/`substract`/`pipe`/`divide`/`multiply`; `+=`/`-=`/`|=`/`/=`/`*=` → `*All` (must return `_this`). Else primitives keep C ops. Spelling is `substract`.
+
 ## Global Variables and `unit_init`
 
 Global inits and `unit_init()` bodies move into `module_init()` after resolve (skip if neither exists). Order: global inits → original `module_init` → each `unit_init` (CU order). `unit_init` is deleted after transplant and is not callable. C name: `{module}_module_init()`; globals are module-prefixed (`main_x`).

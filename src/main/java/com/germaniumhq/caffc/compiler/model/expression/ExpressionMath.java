@@ -1,15 +1,19 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
-import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
+import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMath;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmMathOperator;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
+import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
+import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
@@ -21,6 +25,9 @@ public final class ExpressionMath implements Expression {
 
     public SourceLocation sourceLocation;
     public Symbol symbol;
+
+    /** When set, {@code left op right} lowers to {@code left.method(right)}. */
+    private FunctionDefinition overloadFunction;
 
     public static ExpressionMath fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAddSubContext addSubExpression) {
         ExpressionMath result = new ExpressionMath();
@@ -81,7 +88,16 @@ public final class ExpressionMath implements Expression {
         this.left.recurseResolveTypes();
         this.right.recurseResolveTypes();
 
-        this.symbol = this.left.typeSymbol();
+        this.overloadFunction = CustomOperators.findMethod(
+                this.left.typeSymbol(),
+                CustomOperators.binaryMethodName(this.operator));
+
+        if (this.overloadFunction != null) {
+            this.overloadFunction.recurseResolveTypes();
+            this.symbol = this.overloadFunction.returnType;
+        } else {
+            this.symbol = this.left.typeSymbol();
+        }
     }
 
     @Override
@@ -101,16 +117,28 @@ public final class ExpressionMath implements Expression {
         AsmLinearFormResult result = new AsmLinearFormResult();
         result.value = block.addTempVar(this, this.symbol);
 
-        // we add all the instructions for the left and right expressions
         result.instructions.addAll(left.instructions);
         result.instructions.addAll(right.instructions);
-        result.instructions.add(new AsmMath(
-            this.sourceLocation,
-            (AsmVar) result.value,
-            AsmMathOperator.fromString(this.operator),
-            left.value,
-            right.value
-        ));
+
+        if (this.overloadFunction != null) {
+            AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+            AsmCall call = new AsmCall(
+                    this.sourceLocation,
+                    exceptionLabel,
+                    this.overloadFunction,
+                    left.value,
+                    right.value);
+            call.result = (AsmVar) result.value;
+            result.instructions.add(call);
+        } else {
+            result.instructions.add(new AsmMath(
+                    this.sourceLocation,
+                    (AsmVar) result.value,
+                    AsmMathOperator.fromString(this.operator),
+                    left.value,
+                    right.value
+            ));
+        }
 
         return result;
     }
