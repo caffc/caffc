@@ -254,4 +254,29 @@ public class TestS060DefaultNamedVarargs {
             throw new AssertionError("expected new Box() default to be replicated at each call site");
         }
     }
+
+    @Test
+    public void emptyKwargsUsesSharedGlobal() {
+        String code = compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "test.caffc",
+            new TestUnit[] {
+                new TestUnit("test.caffc",
+                    """
+                    module main
+
+                    use caffc.collection
+
+                    hello(i32 a ... obj[] rest, Dict<str, obj> kw) {
+                    }
+
+                    main() {
+                      hello(1)
+                    }
+                    """)
+            });
+
+        assertCodeContains(code, "caffc_EMPTY_KWARGS",
+                "calls with no keyword args should pass the shared empty kwargs dict");
+    }
 }

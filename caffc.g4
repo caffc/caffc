@@ -88,7 +88,7 @@ interfaceDefinition:
     CURLY_CLOSE
     ;
 
-name: ID;
+name: ID | FN;
 
 interfaceImplementations:
     interfaceImplementation (',' interfaceImplementation)*;
@@ -206,7 +206,9 @@ constExpression:
 
 fqdn:
   ID             # FqdnId
+  | FN           # FqdnFn
   | fqdn '.' ID  # FqdnMultiple
+  | fqdn '.' FN  # FqdnMultipleFn
   ;
 
 // keep in sync with CaffcPebblesExtension and Expression

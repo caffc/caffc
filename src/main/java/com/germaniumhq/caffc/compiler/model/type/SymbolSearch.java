@@ -120,6 +120,11 @@ public class SymbolSearch {
             return SymbolSearch.ofName(classContext.getText());
         } else if (typeContext instanceof caffcParser.TypePrimitiveContext primitiveContext) {
             return SymbolSearch.ofName(primitiveContext.getText());
+        } else if (typeContext instanceof caffcParser.TypeFunctionContext functionContext) {
+            SymbolSearch symbolSearch = SymbolSearch.ofName("fn");
+            symbolSearch.generics = fromGenericsInstantiation(
+                    unit, functionContext.functionType().genericsInstantiations());
+            return symbolSearch;
         }
 
         CaffcCompiler.get().fatal(

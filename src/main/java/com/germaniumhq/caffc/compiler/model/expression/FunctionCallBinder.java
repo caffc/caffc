@@ -296,8 +296,14 @@ public final class FunctionCallBinder {
             usedNames.add(entry.getKey());
         }
 
-        if (kwKeys.isEmpty() && kwargsParam.defaultExpression != null) {
-            return kwargsParam.defaultExpression;
+        if (kwKeys.isEmpty()) {
+            if (kwargsParam.defaultExpression != null) {
+                return kwargsParam.defaultExpression;
+            }
+            // Shared empty readonly dict — avoid allocating a new HashDict per call.
+            Expression emptyKwargs = ExpressionId.fromName(null, owner, "EMPTY_KWARGS");
+            emptyKwargs.recurseResolveTypes();
+            return emptyKwargs;
         }
 
         Expression kwargsValue = ExpressionKwargsPack.of(

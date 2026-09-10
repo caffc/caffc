@@ -6,10 +6,12 @@ import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.GenericInstantiations;
+import com.germaniumhq.caffc.compiler.model.InterfaceDefinition;
 import com.germaniumhq.caffc.compiler.model.Module;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmCall;
 import com.germaniumhq.caffc.compiler.model.asm.vars.AsmValue;
@@ -17,6 +19,9 @@ import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.GenericsDefinitionsSymbol;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
+import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -89,6 +94,17 @@ public final class ExpressionFnCall implements Expression {
         this.functionExpression.recurseResolveTypes();
 
         Symbol functionSymbol = this.functionExpression.typeSymbol();
+
+        // Objects implementing {@code fn<R>} are callable: {@code x(...)} → {@code x.call(...)}.
+        if (!(functionSymbol instanceof FunctionDefinition) && isFnCallable(functionSymbol)) {
+            ExpressionDotAccess callAccess = ExpressionDotAccess.fromParts(
+                    this, this.functionExpression, "call");
+            callAccess.sourceLocation = this.functionExpression.getSourceLocation();
+            this.functionExpression = callAccess;
+            callAccess.recurseResolveTypes();
+            functionSymbol = callAccess.typeSymbol();
+        }
+
         if (functionSymbol instanceof FunctionDefinition originalFunction) {
             // Ensure the canonical definition (and its parameters) are resolved before
             // instantiation / argument binding — needed for cross-module calls.
@@ -133,6 +149,43 @@ public final class ExpressionFnCall implements Expression {
                 functionDefinition,
                 thisReceiver,
                 callArguments);
+    }
+
+    /**
+     * True when {@code type} is (or implements) the {@code caffc.fn} interface, so
+     * {@code value(...)} can lower to {@code value.call(...)}.
+     */
+    private boolean isFnCallable(Symbol type) {
+        Symbol fnSymbol = SymbolResolver.resolveInstantiatedSymbol(this, SymbolSearch.ofName("fn"));
+        if (!(fnSymbol instanceof InterfaceDefinition fnInterface)) {
+            return false;
+        }
+
+        Symbol underlying = type;
+        while (underlying != null
+                && !(underlying instanceof ClassDefinition)
+                && !(underlying instanceof InterfaceDefinition)
+                && underlying.typeSymbol() != underlying) {
+            underlying = underlying.typeSymbol();
+        }
+
+        if (underlying instanceof ClassDefinition classDefinition) {
+            return classDefinition.isImplementing(fnInterface);
+        }
+
+        if (underlying instanceof InterfaceDefinition interfaceDefinition) {
+            if (fnInterface.isAssignableFrom(interfaceDefinition)) {
+                return true;
+            }
+            for (TypeDefinitionSymbol implemented : interfaceDefinition.getImplementedTypes()) {
+                if (implemented instanceof InterfaceDefinition parent &&
+                        fnInterface.isAssignableFrom(parent)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override

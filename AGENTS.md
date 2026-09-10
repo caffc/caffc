@@ -231,7 +231,9 @@ flex(i32 a ... obj[] rest, Dict<str, obj> kw) { }
 flex(1, extra=null)
 ```
 
-`FunctionCallBinder` + `ExpressionArrayPack` / `ExpressionKwargsPack`. Explicit `...` (or `name...`) always packs leftovers; pass an existing array by name (`rest=xs`).
+`FunctionCallBinder` + `ExpressionArrayPack` / `ExpressionKwargsPack`. Explicit `...` (or `name...`) always packs leftovers; pass an existing array by name (`rest=xs`). Empty kwargs use the shared `caffc.EMPTY_KWARGS` (`EmptyReadonlyDict`).
+
+**`fn<R>` callable objects:** `templates/common/default/caffc/fn.caffc` — `interface fn<R> { call(... obj[] args, Dict<str, obj> kw) -> R }`. Any value that implements `fn` can be invoked with `x(...)`; that lowers to `x.call(...)`.
 
 **i18n files:** `templates/i18n/{impl}/caffc/`; `caffc.yaml` `i18n.files` globs (default none); regenerate via `python3 util/generate-codepages.py`.
 

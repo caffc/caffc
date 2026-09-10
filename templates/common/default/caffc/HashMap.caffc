@@ -200,3 +200,74 @@ class HashDictIterator<K is HasHash, V> implements Iterator<DictEntry<K, V>> {
         raise("iterator out of bounds")
     }
 }
+
+/**
+ * Immutable empty Dict. Mutating methods raise. Used as the shared empty kwargs
+ * instance when a call site has no keyword arguments.
+ */
+#public class EmptyReadonlyDict<K is HasHash, V> implements Dict<K, V> {
+    #public constructor() {
+    }
+
+    #public get(K key) -> V {
+        return null
+    }
+
+    #public put(K key, V value) {
+        raise("EmptyReadonlyDict is readonly")
+    }
+
+    #public remove(K key) -> V {
+        raise("EmptyReadonlyDict is readonly")
+    }
+
+    #public containsKey(K key) -> bool {
+        return 0
+    }
+
+    #public add(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> result = new HashDict<K, V>(other.size() + 1)
+        result.addAll(other)
+        return result
+    }
+
+    #public addAll(Dict<K, V> other) -> Dict<K, V> {
+        raise("EmptyReadonlyDict is readonly")
+    }
+
+    #public substract(Dict<K, V> other) -> Dict<K, V> {
+        return _this
+    }
+
+    #public substractAll(Dict<K, V> other) -> Dict<K, V> {
+        raise("EmptyReadonlyDict is readonly")
+    }
+
+    #public isEmpty() -> bool {
+        return 1
+    }
+
+    #public size() -> i32 {
+        return 0
+    }
+
+    #public newIterator() -> Iterator<DictEntry<K, V>> {
+        return new EmptyReadonlyDictIterator<K, V>()
+    }
+}
+
+class EmptyReadonlyDictIterator<K is HasHash, V> implements Iterator<DictEntry<K, V>> {
+    #public constructor() {
+    }
+
+    #public hasNext() -> bool {
+        return 0
+    }
+
+    #public next() -> DictEntry<K, V> {
+        raise("iterator out of bounds")
+    }
+}
+
+// Shared empty kwargs dict for calls with no keyword arguments.
+Dict<str, obj> EMPTY_KWARGS = new EmptyReadonlyDict<str, obj>()

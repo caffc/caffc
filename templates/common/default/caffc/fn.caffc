@@ -1,0 +1,6 @@
+module caffc
+
+interface fn<R> {
+  call(... obj[] args, Dict<str, obj> kw) -> R
+}
+
