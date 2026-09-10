@@ -103,7 +103,7 @@ public final class ExpressionArrayPack implements Expression {
             CaffcCompiler.get().fatal(this, "varargs array type has no set() method: " + arrayType);
         }
 
-        AsmLabel exceptionLabel = block.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmLabel exceptionLabel = ExceptionHandler.resolveExceptionLabel(this, block);
 
         for (int i = 0; i < elements.size(); i++) {
             AsmLinearFormResult elementLinear = elements.get(i).asLinearForm(block);

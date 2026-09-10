@@ -1,0 +1,131 @@
+module main
+
+use caffc.collection
+
+assertTrue(bool what, str message) {
+  if not what {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}
+
+// --- custom fn implementor (callable via x(...)) ---
+
+class Const42 implements fn<i32> {
+  call(... obj[] args, Dict<str, obj> kw) -> i32 {
+    return 42
+  }
+}
+
+class Adder implements fn<i32> {
+  call(... obj[] args, Dict<str, obj> kw) -> i32 {
+    I32 a = (I32) args.get(0)
+    I32 b = (I32) args.get(1)
+    return a.value + b.value
+  }
+}
+
+testFnCallOnCustomClass() {
+  Const42 c = new Const42()
+  assertTrue(c() == 42, "custom fn class should be callable with ()")
+
+  Adder add = new Adder()
+  assertTrue(add(20, 22) == 42, "custom fn class should unpack boxed args")
+}
+
+// --- identity decorator ---
+
+class Identity implements fn<fn<i32>> {
+  call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+    return (fn<i32>) args.get(0)
+  }
+}
+
+Identity identity = new Identity()
+
+@identity
+answer() -> i32 {
+  return 42
+}
+
+testIdentityDecorator() {
+  assertTrue(answer() == 42, "identity-decorated function should return body result")
+}
+
+// --- wrapping decorator ---
+
+class AddTen implements fn<fn<i32>> {
+  call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+    fn<i32> inner = (fn<i32>) args.get(0)
+    return fn() -> i32 {
+      return inner() + 10
+    }
+  }
+}
+
+AddTen addTen = new AddTen()
+
+@addTen
+baseValue() -> i32 {
+  return 32
+}
+
+testWrappingDecorator() {
+  assertTrue(baseValue() == 42, "wrapping decorator should transform the result")
+}
+
+// --- stacked decorators: @a @b f → a(b(body)) ---
+
+class MultiplyByTwo implements fn<fn<i32>> {
+  call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+    fn<i32> inner = (fn<i32>) args.get(0)
+    return fn() -> i32 {
+      return inner() * 2
+    }
+  }
+}
+
+MultiplyByTwo multiplyByTwo = new MultiplyByTwo()
+
+@addTen
+@multiplyByTwo
+stacked() -> i32 {
+  return 16
+}
+
+testStackedDecorators() {
+  // multiplyByTwo(16) = 32, then addTen → 42
+  assertTrue(stacked() == 42, "stacked decorators should apply innermost-first")
+}
+
+// --- decorated function with parameters ---
+
+class DoubleArg implements fn<fn<i32>> {
+  call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+    fn<i32> inner = (fn<i32>) args.get(0)
+    return fn(i32 x) -> i32 {
+      return inner(x * 2)
+    }
+  }
+}
+
+DoubleArg doubleArg = new DoubleArg()
+
+@doubleArg
+echo(i32 x) -> i32 {
+  return x
+}
+
+testDecoratedWithParams() {
+  assertTrue(echo(21) == 42, "decorator can wrap a parameterized function")
+}
+
+main() -> i32 {
+  testFnCallOnCustomClass()
+  testIdentityDecorator()
+  testWrappingDecorator()
+  testStackedDecorators()
+  testDecoratedWithParams()
+  return 0
+}

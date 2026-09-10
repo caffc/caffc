@@ -209,7 +209,7 @@ public final class ExpressionFnCall implements Expression {
             result.instructions.addAll(linearParameter.instructions);
         }
 
-        AsmLabel exceptionLabel = block.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmLabel exceptionLabel = ExceptionHandler.resolveExceptionLabel(this, block);
         AsmCall call = new AsmCall(this.sourceLocation, exceptionLabel, functionDefinition, callParameters);
 
         if (!functionDefinition.isVoid()) {

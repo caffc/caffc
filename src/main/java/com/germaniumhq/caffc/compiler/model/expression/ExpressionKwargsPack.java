@@ -142,7 +142,7 @@ public final class ExpressionKwargsPack implements Expression {
             CaffcCompiler.get().fatal(this, "kwargs dict type has no put() method: " + concreteDictType);
         }
 
-        AsmLabel exceptionLabel = block.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmLabel exceptionLabel = ExceptionHandler.resolveExceptionLabel(this, block);
 
         for (int i = 0; i < keys.size(); i++) {
             AsmConstant keyConstant = new AsmConstant(TypeSymbol.STR, keyConstants.get(i).name);
