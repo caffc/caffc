@@ -86,6 +86,10 @@ use caffc.collection
         return _this._size
     }
 
+    #public newIterator() -> Iterator<i32> {
+        return null
+    }
+
     #public _findFirstFreeSlot() -> i32 {
         i32 i = 0
         while i < _this._capacity {

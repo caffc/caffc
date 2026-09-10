@@ -3,6 +3,7 @@ package com.germaniumhq.caffc.compiler.model.expression;
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.HasMethods;
@@ -17,6 +18,7 @@ import com.germaniumhq.caffc.compiler.model.asm.vars.AsmVar;
 import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeAssignability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,8 +66,19 @@ public final class ExpressionArrayPack implements Expression {
         }
         isResolved = true;
 
+        Symbol elementType = null;
+        if (arrayType instanceof ClassDefinition arrayClass) {
+            elementType = arrayClass.childDefinition;
+        }
+
         for (Expression element : elements) {
             element.recurseResolveTypes();
+            if (elementType != null && !TypeAssignability.isExpressionAssignable(elementType, element)) {
+                CaffcCompiler.get().error(element.getSourceLocation(), String.format(
+                        "varargs element has type '%s' which is not assignable to array element type '%s'",
+                        TypeAssignability.describe(element.typeSymbol()),
+                        TypeAssignability.describe(elementType)));
+            }
         }
     }
 

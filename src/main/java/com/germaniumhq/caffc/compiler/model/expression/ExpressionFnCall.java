@@ -88,13 +88,20 @@ public final class ExpressionFnCall implements Expression {
 
         this.functionExpression.recurseResolveTypes();
 
+        Symbol functionSymbol = this.functionExpression.typeSymbol();
+        if (functionSymbol instanceof FunctionDefinition originalFunction) {
+            // Ensure the canonical definition (and its parameters) are resolved before
+            // instantiation / argument binding — needed for cross-module calls.
+            originalFunction.recurseResolveTypes();
+        }
+
         if (this.genericsInstantiations != null) {
             this.genericsInstantiations.recurseResolveTypes();
             this.symbol = GenericsDefinitionsSymbol.instantiateCopy(
-                    this.functionExpression.typeSymbol(),
+                    functionSymbol,
                     this.genericsInstantiations.getResolvedSymbolList());
         } else {
-            this.symbol = this.functionExpression.typeSymbol();
+            this.symbol = functionSymbol;
         }
 
         if (!(this.symbol instanceof FunctionDefinition)) {

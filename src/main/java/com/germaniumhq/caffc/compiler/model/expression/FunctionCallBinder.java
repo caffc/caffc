@@ -8,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.Parameter;
 import com.germaniumhq.caffc.compiler.model.source.HasSourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
+import com.germaniumhq.caffc.compiler.model.type.TypeAssignability;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -171,7 +172,42 @@ public final class FunctionCallBinder {
                             expected + " for " + functionDefinition.name);
         }
 
+        checkArgumentAssignability(location, functionDefinition, bound, emitThis ? 0 : startIndex);
+
         return bound;
+    }
+
+    /**
+     * After arity/name binding succeeds, ensure each argument is assignable to its parameter.
+     *
+     * @param boundOffset index into {@code params} corresponding to {@code bound.get(0)}
+     *                    (0 when {@code _this} is included; {@code startIndex} for constructors)
+     */
+    private static void checkArgumentAssignability(
+            HasSourceLocation location,
+            FunctionDefinition functionDefinition,
+            List<Expression> bound,
+            int boundOffset) {
+        List<Parameter> params = functionDefinition.parameters;
+
+        for (int i = 0; i < bound.size(); i++) {
+            Parameter param = params.get(boundOffset + i);
+            Expression arg = bound.get(i);
+
+            if ("_this".equals(param.name)) {
+                continue;
+            }
+
+            if (!TypeAssignability.isExpressionAssignable(param.typeSymbol, arg)) {
+                CaffcCompiler.get().error(arg.getSourceLocation() != null ? arg.getSourceLocation() : location.getSourceLocation(),
+                        String.format(
+                                "argument for parameter '%s' in call to '%s' has type '%s' which is not assignable to '%s'",
+                                param.name,
+                                functionDefinition.name,
+                                TypeAssignability.describe(arg.typeSymbol()),
+                                TypeAssignability.describe(param.typeSymbol)));
+            }
+        }
     }
 
     private static Expression bindVarargs(

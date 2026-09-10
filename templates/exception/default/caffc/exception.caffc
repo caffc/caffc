@@ -32,7 +32,7 @@ class StackFrame {
 #public
 interface exception {
   #public message() -> str
-  #public cause() -> Exception
+  #public cause() -> exception
   #public stack() -> StackFrame[]
 }
 
@@ -74,7 +74,7 @@ stackDump() -> StackFrame[] {
   }
 
   if callCount == 0 {
-    return 0
+    return null
   }
 
   StackFrame[] result = new StackFrame[callCount]
@@ -86,7 +86,7 @@ stackDump() -> StackFrame[] {
       frame->name = _caffc_call_stack->frames[i].function_name;
     }
 
-    frame.file = 0     // FIXME: implement
+    frame.file = null     // FIXME: implement
     frame.line = 0     // FIXME: implement
 
     result[i] = frame

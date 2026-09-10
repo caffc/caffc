@@ -102,7 +102,7 @@ class str implements HasHash {
       byte_length = caffc_strlen(data) + 1;
     }
 
-    result = new str(byte_length)
+    result = new str((i32) byte_length)
 
     native {
       caffc_memcpy(result->_caffc_data, data, byte_length);
@@ -327,16 +327,21 @@ class str implements HasHash {
    * Checks if the current string is exactly the same as the other string.
    */
   #public
-  equals(str other) -> bool {
+  equals(HasEquals other) -> bool {
+    if other not instanceof str {
+      return 0
+    }
+
+    str otherStr = (str) other
     bool result
 
     native {
-      if (!other) {
+      if (!otherStr) {
         result = 0;
-      } else if (_this->_byte_length != other->_byte_length) {
+      } else if (_this->_byte_length != otherStr->_byte_length) {
         result = 0;
       } else {
-        result = caffc_strcmp(_this->_caffc_data, other->_caffc_data) == 0 ? 1 : 0;
+        result = caffc_strcmp(_this->_caffc_data, otherStr->_caffc_data) == 0 ? 1 : 0;
       }
     }
 

@@ -9,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
 import com.germaniumhq.caffc.compiler.model.type.SymbolResolver;
 import com.germaniumhq.caffc.compiler.model.type.SymbolSearch;
+import com.germaniumhq.caffc.compiler.model.type.TypeAssignability;
 import com.germaniumhq.caffc.compiler.model.type.TypeDefinitionSymbol;
 import com.germaniumhq.caffc.compiler.model.type.TypeName;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -267,11 +269,132 @@ public class ClassDefinition implements
             }
         }
 
+        checkImplementedInterfaceMethods();
+
         for (Field field: this.fields) {
             field.recurseResolveTypes();
         }
 
         this.gcFieldsCount = this.countGcFieldsCount();
+    }
+
+    /**
+     * Ensures every method from claimed interfaces (including parents) exists on this
+     * class with a compatible signature.
+     */
+    private void checkImplementedInterfaceMethods() {
+        Set<InterfaceDefinition> interfaces = new HashSet<>();
+        Set<InterfaceDefinition> toProcess = new HashSet<>(this.implementedInterfaces);
+
+        while (!toProcess.isEmpty()) {
+            InterfaceDefinition current = toProcess.iterator().next();
+            toProcess.remove(current);
+
+            InterfaceDefinition canonical = canonicalInterfaceDefinition(current);
+            if (!interfaces.add(canonical)) {
+                continue;
+            }
+
+            toProcess.addAll(canonical.implementedInterfaces);
+        }
+
+        Set<String> checkedMethods = new HashSet<>();
+
+        for (InterfaceDefinition interfaceDefinition : interfaces) {
+            for (FunctionDefinition interfaceFn : interfaceDefinition.functions) {
+                if (!checkedMethods.add(interfaceFn.name)) {
+                    continue;
+                }
+
+                FunctionDefinition classFn = this.getFunction(interfaceFn.name);
+                if (classFn == null) {
+                    CaffcCompiler.get().error(this.sourceLocation, String.format(
+                            "class '%s' does not implement method '%s' required by interface '%s'",
+                            this.name,
+                            interfaceFn.name,
+                            interfaceDefinition.name));
+                    continue;
+                }
+
+                checkInterfaceMethodSignature(classFn, interfaceFn, interfaceDefinition);
+            }
+        }
+    }
+
+    private void checkInterfaceMethodSignature(
+            FunctionDefinition classFn,
+            FunctionDefinition interfaceFn,
+            InterfaceDefinition interfaceDefinition) {
+        int classStart = parameterStartIndex(classFn);
+        int interfaceStart = parameterStartIndex(interfaceFn);
+        int classParamCount = classFn.parameters.size() - classStart;
+        int interfaceParamCount = interfaceFn.parameters.size() - interfaceStart;
+
+        if (classParamCount != interfaceParamCount) {
+            CaffcCompiler.get().error(classFn.sourceLocation, String.format(
+                    "method '%s' in class '%s' has %d parameter(s) but interface '%s' requires %d",
+                    classFn.name,
+                    this.name,
+                    classParamCount,
+                    interfaceDefinition.name,
+                    interfaceParamCount));
+            return;
+        }
+
+        for (int i = 0; i < interfaceParamCount; i++) {
+            Parameter classParam = classFn.parameters.get(classStart + i);
+            Parameter interfaceParam = interfaceFn.parameters.get(interfaceStart + i);
+
+            // Parameters must match for a valid implementation (invariant).
+            if (!sameImplementationType(classParam.typeSymbol, interfaceParam.typeSymbol)) {
+                CaffcCompiler.get().error(classFn.sourceLocation, String.format(
+                        "method '%s' in class '%s': parameter '%s' has type '%s' but interface '%s' requires '%s'",
+                        classFn.name,
+                        this.name,
+                        classParam.name,
+                        TypeAssignability.describe(classParam.typeSymbol),
+                        interfaceDefinition.name,
+                        TypeAssignability.describe(interfaceParam.typeSymbol)));
+            }
+        }
+
+        if (!sameImplementationType(interfaceFn.returnType, classFn.returnType)) {
+            CaffcCompiler.get().error(classFn.sourceLocation, String.format(
+                    "method '%s' in class '%s': return type '%s' does not match '%s' required by interface '%s'",
+                    classFn.name,
+                    this.name,
+                    TypeAssignability.describe(classFn.returnType),
+                    TypeAssignability.describe(interfaceFn.returnType),
+                    interfaceDefinition.name));
+        }
+    }
+
+    private static int parameterStartIndex(FunctionDefinition functionDefinition) {
+        if (!functionDefinition.parameters.isEmpty() &&
+                "_this".equals(functionDefinition.parameters.get(0).name)) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Interface implementation parameter/return identity: same named type after
+     * generics resolve (not the looser assignment conversions).
+     */
+    private static boolean sameImplementationType(Symbol classType, Symbol interfaceType) {
+        if (classType == null || interfaceType == null) {
+            return false;
+        }
+
+        TypeName className = classType.typeName();
+        TypeName interfaceName = interfaceType.typeName();
+        if (className == null || interfaceName == null) {
+            return false;
+        }
+
+        return Objects.equals(className.module, interfaceName.module) &&
+                Objects.equals(className.name, interfaceName.name) &&
+                className.dataType == interfaceName.dataType;
     }
 
     /**
@@ -345,6 +468,10 @@ public class ClassDefinition implements
 
         for (Field f : fields) {
             copy.fields.add(f.newGenericsCopy(resolvedGenerics));
+        }
+
+        for (InterfaceDefinition implementedInterface : implementedInterfaces) {
+            copy.implementedInterfaces.add(implementedInterface.newGenericsCopy(resolvedGenerics));
         }
 
         copy.tags = this.tags;

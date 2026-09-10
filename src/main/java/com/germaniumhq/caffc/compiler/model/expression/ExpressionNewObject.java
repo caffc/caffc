@@ -93,6 +93,8 @@ public final class ExpressionNewObject implements Expression {
             return;
         }
 
+        constructor.recurseResolveTypes();
+
         this.parameters = FunctionCallBinder.bindConstructor(
                 this,
                 this,

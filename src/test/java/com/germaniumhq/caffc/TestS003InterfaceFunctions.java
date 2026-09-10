@@ -26,6 +26,9 @@ public class TestS003InterfaceFunctions {
                                 }
                                 
                                 class A implements obj {
+                                  to_string() -> str {
+                                    return null
+                                  }
                                 }
                                 """)
                 }
@@ -96,13 +99,13 @@ public class TestS003InterfaceFunctions {
 
                 class A implements I {
                   x() -> str {
-                    return 0  //should be null
+                    return null
                   }
                 }
                 
                 class B implements I {
                   x() -> str {
-                    return 0
+                    return null
                   }
                 }
 
