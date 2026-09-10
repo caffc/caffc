@@ -3,6 +3,10 @@
 {{ f | c_function_signature }} {
   switch (_this->_caffc_type_id) {
 {%- for implementation in ctx.definition.concreteImplementations %}
+{#- Only emit cases for classes that actually define this method. Parent-interface
+   registration (Dict → Collection → Iterable) includes implementors that may not
+   yet provide every inherited method (e.g. HashDict lacks newIterator). #}
+{%- if implementation.getFunction(f.name) != null %}
   case {{ implementation.typeId }}:
     {%- if f.returnType.name == "void" %}
     {{ implementation | c_name }}_{{ f.name }}(
@@ -16,10 +20,14 @@
             {{- p.name }}{% if not loop.last %}, {% endif -%}
         {% endfor -%});
     {%- endif %}
+{%- endif %}
 {%- endfor %}
   default: /* should not be reached */
   {%- if f.returnType.name == "void" %}
     return; /* FIXME: throw an error, _this isn't a valid pointer */
+  {%- elseif f.returnType.typeName.dataType == "STRUCT" %}
+    {{ f.returnType | c_name }} _caffc_iface_default = {0};
+    return _caffc_iface_default; /* FIXME: throw an error, _this isn't a valid pointer */
   {%- else %}
     return 0; /* FIXME: throw an error, _this isn't a valid pointer */
   {%- endif %}

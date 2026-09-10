@@ -164,7 +164,12 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
             return this.returnTypes.values().iterator().next();
         }
 
-        return Struct.fromDefinition(owner, module, this.name + "_structreturn", this.returnTypes);
+        String structName = this.name + "_structreturn";
+        if (this.clazz != null) {
+            structName = this.clazz.name() + "_" + structName;
+        }
+
+        return Struct.fromDefinition(owner, module, structName, this.returnTypes);
     }
 
     @Override
@@ -192,6 +197,21 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         newFunctionDefinition.tags = this.tags;
 
         newFunctionDefinition.returnNames = this.returnNames;
+        newFunctionDefinition.returnTypeSearches = this.returnTypeSearches == null
+                ? null
+                : new LinkedHashMap<>(this.returnTypeSearches);
+        newFunctionDefinition.owner = this.owner;
+        newFunctionDefinition.sourceLocation = this.sourceLocation;
+
+        if (this.returnTypes == null) {
+            // Copied before recurseResolveTypes finished (e.g. self-typed interface methods).
+            newFunctionDefinition.returnTypes = null;
+            newFunctionDefinition.isResolved = false;
+            for (Parameter parameter: this.parameters) {
+                newFunctionDefinition.parameters.add(parameter.newGenericsCopy(resolvedGenerics));
+            }
+            return (T) newFunctionDefinition;
+        }
 
         for (Map.Entry<String, Symbol> entry: this.returnTypes.entrySet()) {
             if (!(entry.getValue() instanceof GenericDefinition)) {
@@ -215,6 +235,10 @@ public class FunctionDefinition implements GenericsDefinitionsSymbol, Scope {
         }
 
         newFunctionDefinition.returnType = newFunctionDefinition.createReturnTypeSymbol();
+        // Copies already carry resolved return types; re-running recurseResolveTypes would
+        // rebuild from returnTypeSearches (still the unresolved generic names) and wipe
+        // them back to void / the generic parameter.
+        newFunctionDefinition.isResolved = true;
 
         return (T) newFunctionDefinition;
     }

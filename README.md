@@ -131,8 +131,10 @@ You cannot extend another class. This avoids having abstract classes, forces com
 and eliminates all problems related to `super()`-like calls.
 
 Another difference, is that functions and methods, true to their C counterpart, _don't
-have overloading_. In the future, CaffC will have default parameters, and calls with
-named parameters to mitigate this.
+have overloading_. CaffC supports default parameters and named call arguments (Python-style):
+omitted arguments evaluate their default into a temporary _before_ the call. Trailing
+array parameters can be used as varargs (optionally after a `...` separator); a trailing
+`array, Dict` pair also accepts kwargs.
 
 In methods `_this` is available to access the current class instance.
 
@@ -256,6 +258,11 @@ main() {
 The compiler generates a `{module}_module_init()` C function that initializes
 the global variables. If you define your own `module_init()` function, the
 compiler prepends the global variable initializations to it.
+
+Each `.caffc` file may also define an optional `unit_init()` function. Its body
+is copied into `module_init()` after the original `module_init` code, then the
+`unit_init` function is deleted. Calling `unit_init()` is a compiler error,
+because the functions are never generated (the C names would collide).
 
 ## Garbage Collection
 

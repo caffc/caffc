@@ -80,7 +80,7 @@ add_item_to_list(ArrayList<File> list, ptr path) {
     return // exclude hidden files
   }
 
-  list.add(new File(s))
+  list.addAll(new File(s))
 }
 
 sort(ArrayList<File> file_list) -> void {

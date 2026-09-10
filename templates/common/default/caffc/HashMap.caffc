@@ -78,12 +78,54 @@ use caffc.collection
         return _this._findIndex(key, keyHash) != -1
     }
 
+    #public add(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> result = new HashDict<K, V>(_this._size + other.size() + 1)
+        result.addAll(_this)
+        result.addAll(other)
+        return result
+    }
+
+    #public addAll(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> o = (HashDict<K, V>) other
+        i32 i = 0
+        while i < o._capacity {
+            if o._keys[i] != null {
+                _this.put(o._keys[i], o._values[i])
+            }
+            i = i + 1
+        }
+        return _this
+    }
+
+    #public substract(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> result = new HashDict<K, V>(_this._size + 1)
+        result.addAll(_this)
+        result.substractAll(other)
+        return result
+    }
+
+    #public substractAll(Dict<K, V> other) -> Dict<K, V> {
+        HashDict<K, V> o = (HashDict<K, V>) other
+        i32 i = 0
+        while i < o._capacity {
+            if o._keys[i] != null {
+                _this.remove(o._keys[i])
+            }
+            i = i + 1
+        }
+        return _this
+    }
+
     #public isEmpty() -> bool {
         return _this._size == 0
     }
 
     #public size() -> i32 {
         return _this._size
+    }
+
+    #public newIterator() -> Iterator<DictEntry<K, V>> {
+        return new HashDictIterator<K, V>(_this)
     }
 
     #public _findFirstFreeSlot() -> i32 {
@@ -121,5 +163,40 @@ use caffc.collection
             }
             i = i + 1
         }
+    }
+}
+
+class HashDictIterator<K is HasHash, V> implements Iterator<DictEntry<K, V>> {
+    HashDict<K, V> _collection
+    i32 _index
+    i32 _yielded
+
+    #public constructor(HashDict<K, V> coll) {
+        _this._collection = coll
+        _this._index = 0
+        _this._yielded = 0
+    }
+
+    #public hasNext() -> bool {
+        return _this._yielded < _this._collection._size
+    }
+
+    #public next() -> DictEntry<K, V> {
+        if not _this.hasNext() {
+            raise("iterator out of bounds")
+        }
+        while _this._index < _this._collection._capacity {
+            if _this._collection._keys[_this._index] != null {
+                DictEntry<K, V> result = new DictEntry<K, V>(
+                    _this._collection._keys[_this._index],
+                    _this._collection._values[_this._index]
+                )
+                _this._index = _this._index + 1
+                _this._yielded = _this._yielded + 1
+                return result
+            }
+            _this._index = _this._index + 1
+        }
+        raise("iterator out of bounds")
     }
 }

@@ -1,0 +1,236 @@
+module caffc
+
+/**
+ * Sorted map from u8 keys to u32 values. Parallel arrays kept in key order;
+ * lookups use binary search. Not a Collection — mirrors Dict-like get/put API
+ * for primitive types that cannot use generic Dict.
+ */
+#public class TreeSetDictU8ToU32 {
+  u8[] _keys
+  u32[] _values
+  i32 _size
+  i32 _capacity
+
+  #public constructor(i32 capacity) {
+    if capacity <= 0 {
+      capacity = 16
+    }
+    _this._capacity = capacity
+    _this._size = 0
+    _this._keys = new u8[capacity]
+    _this._values = new u32[capacity]
+  }
+
+  #public _findIndex(u8 key) -> i32 index, bool found {
+    if _this._size == 0 {
+      return 0, false
+    }
+
+    i32 start = 0
+    i32 end = _this._size - 1
+
+    while start <= end {
+      i32 mid = (end - start) / 2 + start
+      u8 midKey = _this._keys[mid]
+
+      if midKey == key {
+        return mid, true
+      }
+
+      if key < midKey {
+        end = mid - 1
+      } else {
+        start = mid + 1
+      }
+    }
+
+    return start, false
+  }
+
+  #public get(u8 key) -> u32 value, bool error {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+
+    if not found {
+      return 0, true
+    }
+
+    return _this._values[index], false
+  }
+
+  #public put(u8 key, u32 value) {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+
+    if found {
+      _this._values[index] = value
+      return
+    }
+
+    if (u32) _this._size >= (u32) _this._capacity {
+      _this._grow()
+    }
+
+    i32 i = _this._size
+    while i > index {
+      _this._keys[i] = _this._keys[i - 1]
+      _this._values[i] = _this._values[i - 1]
+      i = i - 1
+    }
+
+    _this._keys[index] = key
+    _this._values[index] = value
+    _this._size = _this._size + 1
+  }
+
+  #public containsKey(u8 key) -> bool {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+    return found
+  }
+
+  #public isEmpty() -> bool {
+    return _this._size == 0
+  }
+
+  #public size() -> i32 {
+    return _this._size
+  }
+
+  _grow() {
+    i32 oldCapacity = _this._capacity
+    u8[] oldKeys = _this._keys
+    u32[] oldValues = _this._values
+    i32 newCapacity = oldCapacity * 2
+    _this._capacity = newCapacity
+    _this._keys = new u8[newCapacity]
+    _this._values = new u32[newCapacity]
+
+    i32 i = 0
+    while i < _this._size {
+      _this._keys[i] = oldKeys[i]
+      _this._values[i] = oldValues[i]
+      i = i + 1
+    }
+  }
+}
+
+/**
+ * Sorted map from u32 keys to u8 values. Parallel arrays kept in key order;
+ * lookups use binary search.
+ */
+#public class TreeSetDictU32ToU8 {
+  u32[] _keys
+  u8[] _values
+  i32 _size
+  i32 _capacity
+
+  #public constructor(i32 capacity) {
+    if capacity <= 0 {
+      capacity = 16
+    }
+    _this._capacity = capacity
+    _this._size = 0
+    _this._keys = new u32[capacity]
+    _this._values = new u8[capacity]
+  }
+
+  #public _findIndex(u32 key) -> i32 index, bool found {
+    if _this._size == 0 {
+      return 0, false
+    }
+
+    i32 start = 0
+    i32 end = _this._size - 1
+
+    while start <= end {
+      i32 mid = (end - start) / 2 + start
+      u32 midKey = _this._keys[mid]
+
+      if midKey == key {
+        return mid, true
+      }
+
+      if key < midKey {
+        end = mid - 1
+      } else {
+        start = mid + 1
+      }
+    }
+
+    return start, false
+  }
+
+  #public get(u32 key) -> u8 value, bool error {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+
+    if not found {
+      return 0, true
+    }
+
+    return _this._values[index], false
+  }
+
+  #public put(u32 key, u8 value) {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+
+    if found {
+      _this._values[index] = value
+      return
+    }
+
+    if (u32) _this._size >= (u32) _this._capacity {
+      _this._grow()
+    }
+
+    i32 i = _this._size
+    while i > index {
+      _this._keys[i] = _this._keys[i - 1]
+      _this._values[i] = _this._values[i - 1]
+      i = i - 1
+    }
+
+    _this._keys[index] = key
+    _this._values[index] = value
+    _this._size = _this._size + 1
+  }
+
+  #public containsKey(u32 key) -> bool {
+    i32 index
+    bool found
+    index, found = _this._findIndex(key)
+    return found
+  }
+
+  #public isEmpty() -> bool {
+    return _this._size == 0
+  }
+
+  #public size() -> i32 {
+    return _this._size
+  }
+
+  _grow() {
+    i32 oldCapacity = _this._capacity
+    u32[] oldKeys = _this._keys
+    u8[] oldValues = _this._values
+    i32 newCapacity = oldCapacity * 2
+    _this._capacity = newCapacity
+    _this._keys = new u32[newCapacity]
+    _this._values = new u8[newCapacity]
+
+    i32 i = 0
+    while i < _this._size {
+      _this._keys[i] = oldKeys[i]
+      _this._values[i] = oldValues[i]
+      i = i + 1
+    }
+  }
+}

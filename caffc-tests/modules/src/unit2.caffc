@@ -1,0 +1,5 @@
+module main
+
+unit_init() {
+  x += 2
+}

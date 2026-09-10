@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.expression;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.AstItem;
 import com.germaniumhq.caffc.compiler.model.AstItemCodeRenderer;
@@ -7,6 +8,7 @@ import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
+import com.germaniumhq.caffc.compiler.model.Struct;
 import com.germaniumhq.caffc.compiler.model.TypeSymbol;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmAssign;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
@@ -19,7 +21,7 @@ import com.germaniumhq.caffc.compiler.model.instruction.ExceptionHandler;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Symbol;
-import com.germaniumhq.caffc.compiler.model.type.TypeName;
+import com.germaniumhq.caffc.compiler.model.type.TypeAssignability;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.List;
 /**
  * Assign a variable, or multiple variables to some expression.
  *
+ * <p>The blank identifier {@code _} may appear on the LHS of an assignment
+ * (including multi-return unpack) to discard a value, similar to Go.
  */
 public final class ExpressionAssign implements Expression {
     public AstItem owner;
@@ -37,6 +41,13 @@ public final class ExpressionAssign implements Expression {
     public SourceLocation sourceLocation;
 
     private boolean isResolved;
+
+    /**
+     * Go-style blank identifier: discard the assigned value; do not resolve or write.
+     */
+    public static boolean isBlankIdentifier(Expression expression) {
+        return expression instanceof ExpressionId expressionId && "_".equals(expressionId.name);
+    }
 
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExAssignContext assignExpression) {
         ExpressionAssign expression = new ExpressionAssign();
@@ -106,7 +117,61 @@ public final class ExpressionAssign implements Expression {
         this.right.recurseResolveTypes();
 
         for (Expression leftExpression: this.leftExpressions) {
+            if (isBlankIdentifier(leftExpression)) {
+                continue;
+            }
+
             leftExpression.recurseResolveTypes();
+        }
+
+        checkAssignability();
+    }
+
+    private void checkAssignability() {
+        if (this.leftExpressions.size() == 1) {
+            Expression left = this.leftExpressions.get(0);
+            if (isBlankIdentifier(left)) {
+                return;
+            }
+
+            if (!TypeAssignability.isExpressionAssignable(left.typeSymbol(), this.right)) {
+                CaffcCompiler.get().error(this.sourceLocation, String.format(
+                        "cannot assign value of type '%s' to '%s'",
+                        TypeAssignability.describe(this.right.typeSymbol()),
+                        TypeAssignability.describe(left.typeSymbol())));
+            }
+            return;
+        }
+
+        Symbol rightType = this.right.typeSymbol();
+        if (!(rightType instanceof Struct rightStruct)) {
+            CaffcCompiler.get().error(this.sourceLocation,
+                    "multi-assignment requires a multi-return value on the right-hand side");
+            return;
+        }
+
+        if (rightStruct.fields.size() != this.leftExpressions.size()) {
+            CaffcCompiler.get().error(this.sourceLocation, String.format(
+                    "multi-assignment expects %d value(s) but right-hand side has %d",
+                    this.leftExpressions.size(),
+                    rightStruct.fields.size()));
+            return;
+        }
+
+        for (int i = 0; i < this.leftExpressions.size(); i++) {
+            Expression left = this.leftExpressions.get(i);
+            if (isBlankIdentifier(left)) {
+                continue;
+            }
+
+            Symbol fieldType = rightStruct.fields.get(i).typeSymbol();
+            if (!TypeAssignability.isAssignable(left.typeSymbol(), fieldType)) {
+                CaffcCompiler.get().error(this.sourceLocation, String.format(
+                        "cannot assign multi-return slot %d of type '%s' to '%s'",
+                        i,
+                        TypeAssignability.describe(fieldType),
+                        TypeAssignability.describe(left.typeSymbol())));
+            }
         }
     }
 
@@ -183,9 +248,14 @@ public final class ExpressionAssign implements Expression {
         AsmLinearFormResult result = new AsmLinearFormResult();
 
         AsmLinearFormResult right = this.right.asLinearForm(block);
-        AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
-
         result.instructions.addAll(right.instructions);
+
+        // `_ = expr` — evaluate for side effects, discard the value
+        if (isBlankIdentifier(this.leftExpressions.get(0))) {
+            return result;
+        }
+
+        AsmLinearFormResult left = this.leftExpressions.get(0).asLinearForm(block);
         result.instructions.addAll(left.instructions);
 
         result.instructions.add(new AsmAssign(this.sourceLocation, (AsmVar) left.value, right.value));
@@ -208,40 +278,43 @@ public final class ExpressionAssign implements Expression {
             Expression left = this.leftExpressions.get(i);
             AsmVar rightAsmVar = AsmFieldVar.fromFieldIndex(rightStruct, i);
 
-            if ((left instanceof ExpressionIndexAccess)) {
-                ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) left;
+            // `_` discards this return slot; still clear object/array fields for GC below
+            if (!isBlankIdentifier(left)) {
+                if ((left instanceof ExpressionIndexAccess)) {
+                    ExpressionIndexAccess indexAccess = (ExpressionIndexAccess) left;
 
-                AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
-                AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
+                    AsmLinearFormResult leftIndex = indexAccess.index.asLinearForm(block);
+                    AsmLinearFormResult leftExpression = indexAccess.expression.asLinearForm(block);
 
-                Symbol arrayDefinition = indexAccess.expression.typeSymbol();
-                FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
+                    Symbol arrayDefinition = indexAccess.expression.typeSymbol();
+                    FunctionDefinition setFunction = ((ClassDefinition) arrayDefinition).getFunction("set");
 
-                result.instructions.addAll(leftIndex.instructions);
-                result.instructions.addAll(leftExpression.instructions);
+                    result.instructions.addAll(leftIndex.instructions);
+                    result.instructions.addAll(leftExpression.instructions);
 
-                AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+                    AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
 
-                // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
-                result.instructions.add(new AsmCall(
-                    this.sourceLocation,
-                    exceptionLabel,
-                    setFunction,
-                    leftExpression.value, // _this
-                    leftIndex.value,      // index
-                    rightAsmVar           // value
-                ));
-            } else {
-                AsmLinearFormResult leftLinear = left.asLinearForm(block);
-                result.instructions.addAll(leftLinear.instructions);
-                result.instructions.add(new AsmAssign(
-                    this.sourceLocation,
-                    (AsmVar) leftLinear.value,
-                    rightAsmVar));
+                    // this is basically: arr_set(leftExpr, leftIndex, rightAsmVar)
+                    result.instructions.add(new AsmCall(
+                        this.sourceLocation,
+                        exceptionLabel,
+                        setFunction,
+                        leftExpression.value, // _this
+                        leftIndex.value,      // index
+                        rightAsmVar           // value
+                    ));
+                } else {
+                    AsmLinearFormResult leftLinear = left.asLinearForm(block);
+                    result.instructions.addAll(leftLinear.instructions);
+                    result.instructions.add(new AsmAssign(
+                        this.sourceLocation,
+                        (AsmVar) leftLinear.value,
+                        rightAsmVar));
+                }
             }
 
             // after the assignment in the individual variables is done, we don't want the
-            // GC to think these values are still used.
+            // GC to think these values are still used (also when the slot was discarded).
             DataType dataType = rightAsmVar.typeSymbol().typeName().dataType;
             if (dataType == DataType.ARRAY || dataType == DataType.OBJECT) {
                 result.instructions.add(new AsmZeroClear(this.sourceLocation, rightAsmVar));

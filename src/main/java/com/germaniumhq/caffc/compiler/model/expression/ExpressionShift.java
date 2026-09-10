@@ -28,7 +28,7 @@ public final class ExpressionShift implements Expression {
         result.owner = owner;
         result.left = Expression.fromAntlr(unit, result, shiftContext.leftExpression);
         result.right = Expression.fromAntlr(unit, result, shiftContext.rightExpression);
-        result.operator = shiftContext.getChild(1).getText();
+        result.operator = shiftContext.shiftOp().getText();
 
         return result;
     }

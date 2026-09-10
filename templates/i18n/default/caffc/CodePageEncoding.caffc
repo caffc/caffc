@@ -1,0 +1,32 @@
+module caffc.i18n
+
+/**
+ * Transforms data from a specific encoding bytes to CaffC UTF-8 strings and
+ * vice-versa
+ */
+interface CodePageEncoding {
+  /*
+   * Name of the code page.
+   */
+  name() -> str
+
+  /*
+   * Vendor of the code page. i.e. Microsoft, IBM, Fujitsu, etc.
+   */
+  vendor() -> str
+
+  /*
+   * Converts the string to a byte array. If there is an error, the
+   * `error` is set to true, and the errorByteIndex is set to the first
+   * byte, from the value's utf-8 bytes, that had issues.
+   */
+  fromUtf8(str value) -> u8[] data, bool error, i32 errorByteIndex
+
+  /*
+   * Converts the string from a byte array. If there's an error - i.e. bytes
+   * that are not mapped, the `error` is set to true, and the errorIndex is set
+   * to the first byte that couldn't be converted.
+   */
+  toUtf8(u8[] data) -> str value, bool error, i32 errorIndex
+}
+

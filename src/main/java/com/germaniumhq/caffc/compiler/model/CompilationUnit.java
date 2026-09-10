@@ -48,8 +48,16 @@ public class CompilationUnit implements AstItem, Scope {
         }
 
         for (caffcParser.CompileBlockContext antlrCompileBlock: antlrCompilationUnit.compileBlock()) {
-            CompileBlock compileBlock = CompileBlock.fromAntlr(compilationUnit, compilationUnit, antlrCompileBlock);
-            compilationUnit.compileBlocks.add(compileBlock);
+            if (antlrCompileBlock.sharpSwitchUnit() != null) {
+                compilationUnit.compileBlocks.addAll(
+                        SharpSwitch.expandUnit(compilationUnit, compilationUnit, antlrCompileBlock.sharpSwitchUnit()));
+            } else if (antlrCompileBlock.sharpIfdefUnit() != null) {
+                compilationUnit.compileBlocks.addAll(
+                        SharpIfdef.expandUnit(compilationUnit, compilationUnit, antlrCompileBlock.sharpIfdefUnit()));
+            } else {
+                CompileBlock compileBlock = CompileBlock.fromAntlr(compilationUnit, compilationUnit, antlrCompileBlock);
+                compilationUnit.compileBlocks.add(compileBlock);
+            }
         }
 
         // FIXME: reload compilation unit in the global program

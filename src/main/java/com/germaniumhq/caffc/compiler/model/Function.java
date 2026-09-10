@@ -90,23 +90,22 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
 
         function.sourceLocationCurlyOpen = SourceLocation.fromAntlrToken(
             unit.sourceLocation.filePath,
-            ctx.block().CURLY_OPEN().getSymbol()
+            ctx.functionBlock().CURLY_OPEN().getSymbol()
         );
         function.sourceLocationCurlyClose = SourceLocation.fromAntlrToken(
             unit.sourceLocation.filePath,
-            ctx.block().CURLY_CLOSE().getSymbol()
+            ctx.functionBlock().CURLY_CLOSE().getSymbol()
         );
 
         function.owner = owner;
         function.definition.module = unit.module.name;
 
-      // if the function has parameters, add them
+        // if the function has parameters, add them
         caffcParser.ParameterDefinitionsContext parameterDefinitions = ctx.parameterDefinitions();
 
         if (parameterDefinitions != null) {
-            for (caffcParser.ParameterDefinitionContext parameter : parameterDefinitions.parameterDefinition()) {
-                function.definition.parameters.add(Parameter.fromAntlr(unit, function.definition, parameter));
-            }
+            function.definition.parameters.addAll(
+                    ParameterListParser.fromAntlr(unit, function.definition, function, parameterDefinitions));
         }
 
         // read the return values and add them as parameters if needed
@@ -152,13 +151,21 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
             function.definition.generics = GenericDefinitions.fromAntlr(unit, function, antlrGenerics);
         }
 
-        for (caffcParser.StatementContext antlrStatement: ctx.block().statement()) {
-            function.statements.addAll(Statement.fromAntlr(unit, function, antlrStatement));
+        for (caffcParser.FunctionBodyItemContext bodyItem : ctx.functionBlock().functionBodyItem()) {
+            if (bodyItem.sharpSwitchMethod() != null) {
+                function.statements.addAll(
+                        SharpSwitch.expandMethod(unit, function, bodyItem.sharpSwitchMethod()));
+            } else if (bodyItem.sharpIfdefMethod() != null) {
+                function.statements.addAll(
+                        SharpIfdef.expandMethod(unit, function, bodyItem.sharpIfdefMethod()));
+            } else {
+                function.statements.addAll(Statement.fromAntlr(unit, function, bodyItem.statement()));
+            }
         }
 
-        // we register the function in the module only if it's a global function, otherwise they
+        // we register the function in the module only if it's a true global function, otherwise they
         // will get loaded from the class.
-        if (function.definition.clazz == null) {
+        if (function.definition.clazz == null && !Module.UNIT_INIT.equals(function.definition.name)) {
             unit.module.functions.put(function.definition.name, function.definition);
         }
 

@@ -11,8 +11,8 @@ module caffc
         return _this.value
     }
 
-    #public hash() -> i64 {
-        return _this.value
+    #public hash() -> i32 {
+        return (i32) _this.value
     }
 
     #public equals(HasEquals other) -> bool {

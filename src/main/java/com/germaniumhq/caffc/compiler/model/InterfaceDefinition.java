@@ -114,6 +114,13 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
             }
         }
 
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            Symbol parentSymbol = parent.resolve(name);
+            if (parentSymbol != null) {
+                return parentSymbol;
+            }
+        }
+
         if (this.generics != null) {
             return this.generics.getByName(name);
         }
@@ -136,6 +143,13 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
         for (FunctionDefinition f : functions) {
             if (f.name.equals(name)) {
                 return f;
+            }
+        }
+
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            FunctionDefinition parentFunction = parent.getFunction(name);
+            if (parentFunction != null) {
+                return parentFunction;
             }
         }
 
@@ -182,9 +196,32 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
 
     @Override
     public <T extends GenericsDefinitionsSymbol> T instantiateGenerics(List<Symbol> resolvedGenerics) {
+        // Self-referential signatures (e.g. Dict.add -> Dict<K,V>) resolve against this
+        // interface's own type parameters while methods are still being resolved. Reuse
+        // this definition instead of copying half-initialized function return types.
+        if (isIdentityInstantiation(resolvedGenerics)) {
+            return (T) this;
+        }
+
         Map<String, Symbol> genericsSymbols = GenericsDefinitionsSymbol.createGenericsSymbolMap(
                 this, resolvedGenerics);
         return this.newGenericsCopy(genericsSymbols);
+    }
+
+    private boolean isIdentityInstantiation(List<Symbol> resolvedGenerics) {
+        int count = getGenericsDefinitionCount();
+        if (count == 0) {
+            return resolvedGenerics == null || resolvedGenerics.isEmpty();
+        }
+        if (resolvedGenerics == null || resolvedGenerics.size() != count) {
+            return false;
+        }
+        for (int i = 0; i < count; i++) {
+            if (resolvedGenerics.get(i) != getGenericDefinition(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -202,7 +239,15 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
             copy.functions.add(f.newGenericsCopy(resolvedGenerics));
         }
 
+        // Keep parent interfaces so inherited methods (e.g. Collection.size on Dict/List)
+        // remain visible after generics instantiation. Re-apply the same substitution so
+        // parents like Collection<T> pick up the concrete type arguments.
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            copy.implementedInterfaces.add(parent.newGenericsCopy(resolvedGenerics));
+        }
+
         copy.tags = this.tags;
+        copy.isResolved = this.isResolved;
 
         return (T) copy;
     }

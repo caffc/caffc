@@ -48,7 +48,8 @@ public class MainApp {
 
     public void mainRun(String[] args) throws IOException {
         BuildSettings buildConfig = ArgumentsParser.parse(args);
-        String[] features = {"common", "exception", "gc", "string"};
+        program.buildSettings = buildConfig;
+        String[] features = {"common", "exception", "gc", "string", "i18n"};
 
         if (buildConfig.getInputSources().isEmpty()) {
             reportError("no sources passed for the build");
@@ -73,13 +74,13 @@ public class MainApp {
         }
 
         // The GlobalVariables must be moved _after_ the `recurseResolveTypes`.
-        // The rationale is explained in Module.createModuleInit().
+        // The rationale is explained in Module.createInitModule().
         for (CompilationUnit compilationUnit: compilationUnits) {
             compilationUnit.recurseResolveTypes();
         }
 
         for (Module module: program.modules.values()) {
-            Module.createModuleInit(module, compilationUnits);
+            Module.createInitModule(module, compilationUnits);
         }
 
         program.recreateConstants();
@@ -118,20 +119,28 @@ public class MainApp {
 
         List<CompilationUnit> compilationUnits = new ArrayList<>();
 
-        for (String file: caffcFolder.list()) {
-            try {
-                String stringPath = Paths.get(caffcFilesFolderString, file).toAbsolutePath().toString();
-                CompilationUnit unit = parseCaffcFile(program, stringPath);
+        try {
+            Files.walk(caffcFolder.toPath())
+                    .filter(path -> path.toString().endsWith(".caffc"))
+                    .filter(path -> Files.isRegularFile(path))
+                    .sorted()
+                    .forEach(path -> {
+                        try {
+                            CompilationUnit unit = parseCaffcFile(program, path.toAbsolutePath().toString());
 
-                if (CaffcCompiler.get().hasErrors) {
-                    throw new CancelCompilationException("compilation failed");
-                }
+                            if (CaffcCompiler.get().hasErrors) {
+                                throw new CancelCompilationException("compilation failed");
+                            }
 
-                compilationUnits.add(unit);
-            } catch (IOException e) {
-                CaffcCompiler.get().fatal(SourceLocation.fromFilePath(file),
-                        "I/O exception: " + e.getMessage());
-            }
+                            compilationUnits.add(unit);
+                        } catch (IOException e) {
+                            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(path.toString()),
+                                    "I/O exception: " + e.getMessage());
+                        }
+                    });
+        } catch (IOException e) {
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath(caffcFilesFolderString),
+                    "I/O exception: " + e.getMessage());
         }
 
         return compilationUnits;
@@ -269,7 +278,7 @@ public class MainApp {
         StringBuilder headers = new StringBuilder();
         StringBuilder implementations = new StringBuilder();
         
-        String[] features = {"common", "exception", "gc", "string"};
+        String[] features = {"common", "exception", "gc", "string", "i18n"};
 
         // Collect all core files and sort by dependency order
         List<String> coreHeaders = new ArrayList<>();

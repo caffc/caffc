@@ -3,6 +3,7 @@ package com.germaniumhq.caffc.output.functions;
 import com.germaniumhq.caffc.compiler.model.NativeBlock;
 import com.germaniumhq.caffc.compiler.model.instruction.ForInstruction;
 import com.germaniumhq.caffc.compiler.model.instruction.IfInstruction;
+import com.germaniumhq.caffc.compiler.model.instruction.SwitchInstruction;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -16,6 +17,7 @@ public class FunctionIsBlockStatement implements com.mitchellbosecke.pebble.exte
 
         return statement instanceof NativeBlock ||
                 statement instanceof IfInstruction ||
+                statement instanceof SwitchInstruction ||
                 statement instanceof ForInstruction;
     }
 

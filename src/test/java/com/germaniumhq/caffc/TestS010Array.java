@@ -126,7 +126,7 @@ public class TestS010Array {
                           yolo.Swag[] class_unidimensional = new yolo.Swag[2]
                           yolo.Swag[][][] class_multidimensional = new yolo.Swag[1][2][3]
 
-                          class_multidimensional[0][0][0] = new yolo.Swag[3]
+                          class_multidimensional[0][0][0] = new yolo.Swag()
                         }
 
                         """)
@@ -310,7 +310,7 @@ caffc_obj_arr_set(_caffc_temp_yolo_Swag_arr_1, 2, _caffc_temp_yolo_Swag_1); if (
                     
                     test() {
                       yolo.Swag[] class_unidimensional = new yolo.Swag[2]
-                      class_unidimensional[1] = 0
+                      class_unidimensional[1] = null
                     }
                     
                     """)
@@ -319,7 +319,7 @@ caffc_obj_arr_set(_caffc_temp_yolo_Swag_arr_1, 2, _caffc_temp_yolo_Swag_1); if (
 
         CodeAssertsStr.assertCodeContains(code, """
                 class_unidimensional = _caffc_temp_yolo_Swag_arr_1;
-                caffc_obj_arr_set(class_unidimensional, 1, 0);
+                caffc_obj_arr_set(class_unidimensional, 1, caffc_null);
                 """,
             "unidimensional object array index assign isn't working");
     }

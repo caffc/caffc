@@ -19,6 +19,13 @@ import com.germaniumhq.caffc.generated.caffcParser;
  */
 public class GlobalVariable implements CompileBlock, Statement, Symbol, AsmVar, AstItem {
     public String name;
+
+    /**
+     * Module this global belongs to. Kept separately from {@link #owner}, which is
+     * reparented to {@code module_init} after type resolution.
+     */
+    public String module;
+
     public ExpressionAssign assignExpression;
 
     public AstItem owner;
@@ -29,6 +36,14 @@ public class GlobalVariable implements CompileBlock, Statement, Symbol, AsmVar, 
 
     private boolean isResolved;
 
+    /**
+     * C identifier for this global: {@code {module}_{name}} with dots in the
+     * module name replaced by underscores (e.g. {@code caffc.i18n} → {@code caffc_i18n_codePages}).
+     */
+    public String getCName() {
+        return module.replace(".", "_") + "_" + name;
+    }
+
     public static GlobalVariable fromAntlr(
         CompilationUnit unit,
         Module module,
@@ -38,6 +53,7 @@ public class GlobalVariable implements CompileBlock, Statement, Symbol, AsmVar, 
         GlobalVariable result = new GlobalVariable();
 
         result.owner = module;
+        result.module = module.name;
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, variableDeclarationContext);
         result.typeSymbolSearch = symbolSearch;
         result.name = variableDeclarationContext.ID().getText();

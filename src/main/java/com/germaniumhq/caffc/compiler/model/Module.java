@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.instruction.InitUnitBlock;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.type.DataType;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
@@ -10,6 +11,7 @@ import com.germaniumhq.caffc.output.filters.FilterCTypeName;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,6 +24,12 @@ import java.util.Set;
  * header C files for the modules.
  */
 public class Module implements AstItem, Scope, Symbol {
+    /** Special function that initializes a module (globals + unit inits). */
+    public static final String MODULE_INIT = "module_init";
+
+    /** Special per-compilation-unit function inlined into {@link #MODULE_INIT}. */
+    public static final String UNIT_INIT = "unit_init";
+
     public Program program;
     public String name;
 
@@ -42,7 +50,7 @@ public class Module implements AstItem, Scope, Symbol {
     }
 
     /**
-     * Ensures the `module_init` function exists, and initializes all
+     * Ensures the {@link #MODULE_INIT} function exists, and initializes all
      * the global variables. If a function already exists for this module,
      * this function will be reused.
      *
@@ -58,93 +66,137 @@ public class Module implements AstItem, Scope, Symbol {
      * The synthetic compilation unit that we create, must have all the
      * `usedModules`
      *
-     * If there's already a `module_init` function in the current module,
+     * If there's already a {@link #MODULE_INIT} function in the current module,
      * the GlobalVariable statements will be prepended. If not, a custom
      * fake compilation unit will be created.
+     *
+     * Each compilation unit may also define an optional {@link #UNIT_INIT}
+     * function. Those bodies are appended after the original {@link #MODULE_INIT}
+     * code (globals, then user {@link #MODULE_INIT}, then each {@link #UNIT_INIT}),
+     * and the {@link #UNIT_INIT} functions themselves are deleted.
      */
-    public static void createModuleInit(Module module, Set<CompilationUnit> compilationUnits) {
+    public static void createInitModule(Module module, Set<CompilationUnit> allCompilationUnits) {
         List<GlobalVariable> globalVariables = new ArrayList<>();
+        List<Function> initUnits = new ArrayList<>();
 
-        // we find all the variables to see if there's anything to be done
+        // fetch only the compilation units relevant for the module (mutable collection)
+        List<CompilationUnit> compilationUnits = new ArrayList<>(allCompilationUnits
+            .stream().filter(compilationUnit -> compilationUnit.module.equals(module))
+            .toList());
+
+        // we don't care about the `use` statements anymore of the module, since
+        // the compilation units are already resolved, and each compilation unit
+        // when generated #includes the module header, that in turn has all deps
+        // correctly included
+        // we need to find:
+        // 1. the global vars we have to init in module_init()
+        // 2. the unit_init() functions we need to inline in module_init()
         for (CompilationUnit compilationUnit: compilationUnits) {
-            // FIXME: Create a map? String -> List<CompilationUnit>
-            if (compilationUnit.module != module) {
-                continue;
-            }
-
-            // we don't care about the `use` statements anymore of the module, since
-            // the compilation units are already resolved, and each compilation unit
-            // when generated #includes the module header, that in turn has all deps
-            // correctly included
+            Function initUnit = null;
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
+                // 1. global vars
                 if (compileBlock instanceof GlobalVariableDeclarations globalVariable) {
                     globalVariables.add(globalVariable.variable);
+                }
+
+                // 2. unit_init() calls
+                if (compileBlock instanceof Function function &&
+                        UNIT_INIT.equals(function.name()) &&
+                        function.definition.clazz == null) {
+                    if (initUnit != null) {
+                        CaffcCompiler.get().fatal(function,
+                                "compilation unit already has a " + UNIT_INIT + "() function");
+                    }
+
+                    initUnit = function;
+                    initUnits.add(initUnit);
                 }
             }
         }
 
-        if (globalVariables.isEmpty()) {
-            // we don't need to augment/create the `module_init()` since we have no globals
+        if (globalVariables.isEmpty() && initUnits.isEmpty()) {
+            // we don't need to augment/create module_init() since we have
+            // no globals and no unit_init functions
             return;
         }
 
-        Function moduleInitFunction = getOrCreateModuleInitFunction(module, compilationUnits);
+        Function initModuleFunction = getOrCreateInitModuleFunction(module, compilationUnits);
 
-        // we need to reparent the global variables to the `module_init` function.
-        // the reason is for try/catch blocks, so exceptions hook in the module_init's
-        // unhandled exception label
+        // we need to reparent the global variables to the module_init function.
+        // the reason is for try/catch blocks, so exceptions hook in module_init's
+        // unhandled exception label, not inside the compile block.
         for (GlobalVariable globalVariable: globalVariables) {
-            globalVariable.owner = moduleInitFunction;
+            globalVariable.owner = initModuleFunction;
         }
 
-        // prepend the global variables
+        // module_init is in order:
+        // 1. global variables initialization
+        // 2. existing module_init() code - i.e. creating a map to register listeners
+        // 3. running each unit_init() code - i.e. registering individual listeners
         List<Statement> statements = new ArrayList<>(globalVariables);
-        statements.addAll(moduleInitFunction.statements);
-        moduleInitFunction.statements = statements;
+        statements.addAll(initModuleFunction.statements);
+
+        for (Function initUnit: initUnits) {
+            validateInitUnitSignature(initUnit);
+            statements.add(InitUnitBlock.fromInitUnit(initModuleFunction, initUnit));
+
+            CompilationUnit unit = (CompilationUnit) initUnit.owner;
+            unit.compileBlocks.remove(initUnit);
+        }
+
+        initModuleFunction.statements = statements;
     }
 
-    private static Function getOrCreateModuleInitFunction(
-            Module module, Set<CompilationUnit> compilationUnits) {
-        // search for an existing `module_init` function
-        for (CompilationUnit compilationUnit: compilationUnits) {
-            if (compilationUnit.module != module) {
-                continue;
-            }
+    private static void validateInitUnitSignature(Function initUnit) {
+        if (!initUnit.definition.parameters.isEmpty()) {
+            CaffcCompiler.get().fatal(initUnit,
+                    UNIT_INIT + "() cannot have parameters; it is inlined into " + MODULE_INIT);
+        }
 
+        if (!initUnit.definition.isVoid()) {
+            CaffcCompiler.get().fatal(initUnit,
+                    UNIT_INIT + "() cannot return a value; it is inlined into " + MODULE_INIT);
+        }
+    }
+
+    private static Function getOrCreateInitModuleFunction(
+            Module module, List<CompilationUnit> compilationUnits) {
+        // search for an existing module_init function
+        for (CompilationUnit compilationUnit: compilationUnits) {
             for (CompileBlock compileBlock: compilationUnit.compileBlocks) {
                 if (compileBlock instanceof Function function) {
-                    if ("module_init".equals(function.name())) {
+                    if (MODULE_INIT.equals(function.name())) {
                         return function;
                     }
                 }
             }
         }
 
-        // we don't have an existing `module_init`, we need to create a
+        // we don't have an existing module_init, we need to create a
         // synthetic one
         CompilationUnit compilationUnit = new CompilationUnit();
         compilationUnit.module = module;
         compilationUnit.isResolved = true;
         compilationUnit.sourceLocation = SourceLocation.fromFilePath(
             FilterCTypeName.getCType(module.typeName()) +
-            "module_init.caffc");
+            MODULE_INIT + ".caffc");
         compilationUnits.add(compilationUnit);
 
-        Function moduleInitFunction = new Function();
-        moduleInitFunction.owner = compilationUnit;
-        moduleInitFunction.definition.name = "module_init";
-        moduleInitFunction.definition.module = module.name;
+        Function initModuleFunction = new Function();
+        initModuleFunction.owner = compilationUnit;
+        initModuleFunction.definition.name = MODULE_INIT;
+        initModuleFunction.definition.module = module.name;
 
-        compilationUnit.compileBlocks.add(moduleInitFunction);
+        compilationUnit.compileBlocks.add(initModuleFunction);
         module.functions.put(
-            moduleInitFunction.definition.name,
-            moduleInitFunction.definition);
+            initModuleFunction.definition.name,
+            initModuleFunction.definition);
 
-        moduleInitFunction.stringConstantName = StringConstant.newStringConstant(
-            moduleInitFunction.getSourceLocation(), moduleInitFunction.definition.name);
-        module.registerConstant(moduleInitFunction.stringConstantName);
+        initModuleFunction.stringConstantName = StringConstant.newStringConstant(
+            initModuleFunction.getSourceLocation(), initModuleFunction.definition.name);
+        module.registerConstant(initModuleFunction.stringConstantName);
 
-        return moduleInitFunction;
+        return initModuleFunction;
     }
 
     public Collection<FunctionDefinition> functionDefinitions() {

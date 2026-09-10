@@ -12,9 +12,7 @@ import com.germaniumhq.caffc.generated.caffcParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,8 +39,22 @@ public class CodeAssertsAst {
     public static CompilationUnit compileCaffcUnitsAst(
             String unit,
             TestUnit[] testUnits) {
+        return compileCaffcUnitsAst(unit, testUnits, null);
+    }
+
+    /**
+     * Same as {@link #compileCaffcUnitsAst(String, TestUnit[])}, with optional
+     * {@link com.germaniumhq.caffc.compiler.settings.BuildSettings} for compile-time {@code #switch}.
+     */
+    public static CompilationUnit compileCaffcUnitsAst(
+            String unit,
+            TestUnit[] testUnits,
+            com.germaniumhq.caffc.compiler.settings.BuildSettings buildSettings) {
         Program program = Program.reset();
         CaffcCompiler.reset();
+        if (buildSettings != null) {
+            program.buildSettings = buildSettings;
+        }
 
         Set<CompilationUnit> compilationUnits = new LinkedHashSet<>();
 
@@ -70,7 +82,7 @@ public class CodeAssertsAst {
         }
 
         for (com.germaniumhq.caffc.compiler.model.Module module: program.modules.values()) {
-            Module.createModuleInit(module, compilationUnits);
+            Module.createInitModule(module, compilationUnits);
         }
 
         program.recreateConstants();

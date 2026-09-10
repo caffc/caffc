@@ -15,7 +15,7 @@
 void caffc_init() {
   caffc_memory_init();
   if (_caffc_exception) return;
-  {%- for module in program.moduleInitsSorted %}
+  {%- for module in program.initModulesSorted %}
   {{ module | c_name }}module_init();
   if (_caffc_exception) return;
   {%- endfor %}

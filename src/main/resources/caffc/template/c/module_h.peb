@@ -73,7 +73,7 @@ typedef struct {{ clazz.typeName | c_name }}_struct {{ clazz.typeName | c_name }
   module {{ ctx.name }} global variable definitions
   ************************************************************** */
 {%- for globalVar in ctx.globalVariables.values() %}
-extern {{ globalVar.typeSymbol | c_type }} {{ globalVar.name }};
+extern {{ globalVar.typeSymbol | c_type }} {{ globalVar.cName }};
 {%- endfor %}
 
 /* **************************************************************

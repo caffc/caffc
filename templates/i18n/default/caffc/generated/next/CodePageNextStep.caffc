@@ -1,0 +1,384 @@
+module caffc.i18n
+
+#ifdef i18n.files.contains("generated/next/CodePageNextStep.caffc") {
+#public
+class CodePageNextStep implements CodePageEncoding {
+  TreeSetDictU8ToU32 codePageToUtf8
+  TreeSetDictU32ToU8 utf8ToCodePage
+
+  constructor() {
+    _this.codePageToUtf8 = new TreeSetDictU8ToU32(256)
+    _this.utf8ToCodePage = new TreeSetDictU32ToU8(256)
+
+    _this.codePageToUtf8.put(0x80, 0x00A0)
+    _this.utf8ToCodePage.put(0x00A0, 0x80)
+    _this.codePageToUtf8.put(0x81, 0x00C0)
+    _this.utf8ToCodePage.put(0x00C0, 0x81)
+    _this.codePageToUtf8.put(0x82, 0x00C1)
+    _this.utf8ToCodePage.put(0x00C1, 0x82)
+    _this.codePageToUtf8.put(0x83, 0x00C2)
+    _this.utf8ToCodePage.put(0x00C2, 0x83)
+    _this.codePageToUtf8.put(0x84, 0x00C3)
+    _this.utf8ToCodePage.put(0x00C3, 0x84)
+    _this.codePageToUtf8.put(0x85, 0x00C4)
+    _this.utf8ToCodePage.put(0x00C4, 0x85)
+    _this.codePageToUtf8.put(0x86, 0x00C5)
+    _this.utf8ToCodePage.put(0x00C5, 0x86)
+    _this.codePageToUtf8.put(0x87, 0x00C7)
+    _this.utf8ToCodePage.put(0x00C7, 0x87)
+    _this.codePageToUtf8.put(0x88, 0x00C8)
+    _this.utf8ToCodePage.put(0x00C8, 0x88)
+    _this.codePageToUtf8.put(0x89, 0x00C9)
+    _this.utf8ToCodePage.put(0x00C9, 0x89)
+    _this.codePageToUtf8.put(0x8A, 0x00CA)
+    _this.utf8ToCodePage.put(0x00CA, 0x8A)
+    _this.codePageToUtf8.put(0x8B, 0x00CB)
+    _this.utf8ToCodePage.put(0x00CB, 0x8B)
+    _this.codePageToUtf8.put(0x8C, 0x00CC)
+    _this.utf8ToCodePage.put(0x00CC, 0x8C)
+    _this.codePageToUtf8.put(0x8D, 0x00CD)
+    _this.utf8ToCodePage.put(0x00CD, 0x8D)
+    _this.codePageToUtf8.put(0x8E, 0x00CE)
+    _this.utf8ToCodePage.put(0x00CE, 0x8E)
+    _this.codePageToUtf8.put(0x8F, 0x00CF)
+    _this.utf8ToCodePage.put(0x00CF, 0x8F)
+    _this.codePageToUtf8.put(0x90, 0x00D0)
+    _this.utf8ToCodePage.put(0x00D0, 0x90)
+    _this.codePageToUtf8.put(0x91, 0x00D1)
+    _this.utf8ToCodePage.put(0x00D1, 0x91)
+    _this.codePageToUtf8.put(0x92, 0x00D2)
+    _this.utf8ToCodePage.put(0x00D2, 0x92)
+    _this.codePageToUtf8.put(0x93, 0x00D3)
+    _this.utf8ToCodePage.put(0x00D3, 0x93)
+    _this.codePageToUtf8.put(0x94, 0x00D4)
+    _this.utf8ToCodePage.put(0x00D4, 0x94)
+    _this.codePageToUtf8.put(0x95, 0x00D5)
+    _this.utf8ToCodePage.put(0x00D5, 0x95)
+    _this.codePageToUtf8.put(0x96, 0x00D6)
+    _this.utf8ToCodePage.put(0x00D6, 0x96)
+    _this.codePageToUtf8.put(0x97, 0x00D9)
+    _this.utf8ToCodePage.put(0x00D9, 0x97)
+    _this.codePageToUtf8.put(0x98, 0x00DA)
+    _this.utf8ToCodePage.put(0x00DA, 0x98)
+    _this.codePageToUtf8.put(0x99, 0x00DB)
+    _this.utf8ToCodePage.put(0x00DB, 0x99)
+    _this.codePageToUtf8.put(0x9A, 0x00DC)
+    _this.utf8ToCodePage.put(0x00DC, 0x9A)
+    _this.codePageToUtf8.put(0x9B, 0x00DD)
+    _this.utf8ToCodePage.put(0x00DD, 0x9B)
+    _this.codePageToUtf8.put(0x9C, 0x00DE)
+    _this.utf8ToCodePage.put(0x00DE, 0x9C)
+    _this.codePageToUtf8.put(0x9D, 0x00B5)
+    _this.utf8ToCodePage.put(0x00B5, 0x9D)
+    _this.codePageToUtf8.put(0x9E, 0x00D7)
+    _this.utf8ToCodePage.put(0x00D7, 0x9E)
+    _this.codePageToUtf8.put(0x9F, 0x00F7)
+    _this.utf8ToCodePage.put(0x00F7, 0x9F)
+    _this.codePageToUtf8.put(0xA0, 0x00A9)
+    _this.utf8ToCodePage.put(0x00A9, 0xA0)
+    _this.codePageToUtf8.put(0xA1, 0x00A1)
+    _this.utf8ToCodePage.put(0x00A1, 0xA1)
+    _this.codePageToUtf8.put(0xA2, 0x00A2)
+    _this.utf8ToCodePage.put(0x00A2, 0xA2)
+    _this.codePageToUtf8.put(0xA3, 0x00A3)
+    _this.utf8ToCodePage.put(0x00A3, 0xA3)
+    _this.codePageToUtf8.put(0xA4, 0x2044)
+    _this.utf8ToCodePage.put(0x2044, 0xA4)
+    _this.codePageToUtf8.put(0xA5, 0x00A5)
+    _this.utf8ToCodePage.put(0x00A5, 0xA5)
+    _this.codePageToUtf8.put(0xA6, 0x0192)
+    _this.utf8ToCodePage.put(0x0192, 0xA6)
+    _this.codePageToUtf8.put(0xA7, 0x00A7)
+    _this.utf8ToCodePage.put(0x00A7, 0xA7)
+    _this.codePageToUtf8.put(0xA8, 0x00A4)
+    _this.utf8ToCodePage.put(0x00A4, 0xA8)
+    _this.codePageToUtf8.put(0xA9, 0x2019)
+    _this.utf8ToCodePage.put(0x2019, 0xA9)
+    _this.codePageToUtf8.put(0xAA, 0x201C)
+    _this.utf8ToCodePage.put(0x201C, 0xAA)
+    _this.codePageToUtf8.put(0xAB, 0x00AB)
+    _this.utf8ToCodePage.put(0x00AB, 0xAB)
+    _this.codePageToUtf8.put(0xAC, 0x2039)
+    _this.utf8ToCodePage.put(0x2039, 0xAC)
+    _this.codePageToUtf8.put(0xAD, 0x203A)
+    _this.utf8ToCodePage.put(0x203A, 0xAD)
+    _this.codePageToUtf8.put(0xAE, 0xFB01)
+    _this.utf8ToCodePage.put(0xFB01, 0xAE)
+    _this.codePageToUtf8.put(0xAF, 0xFB02)
+    _this.utf8ToCodePage.put(0xFB02, 0xAF)
+    _this.codePageToUtf8.put(0xB0, 0x00AE)
+    _this.utf8ToCodePage.put(0x00AE, 0xB0)
+    _this.codePageToUtf8.put(0xB1, 0x2013)
+    _this.utf8ToCodePage.put(0x2013, 0xB1)
+    _this.codePageToUtf8.put(0xB2, 0x2020)
+    _this.utf8ToCodePage.put(0x2020, 0xB2)
+    _this.codePageToUtf8.put(0xB3, 0x2021)
+    _this.utf8ToCodePage.put(0x2021, 0xB3)
+    _this.codePageToUtf8.put(0xB4, 0x00B7)
+    _this.utf8ToCodePage.put(0x00B7, 0xB4)
+    _this.codePageToUtf8.put(0xB5, 0x00A6)
+    _this.utf8ToCodePage.put(0x00A6, 0xB5)
+    _this.codePageToUtf8.put(0xB6, 0x00B6)
+    _this.utf8ToCodePage.put(0x00B6, 0xB6)
+    _this.codePageToUtf8.put(0xB7, 0x2022)
+    _this.utf8ToCodePage.put(0x2022, 0xB7)
+    _this.codePageToUtf8.put(0xB8, 0x201A)
+    _this.utf8ToCodePage.put(0x201A, 0xB8)
+    _this.codePageToUtf8.put(0xB9, 0x201E)
+    _this.utf8ToCodePage.put(0x201E, 0xB9)
+    _this.codePageToUtf8.put(0xBA, 0x201D)
+    _this.utf8ToCodePage.put(0x201D, 0xBA)
+    _this.codePageToUtf8.put(0xBB, 0x00BB)
+    _this.utf8ToCodePage.put(0x00BB, 0xBB)
+    _this.codePageToUtf8.put(0xBC, 0x2026)
+    _this.utf8ToCodePage.put(0x2026, 0xBC)
+    _this.codePageToUtf8.put(0xBD, 0x2030)
+    _this.utf8ToCodePage.put(0x2030, 0xBD)
+    _this.codePageToUtf8.put(0xBE, 0x00AC)
+    _this.utf8ToCodePage.put(0x00AC, 0xBE)
+    _this.codePageToUtf8.put(0xBF, 0x00BF)
+    _this.utf8ToCodePage.put(0x00BF, 0xBF)
+    _this.codePageToUtf8.put(0xC0, 0x00B9)
+    _this.utf8ToCodePage.put(0x00B9, 0xC0)
+    _this.codePageToUtf8.put(0xC1, 0x02CB)
+    _this.utf8ToCodePage.put(0x02CB, 0xC1)
+    _this.codePageToUtf8.put(0xC2, 0x00B4)
+    _this.utf8ToCodePage.put(0x00B4, 0xC2)
+    _this.codePageToUtf8.put(0xC3, 0x02C6)
+    _this.utf8ToCodePage.put(0x02C6, 0xC3)
+    _this.codePageToUtf8.put(0xC4, 0x02DC)
+    _this.utf8ToCodePage.put(0x02DC, 0xC4)
+    _this.codePageToUtf8.put(0xC5, 0x00AF)
+    _this.utf8ToCodePage.put(0x00AF, 0xC5)
+    _this.codePageToUtf8.put(0xC6, 0x02D8)
+    _this.utf8ToCodePage.put(0x02D8, 0xC6)
+    _this.codePageToUtf8.put(0xC7, 0x02D9)
+    _this.utf8ToCodePage.put(0x02D9, 0xC7)
+    _this.codePageToUtf8.put(0xC8, 0x00A8)
+    _this.utf8ToCodePage.put(0x00A8, 0xC8)
+    _this.codePageToUtf8.put(0xC9, 0x00B2)
+    _this.utf8ToCodePage.put(0x00B2, 0xC9)
+    _this.codePageToUtf8.put(0xCA, 0x02DA)
+    _this.utf8ToCodePage.put(0x02DA, 0xCA)
+    _this.codePageToUtf8.put(0xCB, 0x00B8)
+    _this.utf8ToCodePage.put(0x00B8, 0xCB)
+    _this.codePageToUtf8.put(0xCC, 0x00B3)
+    _this.utf8ToCodePage.put(0x00B3, 0xCC)
+    _this.codePageToUtf8.put(0xCD, 0x02DD)
+    _this.utf8ToCodePage.put(0x02DD, 0xCD)
+    _this.codePageToUtf8.put(0xCE, 0x02DB)
+    _this.utf8ToCodePage.put(0x02DB, 0xCE)
+    _this.codePageToUtf8.put(0xCF, 0x02C7)
+    _this.utf8ToCodePage.put(0x02C7, 0xCF)
+    _this.codePageToUtf8.put(0xD0, 0x2014)
+    _this.utf8ToCodePage.put(0x2014, 0xD0)
+    _this.codePageToUtf8.put(0xD1, 0x00B1)
+    _this.utf8ToCodePage.put(0x00B1, 0xD1)
+    _this.codePageToUtf8.put(0xD2, 0x00BC)
+    _this.utf8ToCodePage.put(0x00BC, 0xD2)
+    _this.codePageToUtf8.put(0xD3, 0x00BD)
+    _this.utf8ToCodePage.put(0x00BD, 0xD3)
+    _this.codePageToUtf8.put(0xD4, 0x00BE)
+    _this.utf8ToCodePage.put(0x00BE, 0xD4)
+    _this.codePageToUtf8.put(0xD5, 0x00E0)
+    _this.utf8ToCodePage.put(0x00E0, 0xD5)
+    _this.codePageToUtf8.put(0xD6, 0x00E1)
+    _this.utf8ToCodePage.put(0x00E1, 0xD6)
+    _this.codePageToUtf8.put(0xD7, 0x00E2)
+    _this.utf8ToCodePage.put(0x00E2, 0xD7)
+    _this.codePageToUtf8.put(0xD8, 0x00E3)
+    _this.utf8ToCodePage.put(0x00E3, 0xD8)
+    _this.codePageToUtf8.put(0xD9, 0x00E4)
+    _this.utf8ToCodePage.put(0x00E4, 0xD9)
+    _this.codePageToUtf8.put(0xDA, 0x00E5)
+    _this.utf8ToCodePage.put(0x00E5, 0xDA)
+    _this.codePageToUtf8.put(0xDB, 0x00E7)
+    _this.utf8ToCodePage.put(0x00E7, 0xDB)
+    _this.codePageToUtf8.put(0xDC, 0x00E8)
+    _this.utf8ToCodePage.put(0x00E8, 0xDC)
+    _this.codePageToUtf8.put(0xDD, 0x00E9)
+    _this.utf8ToCodePage.put(0x00E9, 0xDD)
+    _this.codePageToUtf8.put(0xDE, 0x00EA)
+    _this.utf8ToCodePage.put(0x00EA, 0xDE)
+    _this.codePageToUtf8.put(0xDF, 0x00EB)
+    _this.utf8ToCodePage.put(0x00EB, 0xDF)
+    _this.codePageToUtf8.put(0xE0, 0x00EC)
+    _this.utf8ToCodePage.put(0x00EC, 0xE0)
+    _this.codePageToUtf8.put(0xE1, 0x00C6)
+    _this.utf8ToCodePage.put(0x00C6, 0xE1)
+    _this.codePageToUtf8.put(0xE2, 0x00ED)
+    _this.utf8ToCodePage.put(0x00ED, 0xE2)
+    _this.codePageToUtf8.put(0xE3, 0x00AA)
+    _this.utf8ToCodePage.put(0x00AA, 0xE3)
+    _this.codePageToUtf8.put(0xE4, 0x00EE)
+    _this.utf8ToCodePage.put(0x00EE, 0xE4)
+    _this.codePageToUtf8.put(0xE5, 0x00EF)
+    _this.utf8ToCodePage.put(0x00EF, 0xE5)
+    _this.codePageToUtf8.put(0xE6, 0x00F0)
+    _this.utf8ToCodePage.put(0x00F0, 0xE6)
+    _this.codePageToUtf8.put(0xE7, 0x00F1)
+    _this.utf8ToCodePage.put(0x00F1, 0xE7)
+    _this.codePageToUtf8.put(0xE8, 0x0141)
+    _this.utf8ToCodePage.put(0x0141, 0xE8)
+    _this.codePageToUtf8.put(0xE9, 0x00D8)
+    _this.utf8ToCodePage.put(0x00D8, 0xE9)
+    _this.codePageToUtf8.put(0xEA, 0x0152)
+    _this.utf8ToCodePage.put(0x0152, 0xEA)
+    _this.codePageToUtf8.put(0xEB, 0x00BA)
+    _this.utf8ToCodePage.put(0x00BA, 0xEB)
+    _this.codePageToUtf8.put(0xEC, 0x00F2)
+    _this.utf8ToCodePage.put(0x00F2, 0xEC)
+    _this.codePageToUtf8.put(0xED, 0x00F3)
+    _this.utf8ToCodePage.put(0x00F3, 0xED)
+    _this.codePageToUtf8.put(0xEE, 0x00F4)
+    _this.utf8ToCodePage.put(0x00F4, 0xEE)
+    _this.codePageToUtf8.put(0xEF, 0x00F5)
+    _this.utf8ToCodePage.put(0x00F5, 0xEF)
+    _this.codePageToUtf8.put(0xF0, 0x00F6)
+    _this.utf8ToCodePage.put(0x00F6, 0xF0)
+    _this.codePageToUtf8.put(0xF1, 0x00E6)
+    _this.utf8ToCodePage.put(0x00E6, 0xF1)
+    _this.codePageToUtf8.put(0xF2, 0x00F9)
+    _this.utf8ToCodePage.put(0x00F9, 0xF2)
+    _this.codePageToUtf8.put(0xF3, 0x00FA)
+    _this.utf8ToCodePage.put(0x00FA, 0xF3)
+    _this.codePageToUtf8.put(0xF4, 0x00FB)
+    _this.utf8ToCodePage.put(0x00FB, 0xF4)
+    _this.codePageToUtf8.put(0xF5, 0x0131)
+    _this.utf8ToCodePage.put(0x0131, 0xF5)
+    _this.codePageToUtf8.put(0xF6, 0x00FC)
+    _this.utf8ToCodePage.put(0x00FC, 0xF6)
+    _this.codePageToUtf8.put(0xF7, 0x00FD)
+    _this.utf8ToCodePage.put(0x00FD, 0xF7)
+    _this.codePageToUtf8.put(0xF8, 0x0142)
+    _this.utf8ToCodePage.put(0x0142, 0xF8)
+    _this.codePageToUtf8.put(0xF9, 0x00F8)
+    _this.utf8ToCodePage.put(0x00F8, 0xF9)
+    _this.codePageToUtf8.put(0xFA, 0x0153)
+    _this.utf8ToCodePage.put(0x0153, 0xFA)
+    _this.codePageToUtf8.put(0xFB, 0x00DF)
+    _this.utf8ToCodePage.put(0x00DF, 0xFB)
+    _this.codePageToUtf8.put(0xFC, 0x00FE)
+    _this.utf8ToCodePage.put(0x00FE, 0xFC)
+    _this.codePageToUtf8.put(0xFD, 0x00FF)
+    _this.utf8ToCodePage.put(0x00FF, 0xFD)
+    _this.codePageToUtf8.put(0xFE, 0xFFFD)
+    _this.utf8ToCodePage.put(0xFFFD, 0xFE)
+    _this.codePageToUtf8.put(0xFF, 0xFFFD)
+    _this.utf8ToCodePage.put(0xFFFD, 0xFF)
+  }
+
+  name() -> str {
+    return "nextstep"
+  }
+
+  vendor() -> str {
+    return "NeXT"
+  }
+
+  fromUtf8(str value) -> u8[] data, bool error, i32 errorByteIndex {
+    i32 currentByteIndex = 0
+    i32 nextByteIndex = 0
+    i32 outByteIndex = 0
+    u8 byteValue
+    bool codePageError
+    u32 codePoint
+
+    if not value or value.size() == 0 {
+      return EMPTY_U8_ARRAY, false, -1
+    }
+
+    data = new u8[value.codePointsSize()]
+
+    errorByteIndex = -1
+    while nextByteIndex < value.size() {
+      currentByteIndex = nextByteIndex
+      codePoint, nextByteIndex = value.getCodePoint(currentByteIndex)
+      byteValue, codePageError = _this.utf8ToCodePage.get(codePoint)
+
+      if codePageError {
+        byteValue = '?'
+
+        if errorByteIndex < 0 {
+          errorByteIndex = currentByteIndex
+        }
+      }
+
+      data[outByteIndex] = byteValue
+      outByteIndex = outByteIndex + 1
+    }
+
+    return data, errorByteIndex >= 0, errorByteIndex
+  }
+
+  toUtf8(u8[] data) -> str value, bool error, i32 errorIndex {
+    i32 i = 0
+    i32 out = 0
+    i32 dataLen
+    u32 codePoint
+    bool codePageError
+    u8 b
+    u8[] buf
+
+    if not data {
+      return "", false, -1
+    }
+
+    dataLen = (i32) data.size
+    if dataLen == 0 {
+      return "", false, -1
+    }
+
+    // Worst case: 4 UTF-8 bytes per code-page byte
+    buf = new u8[dataLen * 4 + 1]
+    errorIndex = -1
+
+    while i < dataLen {
+      b = data[i]
+      codePoint, codePageError = _this.codePageToUtf8.get(b)
+
+      if codePageError {
+        codePoint = 0x3F
+        if errorIndex < 0 {
+          errorIndex = i
+        }
+      }
+
+      if codePoint <= 0x7F {
+        buf[out] = (u8) codePoint
+        out = out + 1
+      } else {
+        if codePoint <= 0x7FF {
+          buf[out] = (u8) (0xC0 | (codePoint >> 6))
+          buf[out + 1] = (u8) (0x80 | (codePoint & 0x3F))
+          out = out + 2
+        } else {
+          if codePoint <= 0xFFFF {
+            buf[out] = (u8) (0xE0 | (codePoint >> 12))
+            buf[out + 1] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
+            buf[out + 2] = (u8) (0x80 | (codePoint & 0x3F))
+            out = out + 3
+          } else {
+            buf[out] = (u8) (0xF0 | (codePoint >> 18))
+            buf[out + 1] = (u8) (0x80 | ((codePoint >> 12) & 0x3F))
+            buf[out + 2] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
+            buf[out + 3] = (u8) (0x80 | (codePoint & 0x3F))
+            out = out + 4
+          }
+        }
+      }
+
+      i = i + 1
+    }
+
+    buf[out] = 0
+    value = str.fromPtrBuffer(buf._caffc_data, out)
+    return value, errorIndex >= 0, errorIndex
+  }
+}
+
+unit_init() {
+  CodePageEncoding codePage = new CodePageNextStep()
+  codePages.put(codePage.name(), codePage)
+}
+}

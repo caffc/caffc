@@ -17,7 +17,19 @@ compileBlock
     | classDefinition
     | interfaceDefinition
     | variableDeclarations
+    | sharpSwitchUnit
+    | sharpIfdefUnit
     // | block
+    ;
+
+// Unit-level #switch/#ifdef bodies: same as compileBlock but no nested #switch/#ifdef.
+compileBlockPlain
+    : nativeBlock
+    | tagDefinition
+    | function
+    | classDefinition
+    | interfaceDefinition
+    | variableDeclarations
     ;
 
 use: USE fqdn;
@@ -26,8 +38,36 @@ use_alias: AS ID;
 nativeBlock: NATIVE;
 
 function:
-    tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? block |
-    tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? block;
+    tags? STATIC? ID genericsDeclarations? '(' extend (',' parameterDefinitions)? ')' ('->' returnType?)? functionBlock |
+    tags? STATIC? ID genericsDeclarations? '(' parameterDefinitions? ')' ('->' returnType?)? functionBlock;
+
+// Method body may contain top-level #switch/#ifdef; if/while/for keep `block` (statements only).
+functionBlock: CURLY_OPEN functionBodyItem* CURLY_CLOSE;
+functionBodyItem: statement | sharpSwitchMethod | sharpIfdefMethod;
+
+// Compile-time conditional (caffc.yaml settings). Braced; first matching #case wins.
+sharpSwitchUnit:
+  SHARP SWITCH CURLY_OPEN sharpCaseUnit+ CURLY_CLOSE;
+
+sharpCaseUnit:
+  SHARP CASE expression ':' CURLY_OPEN compileBlockPlain* CURLY_CLOSE |
+  SHARP DEFAULT ':' CURLY_OPEN compileBlockPlain* CURLY_CLOSE;
+
+sharpSwitchMethod:
+  SHARP SWITCH CURLY_OPEN sharpCaseMethod+ CURLY_CLOSE;
+
+sharpCaseMethod:
+  SHARP CASE expression ':' CURLY_OPEN statement* CURLY_CLOSE |
+  SHARP DEFAULT ':' CURLY_OPEN statement* CURLY_CLOSE;
+
+// Compile-time #ifdef / optional #else (same expression rules as #case).
+sharpIfdefUnit:
+  SHARP IFDEF expression CURLY_OPEN thenBlocks+=compileBlockPlain* CURLY_CLOSE
+  (SHARP ELSE CURLY_OPEN elseBlocks+=compileBlockPlain* CURLY_CLOSE)?;
+
+sharpIfdefMethod:
+  SHARP IFDEF expression CURLY_OPEN thenStatements+=statement* CURLY_CLOSE
+  (SHARP ELSE CURLY_OPEN elseStatements+=statement* CURLY_CLOSE)?;
 
 returnType
   : namedTypeTuple // multi-return into a struct if multiple names defined, otherwise single-value named return
@@ -91,6 +131,7 @@ statement:
   whileBlock |
   forBlock |
   ifBlock |
+  switchBlock |
   tryCatchBlock |
   throwStatement |
   expression |
@@ -108,6 +149,18 @@ forBlock: FOR (initExpression=assignExpression|variableDeclarations) ';'
            | FOR typeName variableName=ID 'in' expression block;
 ifBlock: IF expression (trueBlock=block|return|controlFlow) |
   IF expression trueBlock=block ELSE falseBlock=block;
+
+// Boolean switch: `switch { case cond: { ... } default: { ... } }`
+// Value switch:   `switch x { case 3: { ... } default: { ... } }`
+switchBlock:
+  SWITCH CURLY_OPEN switchBranch+ CURLY_CLOSE |
+  SWITCH expression CURLY_OPEN switchBranch+ CURLY_CLOSE;
+
+switchCaseBody: block | return | controlFlow;
+
+switchBranch:
+  CASE expression ':' switchCaseBody |
+  DEFAULT ':' switchCaseBody;
 
 tryCatchBlock: TRY block (catchBlock)* finallyBlock? |
   TRY block FINALLY block;
@@ -160,6 +213,7 @@ fqdn:
 expression
   : NUMBER                                                                                         # ExNumber
   | STRING                                                                                         # ExString
+  | F_STRING                                                                                       # ExFString
   | CHAR                                                                                           # ExChar
   | ID                                                                                             # ExId
   | NULL                                                                                           # ExNull
@@ -167,10 +221,11 @@ expression
   | FALSE                                                                                          # ExFalse
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
-  | NEW newType '(' expressionTuple? ')'                                                           # ExNewObject
+  | NEW newType '(' callArgumentList? ')'                                                          # ExNewObject
   | NEW newType ('[' expression ']')+                                                              # ExNewArray
-  | expression genericsInstantiations? '(' expressionTuple? ')'                                    # ExFnCall
+  | expression genericsInstantiations? '(' callArgumentList? ')'                                   # ExFnCall
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
+  | arrayExpression=expression '[' startExpression=expression? ':' endExpression=expression? ']'   # ExRangeAccess
   | '(' typeName ')' expression                                                                    # ExCast
   | '(' expression ')'                                                                             # ExParens
   | leftExpression=expression (NOT)? INSTANCEOF newType                                            # ExInstanceOf
@@ -181,17 +236,41 @@ expression
   | leftExpression=expression ('*'|'%') rightExpression=expression                                 # ExMulMod
   | leftExpression=expression '/' rightExpression=expression                                       # ExDiv
   | leftExpression=expression ('+'|'-') rightExpression=expression                                 # ExAddSub
-  | leftExpression=expression ('<<'|'>>') rightExpression=expression                               # ExShift
+  // `>>` is two `>` tokens so nested generics like `DictEntry<K, V>>` parse;
+  // `'>>'` as a single lexer token would steal the closing brackets.
+  | leftExpression=expression shiftOp rightExpression=expression                                   # ExShift
   | leftExpression=expression ('<'|'<='|'>='|'>') rightExpression=expression                       # ExLtLteGtGte
   | leftExpression=expression ('=='|'!=') rightExpression=expression                               # ExEqNeq
   | leftExpression=expression '&' rightExpression=expression                                       # ExBitAnd
   | leftExpression=expression '^' rightExpression=expression                                       # ExBitXor
-  | leftExpression=expression '|' rightExpression=expression                                       # ExBitOr
+  | leftExpression=expression PIPE rightExpression=expression                                     # ExBitOr
   | leftExpression=expression AND rightExpression=expression                                       # ExBoolAnd
   | leftExpression=expression OR rightExpression=expression                                        # ExBoolOr
   | checkExpression=expression
     ('?' trueExpression=expression ':'|'?:')
     falseExpression=expression                                                                     # ExTernary
+  ;
+
+// Restricted expression forms allowed inside f-string `{...}` interpolations:
+// variable names, dot access, indexes, and ranges only.
+fStringInner: fStringPrimary EOF;
+
+fStringPrimary
+  : ID                                                                                             # FStrId
+  | fStringPrimary '.' ID                                                                          # FStrDot
+  | fStringPrimary '[' fStringIndexExpr ']'                                                        # FStrIndex
+  | fStringPrimary '[' fStringStart=fStringIndexExpr? ':' fStringEnd=fStringIndexExpr? ']'         # FStrRange
+  ;
+
+fStringIndexExpr
+  : NUMBER                                                                                         # FStrIndexNumber
+  | fStringPrimary                                                                                 # FStrIndexPrimary
+  ;
+
+// Right-shift is `>` `>` (not a single `>>` token) so type args can nest.
+shiftOp
+  : '<<'
+  | '>' '>'
   ;
 
 assignExpression
@@ -204,14 +283,30 @@ assignExpression
 expressionTuple:
   expression (',' expression)*;
 
+// Positional or named (`name=expr`) arguments for calls and `new`.
+callArgumentList:
+  callArgument (',' callArgument)*;
+
+callArgument:
+  ID '=' expression
+  | expression
+  ;
+
 extend:
     EXTENDS classType;
 
+// Optional bare `...` separates regular parameters from the varargs array
+// (and optional trailing kwargs dict), e.g. `f(i32 a ... obj[] args)` or
+// `f(i32 a ... obj[] args, dict<str, obj> kw)`. A trailing `...` on a parameter
+// name (`obj[] args...`) also marks that parameter as the varargs slot.
+// No comma is required before `...`.
 parameterDefinitions:
-    parameterDefinition (',' parameterDefinition)*;
+    parameterDefinition (',' parameterDefinition)* (ELLIPSIS parameterDefinition (',' parameterDefinition)*)?
+  | ELLIPSIS parameterDefinition (',' parameterDefinition)*
+  ;
 
 parameterDefinition:
-    tags? typeName ID STAR? ('=' expression)?;
+    tags? typeName ID ELLIPSIS? ('=' expression)?;
 
 typeName
     : classType           # TypeClass
@@ -273,6 +368,9 @@ CHAR:
 
 STRING: SHORT_STRING | LONG_STRING;
 
+// Python-style interpolated string. Longest-match prefers this over ID `f` + STRING.
+F_STRING: 'f' SHORT_STRING | 'f' LONG_STRING;
+
 fragment SHORT_STRING:
     '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"])* '"'
 ;
@@ -304,14 +402,17 @@ WS: [ \n\t\r] -> skip;
 AS: 'as';
 AND: 'and';
 BREAK: 'break';
+CASE: 'case';
 CATCH: 'catch';
 CLASS: 'class';
 CONTINUE: 'continue';
+DEFAULT: 'default';
 ELSE: 'else';
 EXTENDS: 'extends';
 FINALLY: 'finally';
 FOR: 'for';
 IF: 'if';
+IFDEF: 'ifdef';
 IMPLEMENTS: 'implements';
 IN: 'in';
 INSTANCEOF: 'instanceof';
@@ -326,6 +427,7 @@ OR: 'or';
 TRUE: 'true';
 RETURN: 'return';
 STATIC: 'static';
+SWITCH: 'switch';
 TAG: 'tag';
 THROW: 'throw';
 TRY: 'try';
@@ -357,6 +459,8 @@ CURLY_CLOSE: '}';
 FN: 'fn';
 SHARP: '#';
 STAR: '*';
+PIPE: '|';
+ELLIPSIS: '...';
 DOT: '.';
 ID: LETTER (LETTER | DIGIT)*;
 

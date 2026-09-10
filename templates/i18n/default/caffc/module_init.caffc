@@ -1,0 +1,12 @@
+module caffc.i18n
+
+u8[] EMPTY_U8_ARRAY = new u8[0]
+HashDict<str, CodePageEncoding> codePages
+
+module_init() {
+  codePages = new HashDict<str, CodePageEncoding>(8)
+}
+
+getCodePage(str codePageName) -> CodePageEncoding {
+  return codePages.get(codePageName)
+}

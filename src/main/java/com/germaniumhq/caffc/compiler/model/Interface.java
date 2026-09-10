@@ -106,9 +106,9 @@ public class Interface implements CompileBlock, AstItem, Scope {
         caffcParser.ParameterDefinitionsContext parameterDefinitionsContext = ctx.parameterDefinitions();
 
         if (parameterDefinitionsContext != null) {
-            for (caffcParser.ParameterDefinitionContext parameter: parameterDefinitionsContext.parameterDefinition()) {
-                functionDefinition.parameters.add(Parameter.fromAntlr(unit, functionDefinition, parameter));
-            }
+            functionDefinition.parameters.addAll(
+                    ParameterListParser.fromAntlr(
+                            unit, functionDefinition, functionDefinition, parameterDefinitionsContext));
         }
 
         return functionDefinition;

@@ -1,5 +1,6 @@
 package com.germaniumhq.caffc.compiler.model.instruction;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AsmLinearFormResult;
 import com.germaniumhq.caffc.compiler.model.source.SourceLocation;
 import com.germaniumhq.caffc.compiler.model.AstItem;
@@ -8,6 +9,7 @@ import com.germaniumhq.caffc.compiler.model.Function;
 import com.germaniumhq.caffc.compiler.model.Statement;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmBlock;
 import com.germaniumhq.caffc.compiler.model.asm.opc.AsmJmp;
+import com.germaniumhq.caffc.compiler.model.asm.opc.AsmLabel;
 import com.germaniumhq.caffc.generated.caffcParser;
 
 public final class ControlFlowInstruction implements Statement {
@@ -48,15 +50,59 @@ public final class ControlFlowInstruction implements Statement {
     @Override
     public AsmLinearFormResult asLinearForm(AsmBlock block) {
         AsmLinearFormResult result = new AsmLinearFormResult();
+        boolean isContinue = "continue".equals(instruction);
 
-        ForInstruction forInstruction = this.findAstParent(ForInstruction.class);
-
-        if ("continue".equals(instruction)) {
-            result.instructions.add(new AsmJmp(this.sourceLocation, forInstruction.forCheckLabel));
-        } else {
-            result.instructions.add(new AsmJmp(this.sourceLocation, forInstruction.forEndLabel));
+        AstItem parent = this.getOwner();
+        while (parent != null) {
+            if (isContinue) {
+                AsmLabel continueLabel = continueTarget(parent);
+                if (continueLabel != null) {
+                    result.instructions.add(new AsmJmp(this.sourceLocation, continueLabel));
+                    return result;
+                }
+            } else {
+                AsmLabel breakLabel = breakTarget(parent);
+                if (breakLabel != null) {
+                    result.instructions.add(new AsmJmp(this.sourceLocation, breakLabel));
+                    return result;
+                }
+            }
+            parent = parent.getOwner();
         }
 
+        CaffcCompiler.get().fatal(this,
+                isContinue
+                        ? "continue outside of loop"
+                        : "break outside of loop or switch");
         return result;
+    }
+
+    private static AsmLabel continueTarget(AstItem parent) {
+        if (parent instanceof ForInstruction forInstruction) {
+            return forInstruction.forCheckLabel;
+        }
+        if (parent instanceof ForInInstruction forInInstruction) {
+            return forInInstruction.forCheckLabel;
+        }
+        if (parent instanceof WhileInstruction whileInstruction) {
+            return whileInstruction.whileCheckLabel;
+        }
+        return null;
+    }
+
+    private static AsmLabel breakTarget(AstItem parent) {
+        if (parent instanceof SwitchInstruction switchInstruction) {
+            return switchInstruction.endLabel;
+        }
+        if (parent instanceof ForInstruction forInstruction) {
+            return forInstruction.forEndLabel;
+        }
+        if (parent instanceof ForInInstruction forInInstruction) {
+            return forInInstruction.forEndLabel;
+        }
+        if (parent instanceof WhileInstruction whileInstruction) {
+            return whileInstruction.whileEndLabel;
+        }
+        return null;
     }
 }

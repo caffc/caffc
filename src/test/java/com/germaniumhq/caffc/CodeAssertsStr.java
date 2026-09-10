@@ -114,6 +114,7 @@ public class CodeAssertsStr {
         allUnits.addAll(caffcFeature("gc", "test"));
         allUnits.addAll(caffcFeature("string", "default"));
         allUnits.addAll(caffcFeature("exception", "default"));
+        allUnits.addAll(caffcFeature("i18n", "default"));
 
         return compileCaffcProgram(template, unit, allUnits.toArray(new TestUnit[0]));
     }
@@ -152,9 +153,14 @@ public class CodeAssertsStr {
 
         List<String> files = new ArrayList<>();
 
-        File[] items = new File(fullPath).listFiles((File dir, String it) -> it.endsWith(".caffc"));
-        for (File file : items) {
-            files.add(file.getAbsolutePath());
+        try {
+            Files.walk(Path.of(fullPath))
+                    .filter(path -> path.toString().endsWith(".caffc"))
+                    .filter(Files::isRegularFile)
+                    .sorted()
+                    .forEach(path -> files.add(path.toAbsolutePath().toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return files;
@@ -167,8 +173,16 @@ public class CodeAssertsStr {
             String template,
             String unit,
             TestUnit[] testUnits) {
+        return compileCaffcProgram(template, unit, testUnits, null);
+    }
+
+    public static String compileCaffcProgram(
+            String template,
+            String unit,
+            TestUnit[] testUnits,
+            BuildSettings buildSettings) {
         try {
-            return compileCaffcUnits(template, unit, testUnits);
+            return compileCaffcUnits(template, unit, testUnits, buildSettings);
         } catch (CancelCompilationException e) {
             CodeAssertsStr.printUnitWithLineNumbers(unit, testUnits);
             throw e;
@@ -200,8 +214,9 @@ public class CodeAssertsStr {
     private static String compileCaffcUnits(
             String template,
             String unit,
-            TestUnit[] testUnits) {
-        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(unit, testUnits);
+            TestUnit[] testUnits,
+            BuildSettings buildSettings) {
+        CompilationUnit compilationUnit = CodeAssertsAst.compileCaffcUnitsAst(unit, testUnits, buildSettings);
 
         if (CaffcCompiler.get().hasErrors) {
             CaffcCompiler.get().fatal(compilationUnit, "Errors found in parsing");
@@ -209,7 +224,7 @@ public class CodeAssertsStr {
 
         try {
             Scope objectToRender = template.contains("module") ? compilationUnit.module : compilationUnit;
-            BuildSettings testBuildSettings = new BuildSettings();
+            BuildSettings testBuildSettings = buildSettings != null ? buildSettings : new BuildSettings();
             Map<String, Object> renderContext = PebbleTemplater.createRenderContext(
                 objectToRender, testBuildSettings);
 

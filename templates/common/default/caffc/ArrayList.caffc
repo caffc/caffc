@@ -27,12 +27,47 @@ use caffc.collection
         _this._items[index] = value
     }
 
-    #public add(T value) {
+    #public add(T value) -> List<T> {
+        ArrayList<T> result = new ArrayList<T>(_this._size + 1)
+        i32 i = 0
+        while i < _this._size {
+            result.addAll(_this._items[i])
+            i = i + 1
+        }
+        result.addAll(value)
+        return result
+    }
+
+    #public addAll(T value) -> List<T> {
         if (u32) _this._size >= (u32) _this._capacity {
             _this._grow()
         }
         _this._items[_this._size] = value
         _this._size = _this._size + 1
+        return _this
+    }
+
+    #public substract(T value) -> List<T> {
+        ArrayList<T> result = new ArrayList<T>(_this._size + 1)
+        i32 i = 0
+        bool removed = 0
+        while i < _this._size {
+            if not removed and _this._items[i] == value {
+                removed = 1
+            } else {
+                result.addAll(_this._items[i])
+            }
+            i = i + 1
+        }
+        return result
+    }
+
+    #public substractAll(T value) -> List<T> {
+        i32 index = _this.indexOf(value)
+        if index != -1 {
+            _this.remove(index)
+        }
+        return _this
     }
 
     #public remove(i32 index) -> T {

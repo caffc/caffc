@@ -38,6 +38,17 @@ public final class ExpressionIndexAccess implements Expression, AstItem {
         return result;
     }
 
+    public static ExpressionIndexAccess fromParts(AstItem owner, Expression expression, Expression index) {
+        ExpressionIndexAccess result = new ExpressionIndexAccess();
+
+        result.sourceLocation = owner.getSourceLocation();
+        result.owner = owner;
+        result.expression = expression;
+        result.index = index;
+
+        return result;
+    }
+
     @Override
     public Symbol typeSymbol() {
         return symbol;
