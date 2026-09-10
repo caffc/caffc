@@ -216,7 +216,15 @@ public class InterfaceDefinition implements HasMethods, GenericsDefinitionsSymbo
             copy.functions.add(f.newGenericsCopy(resolvedGenerics));
         }
 
+        // Keep parent interfaces so inherited methods (e.g. Collection.size on Dict/List)
+        // remain visible after generics instantiation. Re-apply the same substitution so
+        // parents like Collection<T> pick up the concrete type arguments.
+        for (InterfaceDefinition parent : implementedInterfaces) {
+            copy.implementedInterfaces.add(parent.newGenericsCopy(resolvedGenerics));
+        }
+
         copy.tags = this.tags;
+        copy.isResolved = this.isResolved;
 
         return (T) copy;
     }

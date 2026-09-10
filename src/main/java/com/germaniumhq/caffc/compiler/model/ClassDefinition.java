@@ -274,6 +274,15 @@ public class ClassDefinition implements
         this.gcFieldsCount = this.countGcFieldsCount();
     }
 
+    /**
+     * Registers {@code classDefinition} on every interface it implements, including
+     * parents ({@code Dict} → {@code Collection} → {@code Iterable}).
+     *
+     * <p>Parent entries on an interface are often generics instantiations
+     * ({@code Collection<i32>}, {@code Collection<T>}). Codegen emits dispatchers from
+     * the module's canonical interface definitions, so registration must use those —
+     * otherwise {@code Collection_size} stays empty while {@code Dict_get} works.
+     */
     private static void registerConcreteImplementations(ClassDefinition classDefinition, List<InterfaceDefinition> implementedInterfaces) {
         Set<InterfaceDefinition> processedInterfaces = new HashSet<>();
         Set<InterfaceDefinition> toProcess = new HashSet<>(implementedInterfaces);
@@ -282,18 +291,33 @@ public class ClassDefinition implements
             InterfaceDefinition currentInterfaceDefinition = toProcess.iterator().next();
             toProcess.remove(currentInterfaceDefinition);
 
-            if (processedInterfaces.contains(currentInterfaceDefinition)) {
+            InterfaceDefinition canonical = canonicalInterfaceDefinition(currentInterfaceDefinition);
+
+            if (processedInterfaces.contains(canonical)) {
                 continue;
             }
 
-            processedInterfaces.add(currentInterfaceDefinition);
+            processedInterfaces.add(canonical);
 
-            toProcess.addAll(currentInterfaceDefinition.implementedInterfaces);
+            toProcess.addAll(canonical.implementedInterfaces);
             toProcess.removeAll(processedInterfaces);
 
-            assert currentInterfaceDefinition != null;
-            currentInterfaceDefinition.concreteImplementations.add(classDefinition);
+            canonical.concreteImplementations.add(classDefinition);
         }
+    }
+
+    /**
+     * Returns the module-scoped interface definition used for codegen, not a
+     * generics instantiation copy created during {@code extends} resolve.
+     */
+    private static InterfaceDefinition canonicalInterfaceDefinition(InterfaceDefinition iface) {
+        if (iface.module != null && iface.name != null) {
+            InterfaceDefinition fromModule = iface.module.interfaces.get(iface.name);
+            if (fromModule != null) {
+                return fromModule;
+            }
+        }
+        return iface;
     }
 
     /**

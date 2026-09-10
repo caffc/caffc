@@ -197,6 +197,32 @@ public class TestS060DefaultNamedVarargs {
     }
 
     @Test
+    public void kwargsDictParameterCanUseInheritedCollectionMethods() {
+        String code = compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "test.caffc",
+            new TestUnit[] {
+                new TestUnit("test.caffc",
+                    """
+                    module main
+
+                    use caffc.collection
+
+                    hello(i32 a ... obj[] rest, Dict<str, obj> kw) -> i32 {
+                      return kw.size() + rest.size()
+                    }
+
+                    main() {
+                      hello(1, extra=null)
+                    }
+                    """)
+            });
+
+        assertCodeContains(code, "Collection_size(",
+                "Dict<str, obj> should resolve inherited Collection.size()");
+    }
+
+    @Test
     public void defaultObjectExpressionReplicatedPerCall() {
         String code = compileFullCaffcProgram(
             "caffc/template/c/compilation_unit_c.peb",

@@ -247,3 +247,5 @@ flex(1, extra=null)
 - **Switch cases need a colon** — `case cond: {`, `default: {`.
 - **Java `**` globs** — `generated/**/*.caffc` misses files directly under `generated/`.
 - **Call arity is checked** — missing required args / excess positionals (non-varargs) are errors; no positional after named.
+- **Generic interface copies keep parents** — `Dict<K,V>` / `List<T>` instantiate via `InterfaceDefinition.newGenericsCopy`, which must retain `extends` parents so inherited methods (`size()`, etc.) resolve. Prefer `Dict<str, obj>` for kwargs params; packing still builds a concrete `HashDict`.
+- **Interface dispatch uses canonical definitions** — `implements` registration walks parent interfaces but must register on the module's base `InterfaceDefinition` (not generics copies), or parent dispatchers like `Collection_size` stay empty. `interface.peb` only emits cases for classes that define the method (HashDict has `size` but not `newIterator` yet).
