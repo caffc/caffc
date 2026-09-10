@@ -22,6 +22,7 @@ import com.germaniumhq.caffc.compiler.model.expression.ExpressionTrue;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFalse;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionShift;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionChar;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionFString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNull;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionString;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionTernary;
@@ -49,6 +50,10 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExStringContext stringExpression) {
             return ExpressionString.fromAntlr(unit, owner, stringExpression);
+        }
+
+        if (expression instanceof caffcParser.ExFStringContext fStringExpression) {
+            return ExpressionFString.fromAntlr(unit, owner, fStringExpression);
         }
 
         if (expression instanceof caffcParser.ExCharContext charExpression) {

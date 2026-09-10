@@ -43,6 +43,21 @@ public final class ExpressionNumber implements Expression {
         return result;
     }
 
+    public static ExpressionNumber fromLiteral(AstItem owner, String numberExpressionText) {
+        ExpressionNumber result = new ExpressionNumber();
+
+        result.owner = owner;
+        result.sourceLocation = owner.getSourceLocation();
+
+        if (numberExpressionText.contains(".") || numberExpressionText.contains("e") && !numberExpressionText.startsWith("0x")) {
+            parseFloatNumber(numberExpressionText, result);
+        } else {
+            parseIntegerNumber(numberExpressionText, result);
+        }
+
+        return result;
+    }
+
     private static void parseFloatNumber(String numberExpressionText, ExpressionNumber result) {
         if (numberExpressionText.endsWith("_f64")) {
             String textValue = numberExpressionText.substring(0, numberExpressionText.length() - "_f64".length());

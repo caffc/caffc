@@ -54,6 +54,18 @@ public final class ExpressionRangeAccess implements Expression, AstItem {
         return result;
     }
 
+    public static ExpressionRangeAccess fromParts(AstItem owner, Expression expression, Expression start, Expression end) {
+        ExpressionRangeAccess result = new ExpressionRangeAccess();
+
+        result.sourceLocation = owner.getSourceLocation();
+        result.owner = owner;
+        result.expression = expression;
+        result.start = start;
+        result.end = end;
+
+        return result;
+    }
+
     @Override
     public Symbol typeSymbol() {
         return symbol;

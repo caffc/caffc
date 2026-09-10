@@ -213,6 +213,7 @@ fqdn:
 expression
   : NUMBER                                                                                         # ExNumber
   | STRING                                                                                         # ExString
+  | F_STRING                                                                                       # ExFString
   | CHAR                                                                                           # ExChar
   | ID                                                                                             # ExId
   | NULL                                                                                           # ExNull
@@ -246,6 +247,22 @@ expression
   | checkExpression=expression
     ('?' trueExpression=expression ':'|'?:')
     falseExpression=expression                                                                     # ExTernary
+  ;
+
+// Restricted expression forms allowed inside f-string `{...}` interpolations:
+// variable names, dot access, indexes, and ranges only.
+fStringInner: fStringPrimary EOF;
+
+fStringPrimary
+  : ID                                                                                             # FStrId
+  | fStringPrimary '.' ID                                                                          # FStrDot
+  | fStringPrimary '[' fStringIndexExpr ']'                                                        # FStrIndex
+  | fStringPrimary '[' fStringStart=fStringIndexExpr? ':' fStringEnd=fStringIndexExpr? ']'         # FStrRange
+  ;
+
+fStringIndexExpr
+  : NUMBER                                                                                         # FStrIndexNumber
+  | fStringPrimary                                                                                 # FStrIndexPrimary
   ;
 
 assignExpression
@@ -342,6 +359,9 @@ CHAR:
 ;
 
 STRING: SHORT_STRING | LONG_STRING;
+
+// Python-style interpolated string. Longest-match prefers this over ID `f` + STRING.
+F_STRING: 'f' SHORT_STRING | 'f' LONG_STRING;
 
 fragment SHORT_STRING:
     '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"])* '"'

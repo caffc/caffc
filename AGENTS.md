@@ -8,6 +8,7 @@ NOTE: Feel free to update this file with any gotchas you run into, or important 
 
 - Unlike Java classes cannot be inherited in CaffC. This means that effectively every class is `final` by default.
 - Strings (see `str.caffc`) are stored natively as nul-terminated UTF-8 strings in memory.
+- **f-strings** — `f"user: {user}"` (Python-style). Inside `{}`: id / `.` / `[]` / `[:]` only; must be `str`. `{{`/`}}` for literal braces. Lowers to chained `str.add`.
 
 ## Parsing
 

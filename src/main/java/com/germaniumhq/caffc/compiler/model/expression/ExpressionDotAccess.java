@@ -37,6 +37,17 @@ public final class ExpressionDotAccess implements Expression {
         return expression;
     }
 
+    public static ExpressionDotAccess fromParts(AstItem owner, Expression leftOfDot, String rightOfDot) {
+        ExpressionDotAccess expression = new ExpressionDotAccess();
+
+        expression.sourceLocation = owner.getSourceLocation();
+        expression.owner = owner;
+        expression.leftOfDot = leftOfDot;
+        expression.rightOfDot = rightOfDot;
+
+        return expression;
+    }
+
     @Override
     public Symbol typeSymbol() {
         return symbol;

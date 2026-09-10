@@ -9,6 +9,18 @@ test_add() {
   assertEqual("hello world!", a.add(b), "string concatenation should work")
 }
 
+test_fstring() {
+  str user = "alice"
+  str greeting = f"user: {user}"
+  assertEqual("user: alice", greeting, "f-string should interpolate variables")
+
+  assertEqual("user: {user}", f"user: {{user}}", "f-string escaped braces should be literal")
+  assertEqual("alice", f"{user}", "f-string with only interpolation")
+
+  str h = "hello.exe"
+  assertEqual("ello", f"{h[1:5]}", "f-string should allow range access")
+}
+
 test_slice() {
   //       012345678
   str h = "hello.exe"
@@ -184,6 +196,7 @@ test_codepage_8859_2_unmappable() {
 
 main() {
   test_add()
+  test_fstring()
   test_slice()
   test_range()
   test_indexOf()
