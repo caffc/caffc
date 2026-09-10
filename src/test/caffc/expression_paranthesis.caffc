@@ -1,5 +1,0 @@
-module main
-
-main() {
-    b = 3 * (5 / 2) * 7
-}

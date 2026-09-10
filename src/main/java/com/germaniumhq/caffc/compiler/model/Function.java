@@ -100,13 +100,12 @@ public class Function implements CompileBlock, Scope, Statement, Symbol, Excepti
         function.owner = owner;
         function.definition.module = unit.module.name;
 
-      // if the function has parameters, add them
+        // if the function has parameters, add them
         caffcParser.ParameterDefinitionsContext parameterDefinitions = ctx.parameterDefinitions();
 
         if (parameterDefinitions != null) {
-            for (caffcParser.ParameterDefinitionContext parameter : parameterDefinitions.parameterDefinition()) {
-                function.definition.parameters.add(Parameter.fromAntlr(unit, function.definition, parameter));
-            }
+            function.definition.parameters.addAll(
+                    ParameterListParser.fromAntlr(unit, function.definition, function, parameterDefinitions));
         }
 
         // read the return values and add them as parameters if needed

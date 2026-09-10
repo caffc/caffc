@@ -28,6 +28,15 @@ public final class ExpressionFnCall implements Expression {
     public Expression functionExpression;
     public GenericInstantiations genericsInstantiations;
 
+    /**
+     * Raw call-site arguments (positional and/or named), before binding.
+     */
+    public List<CallArgument> callArguments = new ArrayList<>();
+
+    /**
+     * Fully bound positional argument expressions (including {@code _this},
+     * defaults, and packed varargs/kwargs), filled during type resolution.
+     */
     public List<Expression> parameters = new ArrayList<>();
     private Symbol symbol;
 
@@ -35,14 +44,6 @@ public final class ExpressionFnCall implements Expression {
 
     private boolean isResolved;
 
-    /**
-     * Converts an ANTLR-based function call expression into a corresponding ExpressionFnCall object.
-     *
-     * @param unit             The CompilationUnit containing the AST information.
-     * @param owner            The AstItem that owns the function call expression.
-     * @param fnCallExpression The ANTLR context representing the function call expression.
-     * @return An ExpressionFnCall object representing the function call expression.
-     */
     public static Expression fromAntlr(CompilationUnit unit, AstItem owner, caffcParser.ExFnCallContext fnCallExpression) {
         ExpressionFnCall result = new ExpressionFnCall();
 
@@ -51,9 +52,9 @@ public final class ExpressionFnCall implements Expression {
         result.functionExpression = Expression.fromAntlr(unit, result, fnCallExpression.expression());
         result.genericsInstantiations = GenericInstantiations.fromAntlr(unit, result, fnCallExpression.genericsInstantiations());
 
-        if (fnCallExpression.expressionTuple() != null) {
-            for (caffcParser.ExpressionContext parameterExpression: fnCallExpression.expressionTuple().expression()) {
-                result.parameters.add(Expression.fromAntlr(unit, result, parameterExpression));
+        if (fnCallExpression.callArgumentList() != null) {
+            for (caffcParser.CallArgumentContext argumentContext : fnCallExpression.callArgumentList().callArgument()) {
+                result.callArguments.add(CallArgument.fromAntlr(unit, result, argumentContext));
             }
         }
 
@@ -108,17 +109,23 @@ public final class ExpressionFnCall implements Expression {
                             Module.MODULE_INIT + " and cannot be invoked");
         }
 
-        // if we have a dot access function, it means the function is a field of something
-        // else, so we need to get the first part as its first parameter, and call the function.
+        for (CallArgument argument : callArguments) {
+            argument.value.recurseResolveTypes();
+        }
+
+        Expression thisReceiver = null;
         if (this.functionExpression instanceof ExpressionDotAccess dotAccess && !functionDefinition.isStatic) {
             if (dotAccess.leftOfDot.typeSymbol().typeName().dataType != DataType.MODULE) {
-                this.parameters.add(0, dotAccess.leftOfDot);
+                thisReceiver = dotAccess.leftOfDot;
             }
         }
 
-        for (Expression parameter: parameters) {
-            parameter.recurseResolveTypes();
-        }
+        this.parameters = FunctionCallBinder.bind(
+                this,
+                this,
+                functionDefinition,
+                thisReceiver,
+                callArguments);
     }
 
     @Override
@@ -127,13 +134,12 @@ public final class ExpressionFnCall implements Expression {
 
         AsmLinearFormResult result = new AsmLinearFormResult();
 
-        // first we flatten the parameters themselves
+        // Flatten each bound argument first (defaults / packs emit their instructions here)
         List<AsmLinearFormResult> linearParameters = new ArrayList<>();
-        for (Expression parameter: this.parameters) {
+        for (Expression parameter : this.parameters) {
             linearParameters.add(parameter.asLinearForm(block));
         }
 
-        // add the parameters instructions + prepare the parameter values array for the call
         AsmValue[] callParameters = new AsmValue[linearParameters.size()];
         for (int i = 0; i < linearParameters.size(); i++) {
             AsmLinearFormResult linearParameter = linearParameters.get(i);
@@ -143,8 +149,7 @@ public final class ExpressionFnCall implements Expression {
             result.instructions.addAll(linearParameter.instructions);
         }
 
-        // add call instruction
-        AsmLabel exceptionLabel = this.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
+        AsmLabel exceptionLabel = block.findAstParent(ExceptionHandler.class).getExceptionHandlingTargetLabel();
         AsmCall call = new AsmCall(this.sourceLocation, exceptionLabel, functionDefinition, callParameters);
 
         if (!functionDefinition.isVoid()) {

@@ -1,6 +1,0 @@
-module main
-
-main() {
-    if not a or not b and c or d {
-    }
-}

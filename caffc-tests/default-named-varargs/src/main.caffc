@@ -1,0 +1,109 @@
+module main
+
+use caffc.collection
+
+assertTrue(bool what, str message) {
+  if not what {
+    print("assertion failed!")
+    print(message)
+    exit(1)
+  }
+}
+
+// --- defaults + named args ---
+
+greet(i32 a=3, i32 b=7) -> i32 {
+  return a * 100 + b
+}
+
+defaultProvider() -> i32 {
+  return 42
+}
+
+withCallDefault(i32 a, i32 b=defaultProvider()) -> i32 {
+  return a + b
+}
+
+testDefaultsAndNamed() {
+  assertTrue(greet() == 307, "greet() should use both defaults")
+  assertTrue(greet(1) == 107, "greet(1) should default b")
+  assertTrue(greet(1, 2) == 102, "greet(1, 2) should use both positionals")
+  assertTrue(greet(b=9) == 309, "greet(b=9) should default a and set b")
+  assertTrue(greet(a=5, b=6) == 506, "greet(a=5, b=6) fully named")
+  assertTrue(withCallDefault(8) == 50, "default call expression should be evaluated at call site")
+  assertTrue(withCallDefault(8) == 50, "default call expression should be re-evaluated each call")
+}
+
+// --- explicit varargs ---
+
+sum(i32 a ... i32[] rest) -> i32 {
+  i32 total = a
+  i32 i = 0
+  while (u32) i < rest.size {
+    total = total + rest[i]
+    i = i + 1
+  }
+  return total
+}
+
+testExplicitVarargs() {
+  assertTrue(sum(10) == 10, "sum with no varargs should leave rest empty")
+  assertTrue(sum(10, 1, 2, 3) == 16, "sum should pack and add varargs")
+
+  i32[] xs = new i32[2]
+  xs[0] = 4
+  xs[1] = 5
+  assertTrue(sum(10, rest=xs) == 19, "named rest= should pass an existing array through")
+}
+
+// --- auto trailing-array varargs ---
+
+join(i32 a, i32[] rest) -> i32 {
+  i32 total = a
+  i32 i = 0
+  while (u32) i < rest.size {
+    total = total + rest[i]
+    i = i + 1
+  }
+  return total
+}
+
+testAutoTrailingArray() {
+  i32[] xs = new i32[2]
+  xs[0] = 1
+  xs[1] = 2
+  assertTrue(join(10, xs) == 13, "exact arity should pass the array through")
+  assertTrue(join(10, 1, 2) == 13, "extra positionals should pack into the trailing array")
+  assertTrue(join(10) == 10, "missing trailing array should become empty")
+}
+
+// --- varargs + kwargs ---
+
+flex(i32 a ... obj[] rest, Dict<str, obj> kw) -> i32 {
+  i32 total = a
+  total = total + rest.size()
+  total = total + kw.size() * 100
+  if kw.containsKey("extra") {
+    I32 boxed = (I32) kw.get("extra")
+    total = total + boxed.value
+  }
+  return total
+}
+
+testVarargsAndKwargs() {
+  assertTrue(flex(1) == 1, "flex() should get empty rest and empty kw")
+  assertTrue(flex(1, null, null) == 3, "flex should pack two null rest elements")
+
+  I32 extra = new I32(7)
+  assertTrue(flex(1, extra=extra) == 108, "unknown named arg should land in kwargs dict")
+  assertTrue(flex(1, null, extra=extra) == 109, "can mix one rest element and a kwarg")
+}
+
+main() -> i32 {
+  testDefaultsAndNamed()
+  testExplicitVarargs()
+  testAutoTrailingArray()
+  testVarargsAndKwargs()
+  print("default-named-varargs tests ok")
+  return 0
+}

@@ -1,8 +1,0 @@
-module main
-
-native {#include <stdio.h>}
-
-main() {
-  native {printf("hello world!\n");}
-  native {printf("hello world!\n");}
-}

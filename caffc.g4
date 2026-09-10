@@ -220,9 +220,9 @@ expression
   | FALSE                                                                                          # ExFalse
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
-  | NEW newType '(' expressionTuple? ')'                                                           # ExNewObject
+  | NEW newType '(' callArgumentList? ')'                                                          # ExNewObject
   | NEW newType ('[' expression ']')+                                                              # ExNewArray
-  | expression genericsInstantiations? '(' expressionTuple? ')'                                    # ExFnCall
+  | expression genericsInstantiations? '(' callArgumentList? ')'                                   # ExFnCall
   | arraryExpression=expression '[' indexExpression=expression ']'                                 # ExIndexAccess
   | '(' typeName ')' expression                                                                    # ExCast
   | '(' expression ')'                                                                             # ExParens
@@ -239,7 +239,7 @@ expression
   | leftExpression=expression ('=='|'!=') rightExpression=expression                               # ExEqNeq
   | leftExpression=expression '&' rightExpression=expression                                       # ExBitAnd
   | leftExpression=expression '^' rightExpression=expression                                       # ExBitXor
-  | leftExpression=expression '|' rightExpression=expression                                       # ExBitOr
+  | leftExpression=expression PIPE rightExpression=expression                                     # ExBitOr
   | leftExpression=expression AND rightExpression=expression                                       # ExBoolAnd
   | leftExpression=expression OR rightExpression=expression                                        # ExBoolOr
   | checkExpression=expression
@@ -257,14 +257,30 @@ assignExpression
 expressionTuple:
   expression (',' expression)*;
 
+// Positional or named (`name=expr`) arguments for calls and `new`.
+callArgumentList:
+  callArgument (',' callArgument)*;
+
+callArgument:
+  ID '=' expression
+  | expression
+  ;
+
 extend:
     EXTENDS classType;
 
+// Optional bare `...` separates regular parameters from the varargs array
+// (and optional trailing kwargs dict), e.g. `f(i32 a ... obj[] args)` or
+// `f(i32 a ... obj[] args, dict<str, obj> kw)`. A trailing `...` on a parameter
+// name (`obj[] args...`) also marks that parameter as the varargs slot.
+// No comma is required before `...`.
 parameterDefinitions:
-    parameterDefinition (',' parameterDefinition)*;
+    parameterDefinition (',' parameterDefinition)* (ELLIPSIS parameterDefinition (',' parameterDefinition)*)?
+  | ELLIPSIS parameterDefinition (',' parameterDefinition)*
+  ;
 
 parameterDefinition:
-    tags? typeName ID STAR? ('=' expression)?;
+    tags? typeName ID ELLIPSIS? ('=' expression)?;
 
 typeName
     : classType           # TypeClass
@@ -414,6 +430,8 @@ CURLY_CLOSE: '}';
 FN: 'fn';
 SHARP: '#';
 STAR: '*';
+PIPE: '|';
+ELLIPSIS: '...';
 DOT: '.';
 ID: LETTER (LETTER | DIGIT)*;
 

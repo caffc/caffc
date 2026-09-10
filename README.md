@@ -131,8 +131,10 @@ You cannot extend another class. This avoids having abstract classes, forces com
 and eliminates all problems related to `super()`-like calls.
 
 Another difference, is that functions and methods, true to their C counterpart, _don't
-have overloading_. In the future, CaffC will have default parameters, and calls with
-named parameters to mitigate this.
+have overloading_. CaffC supports default parameters and named call arguments (Python-style):
+omitted arguments evaluate their default into a temporary _before_ the call. Trailing
+array parameters can be used as varargs (optionally after a `...` separator); a trailing
+`array, Dict` pair also accepts kwargs.
 
 In methods `_this` is available to access the current class instance.
 

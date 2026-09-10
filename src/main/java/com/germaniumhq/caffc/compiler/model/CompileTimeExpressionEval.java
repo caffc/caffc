@@ -130,12 +130,12 @@ public final class CompileTimeExpressionEval {
                         "unknown method `" + method + "` on files setting (expected contains)");
                 return null;
             }
-            if (fnCall.parameters.size() != 1) {
+            if (fnCall.callArguments.size() != 1) {
                 CaffcCompiler.get().fatal(fnCall,
                         "`files.contains` expects exactly one string argument");
                 return null;
             }
-            Object arg = eval(fnCall.parameters.get(0), settings);
+            Object arg = eval(fnCall.callArguments.get(0).value, settings);
             if (!(arg instanceof String path)) {
                 CaffcCompiler.get().fatal(fnCall,
                         "`files.contains` argument must be a string, got: " + describe(arg));

@@ -25,8 +25,8 @@ public class TestS006GenericsParameters {
                         module caffc
 
                         class obj {
-                          add(obj o1, obj o2) -> obj {
-                            return o1
+                          add(obj o2) -> obj {
+                            return o2
                           }
                         }
                         

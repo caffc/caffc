@@ -16,6 +16,23 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
     public Symbol typeSymbol;
     public String name;
 
+    /**
+     * Optional default value expression. Evaluated (inlined) at each call site
+     * where the argument is omitted.
+     */
+    public Expression defaultExpression;
+
+    /**
+     * True when this parameter appears after a bare {@code ...} separator in the
+     * parameter list (varargs section).
+     */
+    public boolean isVarargsSection;
+
+    /**
+     * True when the parameter name was followed by {@code ...} ({@code arr...}).
+     */
+    public boolean isVarargsMarked;
+
     public SourceLocation sourceLocation;
 
     private SymbolSearch symbolSearch;
@@ -26,15 +43,34 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         this.name = name;
     }
 
-    public static Parameter fromAntlr(CompilationUnit unit, FunctionDefinition owner, caffcParser.ParameterDefinitionContext parameter) {
+    public static Parameter fromAntlr(
+            CompilationUnit unit,
+            FunctionDefinition owner,
+            AstItem defaultExpressionOwner,
+            caffcParser.ParameterDefinitionContext parameter) {
         String name = parameter.ID().getText();
         Parameter result = new Parameter(owner, name);
 
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, parameter);
-
         result.symbolSearch = SymbolSearch.fromAntlr(unit, parameter.typeName());
 
+        if (parameter.expression() != null) {
+            AstItem expressionOwner = defaultExpressionOwner != null ? defaultExpressionOwner : owner;
+            result.defaultExpression = Expression.fromAntlr(unit, expressionOwner, parameter.expression());
+        }
+
         return result;
+    }
+
+    /**
+     * Backwards-compatible overload when no separate owner for defaults is available.
+     */
+    public static Parameter fromAntlr(CompilationUnit unit, FunctionDefinition owner, caffcParser.ParameterDefinitionContext parameter) {
+        return fromAntlr(unit, owner, owner, parameter);
+    }
+
+    public boolean isExplicitVarargs() {
+        return isVarargsMarked || isVarargsSection;
     }
 
     @Override
@@ -75,6 +111,10 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         } else {
             this.typeSymbol = SymbolResolver.mustResolveSymbol(this, this.symbolSearch);
         }
+
+        if (this.defaultExpression != null) {
+            this.defaultExpression.recurseResolveTypes();
+        }
     }
 
     @Override
@@ -87,9 +127,9 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
 
         newParameter.isResolved = this.isResolved;
         newParameter.typeSymbol = this.typeSymbol;
-        // name
-        // owner
-
+        newParameter.defaultExpression = this.defaultExpression;
+        newParameter.isVarargsSection = this.isVarargsSection;
+        newParameter.isVarargsMarked = this.isVarargsMarked;
         newParameter.sourceLocation = this.sourceLocation;
 
         if (newParameter.typeSymbol instanceof GenericDefinition typeSymbolGenericDefinition) {

@@ -45,7 +45,7 @@ public class TestModules {
                                 use b as c
                                 
                                 main() {
-                                  c.x(3)
+                                  c.x()
                                 }
                                 """),
                         new TestUnit("b/b.caffc",
