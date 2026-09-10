@@ -43,6 +43,14 @@ public class Parameter implements AstItem, GenericsSymbol, AsmVar {
         this.name = name;
     }
 
+    public SymbolSearch getSymbolSearch() {
+        return symbolSearch;
+    }
+
+    public void setSymbolSearch(SymbolSearch symbolSearch) {
+        this.symbolSearch = symbolSearch;
+    }
+
     public static Parameter fromAntlr(
             CompilationUnit unit,
             FunctionDefinition owner,

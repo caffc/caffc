@@ -2,6 +2,7 @@ package com.germaniumhq.caffc.compiler.model.expression;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
 import com.germaniumhq.caffc.compiler.model.AstItem;
+import com.germaniumhq.caffc.compiler.model.ClassDefinition;
 import com.germaniumhq.caffc.compiler.model.Expression;
 import com.germaniumhq.caffc.compiler.model.FunctionDefinition;
 import com.germaniumhq.caffc.compiler.model.Parameter;
@@ -232,8 +233,9 @@ public final class FunctionCallBinder {
         if (explicitVarargs) {
             // Python *args: every leftover positional becomes an element
             if (!leftoverPositionals.isEmpty()) {
+                List<Expression> boxed = boxElements(owner, leftoverPositionals, varargsParam.typeSymbol);
                 Expression pack = ExpressionArrayPack.of(
-                        owner, location.getSourceLocation(), varargsParam.typeSymbol, leftoverPositionals);
+                        owner, location.getSourceLocation(), varargsParam.typeSymbol, boxed);
                 pack.recurseResolveTypes();
                 return pack;
             }
@@ -257,13 +259,31 @@ public final class FunctionCallBinder {
             return empty;
         }
         if (leftoverPositionals.size() == 1) {
-            return leftoverPositionals.get(0);
+            Symbol elementType = arrayElementType(varargsParam.typeSymbol);
+            return PrimitiveBoxing.boxIfNeeded(owner, leftoverPositionals.get(0), elementType);
         }
 
+        List<Expression> boxed = boxElements(owner, leftoverPositionals, varargsParam.typeSymbol);
         Expression pack = ExpressionArrayPack.of(
-                owner, location.getSourceLocation(), varargsParam.typeSymbol, leftoverPositionals);
+                owner, location.getSourceLocation(), varargsParam.typeSymbol, boxed);
         pack.recurseResolveTypes();
         return pack;
+    }
+
+    private static List<Expression> boxElements(AstItem owner, List<Expression> elements, Symbol arrayType) {
+        Symbol elementType = arrayElementType(arrayType);
+        List<Expression> boxed = new ArrayList<>();
+        for (Expression element : elements) {
+            boxed.add(PrimitiveBoxing.boxIfNeeded(owner, element, elementType));
+        }
+        return boxed;
+    }
+
+    private static Symbol arrayElementType(Symbol arrayType) {
+        if (arrayType instanceof com.germaniumhq.caffc.compiler.model.ClassDefinition arrayClass) {
+            return arrayClass.childDefinition;
+        }
+        return null;
     }
 
     private static Expression bindKwargs(

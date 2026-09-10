@@ -22,6 +22,11 @@ public interface CompileBlock extends AstItem {
             return NativeBlock.fromAntlr(unit, antlrCompileBlock.nativeBlock(), owner);
         }
 
+        if (antlrCompileBlock.decoratorCall() != null) {
+            // Returns the global binding; the lambda class is registered on the CU inside.
+            return DecoratorCall.fromAntlr(unit, owner, antlrCompileBlock.decoratorCall()).binding;
+        }
+
         if (antlrCompileBlock.function() != null) {
             return Function.fromAntlr(unit, owner, antlrCompileBlock.function());
         }
@@ -47,6 +52,11 @@ public interface CompileBlock extends AstItem {
     static CompileBlock fromPlain(CompilationUnit unit, AstItem owner, caffcParser.CompileBlockPlainContext antlrCompileBlock) {
         if (antlrCompileBlock.nativeBlock() != null) {
             return NativeBlock.fromAntlr(unit, antlrCompileBlock.nativeBlock(), owner);
+        }
+
+        if (antlrCompileBlock.decoratorCall() != null) {
+            // Returns the global binding; the lambda class is registered on the CU inside.
+            return DecoratorCall.fromAntlr(unit, owner, antlrCompileBlock.decoratorCall()).binding;
         }
 
         if (antlrCompileBlock.function() != null) {

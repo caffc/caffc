@@ -235,6 +235,10 @@ flex(1, extra=null)
 
 **`fn<R>` callable objects:** `templates/common/default/caffc/fn.caffc` — `interface fn<R> { call(... obj[] args, Dict<str, obj> kw) -> R }`. Any value that implements `fn` can be invoked with `x(...)`; that lowers to `x.call(...)`.
 
+**Lambdas:** `fn(params) -> R { ... }` is an expression producing a synthetic class that `implements fn<R>`. Typed params are unpacked from `args` (primitives auto-unboxed). Free-variable capture is not supported yet. Void lambdas become `fn<obj>` and return `null`.
+
+**Decorators:** `@decorator function ...` (stackable: `@a @b f(){}` → `a(b(body))`). The body becomes a lambda; the name is rebound to a module global `fn<R>` initialized in `module_init` as `decorator(body)`.
+
 **i18n files:** `templates/i18n/{impl}/caffc/`; `caffc.yaml` `i18n.files` globs (default none); regenerate via `python3 util/generate-codepages.py`.
 
 ## Gotchas
@@ -258,3 +262,4 @@ flex(1, extra=null)
 - **Interface dispatch uses canonical definitions** — `implements` registration walks parent interfaces but must register on the module's base `InterfaceDefinition` (not generics copies), or parent dispatchers like `Collection_size` stay empty.
 - **Type assignability** — `TypeAssignability` checks assignments, call args, and that classes implement claimed interface methods (exact param/return names). `obj` is the top object type; integer widths and bool↔int convert; use `null` for object nulls (not `0`).
 - **Generics copies must mark functions resolved** — `FunctionDefinition.newGenericsCopy` sets `isResolved=true` after substituting return types. Otherwise `ExpressionFnCall` re-runs `recurseResolveTypes` from unresolved `returnTypeSearches` and wipes `ArrayList.get` (etc.) back to `void`.
+- **`fn` / lambdas / decorators** — `x(...)` on `fn` → `x.call(...)`. Lambdas: `fn(…){…}` → synthetic `implements fn<R>` class (no free-var capture yet). `@d f(){}` → global `fn` bound in `module_init`.

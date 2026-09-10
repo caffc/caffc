@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionLambda;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitNot;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBitOperation;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionBoolCompare;
@@ -74,6 +75,10 @@ public interface Expression extends Statement {
 
         if (expression instanceof caffcParser.ExIdContext idExpression) {
             return ExpressionId.fromAntlr(unit, owner, idExpression);
+        }
+
+        if (expression instanceof caffcParser.ExLambdaContext lambdaExpression) {
+            return ExpressionLambda.fromAntlr(unit, owner, lambdaExpression);
         }
 
         if (expression instanceof caffcParser.ExDotAccessContext dotAccessExpression) {

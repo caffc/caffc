@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ExpressionFnCall implements Expression {
-    private AstItem owner;
+    public AstItem owner;
 
     public Expression functionExpression;
     public GenericInstantiations genericsInstantiations;

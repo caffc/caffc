@@ -98,6 +98,11 @@ public class Module implements AstItem, Scope, Symbol {
                 if (compileBlock instanceof GlobalVariableDeclarations globalVariable) {
                     globalVariables.add(globalVariable.variable);
                 }
+                if (compileBlock instanceof DecoratorCall decoratorCall
+                        && decoratorCall.binding != null
+                        && decoratorCall.binding.variable != null) {
+                    globalVariables.add(decoratorCall.binding.variable);
+                }
 
                 // 2. unit_init() calls
                 if (compileBlock instanceof Function function &&

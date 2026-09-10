@@ -28,7 +28,7 @@ public final class ExpressionNewObject implements Expression {
     public SourceLocation sourceLocation;
 
     public TypeDefinitionSymbol instantiatedType;
-    private SymbolSearch instantiatedTypeSearch;
+    public SymbolSearch instantiatedTypeSearch;
 
     private boolean isResolved;
 

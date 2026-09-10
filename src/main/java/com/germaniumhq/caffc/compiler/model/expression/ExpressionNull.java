@@ -27,6 +27,13 @@ public final class ExpressionNull implements Expression {
         return result;
     }
 
+    public static ExpressionNull of(AstItem owner, SourceLocation location) {
+        ExpressionNull result = new ExpressionNull();
+        result.owner = owner;
+        result.sourceLocation = location;
+        return result;
+    }
+
     @Override
     public AstItem getOwner() {
         return owner;

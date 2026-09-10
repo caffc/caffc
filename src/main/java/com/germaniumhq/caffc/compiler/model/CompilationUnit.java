@@ -112,8 +112,9 @@ public class CompilationUnit implements AstItem, Scope {
 
         this.isResolved = true;
 
-        for (CompileBlock compileBlock: this.compileBlocks) {
-            compileBlock.recurseResolveTypes();
+        // Index-based so synthetic classes (lambdas) added during resolve are visited.
+        for (int i = 0; i < this.compileBlocks.size(); i++) {
+            this.compileBlocks.get(i).recurseResolveTypes();
         }
     }
 

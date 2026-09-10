@@ -35,6 +35,17 @@ public final class ExpressionCast implements Expression {
         return result;
     }
 
+    public static ExpressionCast of(AstItem owner, SymbolSearch castTypeSearch, Expression expression) {
+        ExpressionCast result = new ExpressionCast();
+        result.owner = owner;
+        result.sourceLocation = expression.getSourceLocation() != null
+                ? expression.getSourceLocation()
+                : owner.getSourceLocation();
+        result.castTypeSearch = castTypeSearch;
+        result.expression = expression;
+        return result;
+    }
+
     @Override
     public Symbol typeSymbol() {
         return castType;

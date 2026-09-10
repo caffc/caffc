@@ -34,4 +34,12 @@ public final class CallArgument {
     public boolean isNamed() {
         return name != null;
     }
+
+    public static CallArgument positional(Expression value) {
+        CallArgument result = new CallArgument();
+        result.name = null;
+        result.value = value;
+        result.sourceLocation = value.getSourceLocation();
+        return result;
+    }
 }

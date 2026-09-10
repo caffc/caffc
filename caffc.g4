@@ -11,7 +11,7 @@ useStatement: use use_alias?;
 
 compileBlock
     : nativeBlock
-    // | decoratorCall
+    | decoratorCall
     | tagDefinition
     | function
     | classDefinition
@@ -25,6 +25,7 @@ compileBlock
 // Unit-level #switch/#ifdef bodies: same as compileBlock but no nested #switch/#ifdef.
 compileBlockPlain
     : nativeBlock
+    | decoratorCall
     | tagDefinition
     | function
     | classDefinition
@@ -122,8 +123,8 @@ tagDefinition:
 fieldDeclaration: tags? typeName ID (',' ID)*;
 
 statement:
+  // Nested named functions are not supported yet; use `fn(...){...}` lambdas.
   // decoratorCall |
-  function |
   variableDeclarations |
   return |
   controlFlow |
@@ -221,6 +222,7 @@ expression
   | NULL                                                                                           # ExNull
   | TRUE                                                                                           # ExTrue
   | FALSE                                                                                          # ExFalse
+  | FN '(' parameterDefinitions? ')' ('->' returnType?)? functionBlock                             # ExLambda
   | expression '.' ID                                                                              # ExDotAccess
 //  | expression '?.' ID                                                                           # ExNullableDotAccess
   | NEW newType '(' callArgumentList? ')'                                                          # ExNewObject
