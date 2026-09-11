@@ -69,9 +69,11 @@ public class TestS060DefaultNamedVarargs {
 
         assertCodeContains(code,
             """
-            _caffc_temp_caffc_i32_1 = main_defaultB();
-            main_hello(3, _caffc_temp_caffc_i32_1);
-            """,
+_caffc_temp_caffc_i32_1 = main_defaultB();
+if (_caffc_exception) { goto fnUncaughtException0; };
+main_hello(3, _caffc_temp_caffc_i32_1);
+if (_caffc_exception) { goto fnUncaughtException0; };
+""",
             "default that is a call should be evaluated into a temp before the outer call");
     }
 

@@ -35,8 +35,9 @@ public class TestS051InstanceOf {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_bool_1 = caffc_instanceof_check(a, /* caffc:null:A:OBJECT */
-                """,
+_caffc_temp_caffc_bool_1 = caffc_instanceof_check(a,
+  /* caffc:null:A:OBJECT */ 1);
+""",
             "There should be an instanceof check.");
         assertFalse(CaffcCompiler.get().hasWarnings);
     }
@@ -68,9 +69,10 @@ public class TestS051InstanceOf {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_bool_1 = caffc_instanceof_check(a, /* caffc:null:A:OBJECT */ 1);
-                _caffc_temp_caffc_bool_1 = !_caffc_temp_caffc_bool_1;
-                """,
+_caffc_temp_caffc_bool_1 = caffc_instanceof_check(a,
+  /* caffc:null:A:OBJECT */ 1);
+_caffc_temp_caffc_bool_1 = !_caffc_temp_caffc_bool_1;
+""",
             "There should be an instanceof check.");
         assertFalse(CaffcCompiler.get().hasWarnings);
     }
@@ -105,9 +107,10 @@ public class TestS051InstanceOf {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                _caffc_temp_caffc_bool_1 = caffc_instanceof_check(a, /* caffc:null:A:OBJECT */ 1);
-                _caffc_temp_caffc_bool_2 = !_caffc_temp_caffc_bool_1;
-                """,
+_caffc_temp_caffc_bool_1 = caffc_instanceof_check(a,
+  /* caffc:null:A:OBJECT */ 1);
+_caffc_temp_caffc_bool_2 = !_caffc_temp_caffc_bool_1;
+""",
             "There should be an instanceof check.");
         assertTrue(CaffcCompiler.get().hasWarnings);
     }

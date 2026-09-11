@@ -93,8 +93,10 @@ public class TestS004ClassFieldsDotRender {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-_caffc_temp_main_A_2 = main_A_getA(a); if (_caffc_exception) { goto fnUncaughtException0; };
-_caffc_temp_caffc_i32_1 = main_A_getX(_caffc_temp_main_A_2); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_main_A_2 = main_A_getA(a);
+if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_i32_1 = main_A_getX(_caffc_temp_main_A_2);
+if (_caffc_exception) { goto fnUncaughtException0; };
                 """,
             "dot access should translate into function access");
     }

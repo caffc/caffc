@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -87,6 +86,8 @@ public class CCodeGenerator {
                 "caffc/template/c/onefile_c.peb",
                 renderContext);
 
+        code = CCodeLineWrapper.wrap(code, buildSettings.getMaxLineWidth());
+
         String outputFileName = new File(buildSettings.getOneFile()).getName();
         writeToFile(outputFileName, code);
     }
@@ -107,7 +108,8 @@ public class CCodeGenerator {
 
     private String renderCode(Object context, String template) {
         Map<String, Object> renderContext = PebbleTemplater.createRenderContext(context, buildSettings);
-        return PebbleTemplater.INSTANCE.renderToString(template, renderContext);
+        String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
+        return CCodeLineWrapper.wrap(code, buildSettings.getMaxLineWidth());
     }
 
     private void writeToFile(String filePath, String fileContent) {
@@ -141,11 +143,11 @@ public class CCodeGenerator {
 
         for (String file : files) {
             try {
-                Files.copy(
-                        Paths.get(cFilesFolderString, file),
+                String content = Files.readString(Paths.get(cFilesFolderString, file));
+                content = CCodeLineWrapper.wrap(content, buildSettings.getMaxLineWidth());
+                Files.writeString(
                         Paths.get(buildSettings.getOutputFolder(), file),
-                        StandardCopyOption.REPLACE_EXISTING
-                );
+                        content);
             } catch (IOException e) {
                 CaffcCompiler.get().fatal(
                         SourceLocation.fromFilePath(file),

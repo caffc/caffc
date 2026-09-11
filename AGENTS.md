@@ -194,6 +194,10 @@ Custom operators (if left type defines the method): `+`/`-`/`|`/`/`/`*` → `add
 
 Global inits and `unit_init()` bodies move into `module_init()` after resolve (skip if neither exists). Order: global inits → original `module_init` → each `unit_init` (CU order). `unit_init` is deleted after transplant and is not callable. C name: `{module}_module_init()`; globals are module-prefixed (`main_x`).
 
+## Generated C line width
+
+`max_line_width` (default/min **72**) in `caffc.yaml` or `--max-line-width`. `CCodeLineWrapper` post-processes rendered C (and copied runtime sources): break after `;` / `,` / before `=`, else `\` continuations. String constants use a short hash (`caffc_cstr_` + 16 hex) so names fit under 72.
+
 ## Switch Statements
 
 1. **Boolean** — `switch { case cond: { … } default: { … } }` → if/else-if/else (`bool` cases).

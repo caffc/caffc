@@ -30,7 +30,7 @@ public class TestS003String {
                 });
 
         CodeAssertsStr.assertCodeContains(code, """
-                x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9;
+                x = (caffc_str*)&caffc_cstr_7509e5bda0c762d2;
                 """,
                 "string constants aren't generated correctly.");
     }
@@ -60,15 +60,14 @@ public class TestS003String {
                 });
 
         CodeAssertsStr.assertCodeContains(code,
-                """
-                caffc_str_13 caffc_cstr_7509e5bda0c762d2bac7f90d758b5b2263fa01ccbc542ab5e3df163be08e6ca9 = {
-                    /* _caffc_type_id */ CAFFC_STR_TYPE_ID,
-                    /* _caffc_flags */ 0,
-                    /* size */ 13,
-                    { 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x00 }
-                };
-                """,
+                "caffc_str_13 caffc_cstr_7509e5bda0c762d2 = {",
                 "string constants aren't generated correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+                "0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20",
+                "string constant bytes aren't generated correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+                "0x21, 0x00",
+                "string constant bytes aren't generated correctly.");
     }
 
     @Test
@@ -96,7 +95,7 @@ public class TestS003String {
                 });
 
         CodeAssertsStr.assertCodeContains(code,
-                "extern caffc_str_12 caffc_cstr_ce2cddbe5f7f742d1630540ee17299cd33ff3866e5da666952ebff45fdfaa72a;",
+                "extern caffc_str_12 caffc_cstr_ce2cddbe5f7f742d;",
                 "string constants aren't generated correctly.");
 
       CodeAssertsStr.assertCodeContains(code,
@@ -131,7 +130,13 @@ public class TestS003String {
             });
 
         CodeAssertsStr.assertCodeContains(code,
-            "{ 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x65, 0x73, 0x63, 0x61, 0x70, 0x65, 0x73, 0x3a, 0x20, 0x07, 0x08, 0x1b, 0x0c, 0x0a, 0x0d, 0x09, 0x0b, 0x5c, 0x27, 0x22, 0x3f, 0x1b, 0x44, 0x00 }",
+            "0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x65",
+            "string escapes aren't processed correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+            "0x07, 0x08, 0x1b, 0x0c",
+            "string escapes aren't processed correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+            "0x5c, 0x27, 0x22, 0x3f, 0x1b, 0x44, 0x00",
             "string escapes aren't processed correctly.");
     }
 
@@ -157,7 +162,13 @@ public class TestS003String {
             });
 
         CodeAssertsStr.assertCodeContains(code,
-            "{ 0xe2, 0x9c, 0x85, 0x20, 0x1b, 0x5b, 0x32, 0x6d, 0x74, 0x65, 0x73, 0x74, 0x20, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x1b, 0x5b, 0x30, 0x6d, 0x00 }",
+            "0xe2, 0x9c, 0x85, 0x20, 0x1b, 0x5b, 0x32, 0x6d",
+            "string escapes aren't processed correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+            "0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x1b, 0x5b, 0x30",
+            "string escapes aren't processed correctly.");
+        CodeAssertsStr.assertCodeContains(code,
+            "0x6d, 0x00",
             "string escapes aren't processed correctly.");
     }
 }

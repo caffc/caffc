@@ -38,12 +38,14 @@ public class TestS049Assign {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_multi_structreturn _caffc_temp_caffc_multi_structreturn_1 = {0, 0};
-                """,
+caffc_multi_structreturn _caffc_temp_caffc_multi_structreturn_1 = {0,
+  0};
+""",
             "there should be a local variable declaration for the struct response");
 
         CodeAssertsStr.assertCodeContains(code, """
-_caffc_temp_caffc_multi_structreturn_1 = caffc_multi(); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_multi_structreturn_1 = caffc_multi();
+if (_caffc_exception) { goto fnUncaughtException0; };
 x = _caffc_temp_caffc_multi_structreturn_1.x;
 caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
                 """,
@@ -83,7 +85,8 @@ caffc_u8_arr_set(y, 0, _caffc_temp_caffc_multi_structreturn_1.y);
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-_caffc_temp_caffc_multi_structreturn_1 = caffc_multi(); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_multi_structreturn_1 = caffc_multi();
+if (_caffc_exception) { goto fnUncaughtException0; };
 x = _caffc_temp_caffc_multi_structreturn_1.x;
                 """,
             "kept unpack targets should still be assigned from the struct");

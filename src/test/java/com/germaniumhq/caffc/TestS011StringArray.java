@@ -26,7 +26,7 @@ public class TestS011StringArray {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_obj_arr_set(x, 0, (caffc_str*)&caffc_cstr_ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad);
+                caffc_obj_arr_set(x, 0, (caffc_str*)&caffc_cstr_ba7816bf8f01cfea);
                 """,
                 "assigning string values into a string array should work");
 
@@ -53,7 +53,8 @@ public class TestS011StringArray {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-_caffc_temp_caffc_str_1 = caffc_obj_arr_get(x, 0); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_str_1 = caffc_obj_arr_get(x, 0);
+if (_caffc_exception) { goto fnUncaughtException0; };
 y = _caffc_temp_caffc_str_1;
                 """,
                 "reading string values from a string array should work");

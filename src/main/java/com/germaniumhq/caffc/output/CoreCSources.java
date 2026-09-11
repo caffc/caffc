@@ -101,9 +101,9 @@ public final class CoreCSources {
 
     private static String readStripped(Path path) {
         try {
-            String content = Files.readString(path);
+            String code = Files.readString(path);
             StringBuilder result = new StringBuilder();
-            for (String line : content.split("\n", -1)) {
+            for (String line : code.split("\n", -1)) {
                 String trimmed = line.trim();
                 if (trimmed.startsWith("#include \"") || trimmed.startsWith("#include\"")) {
                     continue;
@@ -111,6 +111,7 @@ public final class CoreCSources {
                 result.append(line);
                 result.append("\n");
             }
+            // Note: wrapping is applied by CCodeGenerator on the final onefile render.
             return result.toString();
         } catch (IOException e) {
             CaffcCompiler.get().fatal(

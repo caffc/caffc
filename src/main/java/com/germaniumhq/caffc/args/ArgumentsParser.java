@@ -44,6 +44,9 @@ public class ArgumentsParser {
                 case "-onefile":
                     buildConfig.setOneFile(arguments.remove(0));
                     break;
+                case "--max-line-width":
+                    buildConfig.setMaxLineWidth(Integer.parseInt(arguments.remove(0)));
+                    break;
                 default:
                     buildConfig.getInputSources().add(argument);
                     break;
@@ -77,6 +80,7 @@ public class ArgumentsParser {
         System.out.println("-o/--output              output folder (default: .)");
         System.out.println("-t/--templates           templates folder (default: .)");
         System.out.println("-onefile <file>          output all code to a single .c and .h file pair");
+        System.out.println("--max-line-width <n>     max columns in generated C (default/min: 72)");
         System.out.println();
     }
 }

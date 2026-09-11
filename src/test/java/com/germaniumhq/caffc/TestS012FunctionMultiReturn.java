@@ -32,7 +32,8 @@ public class TestS012FunctionMultiReturn {
 
         CodeAssertsStr.assertCodeContains(code,
             """
-_caffc_temp_caffc_i32_1 = main_getPoint(); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_i32_1 = main_getPoint();
+if (_caffc_exception) { goto fnUncaughtException0; };
 x = _caffc_temp_caffc_i32_1;
             """,
             "the call for a single unnamed return should not be unpacked");
@@ -69,7 +70,8 @@ x = _caffc_temp_caffc_i32_1;
 
         CodeAssertsStr.assertCodeContains(code,
             """
-_caffc_temp_caffc_i32_1 = main_getPoint(); if (_caffc_exception) { goto fnUncaughtException0; };
+_caffc_temp_caffc_i32_1 = main_getPoint();
+if (_caffc_exception) { goto fnUncaughtException0; };
 x = _caffc_temp_caffc_i32_1;
                  """,
                  "the call for a single named return should not be unpacked");
@@ -115,13 +117,15 @@ x = _caffc_temp_caffc_i32_1;
             "the result of the call should be copied in the structure first");
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_u8_arr_set(sizesArray, 0, _caffc_temp_caffc_getFile_structreturn_1.size);
-                """,
+caffc_u8_arr_set(sizesArray, 0,
+  _caffc_temp_caffc_getFile_structreturn_1.size);
+""",
             "the value x of the struct should be unpacked (primitive array)");
 
         CodeAssertsStr.assertCodeContains(code, """
-                caffc_obj_arr_set(namesArray, 0, _caffc_temp_caffc_getFile_structreturn_1.name);
-                """,
+caffc_obj_arr_set(namesArray, 0,
+  _caffc_temp_caffc_getFile_structreturn_1.name);
+""",
             "the value y of the struct should be unpacked (object array)");
 
         CodeAssertsStr.assertCodeContains(code, """

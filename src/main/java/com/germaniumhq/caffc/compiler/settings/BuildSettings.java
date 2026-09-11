@@ -23,10 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 public final class BuildSettings {
+    /** Lowest supported max line width for generated C. */
+    public static final int MIN_MAX_LINE_WIDTH = 72;
+    /** Default max line width for generated C. */
+    public static final int DEFAULT_MAX_LINE_WIDTH = 72;
+
     private String exeName;
     private String templatesFolder;
     private String outputFolder = "caffc-out";
     private String oneFile;
+    private int maxLineWidth = DEFAULT_MAX_LINE_WIDTH;
     private List<String> inputSources = new ArrayList<>();
 
     public CommonSettings common = new CommonSettings();
@@ -72,6 +78,11 @@ public final class BuildSettings {
 
             if (config.containsKey("one_file")) {
                 settings.oneFile = config.get("one_file").toString();
+            }
+
+            if (config.containsKey("max_line_width")) {
+                settings.setMaxLineWidth(parsePositiveInt(
+                        config.get("max_line_width"), "max_line_width"));
             }
 
             Map<String, Object> gcConfig = (Map<String, Object>) config.get("gc");
@@ -121,6 +132,19 @@ public final class BuildSettings {
         return "default";
     }
 
+    private static int parsePositiveInt(Object value, String fieldName) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        try {
+            return Integer.parseInt(value.toString().trim());
+        } catch (NumberFormatException e) {
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath("caffc.yaml"),
+                    "Invalid " + fieldName + " value: " + value);
+            return DEFAULT_MAX_LINE_WIDTH;
+        }
+    }
+
     private void readBuildSettingsFromEnvironment() {
         // The "program" that is running. If the name is a `.jar` file, it means, we're
         // executed as `java -jar caffc.jar ...`. Otherwise, it's a graalvm instance.
@@ -155,6 +179,19 @@ public final class BuildSettings {
 
     public void setOneFile(String oneFile) {
         this.oneFile = oneFile;
+    }
+
+    public int getMaxLineWidth() {
+        return maxLineWidth;
+    }
+
+    public void setMaxLineWidth(int maxLineWidth) {
+        if (maxLineWidth < MIN_MAX_LINE_WIDTH) {
+            CaffcCompiler.get().fatal(SourceLocation.fromFilePath("caffc.yaml"),
+                    "max_line_width must be at least " + MIN_MAX_LINE_WIDTH + ", got: " + maxLineWidth);
+            return;
+        }
+        this.maxLineWidth = maxLineWidth;
     }
 
     public String getFeatureSetting(String featureName) {
@@ -192,6 +229,8 @@ public final class BuildSettings {
         switch (dottedPath) {
             case "one_file":
                 return oneFile;
+            case "max_line_width":
+                return maxLineWidth;
             case "gc.impl":
                 return gc.implName();
             case "gc.memory_trigger":

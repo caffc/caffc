@@ -7,7 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class StringConstant {
     public String name;
@@ -142,14 +144,54 @@ public class StringConstant {
 
         outputData = Arrays.copyOfRange(outputData, 0, outIndex);
 
-        stringConstant.name = "caffc_cstr_" + bytesToHex(sha256Digest.digest(outputData));
         stringConstant.bytes = outputData;
         stringConstant.bytesSize = outputData.length + 1; // we add the null terminator
         stringConstant.value = stringWithoutQuotes;
 
+        // Reuse an existing constant with the same value so callers share one C name.
+        // Otherwise a truncated-hash collision check would mint a longer name on the
+        // duplicate object while the set kept the original short name.
+        for (StringConstant existing : Program.get().getStringConstants()) {
+            if (existing.equals(stringConstant)) {
+                return existing;
+            }
+        }
+
+        String fullHash = bytesToHex(sha256Digest.digest(outputData));
+        // Keep names short enough that generated C can stay within max_line_width (min 72).
+        // Full SHA-256 hex is 64 chars → "caffc_cstr_" + 64 = 75, which already exceeds 72.
+        stringConstant.name = uniqueConstantName(fullHash);
         Program.get().addStringConstant(stringConstant);
 
         return stringConstant;
+    }
+
+    /**
+     * Prefer a short content hash; extend on collision so names stay unique.
+     */
+    private static String uniqueConstantName(String fullHash) {
+        final int preferredHexLen = 16;
+        Set<String> existingNames = new HashSet<>();
+        for (StringConstant existing : Program.get().getStringConstants()) {
+            existingNames.add(existing.name);
+        }
+
+        for (int len = preferredHexLen; len <= fullHash.length(); len++) {
+            String candidate = "caffc_cstr_" + fullHash.substring(0, len);
+            if (!existingNames.contains(candidate)) {
+                return candidate;
+            }
+        }
+
+        // Extremely unlikely: full hash collided; append a counter.
+        int suffix = 0;
+        while (true) {
+            String candidate = "caffc_cstr_" + fullHash + "_" + suffix;
+            if (!existingNames.contains(candidate)) {
+                return candidate;
+            }
+            suffix++;
+        }
     }
 
     private static byte parseCharFromOctalNumbers(SourceLocation owner,

@@ -25,11 +25,13 @@ public class TestS013CallGcRegistration {
         );
 
         CodeAssertsStr.assertCodeContains(code, """
-            _caffc_stack_frame_register((caffc_str*)&caffc_cstr_b039205e869bac191d95d26e278e6b336b652c110dfaa2a044639f0c2759d14e, caffc_null, 0);
+            _caffc_stack_frame_register((caffc_str*)&caffc_cstr_b039205e869bac19,
+              caffc_null, 0);
             """);
 
         CodeAssertsStr.assertCodeContains(code, """
-            _caffc_stack_frame_register((caffc_str*)&caffc_cstr_13b99dc167c251ccb9b8537249cbdaeb5796d6a1390a589f5c95d355a9c5eb69, _caffc_locals, 1);
+            _caffc_stack_frame_register((caffc_str*)&caffc_cstr_13b99dc167c251cc,
+              _caffc_locals, 1);
             """);
     }
 }

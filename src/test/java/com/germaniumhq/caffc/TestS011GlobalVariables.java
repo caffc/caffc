@@ -88,11 +88,12 @@ public class TestS011GlobalVariables {
         assertCodeContains(
             moduleC,
             """
-            yolo_x = 42;
-            yolo_y = 100;
-            _caffc_temp_yolo_obj_1 = yolo_get_data(); if (_caffc_exception) { goto fnUncaughtException0; };
-            yolo_a = _caffc_temp_yolo_obj_1;
-            """
+yolo_x = 42;
+yolo_y = 100;
+_caffc_temp_yolo_obj_1 = yolo_get_data();
+if (_caffc_exception) { goto fnUncaughtException0; };
+yolo_a = _caffc_temp_yolo_obj_1;
+"""
         );
     }
 
@@ -223,11 +224,12 @@ main() -> i32 {
         );
 
         assertCodeContains(moduleC, """
-        yolo_x = 42;
-        yolo_yolo_setup(); if (_caffc_exception) { goto fnUncaughtException0; };
-        fnUncaughtException0:
-        _caffc_stack_frame_unregister(caffc_null);
-        """);
+yolo_x = 42;
+yolo_yolo_setup();
+if (_caffc_exception) { goto fnUncaughtException0; };
+fnUncaughtException0:
+_caffc_stack_frame_unregister(caffc_null);
+""");
     }
 
     @Test

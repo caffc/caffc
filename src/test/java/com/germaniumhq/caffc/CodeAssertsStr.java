@@ -6,6 +6,7 @@ import com.germaniumhq.caffc.compiler.model.CompilationUnit;
 import com.germaniumhq.caffc.compiler.model.Program;
 import com.germaniumhq.caffc.compiler.model.type.Scope;
 import com.germaniumhq.caffc.compiler.settings.BuildSettings;
+import com.germaniumhq.caffc.output.CCodeLineWrapper;
 import com.germaniumhq.caffc.output.PebbleTemplater;
 
 import java.io.File;
@@ -229,8 +230,7 @@ public class CodeAssertsStr {
                 objectToRender, testBuildSettings);
 
             String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
-
-            return code;
+            return CCodeLineWrapper.wrap(code, testBuildSettings.getMaxLineWidth());
         } catch (Exception e) {
             throw new RuntimeException("Unable to render unit: " + unit, e);
         }

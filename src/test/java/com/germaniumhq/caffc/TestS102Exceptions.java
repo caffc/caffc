@@ -84,10 +84,10 @@ public class TestS102Exceptions {
         );
 
         // Verify that check_exception is called after willThrow() call
-        CodeAssertsStr.assertCodeContains(code,
-            """
-            main_willThrow(); if (_caffc_exception) { goto fnUncaughtException0; };
-            """,
+        CodeAssertsStr.assertCodeContains(code, """
+main_willThrow();
+if (_caffc_exception) { goto fnUncaughtException0; };
+""",
             "check_exception should be called after throw-throwing function");
 
         // Verify that fnUncaughtException0 returns from the function
@@ -122,20 +122,22 @@ public class TestS102Exceptions {
         // Verify that main checks for exceptions and exits with code 1
         CodeAssertsStr.assertCodeContains(code,
             """
-            main_main();
-            mainUnhandledException:
-            if (_caffc_exception) {
-              caffc_str* _caffc_exception_msg = caffc_exception_message((caffc_exception*)_caffc_exception);
-              if (_caffc_exception_msg) {
-                printf("Uncaught exception: %s\\n", _caffc_exception_msg->_caffc_data);
-              }
+main_main();
+mainUnhandledException:
+if (_caffc_exception) {
+  caffc_str* _caffc_exception_msg
+    = caffc_exception_message((caffc_exception*)_caffc_exception);
+  if (_caffc_exception_msg) {
+    printf("Uncaught exception: %s\\n",
+      _caffc_exception_msg->_caffc_data);
+  }
 
-              /* we want the GC to sweep it */
-              _caffc_exception = caffc_null;
+  /* we want the GC to sweep it */
+  _caffc_exception = caffc_null;
 
-              exit(1);
-            }
-            """,
+  exit(1);
+}
+""",
             "main should check for exceptions and exit(1) on uncaught exception");
     }
 }

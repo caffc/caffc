@@ -39,10 +39,12 @@ main() -> i32 {
         );
 
         assertCodeContains(moduleC, """
-        yolo_x = 42;
-        yolo_yolo_setup(); if (_caffc_exception) { goto fnUncaughtException0; };
-        yolo_yolo_unit(); if (_caffc_exception) { goto fnUncaughtException0; };
-        """);
+yolo_x = 42;
+yolo_yolo_setup();
+if (_caffc_exception) { goto fnUncaughtException0; };
+yolo_yolo_unit();
+if (_caffc_exception) { goto fnUncaughtException0; };
+""");
         assertCodeNotContains(moduleC, "yolo_unit_init", "unit_init itself must not be generated");
     }
 
@@ -99,7 +101,10 @@ main() -> i32 {
 """)}
         );
 
-        assertCodeContains(moduleC, "yolo_yolo_unit(); if (_caffc_exception) { goto fnUncaughtException0; };");
+        assertCodeContains(moduleC, """
+yolo_yolo_unit();
+if (_caffc_exception) { goto fnUncaughtException0; };
+""");
     }
 
     @Test
@@ -168,11 +173,13 @@ main() -> i32 {
         );
 
         assertCodeContains(moduleC, """
-        yolo_first(); if (_caffc_exception) { goto fnUncaughtException0; };
-        """);
+yolo_first();
+if (_caffc_exception) { goto fnUncaughtException0; };
+""");
         assertCodeContains(moduleC, """
-        yolo_second(); if (_caffc_exception) { goto fnUncaughtException0; };
-        """);
+yolo_second();
+if (_caffc_exception) { goto fnUncaughtException0; };
+""");
         assertCodeNotContains(moduleC, "unit_init", "unit_init itself must not be generated");
     }
 
