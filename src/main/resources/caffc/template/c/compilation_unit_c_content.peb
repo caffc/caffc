@@ -1,0 +1,7 @@
+{%- for block in ctx.compileBlocks %}
+{#- GlobalVariable and unit_init() are moved into the `module_init()` function.
+  Definitions are in the module.c/h #}
+{%- if className(block) != "GlobalVariableDeclarations" %}
+{{ block | render }}
+{%- endif %}
+{%- endfor %}

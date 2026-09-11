@@ -12,24 +12,19 @@ import com.germaniumhq.caffc.compiler.optimizer.LinearFormConverter;
 import com.germaniumhq.caffc.compiler.settings.BuildSettings;
 import com.germaniumhq.caffc.generated.caffcLexer;
 import com.germaniumhq.caffc.generated.caffcParser;
-import com.germaniumhq.caffc.output.OutputFilePathCalculator;
-import com.germaniumhq.caffc.output.PebbleTemplater;
+import com.germaniumhq.caffc.output.CCodeGenerator;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -56,18 +51,19 @@ public class MainApp {
         }
 
         Set<CompilationUnit> compilationUnits = new HashSet<>();
-
+        CCodeGenerator codeGenerator = new CCodeGenerator(buildConfig, program);
         boolean inOneFileMode = buildConfig.getOneFile() != null;
 
-        for (String feature : features) {
-            if (!inOneFileMode) {
-                copyCSources(buildConfig, feature);
-            }
-            compilationUnits.addAll( parseCaffcSources(program, buildConfig, feature) );
+        if (!inOneFileMode) {
+            codeGenerator.copyFeatureCSources();
         }
 
-        for (String sourcePath: buildConfig.getInputSources()) {
-            for (String sourceFile: resolveGlob(sourcePath)) {
+        for (String feature : features) {
+            compilationUnits.addAll(parseCaffcSources(program, buildConfig, feature));
+        }
+
+        for (String sourcePath : buildConfig.getInputSources()) {
+            for (String sourceFile : resolveGlob(sourcePath)) {
                 CompilationUnit compilationUnit = parseCaffcFile(program, sourceFile);
                 compilationUnits.add(compilationUnit);
             }
@@ -75,35 +71,21 @@ public class MainApp {
 
         // The GlobalVariables must be moved _after_ the `recurseResolveTypes`.
         // The rationale is explained in Module.createInitModule().
-        for (CompilationUnit compilationUnit: compilationUnits) {
+        for (CompilationUnit compilationUnit : compilationUnits) {
             compilationUnit.recurseResolveTypes();
         }
 
-        for (Module module: program.modules.values()) {
+        for (Module module : program.modules.values()) {
             Module.createInitModule(module, compilationUnits);
         }
 
         program.recreateConstants();
 
-        for (CompilationUnit compilationUnit: compilationUnits) {
+        for (CompilationUnit compilationUnit : compilationUnits) {
             LinearFormConverter.convertAstToLinearForm(compilationUnit);
         }
 
-        if (buildConfig.getOneFile() != null) {
-            renderAllToOneFile(buildConfig, compilationUnits, program);
-        } else {
-            for (CompilationUnit compilationUnit: compilationUnits) {
-                renderCompilationUnit(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb", "c");
-            }
-
-            for (Module module: getModuleHeaders()) {
-                generateModuleHeader(buildConfig, module);
-                generateModuleC(buildConfig, module);
-            }
-
-            generateConstantsHeader(buildConfig, program);
-            generateConstantsC(buildConfig, program);
-        }
+        codeGenerator.generate(compilationUnits);
     }
 
     public static Collection<CompilationUnit> parseCaffcSources(Program program, BuildSettings buildConfig, String feature) {
@@ -146,323 +128,13 @@ public class MainApp {
         return compilationUnits;
     }
 
-    private Iterable<Module> getModuleHeaders() {
-        return program.modules.values();
-    }
-
     private void reportError(String errorMessage) {
         System.err.println(errorMessage);
         System.exit(1);
     }
 
-    private void copyCSources(BuildSettings buildConfig, String feature) {
-        String selectedOption = buildConfig.getFeatureSetting(feature);
-
-        String cFilesFolderString = String.format("%s/%s/%s/c",
-                buildConfig.getTemplatesFolder(), feature, selectedOption);
-        File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
-
-        // it's ok not to have C sources
-        if (!cFilesFolder.isDirectory()) {
-            return;
-        }
-
-        for (String file: cFilesFolder.list()) {
-            try {
-                Files.copy(
-                        Paths.get(cFilesFolderString, file),
-                        Paths.get(buildConfig.getOutputFolder(), file),
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-            } catch (IOException e) {
-                CaffcCompiler.get().fatal(
-                        SourceLocation.fromFilePath(file),
-                        "I/O exception: " + e.getMessage());
-            }
-        }
-    }
-
     private String[] resolveGlob(String sourcePath) {
-        return new String[]{ new File(sourcePath).getAbsolutePath() };
-    }
-
-    /**
-     * Write a module_name.h file that contains all the functions, and classes
-     * definitions for the C compiler.
-     *
-     * @param buildConfig
-     * @param module
-     */
-    private void generateModuleHeader(BuildSettings buildConfig, Module module) {
-        String outputFileName = OutputFilePathCalculator.getModuleFileName(module, ".h");
-        renderFile(buildConfig, module, "caffc/template/c/module_h.peb", outputFileName);
-    }
-
-    private void generateModuleC(BuildSettings buildConfig, Module module) {
-        String outputFileName = OutputFilePathCalculator.getModuleFileName(module, ".c");
-        renderFile(buildConfig, module, "caffc/template/c/module_c.peb", outputFileName);
-    }
-
-    private void generateConstantsHeader(BuildSettings buildConfig, Program program) {
-        renderFile(buildConfig, program, "caffc/template/c/constants_h.peb", "caffc_program_constants.h");
-    }
-
-    private void generateConstantsC(BuildSettings buildConfig, Program program) {
-        renderFile(buildConfig, program, "caffc/template/c/constants_c.peb", "caffc_program_constants.c");
-    }
-
-    /**
-     * Render the code for the compilation unit, and write the file with
-     * the given extension. The file name is computed by the OutputFilePathCalculatOr.
-     * @param buildConfig
-     * @param compilationUnit
-     * @param templatePath
-     * @param fileExtension
-     */
-    private void renderCompilationUnit(BuildSettings buildConfig, CompilationUnit compilationUnit, String templatePath, String fileExtension) {
-        String outputFileName = OutputFilePathCalculator.getOutputFileName(compilationUnit, fileExtension);
-        String code = renderCode(buildConfig, compilationUnit, templatePath);
-
-        writeToFile(buildConfig, outputFileName, code);
-    }
-
-    /**
-     * Render a file into the output folder, using the given template. The idea is to
-     * start from an object, use the given template, and spit out a bunch of code.
-     * This will be saved as a file under the output folder with the given name.
-     *
-     * @param buildConfig
-     * @param context
-     * @param templatePath
-     * @param outputFileName
-     */
-    private void renderFile(BuildSettings buildConfig, Object context, String templatePath, String outputFileName) {
-        String code = renderCode(buildConfig, context, templatePath);
-        writeToFile(buildConfig, outputFileName, code);
-    }
-
-    /**
-     * Render a bunch of
-     * @param buildConfig
-     * @param context
-     * @param template
-     * @return
-     */
-    private String renderCode(BuildSettings buildConfig, Object context, String template) {
-        Map<String, Object> renderContext = PebbleTemplater.createRenderContext(context, buildConfig);
-        String code = PebbleTemplater.INSTANCE.renderToString(template, renderContext);
-
-        return code;
-    }
-
-    /**
-     * Write the file content into a file with the given name into the output folder.
-     * @param buildConfig
-     * @param filePath
-     * @param fileContent
-     */
-    private void writeToFile(BuildSettings buildConfig, String filePath, String fileContent) {
-        String name = new File(filePath).getName();
-        String outputName = new File(buildConfig.getOutputFolder(), name).getAbsolutePath();
-
-        try (FileWriter writer = new FileWriter(outputName)){
-            writer.write(fileContent);
-        } catch (IOException e) {
-            CaffcCompiler.get().fatal(
-                    SourceLocation.fromFilePath(outputName),
-                    "I/O exception: " + e.getMessage());
-        }
-    }
-
-    private void renderAllToOneFile(BuildSettings buildConfig, Set<CompilationUnit> compilationUnits, Program program) throws IOException {
-        StringBuilder headers = new StringBuilder();
-        StringBuilder implementations = new StringBuilder();
-        
-        String[] features = {"common", "exception", "gc", "string", "i18n"};
-
-        // Collect all core files and sort by dependency order
-        List<String> coreHeaders = new ArrayList<>();
-        List<String> coreImpls = new ArrayList<>();
-        
-        for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature);
-            String cFilesFolderString = String.format("%s/%s/%s/c",
-                    buildConfig.getTemplatesFolder(), feature, selectedOption);
-            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
-            
-            if (cFilesFolder.isDirectory()) {
-                for (String file : cFilesFolder.list()) {
-                    if (file.endsWith(".h")) {
-                        coreHeaders.add(file);
-                    } else if (file.endsWith(".c")) {
-                        coreImpls.add(file);
-                    }
-                }
-            }
-        }
-        
-        // Sort headers by dependency order
-        String[] headerOrder = {"caffcpt.h", "caffcc.h", "caffco.h", "caffca.h"};
-        List<String> sortedHeaders = new ArrayList<>();
-        for (String h : headerOrder) {
-            if (coreHeaders.contains(h)) {
-                sortedHeaders.add(h);
-            }
-        }
-        // Add any remaining headers
-        for (String h : coreHeaders) {
-            if (!sortedHeaders.contains(h)) {
-                sortedHeaders.add(h);
-            }
-        }
-        
-        // Process core headers
-        for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature);
-            String cFilesFolderString = String.format("%s/%s/%s/c",
-                    buildConfig.getTemplatesFolder(), feature, selectedOption);
-            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
-            
-            if (cFilesFolder.isDirectory()) {
-                for (String fileName : sortedHeaders) {
-                    String filePath = Paths.get(cFilesFolderString, fileName).toAbsolutePath().toString();
-                    if (Files.exists(Paths.get(filePath))) {
-                        String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath)));
-                        String[] lines = content.split("\n");
-                        for (String line : lines) {
-                            if (line.trim().startsWith("#include <")) {
-                                headers.append(line);
-                                headers.append("\n");
-                            } else if (!line.trim().startsWith("#include")) {
-                                headers.append(line);
-                                headers.append("\n");
-                            }
-                        }
-                        headers.append("\n");
-                    }
-                }
-            }
-        }
-        
-        // Sort impls by dependency order
-        String[] implOrder = {"caffca.c", "caffcmem.c", "caffcgcpl.c", "caffcgcps.c", 
-                               "caffcms.c", "caffcstk.c"};
-        List<String> sortedImpls = new ArrayList<>();
-        for (String i : implOrder) {
-            if (coreImpls.contains(i)) {
-                sortedImpls.add(i);
-            }
-        }
-        // Add any remaining impls
-        for (String i : coreImpls) {
-            if (!sortedImpls.contains(i)) {
-                sortedImpls.add(i);
-            }
-        }
-        
-        // Process core impls
-        for (String feature : features) {
-            String selectedOption = buildConfig.getFeatureSetting(feature);
-            String cFilesFolderString = String.format("%s/%s/%s/c",
-                    buildConfig.getTemplatesFolder(), feature, selectedOption);
-            File cFilesFolder = new File(cFilesFolderString).getAbsoluteFile();
-            
-            if (cFilesFolder.isDirectory()) {
-                for (String fileName : sortedImpls) {
-                    String filePath = Paths.get(cFilesFolderString, fileName).toAbsolutePath().toString();
-                    if (Files.exists(Paths.get(filePath))) {
-                        String content = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath)));
-                        String[] lines = content.split("\n");
-                        for (String line : lines) {
-                            if (line.trim().startsWith("#include <")) {
-                                implementations.append(line);
-                                implementations.append("\n");
-                            } else if (!line.trim().startsWith("#include")) {
-                                implementations.append(line);
-                                implementations.append("\n");
-                            }
-                        }
-                        implementations.append("\n");
-                    }
-                }
-            }
-        }
-
-        for (Module module : getModuleHeaders()) {
-            String headerCode = renderCode(buildConfig, module, "caffc/template/c/module_h.peb");
-            String[] headerLines = headerCode.split("\n");
-            for (String line : headerLines) {
-                if (line.trim().startsWith("#include <")) {
-                    headers.append(line);
-                    headers.append("\n");
-                } else if (!line.trim().startsWith("#include")) {
-                    headers.append(line);
-                    headers.append("\n");
-                }
-            }
-            String implCode = renderCode(buildConfig, module, "caffc/template/c/module_c.peb");
-            String[] implLines = implCode.split("\n");
-            for (String line : implLines) {
-                if (line.trim().startsWith("#include <")) {
-                    implementations.append(line);
-                    implementations.append("\n");
-                } else if (!line.trim().startsWith("#include")) {
-                    implementations.append(line);
-                    implementations.append("\n");
-                }
-            }
-        }
-
-        String constantsHeaderCode = renderCode(buildConfig, program, "caffc/template/c/constants_h.peb");
-        String[] constHeaderLines = constantsHeaderCode.split("\n");
-        for (String line : constHeaderLines) {
-            if (line.trim().startsWith("#include <")) {
-                headers.append(line);
-                headers.append("\n");
-            } else if (!line.trim().startsWith("#include")) {
-                headers.append(line);
-                headers.append("\n");
-            }
-        }
-        String constantsImplCode = renderCode(buildConfig, program, "caffc/template/c/constants_c.peb");
-        String[] constLines = constantsImplCode.split("\n");
-        for (String line : constLines) {
-            if (line.trim().startsWith("#include <")) {
-                implementations.append(line);
-                implementations.append("\n");
-            } else if (!line.trim().startsWith("#include")) {
-                implementations.append(line);
-                implementations.append("\n");
-            }
-        }
-
-        for (CompilationUnit compilationUnit : compilationUnits) {
-            String implCode = renderCode(buildConfig, compilationUnit, "caffc/template/c/compilation_unit_c.peb");
-            String[] unitLines = implCode.split("\n");
-            for (String line : unitLines) {
-                if (line.trim().startsWith("#include <")) {
-                    implementations.append(line);
-                    implementations.append("\n");
-                } else if (!line.trim().startsWith("#include")) {
-                    implementations.append(line);
-                    implementations.append("\n");
-                }
-            }
-        }
-
-        String outputFileName = new File(buildConfig.getOneFile()).getName();
-        String fullPath = new File(buildConfig.getOutputFolder(), outputFileName).getAbsolutePath();
-
-        try (FileWriter writer = new FileWriter(fullPath)) {
-            // Prepend headers first
-            writer.write(headers.toString());
-            writer.write("\n\n");
-            writer.write(implementations.toString());
-        } catch (IOException e) {
-            CaffcCompiler.get().fatal(
-                    SourceLocation.fromFilePath(fullPath),
-                    "I/O exception: " + e.getMessage());
-        }
+        return new String[]{new File(sourcePath).getAbsolutePath()};
     }
 
     public static CompilationUnit parseCaffcFile(Program program, String filePath) throws IOException {
@@ -477,8 +149,6 @@ public class MainApp {
 
         caffcParser.CompilationUnitContext antlrCompilationUnit = parser.compilationUnit();
 
-        CompilationUnit compilationUnit = CompilationUnit.fromAntlr(program, antlrCompilationUnit, filePath);
-
-        return compilationUnit;
+        return CompilationUnit.fromAntlr(program, antlrCompilationUnit, filePath);
     }
 }

@@ -1,0 +1,48 @@
+/* caffc onefile generated output */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+{#- Runtime / feature C headers (local #includes already stripped) -#}
+{%- for header in coreHeaders %}
+{{ header }}
+{%- endfor %}
+
+{#- Module headers (definitions) -#}
+{%- for module in modules %}
+/* ================================================================
+ * module {{ module.name }} (header)
+ * ================================================================ */
+{% include "caffc/template/c/module_h_content.peb" with {"ctx": module, "module": module} %}
+{%- endfor %}
+
+{#- Program constants (header) -#}
+{% include "caffc/template/c/constants_h_content.peb" %}
+
+{#- Runtime / feature C implementations -#}
+{%- for impl in coreImplementations %}
+{{ impl }}
+{%- endfor %}
+
+{#- Module implementations (globals + array constructors) -#}
+{%- for module in modules %}
+/* ================================================================
+ * module {{ module.name }} (implementation)
+ * ================================================================ */
+{% include "caffc/template/c/module_c_content.peb" with {"ctx": module, "module": module} %}
+{%- endfor %}
+
+{#- Program constants (implementation) -#}
+{% include "caffc/template/c/constants_c_content.peb" %}
+
+{#- Compilation units -#}
+{%- for unit in compilationUnits %}
+/* ================================================================
+ * compilation unit: {{ unit.sourceLocation.filePath }}
+ * ================================================================ */
+{% include "caffc/template/c/compilation_unit_c_content.peb" with {"ctx": unit, "unit": unit, "module": unit.module} %}
+{%- endfor %}
+
+#ifdef __cplusplus
+}
+#endif

@@ -17,9 +17,9 @@ The code is parsed in several stages:
 1. the source is tokenized + parsed into an abstract syntax tree (AST) by antlr (the grammar it's in `caffc.g4`)
 2. the Antlr AST is converted to an internal AST representation (`com.germaniumhq.caffc.compiler.model.*`)
 3. The internal AST is converted to a linear form of assembler-like instructions (`com.germaniumhq.caffc.compiler.asm.*`)
-4. The linear form is then rendered using pebble templates into the actual files.
+4. The linear form is then rendered using pebble templates into the actual files (`CCodeGenerator`).
 
-All of this is visible in the `com.germaniumhq.caffc.compiler.MainApp` class. The same ideas are replicated in the unit test execution `com.germaniumhq.caffc.CodeAssertsStr` - see for example `compileCaffcProgram`.
+`MainApp` parses/resolves; `com.germaniumhq.caffc.output.CCodeGenerator` writes C. Multi-file: one template per CU/module. `-onefile`: single `onefile_c.peb` over all modules + CUs (content partials `*_content.peb`; runtime `.c/.h` via `CoreCSources`). Unit tests: `CodeAssertsStr.compileCaffcProgram`.
 
 ## Build Commands
 
@@ -125,7 +125,7 @@ Right-shift is parsed as two `>` tokens (not a single `>>`) so nested generics l
 ## Template Engine
 
 Uses Pebble templates (`*.peb` files) for code generation. Templates are in:
-- `src/main/resources/caffc/templates/c/`: C code templates
+- `src/main/resources/caffc/template/c/`: C code templates (`onefile_c.peb`, `*_content.peb` partials)
 - `templates/feature/profile/`: Feature implementations (gc, string, exception, common)
 
 ### Template Context
