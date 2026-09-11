@@ -16,10 +16,12 @@ use caffc.collection
     #public _findIndex(T value, i32 valueHash) -> i32 {
         i32 i = 0
         while i < _this._capacity {
-            if _this._items[i] != null {
-                i32 existingHash = _this._items[i].hash()
-                if existingHash == valueHash and _this._items[i].equals(value) == 1 {
-                    return i
+            switch {
+                case _this._items[i] != null: {
+                    i32 existingHash = _this._items[i].hash()
+                    if existingHash == valueHash and _this._items[i].equals(value) == 1 {
+                        return i
+                    }
                 }
             }
             i = i + 1
@@ -63,10 +65,12 @@ use caffc.collection
         i32 valueHash = value.hash()
         i32 i = 0
         while i < _this._capacity {
-            if _this._items[i] != null {
-                i32 itemHash = _this._items[i].hash()
-                if not (itemHash == valueHash and _this._items[i].equals(value) == 1) {
-                    result.addAll(_this._items[i])
+            switch {
+                case _this._items[i] != null: {
+                    i32 itemHash = _this._items[i].hash()
+                    if not (itemHash == valueHash and _this._items[i].equals(value) == 1) {
+                        result.addAll(_this._items[i])
+                    }
                 }
             }
             i = i + 1
@@ -131,11 +135,13 @@ use caffc.collection
     _tryAt(i32 oldCapacity, i32 index) -> T {
         i32 j = 0
         while j < oldCapacity {
-            if _this._items[j] != null {
-                if index == 0 {
-                    return _this._items[j]
+            switch {
+                case _this._items[j] != null: {
+                    if index == 0 {
+                        return _this._items[j]
+                    }
+                    index = index - 1
                 }
-                index = index - 1
             }
             j = j + 1
         }

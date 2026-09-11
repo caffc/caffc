@@ -554,10 +554,9 @@ class CodePagePTCP154 implements CodePageEncoding {
 
       if codePageError {
         byteValue = '?'
-
-        if errorByteIndex < 0 {
-          errorByteIndex = currentByteIndex
-        }
+      }
+      if codePageError and errorByteIndex < 0 {
+        errorByteIndex = currentByteIndex
       }
 
       data[outByteIndex] = byteValue
@@ -595,32 +594,33 @@ class CodePagePTCP154 implements CodePageEncoding {
 
       if codePageError {
         codePoint = 0x3F
-        if errorIndex < 0 {
-          errorIndex = i
-        }
+      }
+      if codePageError and errorIndex < 0 {
+        errorIndex = i
       }
 
-      if codePoint <= 0x7F {
-        buf[out] = (u8) codePoint
-        out = out + 1
-      } else {
-        if codePoint <= 0x7FF {
+      switch {
+        case codePoint <= 0x7F: {
+          buf[out] = (u8) codePoint
+          out = out + 1
+        }
+        case codePoint <= 0x7FF: {
           buf[out] = (u8) (0xC0 | (codePoint >> 6))
           buf[out + 1] = (u8) (0x80 | (codePoint & 0x3F))
           out = out + 2
-        } else {
-          if codePoint <= 0xFFFF {
-            buf[out] = (u8) (0xE0 | (codePoint >> 12))
-            buf[out + 1] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
-            buf[out + 2] = (u8) (0x80 | (codePoint & 0x3F))
-            out = out + 3
-          } else {
-            buf[out] = (u8) (0xF0 | (codePoint >> 18))
-            buf[out + 1] = (u8) (0x80 | ((codePoint >> 12) & 0x3F))
-            buf[out + 2] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
-            buf[out + 3] = (u8) (0x80 | (codePoint & 0x3F))
-            out = out + 4
-          }
+        }
+        case codePoint <= 0xFFFF: {
+          buf[out] = (u8) (0xE0 | (codePoint >> 12))
+          buf[out + 1] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
+          buf[out + 2] = (u8) (0x80 | (codePoint & 0x3F))
+          out = out + 3
+        }
+        default: {
+          buf[out] = (u8) (0xF0 | (codePoint >> 18))
+          buf[out + 1] = (u8) (0x80 | ((codePoint >> 12) & 0x3F))
+          buf[out + 2] = (u8) (0x80 | ((codePoint >> 6) & 0x3F))
+          buf[out + 3] = (u8) (0x80 | (codePoint & 0x3F))
+          out = out + 4
         }
       }
 

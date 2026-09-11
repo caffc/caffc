@@ -18,10 +18,12 @@ use caffc.collection
     #public _findIndex(K key, i32 keyHash) -> i32 {
         i32 i = 0
         while i < _this._capacity {
-            if _this._keys[i] != null {
-                i32 existingHash = _this._keys[i].hash()
-                if existingHash == keyHash and _this._keys[i].equals(key) == 1 {
-                    return i
+            switch {
+                case _this._keys[i] != null: {
+                    i32 existingHash = _this._keys[i].hash()
+                    if existingHash == keyHash and _this._keys[i].equals(key) == 1 {
+                        return i
+                    }
                 }
             }
             i = i + 1
@@ -139,6 +141,20 @@ use caffc.collection
         return -1
     }
 
+    _reinsert(K key, V value) {
+        i32 keyHash = key.hash()
+        i32 found = _this._findIndex(key, keyHash)
+        switch {
+            case found != -1: {
+                _this._tryPutAt(key, value, found)
+            }
+            default: {
+                i32 free = _this._findFirstFreeSlot()
+                _this._tryPutAt(key, value, free)
+            }
+        }
+    }
+
     _grow() {
         i32 oldCapacity = _this._capacity
         K[] oldKeys = _this._keys
@@ -150,16 +166,7 @@ use caffc.collection
         i32 i = 0
         while i < oldCapacity {
             if oldKeys[i] != null {
-                K key = oldKeys[i]
-                V value = oldValues[i]
-                i32 keyHash = key.hash()
-                i32 found = _this._findIndex(key, keyHash)
-                if found != -1 {
-                    _this._tryPutAt(key, value, found)
-                } else {
-                    i32 free = _this._findFirstFreeSlot()
-                    _this._tryPutAt(key, value, free)
-                }
+                _this._reinsert(oldKeys[i], oldValues[i])
             }
             i = i + 1
         }

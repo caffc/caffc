@@ -1,5 +1,7 @@
 package com.germaniumhq.caffc;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestS103InstructionSwitch {
@@ -216,5 +218,78 @@ public class TestS103InstructionSwitch {
             goto forEnd
             """,
             "break as sole case body should exit the enclosing loop");
+    }
+
+    @Test
+    public void nestedSwitchIsRejected() {
+        CaffcCompiler.get().hasErrors = false;
+        try {
+            CodeAssertsStr.compileFullCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                    new TestUnit("a/a.caffc",
+                        """
+                        module main
+
+                        test(i32 x) -> i32 {
+                          switch x {
+                            case 1: {
+                              switch {
+                                case x > 0: {
+                                  return 1
+                                }
+                                default: {
+                                  return 2
+                                }
+                              }
+                            }
+                            default: {
+                              return 0
+                            }
+                          }
+                        }
+                        """)
+                });
+        } catch (Exception ignored) {
+        }
+
+        Assertions.assertTrue(CaffcCompiler.get().hasErrors,
+                "nested switch should be a compilation error");
+    }
+
+    @Test
+    public void switchInsideIfIsAllowed() {
+        CaffcCompiler.get().hasErrors = false;
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                    module main
+
+                    test(i32 x) -> i32 {
+                      i32 result = 0
+                      if x > 0 {
+                        switch x {
+                          case 1: {
+                            result = 10
+                          }
+                          default: {
+                            result = 20
+                          }
+                        }
+                      }
+                      return result
+                    }
+                    """)
+            });
+
+        Assertions.assertFalse(CaffcCompiler.get().hasErrors,
+                "switch inside if should be allowed");
+        CodeAssertsStr.assertCodeContains(code,
+            "/* switchBegin",
+            "switch inside if should still generate a switch");
     }
 }

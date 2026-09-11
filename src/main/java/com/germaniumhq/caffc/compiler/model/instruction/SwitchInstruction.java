@@ -64,6 +64,11 @@ public final class SwitchInstruction implements Statement {
         result.owner = owner;
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, switchAntlr);
 
+        if (result.findAstParent(SwitchInstruction.class) != null) {
+            CaffcCompiler.get().error(result,
+                    "nested switch is not allowed; break the code down into functions/methods");
+        }
+
         if (switchAntlr.expression() != null) {
             result.switchExpression = Expression.fromAntlr(unit, result, switchAntlr.expression());
         }

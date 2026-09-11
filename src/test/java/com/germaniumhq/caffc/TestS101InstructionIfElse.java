@@ -1,5 +1,7 @@
 package com.germaniumhq.caffc;
 
+import com.germaniumhq.caffc.compiler.error.CaffcCompiler;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestS101InstructionIfElse {
@@ -246,5 +248,70 @@ forEnd1:
             _caffc_temp_caffc_bool_1 = !x;
             """,
             "`not` on an object should return a boolean type, not the original object type");
+    }
+
+    @Test
+    public void nestedIfElseIsRejected() {
+        CaffcCompiler.get().hasErrors = false;
+        try {
+            CodeAssertsStr.compileFullCaffcProgram(
+                "caffc/template/c/compilation_unit_c.peb",
+                "a/a.caffc",
+                new TestUnit[] {
+                    new TestUnit("a/a.caffc",
+                        """
+                        module main
+
+                        test(i32 x) -> i32 {
+                          if x > 0 {
+                            if x > 10 {
+                              return 1
+                            }
+                            return 2
+                          }
+                          return 0
+                        }
+                        """)
+                });
+        } catch (Exception ignored) {
+        }
+
+        Assertions.assertTrue(CaffcCompiler.get().hasErrors,
+                "nested if/else should be a compilation error");
+    }
+
+    @Test
+    public void ifInsideSwitchIsAllowed() {
+        CaffcCompiler.get().hasErrors = false;
+        String code = CodeAssertsStr.compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "a/a.caffc",
+            new TestUnit[] {
+                new TestUnit("a/a.caffc",
+                    """
+                    module main
+
+                    test(i32 x) -> i32 {
+                      i32 result = 0
+                      switch {
+                        case x > 0: {
+                          if x > 10 {
+                            result = 1
+                          }
+                        }
+                        default: {
+                          result = 2
+                        }
+                      }
+                      return result
+                    }
+                    """)
+            });
+
+        Assertions.assertFalse(CaffcCompiler.get().hasErrors,
+                "if inside switch should be allowed");
+        CodeAssertsStr.assertCodeContains(code,
+            "/* switchBegin",
+            "if inside switch should still generate a switch");
     }
 }

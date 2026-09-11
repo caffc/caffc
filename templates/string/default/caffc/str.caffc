@@ -271,63 +271,63 @@ class str implements HasHash {
 
     b0 = _this.get(index)
 
-    // ASCII
-    if (b0 & 0x80) == 0 {
-      return (u32) b0, index + 1
+    switch {
+      // ASCII
+      case (b0 & 0x80) == 0: {
+        return (u32) b0, index + 1
+      }
+      // 2-byte sequence: 110xxxxx 10xxxxxx
+      case (b0 & 0xE0) == 0xC0: {
+        if index + 1 >= len {
+          return 0xFFFD, index + 1
+        }
+        b1 = _this.get(index + 1)
+        if (b1 & 0xC0) != 0x80 {
+          return 0xFFFD, index + 1
+        }
+        cp = ((u32) (b0 & 0x1F) << 6) | (u32) (b1 & 0x3F)
+        if cp < 0x80 {
+          return 0xFFFD, index + 1
+        }
+        return cp, index + 2
+      }
+      // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
+      case (b0 & 0xF0) == 0xE0: {
+        if index + 2 >= len {
+          return 0xFFFD, index + 1
+        }
+        b1 = _this.get(index + 1)
+        b2 = _this.get(index + 2)
+        if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 {
+          return 0xFFFD, index + 1
+        }
+        cp = ((u32) (b0 & 0x0F) << 12) | ((u32) (b1 & 0x3F) << 6) | (u32) (b2 & 0x3F)
+        if cp < 0x800 {
+          return 0xFFFD, index + 1
+        }
+        return cp, index + 3
+      }
+      // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+      case (b0 & 0xF8) == 0xF0: {
+        if index + 3 >= len {
+          return 0xFFFD, index + 1
+        }
+        b1 = _this.get(index + 1)
+        b2 = _this.get(index + 2)
+        b3 = _this.get(index + 3)
+        if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 or (b3 & 0xC0) != 0x80 {
+          return 0xFFFD, index + 1
+        }
+        cp = ((u32) (b0 & 0x07) << 18) | ((u32) (b1 & 0x3F) << 12) | ((u32) (b2 & 0x3F) << 6) | (u32) (b3 & 0x3F)
+        if cp < 0x10000 or cp > 0x10FFFF {
+          return 0xFFFD, index + 1
+        }
+        return cp, index + 4
+      }
+      default: {
+        return 0xFFFD, index + 1
+      }
     }
-
-    // 2-byte sequence: 110xxxxx 10xxxxxx
-    if (b0 & 0xE0) == 0xC0 {
-      if index + 1 >= len {
-        return 0xFFFD, index + 1
-      }
-      b1 = _this.get(index + 1)
-      if (b1 & 0xC0) != 0x80 {
-        return 0xFFFD, index + 1
-      }
-      cp = ((u32) (b0 & 0x1F) << 6) | (u32) (b1 & 0x3F)
-      if cp < 0x80 {
-        return 0xFFFD, index + 1
-      }
-      return cp, index + 2
-    }
-
-    // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
-    if (b0 & 0xF0) == 0xE0 {
-      if index + 2 >= len {
-        return 0xFFFD, index + 1
-      }
-      b1 = _this.get(index + 1)
-      b2 = _this.get(index + 2)
-      if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 {
-        return 0xFFFD, index + 1
-      }
-      cp = ((u32) (b0 & 0x0F) << 12) | ((u32) (b1 & 0x3F) << 6) | (u32) (b2 & 0x3F)
-      if cp < 0x800 {
-        return 0xFFFD, index + 1
-      }
-      return cp, index + 3
-    }
-
-    // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    if (b0 & 0xF8) == 0xF0 {
-      if index + 3 >= len {
-        return 0xFFFD, index + 1
-      }
-      b1 = _this.get(index + 1)
-      b2 = _this.get(index + 2)
-      b3 = _this.get(index + 3)
-      if (b1 & 0xC0) != 0x80 or (b2 & 0xC0) != 0x80 or (b3 & 0xC0) != 0x80 {
-        return 0xFFFD, index + 1
-      }
-      cp = ((u32) (b0 & 0x07) << 18) | ((u32) (b1 & 0x3F) << 12) | ((u32) (b2 & 0x3F) << 6) | (u32) (b3 & 0x3F)
-      if cp < 0x10000 or cp > 0x10FFFF {
-        return 0xFFFD, index + 1
-      }
-      return cp, index + 4
-    }
-
-    return 0xFFFD, index + 1
   }
 
   /*

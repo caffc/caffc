@@ -29,6 +29,12 @@ public final class IfInstruction implements Statement {
 
         result.owner = owner;
         result.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ifAntlr);
+
+        if (result.findAstParent(IfInstruction.class) != null) {
+            CaffcCompiler.get().error(result,
+                    "nested if/else is not allowed; use a switch statement instead");
+        }
+
         result.checkExpression = Expression.fromAntlr(unit, result, ifAntlr.expression());
 
         if (ifAntlr.trueBlock != null) {

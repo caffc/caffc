@@ -198,6 +198,7 @@ Global inits and `unit_init()` bodies move into `module_init()` after resolve (s
 
 1. **Boolean** — `switch { case cond: { … } default: { … } }` → if/else-if/else (`bool` cases).
 2. **Value** — `switch x { case 3: { … } }`. Objects need `HasEquals`; `case null:` is safe. No fall-through; bodies are block/`return`/`break`/`continue`.
+3. **Non-nestable** — `if/else` cannot nest inside another `if/else` (use `switch`); `switch` cannot nest inside another `switch` (split into functions/methods). `if` inside `switch` (and vice versa) is allowed.
 
 ## Compile-time `#switch` / `#ifdef`
 
@@ -245,7 +246,8 @@ flex(1, extra=null)
 - **Nested generics need adjacent `>`** — right-shift is two `>` tokens (not one `>>`), so `Collection<DictEntry<K, V>>` parses; `x >> 1` still works.
 - **Globals are module-prefixed in C** — `main_x`; dots → underscores. Native blocks must use the C name.
 - **`#switch` / `#ifdef` are compile-time** — `BuildSettings` only; no nesting / mid-control-flow.
-- **`continue` not supported** — use nested if/return instead.
+- **`continue` not supported** — use early `return` / restructure with `switch` instead.
+- **`if/else` and `switch` are non-nestable** — no `if` inside `if` (use `switch`); no `switch` inside `switch` (extract functions/methods).
 - **No modulo (`%`)** — use `&` for power-of-2 modular arithmetic.
 - **Bitwise vs boolean** — `& | ^ ~ << >>` vs `and` / `or` / `not`.
 - **No local shadowing** — declare once at function scope and assign.
