@@ -1,6 +1,7 @@
 package com.germaniumhq.caffc.compiler.model;
 
 import com.germaniumhq.caffc.compiler.model.expression.CallArgument;
+import com.germaniumhq.caffc.compiler.model.expression.ExpressionDotAccess;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionFnCall;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionId;
 import com.germaniumhq.caffc.compiler.model.expression.ExpressionNewObject;
@@ -12,17 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Python-style decorator: {@code @decorator function ...}.
+ * Parametrized decorator: {@code @decorator(args) function ...}.
  *
- * <p>Lowers to a module global {@code fn<R> name = decorator(bodyLambda)}.
- * Nested {@code @a @b f(){}} becomes {@code a(b(body))}.
+ * <p>Always requires parentheses (no bare {@code @decorator}). Lowers to a module
+ * global {@code fn<R> name = decorator(args)(bodyLambda)}. Nested
+ * {@code @a() @b(x) f(){}} becomes {@code a()(b(x)(body))}.
  */
 public final class DecoratorCall implements CompileBlock, AstItem {
     public AstItem owner;
     public SourceLocation sourceLocation;
 
     /**
-     * Decorator expressions from outermost to innermost ({@code @a @b} → {@code [a, b]}).
+     * Factory call expressions from outermost to innermost
+     * ({@code @a() @b(x)} → {@code [a(), b(x)]}).
      */
     public List<Expression> decoratorExpressions = new ArrayList<>();
 
@@ -41,7 +44,7 @@ public final class DecoratorCall implements CompileBlock, AstItem {
 
         caffcParser.DecoratorCallContext current = ctx;
         while (current != null) {
-            result.decoratorExpressions.add(Expression.fromAntlr(unit, result, current.expression()));
+            result.decoratorExpressions.add(factoryCallFromAntlr(unit, result, current));
             if (current.function() != null) {
                 // Do not register as a module function — Function.fromAntlr would.
                 result.decoratedFunction = Function.fromAntlr(unit, owner, current.function());
@@ -76,7 +79,7 @@ public final class DecoratorCall implements CompileBlock, AstItem {
         bodyInstance.instantiatedTypeSearch = SymbolSearch.ofName(lambda.clazz.definition.name);
 
         Expression wrapped = bodyInstance;
-        // Apply decorators innermost-first: @a @b f → a(b(f))
+        // Apply decorators innermost-first: @a() @b(x) f → a()(b(x)(f))
         for (int i = result.decoratorExpressions.size() - 1; i >= 0; i--) {
             Expression decorator = result.decoratorExpressions.get(i);
             ExpressionFnCall call = new ExpressionFnCall();
@@ -104,6 +107,38 @@ public final class DecoratorCall implements CompileBlock, AstItem {
         result.binding = declarations;
 
         return result;
+    }
+
+    private static Expression factoryCallFromAntlr(
+            CompilationUnit unit,
+            AstItem owner,
+            caffcParser.DecoratorCallContext ctx) {
+        ExpressionFnCall factoryCall = new ExpressionFnCall();
+        factoryCall.owner = owner;
+        factoryCall.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
+        factoryCall.functionExpression = calleeFromAntlr(unit, factoryCall, ctx.decoratorCallee());
+
+        if (ctx.callArgumentList() != null) {
+            for (caffcParser.CallArgumentContext argumentContext : ctx.callArgumentList().callArgument()) {
+                factoryCall.callArguments.add(CallArgument.fromAntlr(unit, factoryCall, argumentContext));
+            }
+        }
+
+        return factoryCall;
+    }
+
+    private static Expression calleeFromAntlr(
+            CompilationUnit unit,
+            AstItem owner,
+            caffcParser.DecoratorCalleeContext ctx) {
+        if (ctx.decoratorCallee() != null) {
+            Expression left = calleeFromAntlr(unit, owner, ctx.decoratorCallee());
+            ExpressionDotAccess dot = ExpressionDotAccess.fromParts(owner, left, ctx.ID().getText());
+            dot.sourceLocation = SourceLocation.fromAntlrContext(unit.sourceLocation.filePath, ctx);
+            return dot;
+        }
+
+        return ExpressionId.fromName(unit, owner, ctx.ID().getText());
     }
 
     @Override

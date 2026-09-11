@@ -34,7 +34,7 @@ testFnCallOnCustomClass() {
   assertTrue(add(20, 22) == 42, "custom fn class should unpack boxed args")
 }
 
-// --- identity decorator ---
+// --- identity decorator (factory with no config args) ---
 
 class Identity implements fn<fn<i32>> {
   call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
@@ -42,9 +42,11 @@ class Identity implements fn<fn<i32>> {
   }
 }
 
-Identity identity = new Identity()
+identity() -> fn<fn<i32>> {
+  return new Identity()
+}
 
-@identity
+@identity()
 answer() -> i32 {
   return 42
 }
@@ -64,9 +66,11 @@ class AddTen implements fn<fn<i32>> {
   }
 }
 
-AddTen addTen = new AddTen()
+addTen() -> fn<fn<i32>> {
+  return new AddTen()
+}
 
-@addTen
+@addTen()
 baseValue() -> i32 {
   return 32
 }
@@ -75,7 +79,7 @@ testWrappingDecorator() {
   assertTrue(baseValue() == 42, "wrapping decorator should transform the result")
 }
 
-// --- stacked decorators: @a @b f → a(b(body)) ---
+// --- stacked decorators: @a() @b() f → a()(b()(body)) ---
 
 class MultiplyByTwo implements fn<fn<i32>> {
   call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
@@ -86,10 +90,12 @@ class MultiplyByTwo implements fn<fn<i32>> {
   }
 }
 
-MultiplyByTwo multiplyByTwo = new MultiplyByTwo()
+multiplyByTwo() -> fn<fn<i32>> {
+  return new MultiplyByTwo()
+}
 
-@addTen
-@multiplyByTwo
+@addTen()
+@multiplyByTwo()
 stacked() -> i32 {
   return 16
 }
@@ -110,9 +116,11 @@ class DoubleArg implements fn<fn<i32>> {
   }
 }
 
-DoubleArg doubleArg = new DoubleArg()
+doubleArg() -> fn<fn<i32>> {
+  return new DoubleArg()
+}
 
-@doubleArg
+@doubleArg()
 echo(i32 x) -> i32 {
   return x
 }
@@ -121,11 +129,43 @@ testDecoratedWithParams() {
   assertTrue(echo(21) == 42, "decorator can wrap a parameterized function")
 }
 
+// --- parametrized decorator: @addN(n) → addN(n)(body) ---
+
+class AddN implements fn<fn<i32>> {
+  i32 n
+
+  constructor(i32 n) {
+    _this.n = n
+  }
+
+  call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+    fn<i32> inner = (fn<i32>) args.get(0)
+    i32 amount = _this.n
+    return fn() -> i32 {
+      return inner() + amount
+    }
+  }
+}
+
+addN(i32 n) -> fn<fn<i32>> {
+  return new AddN(n)
+}
+
+@addN(10)
+parametrized() -> i32 {
+  return 32
+}
+
+testParametrizedDecorator() {
+  assertTrue(parametrized() == 42, "parametrized decorator should pass config args to the factory")
+}
+
 main() -> i32 {
   testFnCallOnCustomClass()
   testIdentityDecorator()
   testWrappingDecorator()
   testStackedDecorators()
   testDecoratedWithParams()
+  testParametrizedDecorator()
   return 0
 }

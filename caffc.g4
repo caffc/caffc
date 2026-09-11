@@ -176,9 +176,15 @@ return:
   RETURN expression (',' expression)* |
   RETURN;
 
+// Decorators are always parametrized: @d() / @d(args). Lowers as d(args)(body).
+decoratorCallee:
+  ID
+  | decoratorCallee '.' ID
+  ;
+
 decoratorCall:
-  '@' expression function |
-  '@' expression decoratorCall;
+  '@' decoratorCallee '(' callArgumentList? ')' function |
+  '@' decoratorCallee '(' callArgumentList? ')' decoratorCall;
 
 controlFlow:
   BREAK |

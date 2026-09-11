@@ -27,7 +27,7 @@ caffc [-onefile main.c] -o out_folder/ *.caffc
 * native UTF-8 string support (WIP)
 * fast compilation times
 * tags (annotations) (TBD)
-* decorators (`@decorator function`)
+* decorators (`@decorator(args) function`)
 * lambdas (`fn(params) -> R { ... }`)
 * multi-returns
 

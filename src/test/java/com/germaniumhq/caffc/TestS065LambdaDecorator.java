@@ -78,9 +78,11 @@ public class TestS065LambdaDecorator {
                       }
                     }
 
-                    Identity identity = new Identity()
+                    identity() -> fn<fn<i32>> {
+                      return new Identity()
+                    }
 
-                    @identity
+                    @identity()
                     answer() -> i32 {
                       return 42
                     }
@@ -97,6 +99,57 @@ public class TestS065LambdaDecorator {
                 "decorated function should be invoked as an fn global");
         assertCodeContains(code, "Identity_call(",
                 "decorator should be applied to the body lambda");
+    }
+
+    @Test
+    public void parametrizedDecoratorPassesFactoryArgs() {
+        String code = compileFullCaffcProgram(
+            "caffc/template/c/compilation_unit_c.peb",
+            "test.caffc",
+            new TestUnit[] {
+                new TestUnit("test.caffc",
+                    """
+                    module main
+
+                    use caffc.collection
+
+                    class AddN implements fn<fn<i32>> {
+                      i32 n
+
+                      constructor(i32 n) {
+                        _this.n = n
+                      }
+
+                      call(... obj[] args, Dict<str, obj> kw) -> fn<i32> {
+                        fn<i32> inner = (fn<i32>) args.get(0)
+                        i32 amount = _this.n
+                        return fn() -> i32 {
+                          return inner() + amount
+                        }
+                      }
+                    }
+
+                    addN(i32 n) -> fn<fn<i32>> {
+                      return new AddN(n)
+                    }
+
+                    @addN(10)
+                    answer() -> i32 {
+                      return 32
+                    }
+
+                    main() -> i32 {
+                      return answer()
+                    }
+                    """)
+            });
+
+        assertCodeContains(code, "main_addN(",
+                "parametrized decorator should call the factory with config args");
+        assertCodeContains(code, "AddN_call(",
+                "factory result should wrap the body lambda");
+        assertCodeContains(code, "caffc_fn_call(main_answer",
+                "decorated function should remain an fn global");
     }
 
     @Test
